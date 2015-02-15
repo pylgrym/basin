@@ -23,20 +23,36 @@ bool Bag::add(Obj* o, std::ostream& err) {
     return false;
   }
   // FIXME - consider a fixed order of items/slots, so you always fill empty spaces.
-  objs.insert(o);
+  objs.push_back(o); //  append(o); // insert(o);
   return true; 
 }
 
 
 
 bool Bag::remove(Obj* obj, std::ostream& err) {
-  std::set<Obj*>::iterator i;
-  i = objs.find(obj);
+  BagCont::iterator i;
+
+  //i = objs.find(obj);
+  i = std::find(objs.begin(), objs.end(), obj); // objs.find(obj);
+
   if (i == objs.end()) { err << "bag: Err, obj not found?"; return false; }
   objs.erase(i);
   return true;
 }
 
+
+
+char Bag::letterIx(Obj* item) {
+  char ix = 'a';
+  BagCont::iterator i;
+  for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
+    Obj* o = *i;
+    if (o == item) {
+      return ix;
+    }
+  }
+  return '?';
+}
 
 
 void Bag::showInv() {
@@ -46,7 +62,8 @@ void Bag::showInv() {
 
   char ix = 'a';
 
-  std::set<Obj*>::iterator i;
+  int totalWeight = 0;
+  BagCont::iterator i;
   // FIXME - bag and iterators should be prominent, so you get 'Bag::begin'.
   for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
     Obj& o = **i;
@@ -65,10 +82,17 @@ void Bag::showInv() {
       // << " " << abbrA[0] // Icon-letter first.
       // << " " 
       << ix 
+      << " " << o.weight/10.0  
       << " " << descA
     ;
     Cuss::prtL(ss.str().c_str());  
+    totalWeight += o.weight;
   }
+
+  std::stringstream ss;
+  ss << "Total weight: " << totalWeight / 10.0 << " kg";
+  Cuss::prtL(ss.str().c_str());  
+
   Cuss::invalidate();
 
 }
@@ -104,7 +128,7 @@ Obj* Bag::pick(const char* prompt) {
 
   int objIx = key - firstKey;
   // Approach necessary because sets are not indexable:
-  std::set<Obj*>::iterator si = objs.begin(); 
+  BagCont::iterator si = objs.begin(); 
   for (int i = 0; i < objIx && si != objs.end(); ++i, ++si) { }
   if (si == objs.end()) { return false;  } // Error condition.
   Obj* obj = *si;

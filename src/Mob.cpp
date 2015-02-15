@@ -15,6 +15,8 @@
 
 #include "Equ.h"
 
+#include <iomanip>
+
 Mob::Mob() {  
   mobDummyWeapon = Dice(rnd(3), rnd(12)); // Wow that can hit hard..
 
@@ -73,7 +75,9 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     logstr ss;
 
     switch (nChar) {
+    case 'W': // W=wield/wear, same as a=activate/use.
     case 'A': if ( UseCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; // Use is.. A..?
+
     case 'D': if (DropCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; // D is DROP.
     case 'G': if (TakeCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true;  } break; // G is GET.
     case 'I': if (InvCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // I is INVentory (not B-bag.)
@@ -230,6 +234,22 @@ int PlayerMob::distPly(CPoint p) {
 
 
 
+bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
+  Obj* oldItem = NULL;
+  if (!Equ::worn.replaceItem(obj, &oldItem, err)) { return false;  }
+
+  bool bOK = false;
+  bOK = Bag::bag.remove(obj, err); // Item must be removed from bag.
+  if (!bOK) { return false;  }
+  if (oldItem != NULL) { // old item must go back in the bag.
+    logstr log;  log << "You put the old item in your bag.";
+    bOK = Bag::bag.add(oldItem, err);
+  }
+  return bOK;
+}
+
+
+
 
 
 
@@ -256,12 +276,12 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) { // int& hitRoll, int hitBonus
 
  
 
-bool Mob::calcAttack(class Mob& adv, AttackInf& ai) { // int& dmg) {
+bool Mob::calcAttack(class Mob& adv, AttackInf& ai, std::ostream& os) { // int& dmg) {
   // Collect 'attack info' in an AttackInfo struct.
   // AttackInf ai;
 
   Obj* player_weapon = Equ::worn.weapon(); // FIXME, inventory and equipment should be members of Mobs.
-  if (ctype() == CR_Player) {
+  if (isPlayer()) { // ctype() == CR_Player) {
     if (player_weapon != NULL) { ai.wpHitBonus = player_weapon->toHit; }
   }
 
@@ -269,7 +289,7 @@ bool Mob::calcAttack(class Mob& adv, AttackInf& ai) { // int& dmg) {
   if (!ai.bHit) { return false;  }
 
   ai.attackDice = mobWeaponDice();
-  if (ctype() == CR_Player) {
+  if (isPlayer()) { // ctype() == CR_Player) {
     if (player_weapon != NULL) { 
       ai.attackDice = player_weapon->dmgDice; 
       ai.dmgBonus = player_weapon->toDmg;
@@ -277,7 +297,7 @@ bool Mob::calcAttack(class Mob& adv, AttackInf& ai) { // int& dmg) {
    
   }
 
-  ai.dmgRoll = ai.attackDice.roll();
+  ai.dmgRoll = ai.attackDice.roll(os);
   ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg.
   ai.dmg += ai.dmgRoll + ai.dmgMod + ai.dmgBonus;
   AttackSchool type = SC_Phys; 
@@ -299,17 +319,16 @@ int Mob::takeDamage(int dmg, AttackSchool damageType) { // returns dmgTaken
 
 
 
-bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
-  Obj* oldItem = NULL;
-  if (!Equ::worn.replaceItem(obj, &oldItem, err)) { return false;  }
 
-  bool bOK = false;
-  bOK = Bag::bag.remove(obj, err); // Item must be removed from bag.
-  if (!bOK) { return false;  }
-  if (oldItem != NULL) { // old item must go back in the bag.
-    logstr log;  log << "You put the old item in your bag.";
-    bOK = Bag::bag.add(oldItem, err);
-  }
-  return bOK;
+
+double AttackInf::calcHitChance() const {
+  double hitRatio = hitThres / 20.0;
+  return hitRatio;
 }
 
+void AttackInf::repHitChance(std::ostream& os) {
+  double chance = calcHitChance();
+  int percent = int(chance*100.0 + 0.5);
+  //os << std::fixed << std::setw(4) << std::setprecision(2) << chance;
+  os << percent;
+}

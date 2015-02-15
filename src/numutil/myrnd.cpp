@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "myrnd.h"
 
+#include <ostream>
+
 int rnd(int range) { return rand() % range;  }
 
 int rnd(int from,int to) { 
@@ -24,6 +26,18 @@ int nDx(int n, int x) { // roll n Dice-x and add them.
   return sum;
 }
 
+extern int nDx_ss(int n, int x, std::ostream& os) { // roll n Dice-x and add them. 
+  int sum = 0;
+  for (int d = 1; d <= n; ++d) {
+    int roll = Dx(x);
+    if (d > 1) { os << "+";  }
+    os << roll;
+    sum += roll;
+  }
+  os << "=" << sum;
+  return sum;
+}
+
 int nDxDetail(int n, int x, std::vector<int>& details) { // roll n Dice-x and add them. 
   /* Does the same as nDx, but let's you see the details (e.g. to print 2+4+1, so you can see why you are getting those ugly numbers :-).
   NB, I might want to gather-show the intermediate results.
@@ -39,8 +53,8 @@ int nDxDetail(int n, int x, std::vector<int>& details) { // roll n Dice-x and ad
 
 
 
-int Dice::roll() const {
-  int result = nDx(n, x);
+int Dice::roll(std::ostream& os) const {
+  int result = nDx_ss(n, x, os); //nDx
   return result;
 }
 

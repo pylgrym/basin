@@ -18,9 +18,9 @@ bool WalkCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
 
   Map::map.moveMob(mob, newpos);
-  if (mob.ctype() == CR_Player) { mob.lightWalls(mob.pos); }
+  if (mob.isPlayer()) { mob.lightWalls(mob.pos); } // ; } // ctype() == CR_Player
 
-  if (mob.ctype() == CR_Player && Map::map[newpos].item.o != NULL) { 
+  if (mob.isPlayer() && Map::map[newpos].item.o != NULL) {  // ctype() == CR_Player
     LookCmd look(mob);
     look.Do(err);
   }
@@ -93,14 +93,22 @@ bool HitCmd::Do(std::ostream& err) {
   hittee->invalidateGfx(tgt, tgt, true);
 
   // int dmg = 0;
+  std::stringstream dummy;
+  bool isPlayer = mob.isPlayer(); // ctype() == CR_Player;
+
   AttackInf ai;
-  bool bHit = mob.calcAttack(*hittee, ai); // dmg);
+  bool bHit = mob.calcAttack(*hittee, ai, isPlayer ? err : dummy); // dmg);
   if (!bHit) { 
-    if (mob.ctype() == CR_Player) {
+    if (mob.isPlayer()) { // mob.ctype() == CR_Player) {
       err << "You miss! "; 
     } else {
       err << "It misses. "; 
     }
+
+    err << "(";
+    ai.repHitChance(err);
+    err << "%)";
+
     ai.rep(err, mob.stats);
     return false; 
   }
@@ -111,7 +119,11 @@ bool HitCmd::Do(std::ostream& err) {
     log
       << mob.pronoun()
       << " hit" << mob.verbS() << " "
-      << hittee->pronoun() << " for " << ai.dmgTaken << ".";
+      << hittee->pronoun() << " for " << ai.dmgTaken;
+
+    log << "(";
+    ai.repHitChance(log);
+    log << "%)";
 
   }
  

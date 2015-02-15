@@ -20,7 +20,7 @@ public:
     newpos = old; newpos.x += dx; newpos.y += dy;
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } //  ctype() != CR_Player;  
 
   virtual bool legal(std::ostream& err) { 
     if (newpos == old) { err << "Not a move-direction.";  return false; }
@@ -48,10 +48,13 @@ public:
     // assert(hittee != NULL);
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } // ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
-    if (hittee == NULL) { err << "No opponent to hit.";  return false; }
+    if (hittee == NULL) { 
+      if (!silent()) { err << "No opponent to hit."; }
+      return false; 
+    }
     if (hittee == &mob) { err << "Don't hit ourselves..";  return false;  }
     return true; 
   }
@@ -72,7 +75,7 @@ public:
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
     if (tgt == mob.pos) { err << "Not a dig-direction.\n";  return false; }
@@ -110,7 +113,7 @@ public:
     o = Map::map[tgt].item.o;
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
   virtual bool legal(std::ostream& err) {  return true; }
 
   virtual bool Do(std::ostream& err) {  
@@ -140,7 +143,7 @@ public:
     o = Map::map[tgt].item.o;
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
     bool empty = Map::map[tgt].item.empty(); 
@@ -162,9 +165,10 @@ public:
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
     if (!Bag::bag.add(o, err)) { return false; } // err << "Couldn't fit item in bag.";  
 
+    char itemIx = Bag::bag.letterIx(o);
     // std::string anItem = o->an_item();
     std::string theItem = o->the_item();
-    err << "You pick up " << theItem;
+    err << "You pick up (" << itemIx << ") " << theItem;
     item.setObj(NULL);
     return true; 
   }
@@ -182,7 +186,7 @@ public:
     tgt = mob.pos;
   }
 
-  virtual bool silent() const { return mob.ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
     bool empty = Map::map[tgt].item.empty(); 

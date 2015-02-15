@@ -46,12 +46,13 @@ public:
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot;
+  int weight; // tenths of kilos, 100g.
 
   virtual ObjEnum otype() const { return type; }
 
-  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable) { clear(); }
+  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0) { clear(); }
 
-  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable) {
+  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0) {
     effect = Spell::rndSpell();
     eqslot = Equ::rndSlot();
     clear(); 
@@ -70,6 +71,7 @@ public:
     toHit = rndC(-2, 5);
     toDmg = rndC(-2, 6);
     dmgDice = Dice(rndC(1, 4), rndC(2, 12));
+    weight = rnd(1, 50);
   }
 
   // BEGIN BEHAVIOUR

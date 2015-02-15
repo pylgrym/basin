@@ -49,6 +49,9 @@ struct AttackInf {
   int dmgTaken; // The actual amount of damage, adversary takes - adjusted for resistances/vulnerabilities.
   AttackInf() { hitRoll = 0; wpHitBonus = 0; finalToHit = 0; advAC = 0; hitThres = 0; bHit = false; dmgRoll = 0; dmgBonus = 0;  dmgMod = 0; dmg = 0; dmgTaken = 0; }
 
+  double calcHitChance() const;
+  void repHitChance(std::ostream& os);
+
   void rep(std::ostream& os, Stats& stats) {
     os << 'r' << hitRoll << "<=" << hitThres << " (th" << finalToHit << "-ac" << advAC << ")+" << wpHitBonus;
     os << " "; // Where does the horrible toHit come from..
@@ -68,7 +71,9 @@ public:
   Stats stats;
   Dice mobDummyWeapon;
 
-  bool calcAttack(class Mob& adv, struct AttackInf& ai); // int& dmg);
+  virtual bool isPlayer() const { return ctype() == CR_Player;  }
+
+  bool calcAttack(class Mob& adv, struct AttackInf& ai, std::ostream& os); // int& dmg);
   bool hitTest(class Mob& adv, struct AttackInf& ai); // int& roll, int hitBonus);
   int takeDamage(int dmg, AttackSchool damageType); // returns damage-taken (adjusted for resistancs/vulnerabilities)
 
