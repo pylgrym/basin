@@ -131,9 +131,8 @@ public:
     }
 
     logstr log;
-    // Todo - act on obj.effect..
+    // Act on obj.effect:
     Spell::doSpell(effect, who, log);
-    log << "A blue glow appears."; // surrounds you."; // You are surrounded by a blue glow.";
 
     return true;
   } 

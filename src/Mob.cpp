@@ -18,12 +18,14 @@
 #include <iomanip>
 
 Mob::Mob() {  
-  mobDummyWeapon = Dice(rnd(3), rnd(12)); // Wow that can hit hard..
+  mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
 
   pos.x = rnd(1, Map::Width-1); 
   pos.y = rnd(2, Map::Height-1);
   color = RGB(rand()%255,rand()%255,rand()%255);
   speed = 1.0;
+
+  defSchool = (AttackSchool) rnd(0, SC_MaxSchools);
 }
 
 
@@ -120,7 +122,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
             if (WalkCmd(*this, dx, dy, false).Do(ss)) { actionDuration = 1; bActionDone = true; }
           }
         } else { // target-field HAS a creature - then it's an attack (we aren't very social, are we..)
-          if (HitCmd(*this, dx, dy).Do(ss)) { actionDuration = 1; bActionDone = true; }
+          if (HitCmd(*this, dx, dy, SC_Phys).Do(ss)) { actionDuration = 1; bActionDone = true; }
         }
       } //end movement-scope-block.
       break; // end of keyboard switch.
@@ -145,7 +147,7 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
   bool attack = oneIn(2); // JG, FIXME: If player is on neighbour tile, we should ALWAYS attack.
   if (attack) {
     logstr log;
-    HitCmd(*this, dx, dy).Do(log);
+    HitCmd(*this, dx, dy, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // walk
     std::stringstream ss;
     bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
@@ -324,9 +326,10 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) { // int& hitRoll, int hitBonus
 
  
 
-bool Mob::calcAttack(class Mob& adv, AttackInf& ai, std::ostream& os) { // int& dmg) {
+bool Mob::calcAttack(class Mob& adv, AttackInf& ai, AttackSchool school, std::ostream& os) { // int& dmg) {
   // Collect 'attack info' in an AttackInfo struct.
-  // AttackInf ai;
+
+  //ai.school = school; // FIXME, record that..
 
   Obj* player_weapon = Equ::worn.weapon(); // FIXME, inventory and equipment should be members of Mobs.
   if (isPlayer()) { // ctype() == CR_Player) {
@@ -352,9 +355,10 @@ bool Mob::calcAttack(class Mob& adv, AttackInf& ai, std::ostream& os) { // int& 
 
   ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg.
   ai.dmg += ai.dmgRoll + ai.dmgMod + ai.dmgBonus;
-  AttackSchool type = SC_Phys; 
+  if (ai.dmg < 1) { ai.dmg = 1; } // You always hit for at least 1
 
-  ai.dmgTaken = adv.takeDamage(ai.dmg, type); 
+  //AttackSchool type = school; // SC_Phys;
+  ai.dmgTaken = adv.takeDamage(ai.dmg, school); // type);
 
   return true;
 }

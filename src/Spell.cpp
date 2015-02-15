@@ -147,7 +147,7 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 
 bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob* target, 
-  log << "Do:" << effect << ". "; 
+  // log << "Do:" << effect << ". "; 
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
@@ -170,7 +170,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob*
   case SP_Heal:         return healSpell(actor,35); break;
   case SP_Sick:         return healSpell(actor,-35); break;
   // case SP_Poison:       healSpell(actor); break;
-  case SP_LightArea:   return lightSpell(actor, actor.pos,3); break;
+  case SP_LightArea:   return lightSpell(actor, actor.pos,2); break;
   case SP_LightDir:    return lightSpell(actor, actor.pos,3); break; // FIXME, should be zap spell instead..
   default: log << "err spell unknown.";  return false;
   }

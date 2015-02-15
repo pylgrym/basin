@@ -53,10 +53,12 @@ public:
   Stats stats;
   double speed;
   Dice mobDummyWeapon;
+  AttackSchool defSchool;
+  virtual AttackSchool school() const { return defSchool;  }
 
   virtual bool isPlayer() const { return ctype() == CR_Player;  }
 
-  bool calcAttack(class Mob& adv, struct AttackInf& ai, std::ostream& os); // int& dmg);
+  bool calcAttack(class Mob& adv, struct AttackInf& ai, AttackSchool school, std::ostream& os); // int& dmg);
   bool hitTest(class Mob& adv, struct AttackInf& ai); // int& roll, int hitBonus);
   int takeDamage(int dmg, AttackSchool damageType); // returns damage-taken (adjusted for resistancs/vulnerabilities)
 

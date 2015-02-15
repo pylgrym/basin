@@ -97,7 +97,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer(); // ctype() == CR_Player;
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(*hittee, ai, isPlayer ? err : dummy); // dmg);
+  bool bHit = mob.calcAttack(*hittee, ai, school, isPlayer ? err : dummy); // dmg);
   if (!bHit) { 
     if (mob.isPlayer()) { // mob.ctype() == CR_Player) {
       err << "You miss! "; 
@@ -208,14 +208,24 @@ bool ZapCmd::Do(std::ostream& err) {
     CPoint newBullet = bullet;
     newBullet += dir;
     if (!Map::map.legalPos(newBullet)) { break; }
-    if (Map::map[newBullet].blocked()) {
+
+    if (!Map::map[newBullet].creature.empty()) { // We hit a mob..
+      CPoint aim = newBullet - tgt;
+      { logstr log; log << "The bullet hits the monster."; } // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
+      HitCmd cmd(mob,aim.x, aim.y, school);
+      bool bOK = cmd.Do(err);
       break;
     }
+
+    if (Map::map[newBullet].blocked()) { // Did we hit some wall instead?
+      break;
+    }
+
     // It's legal, move to it:
     bullet = newBullet;
     Map::map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
-    TheUI::microSleepForRedraw(4); 
+    TheUI::microSleepForRedraw(7); // 4);
   }
 
   Cuss::clear(true);

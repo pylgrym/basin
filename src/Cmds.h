@@ -47,7 +47,7 @@ public:
 
 class HitCmd : public Cmd {
 public:
-  HitCmd(Mob& mob_, int dx, int dy):mob(mob_), hittee(NULL) {
+  HitCmd(Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_) {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
     hittee = Map::map[tgt].creature.m; 
     // assert(hittee != NULL);
@@ -67,6 +67,7 @@ public:
   CPoint tgt;
   Mob& mob;
   Mob* hittee;
+  AttackSchool school;
 
   virtual bool Do(std::ostream& err);
 

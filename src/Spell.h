@@ -17,7 +17,7 @@ will trigger the spell effect of the item.
 
 enum AttackSchool {
   // Ideas for different kinds of attack, for weakness/strength against.
-  SC_Phys,
+  SC_Phys=0,
   SC_Fire,
   SC_Frost,
   SC_Water,
@@ -33,6 +33,7 @@ enum AttackSchool {
   SC_Poison,
   SC_Gas,
   SC_Mind,
+  SC_MaxSchools
 };
 
 /*
