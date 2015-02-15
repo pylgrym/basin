@@ -297,7 +297,11 @@ bool Mob::calcAttack(class Mob& adv, AttackInf& ai, std::ostream& os) { // int& 
    
   }
 
-  ai.dmgRoll = ai.attackDice.roll(os);
+  {
+    logstr log; log << "attack roll " << ai.attackDice.n << "d" << ai.attackDice.x << ": ";
+    ai.dmgRoll = ai.attackDice.roll(log); // os);
+  }
+
   ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg.
   ai.dmg += ai.dmgRoll + ai.dmgMod + ai.dmgBonus;
   AttackSchool type = SC_Phys; 
