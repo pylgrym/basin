@@ -99,6 +99,15 @@ void Bag::showInv() {
 
 
 
+Obj* Bag::findItem(ObjEnum otype) {
+  BagCont::iterator si; 
+  for (si = objs.begin(); si != objs.end(); ++si) {
+    Obj* obj = *si;
+    if (obj->otype() == otype) { return obj;  }
+  }
+  return NULL;
+}
+
 
 
 Obj* Bag::pick(const char* prompt) {

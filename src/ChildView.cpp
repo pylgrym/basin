@@ -138,15 +138,16 @@ unsigned int TheUI::getNextKey() {  // UINT
 
 
 
- int TheUI::microSleepForRedraw() {  // UINT
+ int TheUI::microSleepForRedraw(int maxCount) {  
 	// GetMessage loop example. // http://www.cplusplus.com/forum/beginner/38860/	
   debstr() << "microSleep, allowing redraw.\n";
   int count = 0;
 	MSG msg;
   // GetMessage(&msg, NULL, 0, 0) > 0 
-  while ( PeekMessage(&msg,NULL,0,0, PM_REMOVE) > 0 && count < 4) {
+  while ( PeekMessage(&msg,NULL,0,0, PM_REMOVE) > 0 && count < maxCount) {
     ++count;
-    Sleep(2);
+    const int sleepMS = 10; // 4;
+    Sleep(sleepMS);
 		TranslateMessage(&msg);  
 		DispatchMessage(&msg);
 	} // If we get out of here (return value not == 0), it means we got WM_QUIT. (or < 0 on error.)
@@ -309,6 +310,10 @@ void CChildView::OnPaint() {
 		    dc.DrawText(s, &cellR,  lowerLeftFlags);
       }
 
+      if (!cell.hasOverlay()) { 
+        tiles.drawTileB(x, y, cell.overlay, dc, true,255); // false);  // THINGS
+      }
+
       if (!cell.charEmpty()) { 
 	      dc.SelectObject(largeFont);
         const COLORREF txtColor = RGB(255, 255, 255);
@@ -322,15 +327,12 @@ void CChildView::OnPaint() {
 
         if (!cell.light()) {
           // Base darkening on tile-distance to player:
-          int dist = PlayerMob::distPly(CPoint(x, y));
-          // Clip dist, for stronger torch:
-          dist = dist / 9;
-          dist = dist - 2; 
+          int dist = PlayerMob::distPlyLight(CPoint(x, y));
           if (dist < 0) { dist = 0;  }
           int blend = (int) (255.0 - (255.0 / (dist+1)));
 
           CPoint blendTile(29,20); 
-          tiles.drawTileB(x, y, blendTile, dc, true, blend); // 128);
+          tiles.drawTileB(x, y, blendTile, dc, true, blend); 
         }
       }
 

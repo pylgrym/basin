@@ -25,6 +25,8 @@ public:
   void showInv();
   Obj* pick(const char* prompt);
 
+  Obj* findItem(ObjEnum otype);
+
   Bag();
   ~Bag();
 

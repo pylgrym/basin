@@ -176,25 +176,44 @@ bool ZapCmd::Do(std::ostream& err) {
     }      
   } // Loop until dir key.
 
+  CPoint tileMagic(18, 24);
+  CPoint tileFire(22, 24);
+  CPoint tileFrost(23, 24);
+  CPoint tilePurple(34, 24);
+  CPoint tileYellow(35, 24);
+  CPoint tileGreenFire(39, 24);
+  CPoint tileGreenBall(3, 25);
+  CPoint tileWeird(39, 2);
+
+  CPoint tile = tileMagic;
+  switch (school) {
+  case SC_Magic: tile = tileMagic; break;
+  case SC_Fire:  tile = tileFire; break;
+  case SC_Frost: tile = tileFrost; break;
+  case SC_Earth: tile = tileYellow; break;
+  case SC_Gas:   tile = tileGreenBall; break;
+  default:       tile = tileWeird; break;
+  }
+
   CPoint dir = Map::key2dir(dirKey); // (1, 0); // FIXME; should follow key.
   CPoint bullet = tgt;
   for (int shoot = 0; shoot < 10; ++shoot) {
     // Clear old bullet pos:
-    Map::map[bullet].c = 0;
+    Map::map[bullet].overlay = CPoint(0, 0); // c = 0;
     CPoint oldBullet = bullet;
 
     // Consider new bullet pos:
     CPoint newBullet = bullet;
     newBullet += dir;
-    if (!Map::map.legalPos(newBullet)) { break;  }
+    if (!Map::map.legalPos(newBullet)) { break; }
     if (Map::map[newBullet].blocked()) {
       break;
     }
     // It's legal, move to it:
     bullet = newBullet;
-    Map::map[bullet].c = '*';
+    Map::map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
-    TheUI::microSleepForRedraw(); 
+    TheUI::microSleepForRedraw(4); 
   }
 
   Cuss::clear(true);

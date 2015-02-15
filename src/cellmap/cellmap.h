@@ -20,6 +20,7 @@ public:
   ObjSlot item; 
   Creature creature;
   char c;
+  CPoint overlay;
 
   Cell() {
     clearChar(); 
@@ -35,6 +36,9 @@ public:
     // debstr() << "blocked, envir:" << envir.blocked() << "/" << envir.type << ", mob:" << creature.blocked() << "\n";
     return envir.blocked() || creature.blocked();
   }
+
+  bool hasOverlay() const { return !!(overlay == CPoint(0, 0));  }
+  void clearOverlay() { overlay = CPoint(0, 0);  }
 };
 
 

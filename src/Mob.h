@@ -13,23 +13,7 @@
 
 #include "Stats.h"
 
-enum AttackSchool {
-  // Ideas for different kinds of attack, for weakness/strength against.
-  SC_Phys,
-  SC_Fire,
-  SC_Frost,
-  SC_Water,
-  SC_Lightning,
-  SC_Air,
-  SC_Earth,
-  SC_Acid,
-  SC_Shadow,
-  SC_Magic,
-  SC_Nature,
-  SC_Undead,
-  SC_Holy
-};
-
+#include "Spell.h" // for attack schools.
 
 struct AttackInf {
   // HIT-OR-MISS info:
@@ -66,9 +50,8 @@ public:
   ~Mob(void);
 
   CPoint pos;
-  // int hp;
-  // int maxhp;
   Stats stats;
+  double speed;
   Dice mobDummyWeapon;
 
   virtual bool isPlayer() const { return ctype() == CR_Player;  }
@@ -83,6 +66,7 @@ public:
   virtual CreatureEnum ctype() const = 0;
 
   virtual double act() = 0; // returns time that action requires (0 means keep doing actions/keep initiative.)
+  virtual void passTime() {} // Currently only activated for player mob.
 
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 
@@ -184,12 +168,21 @@ public:
   PlayerMob();
   ~PlayerMob();
   virtual double act(); // returns time that action requires (0 means keep doing actions/keep initiative.)
+  virtual void passTime();
+  void updateLight();
+  Obj* findLight();
+
   virtual CreatureEnum ctype() const { return CR_Player; }
   virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "";  } // "you HIT".
 
+  int lightStrength() const { return theLightStrength;  }
+  int theLightStrength; // 1 is weak, 9 is good. (examples.)
+  void setLightStrength(int strength)  { theLightStrength = strength; }
+
   static PlayerMob* ply;
-  static int distPly(CPoint p);
+  static int distPly(CPoint p); // raw/true calc. (square)
+  static int distPlyLight(CPoint p); // light-adjusted
 };
 
 class MonsterMob : public Mob {

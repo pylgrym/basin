@@ -7,6 +7,8 @@
 
 #include "util/debstr.h"
 
+#include "LogEvents.h"
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -49,7 +51,10 @@ void Stats::setLevel(int level_) {
 }
 
 Stats::Stats()
-  :theLevel(0)
+:theLevel(0)
+,hunger(1500)
+,confused(0)
+,gold(0)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
   addStat("str"); // These are also called 'attributes'.
@@ -200,4 +205,51 @@ http://www.monkeysushi.net/gaming/DnD/math.html
 
 int Stat::mdf() const {
   return Stats::mdf(v);
+}
+
+
+
+void Stats::passTime() {
+  /* JG: Deal with temporary effects, ie positive and negative buffs,
+  and cooldowns. Possibly this is not the proper place to handle all than.
+  OTOH, a lot of them might affect stats.
+  */
+  updateHunger();
+  updateConfusion();
+}
+
+void Stats::updateHunger() {
+  --hunger;
+  if (hunger < 0) {
+    if (hunger % 10 == 0) {
+      logstr log;
+      log << "You are starving!";
+    }
+  }
+}
+
+
+void Stats::updateConfusion() {
+  if (confused <= 0) { return; }  // no confusion going on.
+  --confused; // Continuing the countdown.
+  if (confused == 0) {
+    logstr log; log << "Your confusion wears off.";
+  }
+}
+
+
+void Stats::heal(int percent) { // May also be used negative.
+  int deltaHP = hp*percent / 100;
+  int newHP = hp + deltaHP;
+  if (newHP > maxHP) {
+    newHP = maxHP;
+  }
+  hp = newHP;
+
+  logstr log;
+  if (percent > 0) {
+    log << "You feel your health returning.";
+  } else {
+    log << "Your health worsens.";
+  }
 }

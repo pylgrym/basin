@@ -3,6 +3,10 @@
 
 #include "numutil/myrnd.h"
 
+#include "Mob.h"
+
+#include "Cmds.h"
+
 Spell::Spell()
 {
 }
@@ -62,7 +66,97 @@ SpellEnum Spell::rndSpell() {
 }
 
 
-bool Spell::doSpell(SpellEnum effect, std::ostream& log) {
+bool updateSpeed(Mob& actor, double factor) {
+  logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }
+  actor.speed *= factor;
+  return true;
+}
+
+bool updateConfused(Mob& actor, int confuseCount) {
+  logstr log; if (confuseCount > 0) { log << "You feel confused."; } else { log << "You feel less confused."; }
+  actor.stats.confused = confuseCount; 
+  return true;
+}
+
+
+bool teleportSpell(Mob& actor, int range) {
+  { logstr log; log << "Your body shifts in time and space."; }
+
+  for (int i = 0; i < 10; ++i) { // We try a number of times, to avoid teleporting into rock.
+    int dx = rndC(-range, range), dy = rndC(-range, range);
+    WalkCmd cmd(actor, dx, dy, true);
+    // Possibly check 'legal' (for mapPosLegal), even before calling Do.
+    logstr log;
+    if (cmd.Do(log)) { return true;  } // Otherwise, keep trying different directions.
+  }
+  return false; // It never worked. Not normal.
+}
+
+
+bool eatSpell(Mob& actor, int deltaFood) {
+  {
+    logstr log; log << "You eat a bit and feel less hungry!";
+    actor.stats.hunger += deltaFood; // Eat 300 something.
+  }
+  actor.stats.heal(25);
+  return true; 
+}
+
+
+bool healSpell(Mob& actor, int percent) {
+  {
+    logstr log; 
+    if (percent > 0) { log << "You feel healing energies."; }
+    if (percent < 0) { log << "You feel sick."; }
+  }
+  actor.stats.heal(percent);
+  return true;
+}
+
+
+
+bool bulletSpell(Mob& actor, AttackSchool school) {
+  ZapCmd cmd(actor, school);
+  logstr log;
+  return cmd.Do(log);
+}
+
+
+bool lightSpell(Mob& actor) {
+  logstr log;
+  log << "Light floods around you.";
+  // FIXME, make a 'light' command.
+  return true;
+}
+
+
+
+bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob* target, 
   log << "Do:" << effect << ". "; 
+  switch (effect) {
+  case SP_Speedup:      return updateSpeed(actor, 2); break;
+  case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
+  case SP_Confuse:      return updateConfused(actor, rnd(3, 20)); break;
+  case SP_Unconfuse:    return updateConfused(actor, 0); break;
+  case SP_Teleport:     return teleportSpell(actor, 4); break;
+
+  case SP_MagicMissile: return bulletSpell(actor, SC_Magic); break; // FIXME - they can have different types of 'missile' for same spell! (school/dmg type?)
+  case SP_FireBolt:     return bulletSpell(actor, SC_Fire); break;
+  case SP_FrostBolt:    return bulletSpell(actor, SC_Frost); break;
+  case SP_FireBall:     return bulletSpell(actor, SC_Fire); break;
+  case SP_StinkCloud:   return bulletSpell(actor, SC_Gas); break;
+
+  case SP_StoneToMud:   return bulletSpell(actor, SC_Air); break; // FIXME - a bit different from the other projectile-missile things.
+  case SP_WallBuilding: return bulletSpell(actor, SC_Earth); break;
+  case SP_Earthquake:   return bulletSpell(actor, SC_Earth); break;
+
+  case SP_Eat:          return eatSpell(actor,300); break;
+  case SP_Heal:         return healSpell(actor,35); break;
+  case SP_Sick:         return healSpell(actor,-35); break;
+  // case SP_Poison:       healSpell(actor); break;
+  case SP_LightArea:   return lightSpell(actor); break;
+  case SP_LightDir:    return lightSpell(actor); break;
+  default: log << "err spell unknown.";  return false;
+  }
   return true; 
 }

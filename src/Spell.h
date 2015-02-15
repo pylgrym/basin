@@ -14,20 +14,57 @@ will trigger the spell effect of the item.
 (both player and mob.)
 */
 
+
+enum AttackSchool {
+  // Ideas for different kinds of attack, for weakness/strength against.
+  SC_Phys,
+  SC_Fire,
+  SC_Frost,
+  SC_Water,
+  SC_Lightning,
+  SC_Air,
+  SC_Earth,
+  SC_Acid,
+  SC_Shadow,
+  SC_Magic,
+  SC_Nature,
+  SC_Undead,
+  SC_Holy,
+  SC_Poison,
+  SC_Gas
+};
+
+/*
+  CPoint tileMagic(18, 24);  SC_Magic
+  CPoint tileFire(22, 24);   SC_FIre
+  CPoint tileFrost(23, 24);  SC_Frost
+  CPoint tilePurple(34, 24);
+  CPoint tileYellow(35, 24); SC_Earth
+  CPoint tileGreenFire(39, 24); 
+  CPoint tileGreenBall(3, 25); SC_Gas/SC_Poison
+*/
+
 enum SpellEnum {
   SP_NoSpell = 0,
-  SP_Speedup = 1,
-  SP_Slowdown = 2,
-  SP_Confuse = 3,
-  SP_Teleport = 4,
-  SP_MagicMissile = 5,
-  SP_FireBolt = 6,
-  SP_FrostBolt = 7,
-  SP_FireBall = 8,
-  SP_StoneToMud = 9,
-  SP_WallBuilding = 10,
-  SP_StinkCloud = 11,
-  SP_MaxSpells = 12
+  SP_Speedup ,
+  SP_Slowdown ,
+  SP_Confuse ,
+  SP_Unconfuse, 
+  SP_Teleport  ,
+  SP_MagicMissile , // SC_Magic
+  SP_FireBolt ,     // SC_Fire
+  SP_FrostBolt ,    // SC_Frost
+  SP_FireBall ,     // SC_Fire
+  SP_StoneToMud ,   // SC_Air/Elm?
+  SP_WallBuilding , // SC_Earth
+  SP_Earthquake ,   // SC_Earth
+  SP_StinkCloud ,   // SC_Poison/SC_Gas
+  SP_Eat ,
+  SP_Heal ,
+  SP_Sick ,
+  SP_LightArea ,
+  SP_LightDir ,
+  SP_MaxSpells
 };
 
 struct SpellDesc {
@@ -46,7 +83,7 @@ public:
   static const SpellDesc& spell(SpellEnum);
   static SpellEnum rndSpell();
 
-  static bool doSpell(SpellEnum, std::ostream& log);
+  static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log); // Mob& target, 
 
 private:
   static const SpellDesc spells[SP_MaxSpells];

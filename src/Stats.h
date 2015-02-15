@@ -46,6 +46,15 @@ public:
   int ac;
   int toHit;
 
+  // Temp/fluctuating state: Might deserve its own sub-struct; 
+  // OTOH, actually all stats might need to follow..
+  int hunger;
+  int confused; // counter > 0 if we are confused, 0 if not confused. 
+
+  int gold; // Possibly this should go in equipment/inventory instead..?
+
+  bool isConfused() const { return (confused > 0);  }
+
   int calcMaxHP();
   int calcAC();
   int calcToHit(std::ostream& os);
@@ -55,6 +64,11 @@ public:
     calcToHit(os);
   }
 
+  void heal(int percent);
+
+  void passTime();
+  void updateHunger();
+  void updateConfusion();
 
   // static Stats stats;
   static int statModifyEffect[18 + 1];

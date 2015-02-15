@@ -191,3 +191,15 @@ ObjEnum ObjSlot::type() const {
 bool Obj::wearable() const {
   return (eqslot != EQ_Unwearable); // Equippable);
 }
+
+
+int Obj::getLightStrength() const {
+  if (otype() != OB_Lamp) { return 1;  } // No light from a non-lamp.
+  return itemUnits / 100; // 1500 units will give you 15.
+}
+
+void Obj::burnUnits(int units) {
+  int remainingUnits = itemUnits - units;
+  if (remainingUnits < 0) { remainingUnits = 0;  }
+  itemUnits = remainingUnits;
+}

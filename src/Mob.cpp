@@ -23,6 +23,7 @@ Mob::Mob() {
   pos.x = rnd(1, Map::Width-1); 
   pos.y = rnd(2, Map::Height-1);
   color = RGB(rand()%255,rand()%255,rand()%255);
+  speed = 1.0;
 }
 
 
@@ -52,13 +53,18 @@ void Mob::invalidateGfx() {
 
 
 
-
+void PlayerMob::passTime() {
+  stats.passTime();
+  updateLight();
+}
 
 double PlayerMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   double actionDuration = 1.0; // seconds. // WalkCmd/Cmd's might set this instead.
 
   bool bActionDone = false;
   for (;!bActionDone;) {
+    passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. FIXME - probably should respect action-duration.
+
 	  // Prompt user for command, then move:
 	  int nChar = TheUI::getNextKey(); 
 
@@ -88,7 +94,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
     case 'S': if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break; 
-    case 'Z': if (ZapCmd(*this).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
+    case 'Z': if (ZapCmd(*this, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
 
 
 
@@ -111,7 +117,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
           if (bCtrl) { // CTRL means digging:
             if (DigCmd(*this, dx, dy).Do(ss)) { actionDuration = 1; bActionDone = true; }
           } else { // no control-key - it's a move.
-            if (WalkCmd(*this, dx, dy).Do(ss)) { actionDuration = 1; bActionDone = true; }
+            if (WalkCmd(*this, dx, dy, false).Do(ss)) { actionDuration = 1; bActionDone = true; }
           }
         } else { // target-field HAS a creature - then it's an attack (we aren't very social, are we..)
           if (HitCmd(*this, dx, dy).Do(ss)) { actionDuration = 1; bActionDone = true; }
@@ -142,7 +148,7 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
     HitCmd(*this, dx, dy).Do(log);
   } else { // walk
     std::stringstream ss;
-    bool bLegal = WalkCmd(*this, dx, dy).Do(ss);
+    bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
   }
 
   // if (!bLegal) { return duration; } // Even if it failed, throw away our turn.
@@ -222,7 +228,10 @@ std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The or
 
 
 PlayerMob* PlayerMob::ply = NULL;
-PlayerMob::PlayerMob() { ply = this;  }
+PlayerMob::PlayerMob() { 
+  ply = this;  
+  theLightStrength = 1;
+}
 PlayerMob::~PlayerMob() { ply = NULL;  }
 
 
@@ -231,6 +240,33 @@ int PlayerMob::distPly(CPoint p) {
   CPoint delta = p - ply->pos;
   int dist = delta.x*delta.x + delta.y*delta.y;
   return dist;
+}
+
+int PlayerMob::distPlyLight(CPoint p) {
+  int dist = distPly(p);
+
+  // Clip dist, for stronger torch:
+  dist = dist / ply->lightStrength();
+
+  dist = dist - 2; 
+  return dist;
+}
+
+void PlayerMob::updateLight() {
+  Obj* light = findLight();
+  if (light != NULL) { 
+    setLightStrength(light->getLightStrength());  
+    if (light->itemUnits == 1) { logstr log; log << "Your light flickers out."; }
+    light->burnUnits(1);
+  } else {
+    setLightStrength(rnd(1,3));  // Flicker-torch.
+  }
+}
+
+
+Obj* PlayerMob::findLight() { // FIXME: You'll get a random lamp, maybe not the strongest we are carrying..
+  Obj* obj = Bag::bag.findItem(OB_Lamp);
+  return obj; // May  be NULL.
 }
 
 

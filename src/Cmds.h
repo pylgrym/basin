@@ -16,7 +16,12 @@
 
 class WalkCmd : public Cmd {
 public:
-  WalkCmd(class Mob& mob_, int dx, int dy):old(mob_.pos), mob(mob_) {
+  WalkCmd(class Mob& mob_, int dx, int dy, bool force):old(mob_.pos), mob(mob_) {
+    // JG: I'm not sure about force - the intent is, that with 'force', you can make sure Walk will 'do what you tell it to do', even if player is challenged/confused.
+    if (mob.stats.isConfused() && oneIn(2) && !force) {
+      logstr log; log << "You stumble randomly, still confused.";
+      dx = rndC(-1, 1); dy = rndC(-1, 1);
+    }
     newpos = old; newpos.x += dx; newpos.y += dy;
   }
 
@@ -163,6 +168,18 @@ public:
     ObjSlot& item = Map::map[tgt].item;
     // (No need to invalidate, as we are standing on it)
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+
+
+    if (o->otype() == OB_Gold) { // Gold is special - it's consumed on pickup, and added to gold balance:
+      mob.stats.gold += o->itemUnits;
+      err << "You pick up " << o->itemUnits << " gold pieces.";
+      item.setObj(NULL);
+      delete o; 
+      return true; 
+    } // special-case gold.
+
+    // Everything else non-gold, goes in bag:
+
     if (!Bag::bag.add(o, err)) { return false; } // err << "Couldn't fit item in bag.";  
 
     char itemIx = Bag::bag.letterIx(o);
@@ -373,9 +390,9 @@ class ZapCmd : public Cmd {
 public:
   CPoint tgt;
   Mob& mob;
-  //Obj* o;
+  AttackSchool school;
 
-  ZapCmd(Mob& mob_):mob(mob_) {
+  ZapCmd(Mob& mob_, AttackSchool school_):mob(mob_), school(school_) {
     tgt = mob.pos;
     // o = Map::map[tgt].item.o;
   }

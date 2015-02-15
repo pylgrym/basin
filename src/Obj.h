@@ -61,12 +61,13 @@ public:
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot;
   int weight; // tenths of kilos, 100g.
+  int itemUnits; // food'charges', light'charges', gold 'charges', etc.
 
   virtual ObjEnum otype() const { return type; }
 
-  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0) { clear(); }
+  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0),itemUnits(0) { clear(); }
 
-  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0) {
+  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0) {
     effect = Spell::rndSpell();
 
     const ObjDef& desc = Obj::objDesc(type);
@@ -87,6 +88,9 @@ public:
 
   bool wearable() const;
 
+  int getLightStrength() const;
+  void burnUnits(int units);
+
   void clear() { // - clear should not init (to random) - use initRandom instead.
     charges = 1; 
     consumed = true;
@@ -94,6 +98,7 @@ public:
     toDmg = 0; // rndC(-2, 6);
     dmgDice = Dice(1, 2); // rndC(1, 4), rndC(2, 12));
     weight = 1; // rnd(1, 50);
+    itemUnits = 0;
   }
 
   void initRandom() { // FIXME - clear should not init.
@@ -103,6 +108,7 @@ public:
     toDmg = rndC(-2, 6);
     dmgDice = Dice(rndC(1, 4), rndC(2, 12));
     weight = rnd(1, 50);
+    itemUnits = rnd(20, 400);
   }
 
   // BEGIN BEHAVIOUR
@@ -126,7 +132,7 @@ public:
 
     logstr log;
     // Todo - act on obj.effect..
-    Spell::doSpell(effect, log);
+    Spell::doSpell(effect, who, log);
     log << "A blue glow appears."; // surrounds you."; // You are surrounded by a blue glow.";
 
     return true;
