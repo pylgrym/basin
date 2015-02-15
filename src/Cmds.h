@@ -365,3 +365,23 @@ public:
     return true; 
   }
 };
+
+
+
+
+class ZapCmd : public Cmd {
+public:
+  CPoint tgt;
+  Mob& mob;
+  //Obj* o;
+
+  ZapCmd(Mob& mob_):mob(mob_) {
+    tgt = mob.pos;
+    // o = Map::map[tgt].item.o;
+  }
+
+  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
+  virtual bool legal(std::ostream& err) {  return true; }
+
+  virtual bool Do(std::ostream& err);
+};

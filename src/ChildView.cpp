@@ -138,6 +138,26 @@ unsigned int TheUI::getNextKey() {  // UINT
 
 
 
+ int TheUI::microSleepForRedraw() {  // UINT
+	// GetMessage loop example. // http://www.cplusplus.com/forum/beginner/38860/	
+  debstr() << "microSleep, allowing redraw.\n";
+  int count = 0;
+	MSG msg;
+  // GetMessage(&msg, NULL, 0, 0) > 0 
+  while ( PeekMessage(&msg,NULL,0,0, PM_REMOVE) > 0 && count < 4) {
+    ++count;
+    Sleep(2);
+		TranslateMessage(&msg);  
+		DispatchMessage(&msg);
+	} // If we get out of here (return value not == 0), it means we got WM_QUIT. (or < 0 on error.)
+
+  return 0; // VK_CANCEL; // bad, the user is closing app, WM_QUIT!
+}
+
+
+
+
+
 // CChildView message handlers
 
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 

@@ -87,3 +87,11 @@ Cell& CellColumn::operator [] (int y) {
 
 
 
+
+bool Map::legalPos(CPoint pos) {
+  if (pos.x < 0 || pos.y < 0) { return false; }
+  if (pos.x >= Map::Width || pos.y >= Map::Height) { return false;  }
+  return true;
+}
+
+

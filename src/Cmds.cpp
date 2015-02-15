@@ -140,3 +140,63 @@ bool HitCmd::Do(std::ostream& err) {
   }
   return true;
 }
+
+
+
+
+CPoint Map::key2dir(char nChar) {
+  int dx = 0, dy = 0;
+  // determine movement:
+  switch (nChar) { case VK_RIGHT:  case 'L': case 'U': case 'N': dx = 1;  }
+  switch (nChar) { case VK_LEFT:   case 'H': case 'Y': case 'B': dx = -1; } 
+  switch (nChar) { case VK_DOWN:   case 'J': case 'B': case 'N': dy = 1;  } 
+  switch (nChar) { case VK_UP:     case 'K': case 'Y': case 'U': dy = -1; } 
+  CPoint dir(dx, dy);
+  return dir;
+}
+
+
+bool ZapCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  const char* keyPrompt = "Zap which direction?";
+  bool bFound = false;
+  int dirKey = 0;
+  for (;!bFound;) {
+    dirKey = TheUI::promptForKey(keyPrompt); 
+
+    if (dirKey == VK_ESCAPE) {
+      Cuss::clear(true);
+      return false; // Cancelled zap operation.
+    }
+    
+    switch (dirKey) {
+    case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
+    default: TheUI::BeepWarn(); break; // Not a DIR key.
+    }      
+  } // Loop until dir key.
+
+  CPoint dir = Map::key2dir(dirKey); // (1, 0); // FIXME; should follow key.
+  CPoint bullet = tgt;
+  for (int shoot = 0; shoot < 10; ++shoot) {
+    // Clear old bullet pos:
+    Map::map[bullet].c = 0;
+    CPoint oldBullet = bullet;
+
+    // Consider new bullet pos:
+    CPoint newBullet = bullet;
+    newBullet += dir;
+    if (!Map::map.legalPos(newBullet)) { break;  }
+    if (Map::map[newBullet].blocked()) {
+      break;
+    }
+    // It's legal, move to it:
+    bullet = newBullet;
+    Map::map[bullet].c = '*';
+    mob.invalidateGfx(bullet, oldBullet, true);
+    TheUI::microSleepForRedraw(); 
+  }
+
+  Cuss::clear(true);
+  return true; 
+}

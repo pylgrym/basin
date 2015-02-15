@@ -60,12 +60,16 @@ public:
   CellColumn& operator [] (int x); // { return cellColumns[x];  }
   Cell& operator [] (CPoint p); // { return cellColumns[p.x][p.y];  }
 
+  bool legalPos(CPoint pos);
+
   void moveMob(class Mob& m, CPoint newpos);
   void addObj(class Obj& o, CPoint pos);
 
   Map();
 
   static Map map;
+
+  static CPoint key2dir(char key);
 };
 
 

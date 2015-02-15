@@ -8,6 +8,8 @@ public:
   static void promptForAnyKey(); // ("auto-")PROMPT user to press any key.
   static int promptForKey(const char* prompt); // Specifically prompt user to press keys, ie with a description.
 
+  static int microSleepForRedraw(int maxCount); // allow redraw
+
   static void invalidateCellXY(int tx, int ty); // Interface
   static void invalidateCell(CPoint tilepos);   // Interface
   static void invalidateWndJG(CRect* pRect, bool erase); // Used for impl.
