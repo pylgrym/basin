@@ -1,0 +1,132 @@
+#pragma once
+
+#include <string>
+
+#include "LogEvents.h"
+
+#include "Spell.h"
+#include "Equ.h"
+
+#include "numutil/myrnd.h"
+
+enum ObjEnum {
+  OB_None=0,
+  OB_Lamp=1,
+  OB_Sword=2,
+  OB_Hat=3,
+  OB_Gold=4,
+  OB_Potion=5,
+  OB_Scroll=6,
+  OB_Staff=7,
+  OB_Wand=8,
+  OB_Amulet=9,
+  OB_Food=10,
+  OB_Mushroom=11,
+  OB_Shield=12,
+  OB_Ring=13,
+  OB_Cloak=14,
+  OB_Water=15,
+  OB_Bandage=16,
+  OB_Helmet=17,
+  OB_ChestArmor=18,
+  OB_SpellBook=19,
+  OB_Key=20,
+  OB_Candle=21,
+  OB_Trap=22,
+  OB_StairUp=23,
+  OB_StairDown=24,
+  OB_Rune=25,
+  OB_MaxLimit // highest nr to size arrays.
+};
+
+class Obj {
+public:
+  ObjEnum type;
+
+  SpellEnum effect;
+  // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
+  EquipSlotEnum eqslot;
+
+  virtual ObjEnum otype() const { return type; }
+
+  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable) { clear(); }
+
+  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable) {
+    effect = Spell::rndSpell();
+    eqslot = Equ::rndSlot();
+    clear(); 
+  }
+
+  std::string an_item() const; 
+  std::string the_item() const; 
+  std::string indef_item() const; 
+  CString some_item() const; 
+
+  bool wearable() const;
+
+  void clear() {
+    charges = 1; // -1;
+    consumed = true;
+    toHit = rndC(-2, 5);
+    toDmg = rndC(-2, 6);
+    dmgDice = Dice(rndC(1, 4), rndC(2, 12));
+  }
+
+  // BEGIN BEHAVIOUR
+  int charges; // -1 means infinite. (use-charges) (food, potions, scrolls will be 1.)
+  bool consumed; // Will be consumed/destroyed at zero charges.
+
+  // ATTACK/Damage compotent:
+  int toHit; // tohit modifier.
+  int toDmg; // todamage modifier.
+  Dice dmgDice; // The damage this object/weapon can deal.
+
+  virtual bool use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
+    /* FIXME/TODO: multi-messages must 'prompt with <more>',
+    ie whenever too much info to print, guide the user through it.
+
+    Also, make monsters attack.
+    */
+    if (!infiniteCharges()) {
+      if (!eatCharge(err)) { return false; }
+    }
+
+    logstr log;
+    // Todo - act on obj.effect..
+    Spell::doSpell(effect, log);
+    log << "A blue glow appears."; // surrounds you."; // You are surrounded by a blue glow.";
+
+    return true;
+  } 
+
+  bool eatCharge(std::ostream& err) {
+    if (charges == 0) { err << "It doesn't have any charges left.";  return false; }
+    --charges; 
+
+    logstr log;
+    log << charges << " charges remain. ";
+    return true;
+  }
+  bool infiniteCharges() const { return (charges == -1);  }
+  // END BEHAVIOUR
+
+  static const TCHAR* typeAsStr(ObjEnum type);
+  static const TCHAR* typeAsDesc(ObjEnum type);
+};
+
+
+
+// JG: You could argue whether ObjSlot should be here on in cellmap or a third place.
+class ObjSlot { // We have two layers, so we can have virtuals - otherwise, Obj could just be a 'value' type.
+public:
+  virtual ObjEnum type() const;
+  Obj* o;
+  ObjSlot():o(NULL) {} 
+
+  void setObj(Obj* o_) { o = o_; }
+
+  const TCHAR* typeS() { return Obj::typeAsStr(type());  }
+
+  bool empty() const { return type() == OB_None; }
+
+};
