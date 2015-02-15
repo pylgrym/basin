@@ -31,7 +31,8 @@ enum AttackSchool {
   SC_Undead,
   SC_Holy,
   SC_Poison,
-  SC_Gas
+  SC_Gas,
+  SC_Mind,
 };
 
 /*
@@ -50,6 +51,7 @@ enum SpellEnum {
   SP_Slowdown ,
   SP_Confuse ,
   SP_Unconfuse, 
+  SP_ConfuseMob,
   SP_Teleport  ,
   SP_MagicMissile , // SC_Magic
   SP_FireBolt ,     // SC_Fire

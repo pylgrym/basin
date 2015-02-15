@@ -246,20 +246,31 @@ int PlayerMob::distPlyLight(CPoint p) {
   int dist = distPly(p);
 
   // Clip dist, for stronger torch:
-  dist = dist / ply->lightStrength();
+  int strength = ply->lightStrength();
+  if (strength > 0) {
+    dist = dist / strength;
+  } else {
+    dist *= 5; // or set it to 'far away'?
+  }
 
-  dist = dist - 2; 
+  //dist = dist - 2; 
   return dist;
 }
 
 void PlayerMob::updateLight() {
   Obj* light = findLight();
-  if (light != NULL) { 
-    setLightStrength(light->getLightStrength());  
-    if (light->itemUnits == 1) { logstr log; log << "Your light flickers out."; }
+  if (light != NULL) {
+    int activeStr = light->getLightStrength();
+    if (light->itemUnits == 0) { activeStr = 1; } else { activeStr *= 4;  }
+    setLightStrength(activeStr); 
+
+    bool burnout = false;
+    if (light->itemUnits == 1) { burnout = true;  } // Is it the last flicker, burning out now?
     light->burnUnits(1);
+    if (burnout) { logstr log; log << "Your light flickers out!"; }
+
   } else {
-    setLightStrength(rnd(1,3));  // Flicker-torch.
+    setLightStrength(rnd(0,2));  // Flicker-torch.
   }
 }
 

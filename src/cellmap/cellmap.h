@@ -31,6 +31,7 @@ public:
 
   bool light() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
   void markWalls() { envir.markWalls();  }
+  void lightCells() { envir.lightCells();  }
 
   bool blocked() const {
     // debstr() << "blocked, envir:" << envir.blocked() << "/" << envir.type << ", mob:" << creature.blocked() << "\n";

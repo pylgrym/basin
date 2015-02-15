@@ -93,6 +93,18 @@ public:
       }
     }
   }
+
+  void lightArea(CPoint pos, int radius) {
+    for (int dx = -radius; dx <= radius; ++dx) {
+      for (int dy = -radius; dy <= radius; ++dy) {
+        CPoint p(pos.x + dx, pos.y + dy);
+        if (Map::map.legalPos(p)) {
+          Map::map[p].lightCells();//  Walls();
+        }
+      }
+    }
+  }
+
 };
 
 
@@ -178,7 +190,10 @@ public:
 
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)
-  void setLightStrength(int strength)  { theLightStrength = strength; }
+
+  void setLightStrength(int strength)  { 
+    theLightStrength = strength; 
+  }
 
   static PlayerMob* ply;
   static int distPly(CPoint p); // raw/true calc. (square)

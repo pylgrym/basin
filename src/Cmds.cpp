@@ -159,6 +159,8 @@ CPoint Map::key2dir(char nChar) {
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
+  Cuss::clear(false);
+
   const char* keyPrompt = "Zap which direction?";
   bool bFound = false;
   int dirKey = 0;

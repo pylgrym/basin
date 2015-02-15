@@ -17,10 +17,12 @@ Spell::~Spell()
 }
 
 const SpellDesc Spell::spells[SP_MaxSpells] = {
-  { "nospell", "No spell" }, // = 0,
+{"nospell", "No spell" }, // = 0,
 {"speedup", "Haste" }, // = 1,
 {"slowdown", "Slow" }, // = 2,
 {"confuse", "Confuse" }, // = 3,
+{"unconfuse", "Unconfuse" }, // = 3,
+{"confusemob", "Confuse monster" }, // = 3,
 {"teleport", "Teleport" }, // = 4,
 {"magicmissile", "Magic missile" }, // = 5,
 {"firebolt", "Fire bolt" }, // = 6,
@@ -28,7 +30,13 @@ const SpellDesc Spell::spells[SP_MaxSpells] = {
 {"fireball", "Fire ball" }, // = 8,
 {"stonetomud", "Stone to mud" }, // = 9,
 {"wallbuilding", "Wallbuilding" }, // = 10
-{"stinkcloud", "Stinking cloud" }, // = 11,
+{"earthquake", "Earthquake" }, // = 11,
+{"stinkcloud", "Stinking cloud" }, // = 12,
+{"eat", "Food" }, // = 13,
+{"heal", "Healing" }, // = 14,
+{"sick", "Sickness" }, // = 15,
+{"lightarea", "Light area" }, // = 16,
+{"lightbeam", "Light beam" }, // = 17,
 };
 /* JG: - an idea: These could be auto-assigned to items,
 and auto-added to description - "A WAND OF X".
@@ -36,14 +44,20 @@ and auto-added to description - "A WAND OF X".
 
 
 const char* Spell::type2str(SpellEnum type) {
+  assert(type >= 0);
+  assert(type < SP_MaxSpells);
   return spells[type].abbr;
 }
 
 const char* Spell::type2desc(SpellEnum type) {
+  assert(type >= 0);
+  assert(type < SP_MaxSpells);
   return spells[type].desc;
 }
 
 const SpellDesc& Spell::spell(SpellEnum type) {
+  assert(type >= 0);
+  assert(type < SP_MaxSpells);
   return spells[type];
 }
 
@@ -122,10 +136,11 @@ bool bulletSpell(Mob& actor, AttackSchool school) {
 }
 
 
-bool lightSpell(Mob& actor) {
+bool lightSpell(Mob& actor, CPoint pos, int radius) { 
+  // Do a 'light' command:
+  actor.lightArea(pos,radius); 
   logstr log;
   log << "Light floods around you.";
-  // FIXME, make a 'light' command.
   return true;
 }
 
@@ -138,6 +153,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob*
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
   case SP_Confuse:      return updateConfused(actor, rnd(3, 20)); break;
   case SP_Unconfuse:    return updateConfused(actor, 0); break;
+  case SP_ConfuseMob:   return bulletSpell(actor, SC_Mind); break; // or gas..?
   case SP_Teleport:     return teleportSpell(actor, 4); break;
 
   case SP_MagicMissile: return bulletSpell(actor, SC_Magic); break; // FIXME - they can have different types of 'missile' for same spell! (school/dmg type?)
@@ -154,8 +170,8 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob*
   case SP_Heal:         return healSpell(actor,35); break;
   case SP_Sick:         return healSpell(actor,-35); break;
   // case SP_Poison:       healSpell(actor); break;
-  case SP_LightArea:   return lightSpell(actor); break;
-  case SP_LightDir:    return lightSpell(actor); break;
+  case SP_LightArea:   return lightSpell(actor, actor.pos,3); break;
+  case SP_LightDir:    return lightSpell(actor, actor.pos,3); break; // FIXME, should be zap spell instead..
   default: log << "err spell unknown.";  return false;
   }
   return true; 
