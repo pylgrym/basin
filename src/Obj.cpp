@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "util/debstr.h"
+
 std::string Obj::an_item() const {
   CString s = some_item();
   s.Replace(L".", L"a"); // FIXME - a/an for vowels..
@@ -24,9 +26,14 @@ std::string Obj::indef_item() const {
 
 
 CString Obj::some_item() const {
-  CString s = typeAsDesc(otype());
+  const char* sA = typeAsDescA(otype());
+  CA2T udesc(sA);
+  CString s = udesc;
   CA2T uspell(Spell::type2desc(effect), CP_UTF8);
-  CA2T uslot(Equ::slotDesc(eqslot), CP_UTF8);
+
+  const char* aslot = Equ::slotDesc(eqslot);
+  if (eqslot == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
+  CA2T uslot(aslot, CP_UTF8);
 
   CString fmt;
   fmt.Format(L"%s of %s %dd%d(%d,%d) %s", (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot);
@@ -36,7 +43,45 @@ CString Obj::some_item() const {
 
 
 
+
+ObjDef objDefs[] = {
+{OB_None,      EQ_None,    "nothing"}, 
+{OB_Lamp,      EQ_None,    ". lamp"}, 
+{OB_Sword,     EQ_MainHand,". sword"}, 
+{OB_Hat,       EQ_Head,    ". hat"}, 
+{OB_Gold,      EQ_None,    ". gold"},
+{OB_Potion,    EQ_None,    ". potion"},
+{OB_Scroll,    EQ_None,    ". scroll"},
+{OB_Staff,     EQ_None,    ". staff"},
+{OB_Wand,      EQ_None,    ". wand"},
+{OB_Amulet,    EQ_Neck,    ". amulet"},
+{OB_Food,      EQ_None,    ". food"},
+{OB_Mushroom,  EQ_None,    ". mushroom"},
+{OB_Shield,    EQ_OffHand, ". shield"},
+{OB_Ring,      EQ_FingerLeft,". ring"}, // FIXME, rings can be worn both left and right.
+{OB_Cloak,     EQ_Back,    ". cloak"},
+{OB_Water,     EQ_None,    ". water"},
+{OB_Bandage,   EQ_None,    ". bandage"},
+{OB_Helmet,    EQ_Head,    ". helmet"},
+{OB_ChestArmor,EQ_Chest,   ". chest armor"},
+{OB_SpellBook, EQ_None,    ". spell book"},
+{OB_Key,       EQ_None,    ". key"},
+{OB_Candle,    EQ_None,    ". candle"},
+{OB_Trap,      EQ_None,    ". trap"},
+{OB_StairUp,   EQ_None,    ". stair up"},
+{OB_StairDown, EQ_None,    ". stair down"},
+{OB_Rune,      EQ_None,    ". rune"},
+{OB_Gloves,    EQ_Hands,   ". pair of gloves" },      // Gauntlets/gloves
+{OB_Wrists,    EQ_Wrists,  ". pair of bracers"},     // bracers
+{OB_Belt,      EQ_Waist,   ". belt"},                 //,=11,      // belt
+{OB_Leggings,  EQ_Legs,    ". pair of leggings"},      // = 13,       // Pants/leggings.
+{OB_Boots,     EQ_Feet,    ". pair of boots" },           //  = 14,       // Boots/shoes/sandals
+};
+
+
 const TCHAR* Obj::typeAsStr(ObjEnum type) {
+  /* JG: This was/is used for the tilemap-keyname assoc.:
+  */
   static std::vector<CString> thingKeys;
   if (thingKeys.size() == 0) {
     thingKeys.resize(OB_MaxLimit);
@@ -69,14 +114,40 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_StairDown] = L"stairdown";
     thingKeys[OB_Rune] = L"rune";
 
+    // I wish to switch from this to ObjDef system.
+    thingKeys[OB_Gloves] = L"glovey";
+    thingKeys[OB_Wrists] = L"wristey";
+    thingKeys[OB_Belt] = L"beltey";
+    thingKeys[OB_Leggings] = L"leggey";
+    thingKeys[OB_Boots] = L"bootey";
   }
+
   if (type < 0 || type >= (int) thingKeys.size()) { return L"out of bounds, thing enum.";  }
   return thingKeys[type];
 }
 
 
-const TCHAR* Obj::typeAsDesc(ObjEnum type) {
-  switch (type) {
+const ObjDef& Obj::objDesc(ObjEnum type) {
+  static const ObjDef dummy = { OB_None, EQ_None, "bad obj" };
+  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+  if (type >= 0 && type < numObjDefs) {
+    ObjDef* od = &objDefs[type];
+    return *od;
+  }
+  debstr() << "warning/error, bad objEnum?!\n";
+  return dummy;
+}
+
+
+const char* Obj::typeAsDescA(ObjEnum type) { // TCHAR*
+  const ObjDef& od = objDesc(type);
+  //const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+  //if (type >= 0 && type < numObjDefs) {
+  //  ObjDef* od = &objDefs[type];
+  //}
+  return od.desc;
+  /*
+  switch (type) {     
   case OB_None:      return L"nothing"; 
   case OB_Lamp:      return L". lamp"; 
   case OB_Sword:     return L". sword"; 
@@ -106,7 +177,8 @@ const TCHAR* Obj::typeAsDesc(ObjEnum type) {
   case OB_Rune:      return L". rune";
 
   }
-  return L"obj error";
+  */
+  return "obj error";
 }
 
 

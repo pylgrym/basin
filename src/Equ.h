@@ -3,7 +3,7 @@
 #include <vector>
 
 enum EquipSlotEnum {
-  EQ_Unwearable=0,
+  EQ_Unwearable=0,EQ_None=0,
   EQ_MainHand=1,
   EQ_OffHand=2,
   EQ_2Hands=3,

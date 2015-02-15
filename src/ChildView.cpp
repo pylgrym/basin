@@ -54,6 +54,7 @@ CChildView::CChildView() {
     MobQueue::mobs.queueMob(monster,1);
   }
 
+  /*
   const int itemCount = 10; // 100;
   for (int i = 0; i < itemCount; ++i) {
     debstr() << "i:" << i << "\n";
@@ -68,6 +69,7 @@ CChildView::CChildView() {
     // color = RGB(rand()%255,rand()%255,rand()%255);
     Map::map.addObj(*obj, pos);
   }
+  */
 
   std::stringstream ignore;
   Bag::bag.add(new Obj(OB_Hat),ignore);

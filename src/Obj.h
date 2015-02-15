@@ -9,6 +9,7 @@
 
 #include "numutil/myrnd.h"
 
+
 enum ObjEnum {
   OB_None=0,
   OB_Lamp=1,
@@ -36,8 +37,21 @@ enum ObjEnum {
   OB_StairUp=23,
   OB_StairDown=24,
   OB_Rune=25,
+
+  OB_Gloves=26,
+  OB_Wrists=27,
+  OB_Belt=28,
+  OB_Leggings=29,
+  OB_Boots=30,
   OB_MaxLimit // highest nr to size arrays.
 };
+
+struct ObjDef { // For declaring POD struct sets. Intention is to eventually read from files instead of compiled source.
+  ObjEnum type;
+  EquipSlotEnum eqtype;
+  const char* desc;
+};
+
 
 class Obj {
 public:
@@ -54,8 +68,16 @@ public:
 
   Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0) {
     effect = Spell::rndSpell();
-    eqslot = Equ::rndSlot();
+
+    const ObjDef& desc = Obj::objDesc(type);
+    if (desc.eqtype != EQ_None) {
+      eqslot = desc.eqtype; // Equ::rndSlot();
+    } else {
+      eqslot = desc.eqtype; // JG, FIXME: I could shorten this to just assign it always..
+    }
+
     clear(); 
+    initRandom();
   }
 
   std::string an_item() const; 
@@ -65,9 +87,18 @@ public:
 
   bool wearable() const;
 
-  void clear() {
-    charges = 1; // -1;
+  void clear() { // - clear should not init (to random) - use initRandom instead.
+    charges = 1; 
     consumed = true;
+    toHit = 0; // rndC(-2, 5);
+    toDmg = 0; // rndC(-2, 6);
+    dmgDice = Dice(1, 2); // rndC(1, 4), rndC(2, 12));
+    weight = 1; // rnd(1, 50);
+  }
+
+  void initRandom() { // FIXME - clear should not init.
+    charges = rnd(-1,3); 
+    consumed = oneIn(2); // true;
     toHit = rndC(-2, 5);
     toDmg = rndC(-2, 6);
     dmgDice = Dice(rndC(1, 4), rndC(2, 12));
@@ -112,8 +143,11 @@ public:
   bool infiniteCharges() const { return (charges == -1);  }
   // END BEHAVIOUR
 
+  static const ObjDef& objDesc(ObjEnum type);
+
   static const TCHAR* typeAsStr(ObjEnum type);
-  static const TCHAR* typeAsDesc(ObjEnum type);
+  static const TCHAR* typeAsDescU(ObjEnum type);
+  static const char* typeAsDescA(ObjEnum type);
 };
 
 
