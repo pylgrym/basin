@@ -391,14 +391,15 @@ class ZapCmd : public Cmd {
 public:
   CPoint tgt;
   Mob& mob;
+  SpellEnum effect;
   AttackSchool school;
 
-  ZapCmd(Mob& mob_, AttackSchool school_):mob(mob_), school(school_) {
+  ZapCmd(Mob& mob_, SpellEnum effect_, AttackSchool school_)
+  :mob(mob_), effect(effect_),school(school_) {
     tgt = mob.pos;
-    // o = Map::map[tgt].item.o;
   }
 
-  virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); } 
   virtual bool legal(std::ostream& err) {  return true; }
 
   virtual bool Do(std::ostream& err);

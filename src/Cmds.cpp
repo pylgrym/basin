@@ -218,6 +218,12 @@ bool ZapCmd::Do(std::ostream& err) {
     }
 
     if (Map::map[newBullet].blocked()) { // Did we hit some wall instead?
+      if (effect == SP_StoneToMud) { 
+        Map::map[newBullet].envir.setType(EN_Floor);
+        mob.invalidateGfx(newBullet, oldBullet, true);
+        logstr log; log << "The wall turns to mud!";
+        TheUI::microSleepForRedraw(7);
+      }
       break;
     }
 
@@ -225,9 +231,24 @@ bool ZapCmd::Do(std::ostream& err) {
     bullet = newBullet;
     Map::map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
+
+    if (effect == SP_WallBuilding) {
+      Map::map[bullet].envir.setType(EN_Wall);
+    }
+    if (effect == SP_LightDir) {
+      Map::map[bullet].lightCells();
+    }
+
     TheUI::microSleepForRedraw(7); // 4);
   }
 
-  Cuss::clear(true);
+  if (effect == SP_WallBuilding) {
+    logstr log; log << "Solid rock forms out of thin air!";
+  }
+  if (effect == SP_LightDir) {
+    logstr log; log << "A beam of shimmering light appears!";
+  }
+
+  Cuss::clear(false);// true); // Are we sure, last bullet is cleaned up?
   return true; 
 }

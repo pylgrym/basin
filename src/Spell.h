@@ -58,15 +58,15 @@ enum SpellEnum {
   SP_FireBolt ,     // SC_Fire
   SP_FrostBolt ,    // SC_Frost
   SP_FireBall ,     // SC_Fire
-  SP_StoneToMud ,   // SC_Air/Elm?
-  SP_WallBuilding , // SC_Earth
-  SP_Earthquake ,   // SC_Earth
+  SP_StoneToMud ,   // SC_Air/Elm? // "DONE"
+  SP_WallBuilding , // SC_Earth    // "DONE"
+  SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
   SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_Eat ,
   SP_Heal ,
   SP_Sick ,
-  SP_LightArea ,
-  SP_LightDir ,
+  SP_LightArea , // "DONE"
+  SP_LightDir ,  // "DONE"
   SP_MaxSpells
 };
 

@@ -96,7 +96,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
     case 'S': if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break; 
-    case 'Z': if (ZapCmd(*this, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
+    case 'Z': if (ZapCmd(*this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
 
 
 
