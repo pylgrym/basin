@@ -76,6 +76,7 @@ ObjDef objDefs[] = {
 {OB_Belt,      EQ_Waist,   ". belt"},                 //,=11,      // belt
 {OB_Leggings,  EQ_Legs,    ". pair of leggings"},      // = 13,       // Pants/leggings.
 {OB_Boots,     EQ_Feet,    ". pair of boots" },           //  = 14,       // Boots/shoes/sandals
+{OB_Pickaxe,   EQ_2Hands,    ". pickaxe"},
 };
 
 
@@ -120,6 +121,7 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_Belt] = L"beltey";
     thingKeys[OB_Leggings] = L"leggey";
     thingKeys[OB_Boots] = L"bootey";
+    thingKeys[OB_Pickaxe] = L"pickaxey";
   }
 
   if (type < 0 || type >= (int) thingKeys.size()) { return L"out of bounds, thing enum.";  }
@@ -136,6 +138,19 @@ const ObjDef& Obj::objDesc(ObjEnum type) {
   }
   debstr() << "warning/error, bad objEnum?!\n";
   return dummy;
+}
+
+
+const char* Obj::flavorUse(ObjEnum type) {
+  switch (type) {
+  case OB_Potion:   return "You quaff the potion."; // drink, sip, ?
+  case OB_Water:    return "You drink the water."; // drink, sip, ?
+  case OB_Scroll:   return "You read the scroll."; // drink, sip, ?
+
+  case OB_Food:     return "You eat the food."; // drink, sip, ?
+  case OB_Mushroom: return "You eat the mushroom."; // drink, sip, ?
+  }
+  return "You use the thingey.";
 }
 
 
@@ -202,4 +217,15 @@ void Obj::burnUnits(int units) {
   int remainingUnits = itemUnits - units;
   if (remainingUnits < 0) { remainingUnits = 0;  }
   itemUnits = remainingUnits;
+}
+
+int Obj::digStrength() const {
+  if (otype() == OB_Pickaxe) {
+    return 200;
+  }
+  if (otype() == OB_Sword) {
+    return dmgDice.roll(std::stringstream());
+  }
+
+  return 4; // Sort of like bare hands.
 }

@@ -137,6 +137,8 @@ public:
   const T& top() { return this->front(); }
   void push(const T& x) {
     this->push_back(x);
+    //std::vector<T>::iterator a = this->begin();
+    //std::vector<T>::iterator b = this->end();
     std::push_heap(this->begin(), this->end(), comp);
   }
   void pop() {
@@ -155,15 +157,18 @@ typedef PQV<MobReady, std::greater<MobReady> > ReadyQueue;
 
 class MobQueue {
 public:
+  //int meat1;
   ReadyQueue queue;
+  //int meat2;
   // FIXME, maybe should be a set, not a vector:
   std::vector<Mob*> globalMobs; // an 'owner' of all mobs, no priority.
   double globalClock;
 
-  MobQueue() :globalClock(0) { }
+  MobQueue(); // :globalClock(0), meat1(0xDEADBEEF), meat2(0xDEADBEEF) { }
 
   void queueMob(Mob* mob, double delay) {
     double when = globalClock + delay;
+    // MobQueue* that = this;
     queue.push(MobReady(when, mob)); // push_heap.
     globalMobs.push_back(mob);
     /* push, top, pop. push_heap, make_heap, pop_heap. (sort_heap?)

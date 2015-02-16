@@ -43,6 +43,7 @@ enum ObjEnum {
   OB_Belt=28,
   OB_Leggings=29,
   OB_Boots=30,
+  OB_Pickaxe=31,
   OB_MaxLimit // highest nr to size arrays.
 };
 
@@ -91,6 +92,8 @@ public:
   int getLightStrength() const;
   void burnUnits(int units);
 
+  int digStrength() const;
+
   void clear() { // - clear should not init (to random) - use initRandom instead.
     charges = 1; 
     consumed = true;
@@ -126,6 +129,11 @@ public:
 
     Also, make monsters attack.
     */
+    const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
+    { 
+      logstr log; log << flavor;
+    }
+
     if (!infiniteCharges()) {
       if (!eatCharge(err)) { return false; }
     }
@@ -153,6 +161,8 @@ public:
   static const TCHAR* typeAsStr(ObjEnum type);
   static const TCHAR* typeAsDescU(ObjEnum type);
   static const char* typeAsDescA(ObjEnum type);
+
+  static const char* flavorUse(ObjEnum type);
 };
 
 

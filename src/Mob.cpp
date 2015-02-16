@@ -188,6 +188,9 @@ bool MobQueue::dispatchFirst() {
 
 MobQueue MobQueue::mobs;
 
+MobQueue::MobQueue():globalClock(0)// ,meat1(0xDEADBEEF), meat2(0xDEADBEEF)   // HOLD OP MED DE SATANS GLOBALE VARIABLE! .. :-).
+{}
+
 
 
 void MobQueue::deleteMob(Mob* toDelete) {
@@ -230,10 +233,12 @@ std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The or
 
 
 PlayerMob* PlayerMob::ply = NULL;
+
 PlayerMob::PlayerMob() { 
   ply = this;  
   theLightStrength = 1;
 }
+
 PlayerMob::~PlayerMob() { ply = NULL;  }
 
 

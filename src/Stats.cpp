@@ -9,6 +9,8 @@
 
 #include "LogEvents.h"
 
+#include "cellmap/cellmap.h"
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -216,6 +218,16 @@ void Stats::passTime() {
   */
   updateHunger();
   updateConfusion();
+
+  if (oneIn(100)) {
+    if (oneIn(2)) {
+      logstr log; log << "You feel a monster appearing.";
+      Map::map.addRandomMob();
+    } else {
+      logstr log; log << "You feel some item appearing.";
+      Map::map.addRandomObj();
+    }
+  }
 }
 
 void Stats::updateHunger() {

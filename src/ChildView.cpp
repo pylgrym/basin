@@ -35,7 +35,8 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  // Populate world:
+
+  Map::map.initWorld();
 
   // FIXME: new + 'firstmove'+queue should become a single function.
   /* Figure out dependency order of map, creatures, queues, etc.*/
@@ -45,32 +46,6 @@ CChildView::CChildView() {
   Map::map.moveMob(*player, player->pos);
   MobQueue::mobs.queueMob(player,0);
 
-  const int mobCount = 10; // 100;
-  for (int i=0; i<mobCount; ++i) {
-    debstr() << "i:" << i << "\n";
-
-    Mob* monster = new MonsterMob;
-    Map::map.moveMob(*monster, monster->pos);
-    MobQueue::mobs.queueMob(monster,1);
-  }
-
-  /*
-  const int itemCount = 10; // 100;
-  for (int i = 0; i < itemCount; ++i) {
-    debstr() << "i:" << i << "\n";
-
-    CPoint pos;
-    pos.x = rnd(1, Map::Width-1); 
-    pos.y = rnd(1, Map::Height-1);
-    if (Map::map[pos].blocked()) { continue; } // Don't add item on blocked floor.
-
-    Obj* obj = new Obj(OB_Gold); // (L"Lamp");
-
-    // color = RGB(rand()%255,rand()%255,rand()%255);
-    Map::map.addObj(*obj, pos);
-  }
-  */
-
   std::stringstream ignore;
   Bag::bag.add(new Obj(OB_Hat),ignore);
   Bag::bag.add(new Obj(OB_Sword),ignore);
@@ -78,6 +53,9 @@ CChildView::CChildView() {
   Bag::bag.add(new Obj(OB_Lamp),ignore);
   Bag::bag.add(new Obj(OB_Hat),ignore);
 
+  Bag::bag.add(new Obj(OB_Potion),ignore);
+  Bag::bag.add(new Obj(OB_Scroll),ignore);
+  Bag::bag.add(new Obj(OB_Food),ignore);
 }
 
 
