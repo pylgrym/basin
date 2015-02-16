@@ -82,6 +82,8 @@ public:
 
   void addRandomMob();
   void addRandomObj();
+  void addObjAtPos(CPoint pos);
+  void scatterObjsAtPos(CPoint pos, int n);
 };
 
 

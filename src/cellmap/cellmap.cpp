@@ -25,12 +25,26 @@ void Map::addRandomMob() {
 void Map::addRandomObj() {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
+  addObjAtPos(pos);
+}
+
+void Map::addObjAtPos(CPoint pos) {
+  assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
-
   ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
   cell.item.setObj(new Obj(otype));
 }
+
+void Map::scatterObjsAtPos(CPoint pos, int n) {
+  for (int i = 0; i < n; ++i) {
+    CPoint posA = pos;
+    posA.x += rndC(-1, 1);
+    posA.y += rndC(-1, 1);
+    addObjAtPos(posA);
+  }
+}
+
 
 
 Map::Map() {}

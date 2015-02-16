@@ -135,8 +135,18 @@ bool HitCmd::Do(std::ostream& err) {
 
   // mob should die if killed:
   if (hittee->isDead()) {
+    bool bLoot = oneIn(2);
+    if (bLoot) {
+      Map::map.addObjAtPos(hittee->pos);
+      if (oneIn(8)) {
+        Map::map.scatterObjsAtPos(hittee->pos, rnd(1,6));
+      }
+    }
     MobQueue::mobs.deleteMob(hittee);
     logstr log; log << "It died.";
+    if (bLoot) {
+      log << "An item rolls on the floor.";
+    }
   }
   return true;
 }
