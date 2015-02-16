@@ -20,6 +20,8 @@
 Mob::Mob() {  
   mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
 
+  m_mobType = (CreatureEnum) rnd(CR_Kobold, CR_MaxLimit);
+
   pos.x = rnd(1, Map::Width-1); 
   pos.y = rnd(2, Map::Height-1);
   color = RGB(rand()%255,rand()%255,rand()%255);
@@ -299,10 +301,15 @@ void MobQueue::deleteMob(Mob* toDelete) {
 
 std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The orc".
   CreatureEnum theCtype = ctype();
-  CString s = Creature::ctypeAsDesc(theCtype);
-  s.Replace(L".", L"the");
+  std::string s = Creature::ctypeAsDesc(theCtype); // CString s = 
+  CA2T us(s.c_str(), CP_ACP);
 
-  CT2A asc(s, CP_ACP);
+  // The lack of 'replace' on std::string sucks.
+  CString s2 = us; // us = s;
+  s2.Replace(L".", L"the");
+  // std::replace(s.begin(), s.end(), ".", "the");
+
+  CT2A asc(s2, CP_ACP);
   std::string sAsc = asc;
   return sAsc;
 }
@@ -315,6 +322,7 @@ PlayerMob* PlayerMob::ply = NULL;
 PlayerMob::PlayerMob() { 
   ply = this;  
   theLightStrength = 1;
+  m_mobType = CR_Player; // (CreatureEnum)rnd(CR_Kobold, CR_MaxLimit);
 }
 
 PlayerMob::~PlayerMob() { ply = NULL;  }
@@ -363,6 +371,31 @@ void PlayerMob::updateLight() {
 Obj* PlayerMob::findLight() { // FIXME: You'll get a random lamp, maybe not the strongest we are carrying..
   Obj* obj = Bag::bag.findItem(OB_Lamp);
   return obj; // May  be NULL.
+}
+
+// Obj* PlayerMob::findShovel() { // FIXME: You'll get a random shovel
+//  Obj* obj = Bag::bag.findItem(OB_Pickaxe);
+//  return obj; // May  be NULL.
+//}
+
+
+int PlayerMob::digStrength() {
+  Obj* weapon = Equ::worn.weapon();
+  if (weapon == NULL) {
+    int strMod = stats.statMod("str");
+    if (strMod < 1) { strMod = 1;  }
+    logstr log; log << "You dig with your bare hands, barely making progess.";
+    return strMod;
+  }
+
+  if (weapon->otype() == OB_Pickaxe) {
+    logstr log; log << "Your pickaxe cuts into the rock.";
+    return weapon->digStrength();
+  }
+
+  //logstr log; log << "You try to dig into the rock with your weapon.";
+  logstr log; log << "You try to dig with your weapon, clumsily.";
+  return weapon->digStrength();
 }
 
 

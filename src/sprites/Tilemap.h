@@ -77,5 +77,6 @@ public:
 
   void drawTile(int x, int y, const TCHAR* key, CDC& dc, bool bTransp, int factor);
   void drawTileB(int x, int y, CPoint tilePos, CDC& dc, bool bTransp, int factor);
+  void drawTileA(int x, int y, const char* key, CDC& dc, bool bTransp, int factor);
 };
 

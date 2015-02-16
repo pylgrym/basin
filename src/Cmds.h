@@ -93,15 +93,7 @@ public:
   CPoint tgt;
   Mob& mob;
 
-  virtual bool Do(std::ostream& err) {  
-    if (!Cmd::Do(err)) { return false; }
-
-    Envir& envir = Map::map[tgt].envir;
-    envir.setType(EN_Floor);
-    debstr() << "Digged through the wall.\n";
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 
@@ -171,9 +163,10 @@ public:
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
 
 
-    if (o->otype() == OB_Gold) { // Gold is special - it's consumed on pickup, and added to gold balance:
+    if (o->otype() == OB_Gold || o->otype() == OB_Gems || o->otype() == OB_Emeralds || o->otype() == OB_Amethysts ) { // Gold is special - it's consumed on pickup, and added to gold balance:
       mob.stats.gold += o->itemUnits;
-      err << "You pick up " << o->itemUnits << " gold pieces.";
+      std::string idesc = o->indef_item();
+      err << "You pick up " << o->itemUnits << " " << idesc; // gold pieces.";
       item.setObj(NULL);
       delete o; 
       return true; 

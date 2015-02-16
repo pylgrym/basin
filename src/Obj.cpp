@@ -29,11 +29,11 @@ CString Obj::some_item() const {
   const char* sA = typeAsDescA(otype());
   CA2T udesc(sA);
   CString s = udesc;
-  CA2T uspell(Spell::type2desc(effect), CP_UTF8);
+  CA2T uspell(Spell::type2desc(effect), CP_ACP); // CP_UTF8);
 
   const char* aslot = Equ::slotDesc(eqslot);
   if (eqslot == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
-  CA2T uslot(aslot, CP_UTF8);
+  CA2T uslot(aslot, CP_ACP); // CP_UTF8);
 
   CString fmt;
   fmt.Format(L"%s of %s %dd%d(%d,%d) %s", (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot);
@@ -76,7 +76,10 @@ ObjDef objDefs[] = {
 {OB_Belt,      EQ_Waist,   ". belt"},                 //,=11,      // belt
 {OB_Leggings,  EQ_Legs,    ". pair of leggings"},      // = 13,       // Pants/leggings.
 {OB_Boots,     EQ_Feet,    ". pair of boots" },           //  = 14,       // Boots/shoes/sandals
-{OB_Pickaxe,   EQ_2Hands,    ". pickaxe"},
+{OB_Pickaxe,   EQ_2Hands,  ". pickaxe"},
+{OB_Emeralds,  EQ_None,    ". emerald"},
+{OB_Amethysts, EQ_None,    ". amethyst"},
+{OB_Gems,      EQ_None,    ". gem"},
 };
 
 
@@ -94,7 +97,7 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
 
     thingKeys[OB_Potion] = L"!";
     thingKeys[OB_Scroll] = L"?";
-    thingKeys[OB_Staff] = L"|";
+    thingKeys[OB_Staff] = L"staff"; // "|";
     thingKeys[OB_Wand] = L"-";
     thingKeys[OB_Amulet] = L"amulet"; // \"";
     thingKeys[OB_Food] = L"food"; // '";
@@ -117,11 +120,14 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
 
     // I wish to switch from this to ObjDef system.
     thingKeys[OB_Gloves] = L"glovey";
-    thingKeys[OB_Wrists] = L"wristey";
+    thingKeys[OB_Wrists] = L"bracers";
     thingKeys[OB_Belt] = L"beltey";
-    thingKeys[OB_Leggings] = L"leggey";
-    thingKeys[OB_Boots] = L"bootey";
+    thingKeys[OB_Leggings] = L"leggings";
+    thingKeys[OB_Boots] = L"boots";
     thingKeys[OB_Pickaxe] = L"pickaxey";
+    thingKeys[OB_Emeralds] = L"emeralds";
+    thingKeys[OB_Amethysts] = L"amethysts";
+    thingKeys[OB_Gems] = L"gem";
   }
 
   if (type < 0 || type >= (int) thingKeys.size()) { return L"out of bounds, thing enum.";  }

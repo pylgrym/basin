@@ -1,5 +1,6 @@
 #pragma once
 
+#include "numutil/myrnd.h"
 
 enum EnvirEnum {
   EN_Floor=0,
@@ -12,7 +13,11 @@ class Envir {
 public:
   EnvirEnum type;
   bool permLight;
-  Envir():type(EN_Floor), permLight(false) {}
+  int envUnits; // E.g. strength of rock.
+
+  Envir():type(EN_Floor), permLight(false) {
+    envUnits = rnd(50, 1500);
+  }
 
   bool blocked() const { return isBlockingEnv(type);  }
 

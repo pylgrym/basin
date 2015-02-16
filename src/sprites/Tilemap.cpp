@@ -22,7 +22,7 @@ bool Tilemap::save(CString filename) {
   for (i = tileAssocs.begin(); i != tileAssocs.end(); ++i) {
     Assoc& assoc = *i;
 
-    CT2A ac(assoc.key, CP_UTF8);  
+    CT2A ac(assoc.key, CP_ACP); // CP_UTF8);
 
     f << '"' << (const char*)ac << '"' << " "; 
     f << assoc.tilepos.x << " ";
@@ -178,6 +178,12 @@ void Tilemap::buildHashes() {
   return true;
 }
 */
+
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, bool bTransp, int factor) {
+  CA2T ukey(key, CP_ACP);
+  CPoint tilePos = tile(CString(ukey));
+  drawTileB(x, y, tilePos, dc, bTransp, factor);
+}
 
 
 void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, bool bTransp, int factor) {

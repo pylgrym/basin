@@ -44,6 +44,9 @@ enum ObjEnum {
   OB_Leggings=29,
   OB_Boots=30,
   OB_Pickaxe=31,
+  OB_Emeralds=32,
+  OB_Amethysts=33,
+  OB_Gems=34,
   OB_MaxLimit // highest nr to size arrays.
 };
 

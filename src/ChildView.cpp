@@ -231,7 +231,7 @@ void CChildView::OnPaint() {
       }
 
       if (!cell.creature.empty()) { 
-        tiles.drawTile(x, y, cell.creature.typeS(), dc, true,255); // false); MOBS
+        tiles.drawTileA(x, y, cell.creature.typeS(), dc, true,255); // false); MOBS
 
         // Draw stats/HP:
         Mob* mob = cell.creature.m;

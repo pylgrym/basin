@@ -133,6 +133,7 @@ void Map::initPlayer() { // JG, FIXME: All this shouldn't really clutter Map/Cel
   Bag::bag.add(new Obj(OB_Potion),ignore);
   Bag::bag.add(new Obj(OB_Scroll),ignore);
   Bag::bag.add(new Obj(OB_Food),ignore);
+  Bag::bag.add(new Obj(OB_Pickaxe),ignore);
 }
 
 

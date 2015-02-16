@@ -57,6 +57,7 @@ public:
   Mob(void);
   ~Mob(void);
 
+  CreatureEnum m_mobType; // better access it through ctype.
   CPoint pos;
   Stats stats;
   double speed;
@@ -71,6 +72,8 @@ public:
   bool hitTest(class Mob& adv, struct AttackInf& ai); // int& roll, int hitBonus);
   int takeDamage(int dmg, AttackSchool damageType); // returns damage-taken (adjusted for resistancs/vulnerabilities)
 
+  virtual int digStrength() { return 3;  }
+
   void makeAngry();
 
   Dice mobWeaponDice() { return mobDummyWeapon;  }
@@ -80,7 +83,7 @@ public:
   bool lowHealth() const;
 
   COLORREF color;
-  virtual CreatureEnum ctype() const = 0;
+  virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
 
   virtual double act() = 0; // returns time that action requires (0 means keep doing actions/keep initiative.)
   virtual void passTime() {} // Currently only activated for player mob.
@@ -206,7 +209,8 @@ public:
   void updateLight();
   Obj* findLight();
 
-  virtual CreatureEnum ctype() const { return CR_Player; }
+  virtual CreatureEnum ctype() const { return CR_Player; } // Consider not having this.. (instead just relying on base ctype)
+
   virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "";  } // "you HIT".
 
@@ -216,6 +220,8 @@ public:
   void setLightStrength(int strength)  { 
     theLightStrength = strength; 
   }
+
+  virtual int digStrength();
 
   static PlayerMob* ply;
   static int distPly(CPoint p); // raw/true calc. (square)
@@ -235,7 +241,7 @@ public:
   virtual double actFlee();
 
 
-  virtual CreatureEnum ctype() const { return CR_Kobold; }
+  // virtual CreatureEnum ctype() const { return CR_Kobold; }
   virtual std::string pronoun() const; // { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".
 };

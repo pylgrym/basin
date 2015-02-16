@@ -264,3 +264,37 @@ bool ZapCmd::Do(std::ostream& err) {
   Cuss::clear(false);// true); // Are we sure, last bullet is cleaned up?
   return true; 
 }
+
+
+
+
+
+bool DigCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  Envir& envir = Map::map[tgt].envir;
+
+  int digStr = mob.digStrength();
+  envir.envUnits -= digStr;
+  if (envir.envUnits > 0) {
+    logstr log; log << "You dig in the wall. " << digStr << "/" << envir.envUnits;
+    return true;
+  }
+
+  envir.setType(EN_Floor);
+  mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+  {
+    logstr log; log << "You'ved dug through the wall!";
+  }
+  if (oneIn(3)) { // Loot?
+    logstr log; log << "You found something embedded in the rock!";
+    Map::map.addObjAtPos(tgt);
+    if (oneIn(8)) {
+      Map::map.scatterObjsAtPos(tgt, rnd(1,6));
+    }
+    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+  }
+
+  debstr() << "Digged through the wall.\n";
+  return true; 
+}
