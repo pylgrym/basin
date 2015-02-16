@@ -44,6 +44,14 @@ struct AttackInf {
 };
 
 
+enum MoodEnum {
+  M_Sleeping, // standing still, passively - may wake up if disturbed by user.
+  M_Wandering, // bumbling around.
+  M_Angry, // wants to attack player.
+  M_Afraid, // fleeing from player, to survive and to trouble him (train him into other monsters.)
+  M_MaxMoods
+};
+
 class Mob {
 public:
   Mob(void);
@@ -52,6 +60,7 @@ public:
   CPoint pos;
   Stats stats;
   double speed;
+  MoodEnum mood;
   Dice mobDummyWeapon;
   AttackSchool defSchool;
   virtual AttackSchool school() const { return defSchool;  }
@@ -62,7 +71,13 @@ public:
   bool hitTest(class Mob& adv, struct AttackInf& ai); // int& roll, int hitBonus);
   int takeDamage(int dmg, AttackSchool damageType); // returns damage-taken (adjusted for resistancs/vulnerabilities)
 
+  void makeAngry();
+
   Dice mobWeaponDice() { return mobDummyWeapon;  }
+
+  bool nearPlayer() const;
+  CPoint playerDir() const;
+  bool lowHealth() const;
 
   COLORREF color;
   virtual CreatureEnum ctype() const = 0;
@@ -207,9 +222,19 @@ public:
   static int distPlyLight(CPoint p); // light-adjusted
 };
 
+
+
+
 class MonsterMob : public Mob {
 public:
   virtual double act(); // returns time that action requires (0 means keep doing actions/keep initiative.)
+
+  virtual double actSleep();
+  virtual double actWander();
+  virtual double actAngry();
+  virtual double actFlee();
+
+
   virtual CreatureEnum ctype() const { return CR_Kobold; }
   virtual std::string pronoun() const; // { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".

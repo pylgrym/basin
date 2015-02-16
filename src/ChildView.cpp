@@ -35,27 +35,7 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-
   Map::map.initWorld();
-
-  // FIXME: new + 'firstmove'+queue should become a single function.
-  /* Figure out dependency order of map, creatures, queues, etc.*/
-
-
-  Mob* player = new PlayerMob;
-  Map::map.moveMob(*player, player->pos);
-  MobQueue::mobs.queueMob(player,0);
-
-  std::stringstream ignore;
-  Bag::bag.add(new Obj(OB_Hat),ignore);
-  Bag::bag.add(new Obj(OB_Sword),ignore);
-  // Bag::bag.add(new Obj(OB_Gold),ignore);
-  Bag::bag.add(new Obj(OB_Lamp),ignore);
-  Bag::bag.add(new Obj(OB_Hat),ignore);
-
-  Bag::bag.add(new Obj(OB_Potion),ignore);
-  Bag::bag.add(new Obj(OB_Scroll),ignore);
-  Bag::bag.add(new Obj(OB_Food),ignore);
 }
 
 

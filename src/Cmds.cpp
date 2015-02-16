@@ -159,11 +159,13 @@ CPoint Map::key2dir(char nChar) {
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
-  Cuss::clear(false);
-
-  const char* keyPrompt = "Zap which direction?";
   bool bFound = false;
   int dirKey = 0;
+
+  // FIXME - respectMultiNotif and promptForKey should be integrated!
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+  const char* keyPrompt = "Zap which direction?";
   for (;!bFound;) {
     dirKey = TheUI::promptForKey(keyPrompt); 
 

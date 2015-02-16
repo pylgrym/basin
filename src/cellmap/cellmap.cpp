@@ -7,6 +7,8 @@
 
 #include <assert.h>
 
+#include "Bag.h"
+
 void Map::addRandomMob() {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
@@ -66,6 +68,8 @@ void Map::initWorld() {
   } // for x/ create floor.
 
   // Populate world:
+   
+  initPlayer();
 
   const int mobCount = 10; // 100;
   for (int i=0; i<mobCount; ++i) {
@@ -96,6 +100,26 @@ void Map::initWorld() {
 
 }
 
+
+void Map::initPlayer() { // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
+    // FIXME: new + 'firstmove'+queue should become a single function.
+  /* Figure out dependency order of map, creatures, queues, etc.*/
+
+  Mob* player = new PlayerMob; // Is a singleton, will store himself.
+  Map::map.moveMob(*player, player->pos);
+  MobQueue::mobs.queueMob(player,0);
+
+  std::stringstream ignore;
+  Bag::bag.add(new Obj(OB_Hat),ignore);
+  Bag::bag.add(new Obj(OB_Sword),ignore);
+  // Bag::bag.add(new Obj(OB_Gold),ignore);
+  Bag::bag.add(new Obj(OB_Lamp),ignore);
+  Bag::bag.add(new Obj(OB_Hat),ignore);
+
+  Bag::bag.add(new Obj(OB_Potion),ignore);
+  Bag::bag.add(new Obj(OB_Scroll),ignore);
+  Bag::bag.add(new Obj(OB_Food),ignore);
+}
 
 
 

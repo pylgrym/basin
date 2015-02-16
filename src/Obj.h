@@ -130,7 +130,7 @@ public:
     Also, make monsters attack.
     */
     const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
-    { 
+    { // JG, FIXME - why doesn't this display?
       logstr log; log << flavor;
     }
 

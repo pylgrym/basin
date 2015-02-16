@@ -26,6 +26,8 @@ Mob::Mob() {
   speed = 1.0;
 
   defSchool = (AttackSchool) rnd(0, SC_MaxSchools);
+
+  mood = (MoodEnum) rnd(0, M_MaxMoods);
 }
 
 
@@ -59,6 +61,9 @@ void PlayerMob::passTime() {
   stats.passTime();
   updateLight();
 }
+
+
+
 
 double PlayerMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   double actionDuration = 1.0; // seconds. // WalkCmd/Cmd's might set this instead.
@@ -138,26 +143,99 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
 
 double MonsterMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
-  const double duration = 1.0; // actionDuration  // seconds.
+  double duration = 1.0; // actionDuration  // seconds.
 
-	// stagger to a random location:
-  int dx = rndC(-1, 1), dy = rndC(-1, 1);
-
-
-  bool attack = oneIn(2); // JG, FIXME: If player is on neighbour tile, we should ALWAYS attack.
-  if (attack) {
-    logstr log;
-    HitCmd(*this, dx, dy, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
-  } else { // walk
-    std::stringstream ss;
-    bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
+  switch (mood) {
+  case M_Sleeping:  duration = actSleep(); break;
+  case M_Wandering: duration = actWander(); break;
+  case M_Angry:     duration = actAngry(); break;
+  case M_Afraid:    duration = actFlee(); break;
   }
 
-  // if (!bLegal) { return duration; } // Even if it failed, throw away our turn.
 
 	return duration;
 }
 
+
+double MonsterMob::actSleep() { // returns time that action requires (0 means keep doing actions/keep initiative.)
+  bool wake = oneIn(10); 
+  if (wake) {
+    logstr log; log << "Something awakens!";
+    bool angry = oneIn(2);  
+    mood = angry ? M_Angry : M_Wandering;
+  } else {
+    debstr() << "I stay asleep."; // on.";
+  }
+
+  return 1.0; // duration.
+}
+
+double MonsterMob::actWander() { // returns time that action requires (0 means keep doing actions/keep initiative.)
+	// stagger to a random location:
+  debstr() << "I wander around randomly.";
+  int dx = rndC(-1, 1), dy = rndC(-1, 1);
+  std::stringstream ss;
+  bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
+  return 1.0; // duration.
+}
+
+
+double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
+  CPoint dir = playerDir();
+  if (nearPlayer()) {
+    debstr() << "I am near player and will attack!";
+    // JG, If player is on neighbour tile, we should ALWAYS attack.
+    logstr log;
+    HitCmd(*this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
+  } else { // Else, chase the player:
+    debstr() << "I am far from player and will chase!";
+    std::stringstream ss;
+    bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
+  }
+
+  if (lowHealth()) {
+    if (oneIn(3)) {
+      logstr log; log << "The monster flees, feeling hurt.";
+      mood = M_Afraid;
+    }
+  }
+
+  return 1.0; // duration.
+}
+
+
+
+void Mob::makeAngry() {
+  if (mood == M_Sleeping || mood == M_Wandering) {
+    mood = M_Angry;
+    logstr log; log << "You have made the monster angry.";
+  }
+}
+
+
+
+bool Mob::lowHealth() const {
+  bool bLow = (stats.hp < (2*stats.maxHP/5) ); // Less than 2/5's
+  return bLow;
+}
+
+
+double MonsterMob::actFlee() { // returns time that action requires (0 means keep doing actions/keep initiative.)
+  CPoint dir = playerDir();
+  dir.x = -dir.x; dir.y = -dir.y; // Flee in the opposite dir.
+
+  debstr() << "I am afraid and will flee from player.";
+
+  std::stringstream ss;
+  bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
+  if (!bLegal) { // if we can't flee in that dir, try a random dir:
+	  // stagger to a random location:
+    int dx = rndC(-1, 1), dy = rndC(-1, 1);
+    bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
+  }
+
+  return 1.0; // duration.
+}
 
 
 
@@ -335,6 +413,7 @@ bool Mob::calcAttack(class Mob& adv, AttackInf& ai, AttackSchool school, std::os
   // Collect 'attack info' in an AttackInfo struct.
 
   //ai.school = school; // FIXME, record that..
+  adv.makeAngry();
 
   Obj* player_weapon = Equ::worn.weapon(); // FIXME, inventory and equipment should be members of Mobs.
   if (isPlayer()) { // ctype() == CR_Player) {
@@ -392,4 +471,20 @@ void AttackInf::repHitChance(std::ostream& os) {
   int percent = int(chance*100.0 + 0.5);
   //os << std::fixed << std::setw(4) << std::setprecision(2) << chance;
   os << percent;
+}
+
+
+bool Mob::nearPlayer() const {
+  int dist = PlayerMob::distPly(pos);
+  return (dist <= 1);
+}
+
+CPoint Mob::playerDir() const {
+  CPoint delta = (PlayerMob::ply->pos - pos);
+  CPoint dir;
+  if (delta.x > 0) { dir.x = 1; }
+  if (delta.x < 0) { dir.x = -1; }
+  if (delta.y > 0) { dir.y = 1; }
+  if (delta.y < 0) { dir.y = -1; }
+  return dir;
 }

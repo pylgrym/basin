@@ -16,6 +16,8 @@ public:
   void incNotif() { ++notifCounter;  }
   bool multiNotif() { return (notifCounter > 0);  }
 
+  static void respectMultiNotif();
+
   std::vector< std::string > lines;
   void add(const std::string& s);
   void show();

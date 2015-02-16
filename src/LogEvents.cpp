@@ -20,14 +20,20 @@ LogEvents::~LogEvents()
 
 LogEvents LogEvents::log;
 
-void LogEvents::add(const std::string& s) {
-  lines.push_back(s);
 
-  if (multiNotif()) {
+void LogEvents::respectMultiNotif() {
+  if (log.multiNotif()) {
     Cuss::move(CPoint(Map::Width-5,0));
     Cuss::prt("MORE",true);
     TheUI::waitForKey();
   }
+}
+
+void LogEvents::add(const std::string& s) {
+  lines.push_back(s);
+
+  respectMultiNotif(); // " - MORE" pause if several messages..
+
   incNotif();
   Cuss::move(CPoint(0,0));
   Cuss::prtL(s.c_str());
