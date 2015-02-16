@@ -397,3 +397,22 @@ public:
 
   virtual bool Do(std::ostream& err);
 };
+
+
+class StatCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err) {  
+    if (!Cmd::Do(err)) { return false; }
+
+    debstr() << "show stats command.\n";
+
+    Cuss::clear(false);
+    Cuss::prtL("  Your stats:"); 
+
+    PlayerMob::ply->stats.showStats(); 
+    TheUI::promptForAnyKey(); 
+
+    Cuss::clear(true);
+    return true; 
+  }
+};

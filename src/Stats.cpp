@@ -11,6 +11,12 @@
 
 #include "cellmap/cellmap.h"
 
+#include "cuss.h"
+
+#include "Mob.h"
+
+#include <assert.h>
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -59,12 +65,16 @@ Stats::Stats()
 ,gold(0)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
+
+  /*
   addStat("str"); // These are also called 'attributes'.
   addStat("int");
   addStat("dex");
   addStat("sta");
   addStat("wis");
   addStat("chr");
+  */
+
   /* Additional rules: 
    - at least one stat must be > 13.
    - sum of modifiers must be > 0. 
@@ -84,7 +94,8 @@ Stats::Stats()
 }
 
 int Stats::calcAC() {
-  int dexMod = s["dex"].mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
+  // s["dex"]
+  int dexMod = Dex.mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
   int val_ac = (level()/2) + dexMod; // You get half your level as AC contribution.
   return val_ac;
 }
@@ -92,7 +103,8 @@ int Stats::calcAC() {
 int Stats::calcToHit(std::ostream& os) {
   const int globOffset = 9; // A global constant setting, what default chance should be to hit something.
 
-  int strMod = s["str"].mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
+  // s["str"]
+  int strMod = Str.mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
   os << "s+" << strMod;
 
   int levelContrib = (level() / 2);
@@ -110,7 +122,8 @@ int Stats::calcMaxHP() {
    - for each level, you get 6+ your stamina modifier.
    -  the '6' should probably be a fixed roll of hit die.
   */
-  int val = s["sta"].v + (HitDie + statMod("sta")) * level(); 
+  // s["sta"]
+  int val = Con.v + (HitDie + Con.mdf()) * level(); 
   //int val = s["sta"].v + (HitDie *level + statMod("sta")*level); // alternative, illustrating that statMod might fluctuate.
   return val;
 }
@@ -120,9 +133,7 @@ Stats::~Stats()
 {
 }
 
-void Stats::addStat(const std::string& name) {
-  s[name] = Stat(name);
-}
+// void Stats::addStat(const std::string& name) { s[name] = Stat(name); }
 
 
 void Stat::roll() {
@@ -184,9 +195,21 @@ int Stats::mdf(int stat) { // Alternative approach, just calc it.
   return modif;
 }
 
+Stat& Stats::stat(const char* name) {
+  std::string sn = name;
+  if (sn == "str") { return Str;  }
+  if (sn == "int") { return Int;  }
+  if (sn == "dex") { return Dex;  }
+  if (sn == "wis") { return Wis;  }
+  if (sn == "con") { return Con;  }
+  if (sn == "chr") { return Chr;  }
+  assert(false); // bad stat name. // 'sta' is not a stat.
+  static Stat noStat;
+  return noStat;
+}
 
-int Stats::statMod(const std::string& stat) {
-  Stat& theStat = s[stat]; // stats.
+int Stats::statMod(const std::string& thestat) {
+  Stat& theStat = stat(thestat.c_str()); // s[stat]; // stats.
   int mod = statModifyEffect[theStat.v];
   return mod;
   /* Conclusion - stats cause bonus modifiers [-4;4] on other things.
@@ -264,4 +287,35 @@ void Stats::heal(int percent) { // May also be used negative.
   } else {
     log << "Your health worsens.";
   }
+}
+
+
+void pr(std::stringstream& ss) {
+  std::string s = ss.str();
+  Cuss::prtL(s.c_str());  
+  ss.str("");
+}
+void Stats::showStats() {
+  std::stringstream s;
+
+  s << "AC:" << this->ac;             pr(s);
+  s << "AU:" << this->gold;           pr(s);
+  s << "Confused?" << this->confused; pr(s);
+  s << "HP:" << this->hp;             pr(s);
+  s << "maxHP:" << this->maxHP;       pr(s);
+  s << "Hunger:" << this->hunger;     pr(s);
+  s << "Level:" << this->level();     pr(s);
+  s << "STR:" << this->Str.v;         pr(s);
+  s << "INT:" << this->Int.v;         pr(s);
+  s << "DEX:" << this->Dex.v;         pr(s);
+  s << "WIS:" << this->Wis.v;         pr(s);
+  s << "CHR:" << this->Chr.v;         pr(s);
+  s << "CON:" << this->Con.v;         pr(s);
+
+  int lightStr = PlayerMob::ply->lightStrength();
+  int lightUnits = PlayerMob::ply->theLightUnits;
+  s << "Light:" << lightStr;          
+  s << ", fuel left:" << lightUnits;          
+  pr(s);
+  // Cuss::prtL(s.str().c_str());  
 }

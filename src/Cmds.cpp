@@ -3,6 +3,13 @@
 
 #include "LogEvents.h"
 
+/* Todos: 
+ - a dashboard on the right or bottom, with stats (or just a command to print them?)
+ - various dmg-spells, should actually do some damage!
+ - effects from armour should have an effect
+ - armour should give armour class..
+*/
+
 bool ShowEventsCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
@@ -197,7 +204,12 @@ bool ZapCmd::Do(std::ostream& err) {
   CPoint tileYellow(35, 24);
   CPoint tileGreenFire(39, 24);
   CPoint tileGreenBall(3, 25);
+  CPoint tileLight(39, 2);
+  CPoint tileNether(0, 3);
+  CPoint tileEarth(16, 22);
+  CPoint tileStar(15,22);
   CPoint tileWeird(39, 2);
+  CPoint tileNone(0, 0); // Yeah it's an ant, but it's also 'none', in this context..
 
   CPoint tile = tileMagic;
   switch (school) {
@@ -206,14 +218,16 @@ bool ZapCmd::Do(std::ostream& err) {
   case SC_Frost: tile = tileFrost; break;
   case SC_Earth: tile = tileYellow; break;
   case SC_Gas:   tile = tileGreenBall; break;
+  case SC_Light: tile = tileLight; break;
   default:       tile = tileWeird; break;
   }
 
-  CPoint dir = Map::key2dir(dirKey); // (1, 0); // FIXME; should follow key.
+  CPoint dir = Map::key2dir(dirKey); 
   CPoint bullet = tgt;
-  for (int shoot = 0; shoot < 10; ++shoot) {
+  const int maxBulletRange = 50;
+  for (int shoot = 0; shoot < maxBulletRange; ++shoot) {
     // Clear old bullet pos:
-    Map::map[bullet].overlay = CPoint(0, 0); // c = 0;
+    Map::map[bullet].overlay = tileNone; // CPoint(0, 0);
     CPoint oldBullet = bullet;
 
     // Consider new bullet pos:
@@ -253,6 +267,9 @@ bool ZapCmd::Do(std::ostream& err) {
 
     TheUI::microSleepForRedraw(7); // 4);
   }
+
+  Map::map[bullet].overlay = tileNone; // Clear the 'last' bullet.
+  mob.invalidateGfx(bullet, bullet, true);
 
   if (effect == SP_WallBuilding) {
     logstr log; log << "Solid rock forms out of thin air!";

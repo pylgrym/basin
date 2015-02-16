@@ -216,9 +216,11 @@ public:
 
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)
+  int theLightUnits; // how much fuel left.
 
-  void setLightStrength(int strength)  { 
+  void setLightStrength(int strength, int lightUnits)  { 
     theLightStrength = strength; 
+    theLightUnits = lightUnits;
   }
 
   virtual int digStrength();

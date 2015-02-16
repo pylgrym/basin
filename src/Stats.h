@@ -29,8 +29,13 @@ enum StatsEnum {
 class Stats // Actually, ability stats..
 {
 public:
-  std::map< std::string, Stat > s;
-  void addStat(const std::string& name);
+  Stat Str, Int, Dex, Con, Wis, Chr;
+  //std::map< std::string, Stat > s;
+  // std::map< std::string, Stat* > s;
+
+  Stat& stat(const char* name);
+
+  // void addStat(const std::string& name);
   Stats();
   ~Stats();
 
@@ -69,6 +74,8 @@ public:
   void passTime();
   void updateHunger();
   void updateConfusion();
+
+  void showStats();
 
   // static Stats stats;
   static int statModifyEffect[18 + 1];

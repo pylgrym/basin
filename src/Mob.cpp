@@ -105,6 +105,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case 'S': if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break; 
     case 'Z': if (ZapCmd(*this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
 
+    case 'Q': if (StatCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // Q is stats (should it be S?)
+
 
 
     // Move/hit/dig: 
@@ -166,7 +168,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
   } else {
-    debstr() << "I stay asleep."; // on.";
+    debstr() << "I stay asleep.\n"; // on.";
   }
 
   return 1.0; // duration.
@@ -174,7 +176,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
 
 double MonsterMob::actWander() { // returns time that action requires (0 means keep doing actions/keep initiative.)
 	// stagger to a random location:
-  debstr() << "I wander around randomly.";
+  debstr() << "I wander around randomly.\n";
   int dx = rndC(-1, 1), dy = rndC(-1, 1);
   std::stringstream ss;
   bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
@@ -185,12 +187,12 @@ double MonsterMob::actWander() { // returns time that action requires (0 means k
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   CPoint dir = playerDir();
   if (nearPlayer()) {
-    debstr() << "I am near player and will attack!";
+    debstr() << "I am near player and will attack!\n";
     // JG, If player is on neighbour tile, we should ALWAYS attack.
     logstr log;
     HitCmd(*this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // Else, chase the player:
-    debstr() << "I am far from player and will chase!";
+    debstr() << "I am far from player and will chase!\n";
     std::stringstream ss;
     bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
   }
@@ -226,7 +228,7 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   CPoint dir = playerDir();
   dir.x = -dir.x; dir.y = -dir.y; // Flee in the opposite dir.
 
-  debstr() << "I am afraid and will flee from player.";
+  debstr() << "I am afraid and will flee from player.\n";
 
   std::stringstream ss;
   bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
@@ -322,6 +324,7 @@ PlayerMob* PlayerMob::ply = NULL;
 PlayerMob::PlayerMob() { 
   ply = this;  
   theLightStrength = 1;
+  theLightUnits = 0;
   m_mobType = CR_Player; // (CreatureEnum)rnd(CR_Kobold, CR_MaxLimit);
 }
 
@@ -355,7 +358,7 @@ void PlayerMob::updateLight() {
   if (light != NULL) {
     int activeStr = light->getLightStrength();
     if (light->itemUnits == 0) { activeStr = 1; } else { activeStr *= 4;  }
-    setLightStrength(activeStr); 
+    setLightStrength(activeStr, light->itemUnits); 
 
     bool burnout = false;
     if (light->itemUnits == 1) { burnout = true;  } // Is it the last flicker, burning out now?
@@ -363,7 +366,7 @@ void PlayerMob::updateLight() {
     if (burnout) { logstr log; log << "Your light flickers out!"; }
 
   } else {
-    setLightStrength(rnd(0,2));  // Flicker-torch.
+    setLightStrength(rnd(0,2),0);  // Flicker-torch.
   }
 }
 

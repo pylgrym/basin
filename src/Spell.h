@@ -33,6 +33,7 @@ enum AttackSchool {
   SC_Poison,
   SC_Gas,
   SC_Mind,
+  SC_Light,
   SC_MaxSchools
 };
 
