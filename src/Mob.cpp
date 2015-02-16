@@ -446,40 +446,38 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) { // int& hitRoll, int hitBonus
 
  
 
-bool Mob::calcAttack(class Mob& adv, AttackInf& ai, AttackSchool school, std::ostream& os) { // int& dmg) {
+bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, std::ostream& os) { 
   // Collect 'attack info' in an AttackInfo struct.
 
   //ai.school = school; // FIXME, record that..
   adv.makeAngry();
 
-  Obj* player_weapon = Equ::worn.weapon(); // FIXME, inventory and equipment should be members of Mobs.
-  if (isPlayer()) { // ctype() == CR_Player) {
-    if (player_weapon != NULL) { ai.wpHitBonus = player_weapon->toHit; }
+  if (isPlayer()) {  
+    if (attackItem != NULL) { ai.wpHitBonus = attackItem->toHit; }  
   }
 
-  ai.bHit = hitTest(adv, ai); // ai.hitRoll, ai.hitBonus);
+  ai.bHit = hitTest(adv, ai);  
   if (!ai.bHit) { return false;  }
 
   ai.attackDice = mobWeaponDice();
-  if (isPlayer()) { // ctype() == CR_Player) {
-    if (player_weapon != NULL) { 
-      ai.attackDice = player_weapon->dmgDice; 
-      ai.dmgBonus = player_weapon->toDmg;
+  if (isPlayer()) { 
+    if (attackItem != NULL) {   
+      ai.attackDice = attackItem->dmgDice;   
+      ai.dmgBonus = attackItem->toDmg;  
     }
    
   }
 
   {
     logstr log; log << "attack roll " << ai.attackDice.n << "d" << ai.attackDice.x << ": ";
-    ai.dmgRoll = ai.attackDice.roll(log); // os);
+    ai.dmgRoll = ai.attackDice.roll(log); 
   }
 
   ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg.
   ai.dmg += ai.dmgRoll + ai.dmgMod + ai.dmgBonus;
   if (ai.dmg < 1) { ai.dmg = 1; } // You always hit for at least 1
 
-  //AttackSchool type = school; // SC_Phys;
-  ai.dmgTaken = adv.takeDamage(ai.dmg, school); // type);
+  ai.dmgTaken = adv.takeDamage(ai.dmg, school);  
 
   return true;
 }

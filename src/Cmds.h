@@ -25,7 +25,7 @@ public:
     newpos = old; newpos.x += dx; newpos.y += dy;
   }
 
-  virtual bool silent() const { return !mob.isPlayer(); } //  ctype() != CR_Player;  
+  virtual bool silent() const { return !mob.isPlayer(); } 
 
   virtual bool legal(std::ostream& err) { 
     if (newpos == old) { err << "Not a move-direction.";  return false; }
@@ -50,10 +50,9 @@ public:
   HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_), hitItem(hitItem_) {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
     hittee = Map::map[tgt].creature.m; 
-    // assert(hittee != NULL);
   }
 
-  virtual bool silent() const { return !mob.isPlayer(); } // ctype() != CR_Player;  }
+  virtual bool silent() const { return !mob.isPlayer(); }  
 
   virtual bool legal(std::ostream& err) { 
     if (hittee == NULL) { 

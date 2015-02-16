@@ -102,14 +102,13 @@ bool HitCmd::Do(std::ostream& err) {
 
   hittee->invalidateGfx(tgt, tgt, true);
 
-  // int dmg = 0;
   std::stringstream dummy;
-  bool isPlayer = mob.isPlayer(); // ctype() == CR_Player;
+  bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(*hittee, ai, school, isPlayer ? err : dummy); // dmg);
+  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, isPlayer ? err : dummy); 
   if (!bHit) { 
-    if (mob.isPlayer()) { // mob.ctype() == CR_Player) {
+    if (mob.isPlayer()) {  
       err << "You miss! "; 
     } else {
       err << "It misses. "; 
@@ -122,7 +121,6 @@ bool HitCmd::Do(std::ostream& err) {
     ai.rep(err, mob.stats);
     return false; 
   }
-  // --hittee->stats.hp;
 
   {
     logstr log;
