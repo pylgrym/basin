@@ -84,6 +84,9 @@
     <ClInclude Include="Equ.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="term.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -141,6 +144,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Equ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="term.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

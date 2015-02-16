@@ -1,20 +1,12 @@
 #include "stdafx.h"
 #include "Mob.h"
-
 #include "./theUI.h"
-
 #include "cellmap/cellmap.h"
-
 #include "numutil/myrnd.h"
-
 #include <assert.h>
-
 #include "Cmds.h"
-
 #include "LogEvents.h"
-
 #include "Equ.h"
-
 #include <iomanip>
 
 Mob::Mob() {  
@@ -60,8 +52,30 @@ void Mob::invalidateGfx() {
 
 
 void PlayerMob::passTime() {
-  stats.passTime();
-  updateLight();
+	stats.passTime();
+	updateLight();
+	dashboard();
+}
+
+void addInf(std::stringstream& ss, CPoint& dash) {
+  Cuss::move(dash);
+  std::string lightInf = ss.str();
+  Cuss::prt(lightInf.c_str(), true);
+  ss.str("");
+  dash.y += 1;
+}
+
+void PlayerMob::dashboard() {
+  /* FIXME - make functions for these.
+  */
+  CPoint dash(Viewport::Width, 1);
+  std::stringstream ss;
+
+  ss << "light:";  addInf(ss, dash);
+  ss << "#" << lightStrength() << "#"; addInf(ss, dash);
+  ss << "#" << this->theLightUnits << "  "; addInf(ss, dash);
+  ss << "hp" << stats.hp; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+
 }
 
 
@@ -358,7 +372,7 @@ void PlayerMob::updateLight() {
   Obj* light = findLight();
   if (light != NULL) {
     int activeStr = light->getLightStrength();
-    if (light->itemUnits == 0) { activeStr = 1; } else { activeStr *= 4;  }
+    if (light->itemUnits == 0) { activeStr = 1; } else { activeStr *= 1;  }
     setLightStrength(activeStr, light->itemUnits); 
 
     bool burnout = false;

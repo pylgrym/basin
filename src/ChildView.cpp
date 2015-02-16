@@ -15,6 +15,9 @@
 #include "Bag.h"
 #include "Term.h"
 
+//#include "Mob.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -37,6 +40,12 @@ CChildView::CChildView() {
   // "D:\moria\Basin\src\"
 
   Map::map.initWorld();
+
+  // This is a little bit bad, because it even
+  // atempts to trigger a redraw, at a time where we don't have any HWND yet..
+  PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
+
+  //FIXME: (DARKNESS) img-tiles should be BLACK!
 }
 
 
@@ -143,7 +152,6 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	debstr() << "ontimer:" << nIDEvent << "\n";
 	KillTimer(timerID);
 	// do stuff..
-
   debstr() << "Starting queue-process..\n";
   for (bool isRunning=true; isRunning; ) {
     isRunning = MobQueue::mobs.dispatchFirst();
@@ -191,7 +199,8 @@ CChildView* CChildView::singletonWnd = NULL;
 void TheUI::invalidateWndJG(CRect* pRect, bool erase) { 
   // (invalidateWndJG: Actual connection to redraw/invalidate window.)
   if (CChildView::singletonWnd == NULL) { debstr() << "no sing wnd?\n";  return; }
-  CChildView::singletonWnd->InvalidateRect(pRect, erase); 
+  if (CChildView::singletonWnd->GetSafeHwnd() == NULL) { debstr() << "no hWnd yet\n";  return; }
+  CChildView::singletonWnd->InvalidateRect(pRect, erase);
 }
 
 

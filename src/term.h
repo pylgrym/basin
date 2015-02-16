@@ -16,7 +16,10 @@ public:
 class Term
 {
 public:
-  enum { Width = 48, Height = 25 };
+  enum { 
+	  Width = 48, 
+	  Height = 20 // 25 
+  };
 
   TCell cells[Width][Height];
 

@@ -95,7 +95,10 @@ public:
 
 class Viewport {
 public:
-  enum Sizes { Width = 32, Height = 25, SweetspotPct = 20};
+  enum Sizes { 
+	  Width = 32, 
+	  Height = 20, // 25, 
+	  SweetspotPct = 20};
   CPoint offset; // Offset is WORLD coordinates, of upper left (0,0) VIEWPORT corner. (e.g. 1,1 for first offset.) So you must ADD it, to go from  v2W
   CRect sweetspotArea;
   Viewport();
