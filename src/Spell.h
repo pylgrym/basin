@@ -87,7 +87,7 @@ public:
   static const SpellDesc& spell(SpellEnum);
   static SpellEnum rndSpell();
 
-  static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log); // Mob& target, 
+  static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
 
 private:
   static const SpellDesc spells[SP_MaxSpells];

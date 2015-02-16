@@ -47,7 +47,7 @@ public:
 
 class HitCmd : public Cmd {
 public:
-  HitCmd(Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_) {
+  HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_), hitItem(hitItem_) {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
     hittee = Map::map[tgt].creature.m; 
     // assert(hittee != NULL);
@@ -68,6 +68,7 @@ public:
   Mob& mob;
   Mob* hittee;
   AttackSchool school;
+  Obj* hitItem;
 
   virtual bool Do(std::ostream& err);
 
@@ -386,9 +387,10 @@ public:
   Mob& mob;
   SpellEnum effect;
   AttackSchool school;
+  Obj* zapHitItem;
 
-  ZapCmd(Mob& mob_, SpellEnum effect_, AttackSchool school_)
-  :mob(mob_), effect(effect_),school(school_) {
+  ZapCmd(Obj* hitItem_, Mob& mob_, SpellEnum effect_, AttackSchool school_)
+  :mob(mob_), effect(effect_),school(school_), zapHitItem(hitItem_) {
     tgt = mob.pos;
   }
 

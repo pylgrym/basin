@@ -103,7 +103,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
     case 'S': if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break; 
-    case 'Z': if (ZapCmd(*this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
+    case 'Z': if (ZapCmd(NULL, *this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
 
     case 'Q': if (StatCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // Q is stats (should it be S?)
 
@@ -131,7 +131,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
             if (WalkCmd(*this, dx, dy, false).Do(ss)) { actionDuration = 1; bActionDone = true; }
           }
         } else { // target-field HAS a creature - then it's an attack (we aren't very social, are we..)
-          if (HitCmd(*this, dx, dy, SC_Phys).Do(ss)) { actionDuration = 1; bActionDone = true; }
+          Obj* player_weapon = Equ::worn.weapon(); 
+          if (HitCmd(player_weapon, *this, dx, dy, SC_Phys).Do(ss)) { actionDuration = 1; bActionDone = true; }
         }
       } //end movement-scope-block.
       break; // end of keyboard switch.
@@ -190,7 +191,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     debstr() << "I am near player and will attack!\n";
     // JG, If player is on neighbour tile, we should ALWAYS attack.
     logstr log;
-    HitCmd(*this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
+    HitCmd(NULL, *this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // Else, chase the player:
     debstr() << "I am far from player and will chase!\n";
     std::stringstream ss;

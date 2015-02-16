@@ -143,7 +143,7 @@ public:
 
     logstr log;
     // Act on obj.effect:
-    Spell::doSpell(effect, who, log);
+    Spell::doSpell(effect, who, log, this);
 
     return true;
   } 

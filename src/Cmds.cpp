@@ -4,8 +4,11 @@
 #include "LogEvents.h"
 
 /* Todos: 
- - a dashboard on the right or bottom, with stats (or just a command to print them?)
+ - "DONE" a dashboard on the right or bottom, with stats (or just a command to print them?)
+   (Q will show current stats.)
+
  - various dmg-spells, should actually do some damage!
+
  - effects from armour should have an effect
  - armour should give armour class..
 */
@@ -237,8 +240,11 @@ bool ZapCmd::Do(std::ostream& err) {
 
     if (!Map::map[newBullet].creature.empty()) { // We hit a mob..
       CPoint aim = newBullet - tgt;
-      { logstr log; log << "The bullet hits the monster."; } // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
-      HitCmd cmd(mob,aim.x, aim.y, school);
+      { logstr log; log << "The bullet hits the monster."; } 
+      // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
+      // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
+      // this way it can both use item and weapon..
+      HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
       bool bOK = cmd.Do(err);
       break;
     }

@@ -129,8 +129,8 @@ bool healSpell(Mob& actor, int percent) {
 
 
 
-bool bulletSpell(Mob& actor, SpellEnum effect, AttackSchool school) {
-  ZapCmd cmd(actor, effect, school);
+bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) {
+  ZapCmd cmd(spellItem, actor, effect, school);
   logstr log;
   return cmd.Do(log);
 }
@@ -146,32 +146,32 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 
 
-bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log) { // , Mob* target, 
+bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) { // , Mob* target, 
   // log << "Do:" << effect << ". "; 
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
   case SP_Confuse:      return updateConfused(actor, rnd(3, 20)); break;
   case SP_Unconfuse:    return updateConfused(actor, 0); break;
-  case SP_ConfuseMob:   return bulletSpell(actor, effect, SC_Mind); break; // or gas..?
+  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..?
   case SP_Teleport:     return teleportSpell(actor, 4); break;
 
-  case SP_MagicMissile: return bulletSpell(actor, effect, SC_Magic); break; // FIXME - they can have different types of 'missile' for same spell! (school/dmg type?)
-  case SP_FireBolt:     return bulletSpell(actor, effect, SC_Fire); break;
-  case SP_FrostBolt:    return bulletSpell(actor, effect, SC_Frost); break;
-  case SP_FireBall:     return bulletSpell(actor, effect, SC_Fire); break;
-  case SP_StinkCloud:   return bulletSpell(actor, effect, SC_Gas); break;
+  case SP_MagicMissile: return bulletSpell(actor, item, effect, SC_Magic); break;  
+  case SP_FireBolt:     return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_FrostBolt:    return bulletSpell(actor, item, effect, SC_Frost); break;
+  case SP_FireBall:     return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_StinkCloud:   return bulletSpell(actor, item, effect, SC_Gas); break;
 
-  case SP_StoneToMud:   return bulletSpell(actor, effect, SC_Air); break; // FIXME - a bit different from the other projectile-missile things.
-  case SP_WallBuilding: return bulletSpell(actor, effect, SC_Earth); break;
-  case SP_Earthquake:   return bulletSpell(actor, effect, SC_Earth); break;
+  case SP_StoneToMud:   return bulletSpell(actor, item, effect, SC_Air); break;  
+  case SP_WallBuilding: return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_Earthquake:   return bulletSpell(actor, item, effect, SC_Earth); break;
 
   case SP_Eat:          return eatSpell(actor,300); break;
   case SP_Heal:         return healSpell(actor,35); break;
   case SP_Sick:         return healSpell(actor,-35); break;
   // case SP_Poison:       healSpell(actor); break;
   case SP_LightArea:   return lightSpell(actor, actor.pos,2); break;
-  case SP_LightDir:    return bulletSpell(actor, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
+  case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
   default: log << "err spell unknown.";  return false;
   }
   return true; 
