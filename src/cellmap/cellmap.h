@@ -12,6 +12,10 @@
 
 
 
+class VPoint { // Points in the viewport coord system' - not used much.
+public:
+  CPoint p;
+};
 
 
 class Cell {
@@ -86,6 +90,22 @@ public:
   void scatterObjsAtPos(CPoint pos, int n);
 };
 
+
+
+
+class Viewport {
+public:
+  enum Sizes { Width = 20, Height = 20, SweetspotPct = 20};
+  CPoint offset; // Offset is WORLD coordinates, of upper left (0,0) VIEWPORT corner. (e.g. 1,1 for first offset.) So you must ADD it, to go from  v2W
+  CRect sweetspotArea;
+  Viewport();
+  bool adjust(CPoint wpos); // True if adjust happens.
+
+  CPoint w2v(CPoint w);
+  CPoint v2w(CPoint v);
+
+  static Viewport vp;
+};
 
 
 #endif // CELLMAP_H

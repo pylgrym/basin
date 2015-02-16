@@ -145,6 +145,10 @@ void Map::moveMob(class Mob& m, CPoint newpos) {
   (*this)[m.pos].creature.clearMob();
   m.pos = newpos;
   (*this)[m.pos].creature.setMob(&m);
+
+  if (m.isPlayer()) {
+    Viewport::vp.adjust(m.pos);
+  }
 }
 
 
@@ -166,6 +170,9 @@ Cell& Map::operator [] (CPoint p) {
 
 
 CellColumn& Map::operator [] (int x) { 
+  static CellColumn noneColumn;
+  if (x < 0 || x >= Map::Width) { return noneColumn; }
+
   assert(x >= 0);
   assert(x < Map::Width);
   return cellColumns[x];  
@@ -173,6 +180,9 @@ CellColumn& Map::operator [] (int x) {
 
 
 Cell& CellColumn::operator [] (int y) { 
+  static Cell noneCell;
+  if (y < 0 || y >= Map::Height) { return noneCell; }
+
   assert(y >= 0);
   assert(y < CellColumn::Height);
   return cells[y];  
@@ -185,6 +195,34 @@ bool Map::legalPos(CPoint pos) {
   if (pos.x < 0 || pos.y < 0) { return false; }
   if (pos.x >= Map::Width || pos.y >= Map::Height) { return false;  }
   return true;
+}
+
+
+
+
+
+Viewport Viewport::vp;
+
+Viewport::Viewport() {
+  const int sweetspotWidth  = (SweetspotPct * Width / 100);
+  const int sweetspotHeight = (SweetspotPct * Height / 100);
+  sweetspotArea.top = sweetspotHeight;
+  sweetspotArea.left = sweetspotWidth;
+  sweetspotArea.right = Width - sweetspotWidth;
+  sweetspotArea.bottom = Height - sweetspotHeight;
+}
+
+
+bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
+  VPoint vp; 
+  vp.p = w2v(wpos); //wpos - offset;
+  if (sweetspotArea.PtInRect(vp.p)) { return false; } // No adjustment necessary.
+
+  debstr() << "adjust..\n";
+  // Move offset, so wpos is in center of screen.
+  offset.x = wpos.x - (Width / 2);
+  offset.y = wpos.y - (Height / 2);
+  return true; // We adjusted..
 }
 
 
