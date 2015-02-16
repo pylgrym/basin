@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Cuss.h"
 
-#include "cellmap/cellmap.h"
+// #include "cellmap/cellmap.h"
+
+#include "term.h"
 
 #include "theUI.h"
 
@@ -12,10 +14,11 @@ void Cuss::clear(bool bInvalidate) {
    
   csr = CPoint(0, 0);  
   // clear map:
-  for (int x = 0; x < Map::Width; ++x) {
-    CellColumn& column = Map::map[x];
-    for (int y = 0; y < Map::Height; ++y) {
-      Cell& cell = column[y];
+  for (int x = 0; x < Term::Width; ++x) {
+    //CellColumn& column = Map::map[x];
+    for (int y = 0; y < Term::Height; ++y) {
+      CPoint p(x,y);
+      TCell& cell = Term::term[p]; //column[y];
       cell.clearChar();
     }
   }
@@ -41,7 +44,7 @@ void Cuss::prtL(const char* txt, bool stay) {
 bool Cuss::prt(const char* txt, bool bDoClip) {
   int count = 0; // This is not 'end of line' check, more like 'not too many chars' check.
   bool bClipped = false;
-  for (const char* s = txt; *s != '\0' && count < Map::Width && !bClipped; ++s, ++count) {
+  for (const char* s = txt; *s != '\0' && count < Term::Width && !bClipped; ++s, ++count) {
     bClipped = putchar(*s, bDoClip);
   }
   return bClipped;
@@ -57,20 +60,22 @@ bool Cuss::prtCR(const char* txt, bool bDoClip) {
 void Cuss::CRLF() { // Do carriage-return + lineFeed.
   csr.x = 0;
   ++csr.y;
-  if (csr.y >= Map::Height) { csr.y = 0;  }
+  if (csr.y >= Term::Height) { csr.y = 0;  }
 }
 
 bool Cuss::putchar(char c, bool bClip) {
   // debstr() << "[§" << c << "]\n";
-  Cell& cell = Map::map[csr];
+  TCell& cell = Term::term[csr]; //Map::map[csr];
   cell.c = c;
-  TheUI::invalidateCell(csr);
+  TheUI::invalidateVPCell(csr);
 
   ++csr.x;
-  if (csr.x >= Map::Width) {
+  if (csr.x >= Term::Width) { // Map::Width) {
     csr.x = 0;
     ++csr.y;
-    if (csr.y >= Map::Height) { csr.y = 0;  }
+    if (csr.y >= Term::Height) { // Map::Height) { 
+      csr.y = 0;  
+    }
 
     if (bClip) {
       return true;

@@ -218,10 +218,34 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   vp.p = w2v(wpos); //wpos - offset;
   if (sweetspotArea.PtInRect(vp.p)) { return false; } // No adjustment necessary.
 
-  debstr() << "adjust..\n";
   // Move offset, so wpos is in center of screen.
-  offset.x = wpos.x - (Width / 2);
-  offset.y = wpos.y - (Height / 2);
+
+  if (vp.p.x < sweetspotArea.left || vp.p.x > sweetspotArea.right) {
+    int halfVPWidth = (Width / 2);
+    offset.x = wpos.x - halfVPWidth;
+
+    if (wpos.x < halfVPWidth) { offset.x = 0; } // If we are close to left edge, lock it.
+    if (wpos.x > (Map::Width - halfVPWidth)) { offset.x = (Map::Width - Width); } // If we are close to right edge, lock it.
+  }
+
+  if (vp.p.y < sweetspotArea.top || vp.p.y > sweetspotArea.bottom) {
+    int halfVPHeight = (Height / 2);
+    offset.y = wpos.y - halfVPHeight;
+
+    if (wpos.y < halfVPHeight) { offset.y = 0; } // If we are close to left edge, lock it.
+    if (wpos.y > (Map::Height - halfVPHeight)) { offset.y = (Map::Height - Height); } // If we are close to bottom edge, lock it.
+  }
+
+  /* If we are 'cornered', we don't really want center; 
+  instead we want to fill viewport.
+  How can I describe this more completely.. 
+  ( a correct description will probably illustrate how to impl.)
+
+  It's something about being close to corners..
+  If the distance to a corner is smaller than.. "half-screen-height?", 
+  we should probably just stay there?
+  */
+
   return true; // We adjusted..
 }
 

@@ -13,6 +13,7 @@
 #include "numutil/myrnd.h"
 
 #include "Bag.h"
+#include "Term.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -193,18 +194,27 @@ void TheUI::invalidateWndJG(CRect* pRect, bool erase) {
   CChildView::singletonWnd->InvalidateRect(pRect, erase); 
 }
 
+
+
 void TheUI::invalidateCell(CPoint w_tilepos) { 
   // (invalidateCell: same as invalidateCellXY, just convenient interface.)
   invalidateCellXY(w_tilepos.x, w_tilepos.y);  
 }
 
+
+
 void TheUI::invalidateCellXY(int w_tx, int w_ty) {
   // (invalidateCellXY: exposed interface func.)
   CPoint wp(w_tx,w_ty); // world
+
   VPoint vp;
   vp.p = Viewport::vp.w2v(wp); // wp + Viewport::vp.offset;
+  invalidateVPCell(vp.p);
+}
 
-	int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+
+void TheUI::invalidateVPCell(CPoint vp) { 
+  int px = vp.x * Tiles::TileWidth, py = vp.y * Tiles::TileHeight;
 	CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
   invalidateWndJG(&cellR, false);
 }
@@ -225,13 +235,14 @@ void CChildView::OnPaint() {
   CBrush txtBk(RGB(0, 0, 20));
 
   VPoint vp;
-  for (vp.p.x = 0; vp.p.x < Viewport::Width; ++vp.p.x) {
-    for (vp.p.y = 0; vp.p.y < Viewport::Height; ++vp.p.y) {
+  for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
+    for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
       CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
 
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
       CellColumn& column = Map::map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
       Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
+      TCell& tcell = Term::term[vp.p];
 
       tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, false, 255); // FLOOR
 
@@ -281,14 +292,14 @@ void CChildView::OnPaint() {
         tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, true,255); // false);  // THINGS
       }
 
-      if (!cell.charEmpty()) { 
+      if (!tcell.charEmpty()) { 
 	      dc.SelectObject(largeFont);
         const COLORREF txtColor = RGB(255, 255, 255);
         dc.SetTextColor(txtColor);  
 		    int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
 		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
         dc.FillRect(&cellR, &txtBk);
-        CString s; s.Format(L"%c", cell.c);
+        CString s; s.Format(L"%c", tcell.c);
 		    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
       } else { // Only draw light-shading when not text-cell:
 

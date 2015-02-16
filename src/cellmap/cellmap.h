@@ -23,15 +23,15 @@ public:
   Envir envir;
   ObjSlot item; 
   Creature creature;
-  char c;
+  char cc;
   CPoint overlay;
 
   Cell() {
     clearChar(); 
   }
 
-  bool charEmpty() const { return c == '\0';  }
-  void clearChar() { c = '\0';  }
+  bool charEmpty() const { return cc == '\0';  }
+  void clearChar() { cc = '\0';  }
 
   bool light() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
   void markWalls() { envir.markWalls();  }
@@ -50,7 +50,7 @@ public:
 
 class CellColumn {
 public:
-  enum ColumnConst { Height = 30 };
+  enum ColumnConst { Height = 60 }; //30 }; // 30
   Cell cells[Height];
   Cell& operator [] (int y); // { return cells[y];  }
 };
@@ -60,7 +60,7 @@ public:
 class Map {
 public:
   enum MapConst { 
-    Width = 48, //16, 
+    Width = 100, //48, //16, 
     Height = CellColumn::Height 
   };
 private:
@@ -95,7 +95,7 @@ public:
 
 class Viewport {
 public:
-  enum Sizes { Width = 20, Height = 20, SweetspotPct = 20};
+  enum Sizes { Width = 32, Height = 25, SweetspotPct = 20};
   CPoint offset; // Offset is WORLD coordinates, of upper left (0,0) VIEWPORT corner. (e.g. 1,1 for first offset.) So you must ADD it, to go from  v2W
   CRect sweetspotArea;
   Viewport();
