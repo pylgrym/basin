@@ -216,7 +216,7 @@ bool Obj::wearable() const {
 
 int Obj::getLightStrength() const {
   if (otype() != OB_Lamp) { return 1;  } // No light from a non-lamp.
-  return itemUnits / 100; // 1500 units will give you 15.
+  return itemUnits / 25; // 100; // 1500 units will give you 15.
 }
 
 void Obj::burnUnits(int units) {

@@ -225,6 +225,8 @@ public:
 
   virtual int digStrength();
 
+  void dashboard();
+
   static PlayerMob* ply;
   static int distPly(CPoint p); // raw/true calc. (square)
   static int distPlyLight(CPoint p); // light-adjusted
