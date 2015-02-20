@@ -15,7 +15,7 @@
 #include "Bag.h"
 #include "Term.h"
 
-//#include "Mob.h"
+#include "MobQueue.h"
 
 
 #ifdef _DEBUG

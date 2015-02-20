@@ -87,6 +87,9 @@
     <ClInclude Include="term.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MobQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="term.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MobQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

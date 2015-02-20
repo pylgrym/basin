@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "numutil/myrnd.h"
 
 class Stat {
 public:
@@ -70,6 +71,14 @@ public:
   }
 
   void heal(int percent);
+
+  void recoverHP() { // Randomized healing.
+    int frac = maxHP / 10;
+    int inst = rnd(frac / 2, frac+ frac/2);
+    int newHP = hp + inst;
+    if (newHP > maxHP) { newHP = maxHP;  }
+    hp = newHP;
+  }
 
   void passTime();
   void updateHunger();

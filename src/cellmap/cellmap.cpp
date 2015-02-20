@@ -9,6 +9,8 @@
 
 #include "Bag.h"
 
+#include "../MobQueue.h"
+
 void Map::addRandomMob() {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));

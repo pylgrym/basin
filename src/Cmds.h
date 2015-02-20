@@ -367,7 +367,7 @@ public:
     if (mob.stats.hp < mob.stats.maxHP) {
       bool chance = oneIn(6);
       if (chance) { 
-        ++mob.stats.hp; 
+        mob.recoverHP(); // ++mob.stats.hp;
         mob.invalidateGfx();
         logstr log;
         log << "You regain some health!";

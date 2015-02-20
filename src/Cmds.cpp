@@ -3,6 +3,8 @@
 
 #include "LogEvents.h"
 
+#include "MobQueue.h"
+
 /* Todos: 
  - "DONE" a dashboard on the right or bottom, with stats (or just a command to print them?)
    (Q will show current stats.)
