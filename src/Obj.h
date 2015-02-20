@@ -111,7 +111,7 @@ public:
   }
 
   void initRandom() { // FIXME - clear should not init.
-    charges = rnd(-1,3); 
+    charges = rnd(-1, 7); // 3);
     consumed = oneIn(2); // true;
     toHit = rndC(-2, 5);
     toDmg = rndC(-2, 6);

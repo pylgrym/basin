@@ -13,7 +13,7 @@ typedef std::vector<Obj*> BagCont;
 class Bag
 {
 public:
-  enum BagEnum { MaxBagSize = 10 };
+  enum BagEnum { MaxBagSize = 15 }; //  10}; - 10 is too few..
 
   BagCont objs; // FIXME, change to vector, change 'add' to append!
 

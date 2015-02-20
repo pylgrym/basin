@@ -340,6 +340,31 @@ public:
 
 
 
+class ExamineCmd : public Cmd {
+public:
+  CPoint tgt;
+  Mob& mob;
+
+  ExamineCmd(Mob& mob_):mob(mob_) {
+    tgt = mob.pos;
+  }
+
+  virtual bool Do(std::ostream& err) {  
+    if (!Cmd::Do(err)) { return false; }
+
+    debstr() << "doing examine item-command.\n";
+    Obj* obj = Bag::bag.pick("  Examine what?");
+    if (obj == NULL) { return false;  }
+
+    logstr log; 
+    log << "Charges:" << obj->charges;
+    log << ", perish:" << obj->consumed;
+    log << ", units:" << obj->itemUnits;
+    return true; 
+  }
+};
+
+
 
 class ShowEventsCmd : public Cmd {
 public:
