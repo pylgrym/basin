@@ -58,6 +58,28 @@ void Map::scatterObjsAtPos(CPoint pos, int n) {
 
 Map::Map() {}
 
+
+/* maze fixmes, todo:
+ - maze generator classifications of cell types are  a mess,
+ it's internal 'stage' graph-colouring flags;
+which is not even coherent between first 'perfect-maze'
+and second 'fill-in deadends' stages.
+
+Further, same classifications end up a mess in the Environment categories,
+and similarly, they don't play well with the digging code either.
+So far, they've only been 'handled' in the 'iscellblocked' code.
+  Further, same messy categories, make the TILE DRAWING a mess (unclear cell types,
+and unnecessary even-odd tile effects (because of cell/door grid.) 
+
+Also, the entire thing is a bit slow, in light of wanting to have quick load-cycles;
+can partially be solved by smaller maze.
+in particular, 'fill-deadends' approach is a bit messy - 
+instead of repeated scans, I should probably just fill based on 'found seeds'(?)
+
+Also, treasure in veins should be impl!
+*/
+
+
 void Map::initWorld() {
 
   Laby laby(Map::Width); // 101); // 51); // 101);
@@ -94,6 +116,14 @@ void Map::initWorld() {
         }
 
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
+
+        if (etype == EN_Vein) {
+          bool hasThing = oneIn(4);
+          if (hasThing) {
+            ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
+            cell.item.setObj(new Obj(otype));
+          }
+        }
 
         if (!isWall) {
           bool hasThing = oneIn(9);  

@@ -96,7 +96,7 @@ void Laby::combine() {
   }
   thinnedMaze(mainThin); // 5); // 20); // 20 here, 120 there, is good.. ( but slow.)
 
-  bool doVeins = false;
+  bool doVeins = false; // true; // false;
   if (doVeins) { // Build an extra maze, to use as 'mineral veins':
     Laby veins(Side); veins.thinnedMaze(veinThin); // 5); // 120);
     addVeins(veins);
