@@ -6,6 +6,15 @@ enum EnvirEnum {
   EN_Floor=0,
   EN_Wall=1,
   EN_Border=2,
+
+  EN_Unv,
+  EN_Vis,
+  //EN_Wall,
+  EN_Wall1,
+  EN_Wall2,
+  EN_Open,
+  EN_Open2,
+  EN_Vein,
   EN_MaxLimit // highest nr to size arrays.
 };
 

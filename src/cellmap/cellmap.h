@@ -60,7 +60,7 @@ public:
 class Map {
 public:
   enum MapConst { 
-    Width = 100, //48, //16, 
+    Width = 101, //100, //48, //16, 
     Height = CellColumn::Height 
   };
 private:

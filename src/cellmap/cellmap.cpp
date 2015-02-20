@@ -11,6 +11,9 @@
 
 #include "../MobQueue.h"
 
+#include "DungGen1.h"
+
+
 void Map::addRandomMob() {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
@@ -57,6 +60,10 @@ Map::Map() {}
 
 void Map::initWorld() {
 
+  Laby laby(Map::Width); // 101); // 51); // 101);
+  laby.combine(); //  buildAll(); // dc);
+
+
   // Create floor/environ.
   for (int x = 0; x < Width; ++x) {
     CellColumn& column = (*this)[x];
@@ -65,8 +72,28 @@ void Map::initWorld() {
       if (x == 0 || y == 1 || x == Width - 1 || y == Height - 1) { // The outer border.
         cell.envir.type = EN_Border;
       } else { // Inside-area:
-        bool isWall = oneIn(3);  
-        cell.envir.type = (isWall ? EN_Wall : EN_Floor);
+        CPoint p(x, y);
+
+        EnvirEnum etype = EN_Floor;
+        bool isWall = laby.grid[p].isWall(); // oneIn(3);
+        switch (laby.grid[p].c) {
+
+          // This is 'original wall': (of labyrinth - before we start filling tunnels.)
+        case M_Unvisited: etype = EN_Unv;  break;
+
+          // These two are used to fill tunnels:
+        case M_Wall:    etype = EN_Wall1;  break;
+        case M_Wall_H:  etype = EN_Wall2;  break;
+
+          // These two are open space:
+        case M_Visited: etype = EN_Vis;  break;
+        case M_Open:    etype = EN_Open;   break;
+
+        case M_OpenB:   etype = EN_Open2; break; // JG: confused if ever used? will look like cobweb.
+        case M_Vein:    etype = EN_Vein;  break; 
+        }
+
+        cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
 
         if (!isWall) {
           bool hasThing = oneIn(9);  
@@ -132,8 +159,12 @@ void Map::initPlayer() { // JG, FIXME: All this shouldn't really clutter Map/Cel
   std::stringstream ignore;
   Bag::bag.add(new Obj(OB_Hat),ignore);
   Bag::bag.add(new Obj(OB_Sword),ignore);
+
   // Bag::bag.add(new Obj(OB_Gold),ignore);
-  Bag::bag.add(new Obj(OB_Lamp),ignore);
+  Obj* firstLamp = new Obj(OB_Lamp);
+  firstLamp->itemUnits = 3700;
+  Bag::bag.add(firstLamp,ignore);
+
   Bag::bag.add(new Obj(OB_Hat),ignore);
 
   Bag::bag.add(new Obj(OB_Potion),ignore);

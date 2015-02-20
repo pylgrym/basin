@@ -90,6 +90,9 @@
     <ClInclude Include="MobQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DungGen1.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -153,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MobQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DungGen1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

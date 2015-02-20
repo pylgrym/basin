@@ -111,6 +111,7 @@
     <ClInclude Include="Cmds.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="Cuss.h" />
+    <ClInclude Include="DungGen1.h" />
     <ClInclude Include="Envir.h" />
     <ClInclude Include="Equ.h" />
     <ClInclude Include="LogEvents.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="Cmds.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Cuss.cpp" />
+    <ClCompile Include="DungGen1.cpp" />
     <ClCompile Include="Envir.cpp" />
     <ClCompile Include="Equ.cpp" />
     <ClCompile Include="LogEvents.cpp" />
