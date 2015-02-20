@@ -33,7 +33,11 @@ void Map::addObjAtPos(CPoint pos) {
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
   ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-  cell.item.setObj(new Obj(otype));
+  Obj* newObj = new Obj(otype);
+  if (otype == OB_Lamp) {
+    newObj->itemUnits += rnd(500, 2500);
+  }
+  cell.item.setObj(newObj);
 }
 
 void Map::scatterObjsAtPos(CPoint pos, int n) {

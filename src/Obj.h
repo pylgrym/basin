@@ -47,6 +47,9 @@ enum ObjEnum {
   OB_Emeralds=32,
   OB_Amethysts=33,
   OB_Gems=34,
+  OB_LampOil=35, // FIXME/TODO: make item to refuel lamp!
+  // Idea: Make a 'wonder' lamp that will 'lightning-flicker' once in a while, temporarily revealing bigger map.
+  // Idea: light/lamps that colour the dungeon with coloured light, for flavor.
   OB_MaxLimit // highest nr to size arrays.
 };
 

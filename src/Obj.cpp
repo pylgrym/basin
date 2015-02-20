@@ -6,19 +6,33 @@
 
 #include "util/debstr.h"
 
+bool IsVowel(TCHAR c) {
+  CString vowels = L"aeiouy";
+  int pos = vowels.Find(c);
+  return (pos >= 0);
+}
+
 std::string Obj::an_item() const {
   CString s = some_item();
-  s.Replace(L".", L"a"); // FIXME - a/an for vowels..
+  TCHAR first = s[2];
+  bool isVowel = IsVowel(first);
+  if (isVowel) {
+    s.Replace(L".", L"an"); // a/an for vowels..
+  } else {
+    s.Replace(L".", L"a"); // a/an for vowels..
+  }
+
+  s.Replace(L"-", L"some"); // FIXME - a/an for vowels..
   return std::string(CT2A(s));
 }
 
 std::string Obj::the_item() const {
   CString s = some_item();
-  s.Replace(L".", L"the"); // FIXME - a/an for vowels..
+  s.Replace(L".", L"the");  
   return std::string(CT2A(s));
 }
 
-std::string Obj::indef_item() const {
+std::string Obj::indef_item() const { 
   CString s = some_item();
   s.Replace(L".", L"");  
   return std::string(CT2A(s));
@@ -49,21 +63,21 @@ ObjDef objDefs[] = {
 {OB_Lamp,      EQ_None,    ". lamp"}, 
 {OB_Sword,     EQ_MainHand,". sword"}, 
 {OB_Hat,       EQ_Head,    ". hat"}, 
-{OB_Gold,      EQ_None,    ". gold"},
+{OB_Gold,      EQ_None,    "- gold"},
 {OB_Potion,    EQ_None,    ". potion"},
 {OB_Scroll,    EQ_None,    ". scroll"},
 {OB_Staff,     EQ_None,    ". staff"},
 {OB_Wand,      EQ_None,    ". wand"},
 {OB_Amulet,    EQ_Neck,    ". amulet"},
-{OB_Food,      EQ_None,    ". food"},
+{OB_Food,      EQ_None,    "- food"},
 {OB_Mushroom,  EQ_None,    ". mushroom"},
 {OB_Shield,    EQ_OffHand, ". shield"},
 {OB_Ring,      EQ_FingerLeft,". ring"}, // FIXME, rings can be worn both left and right.
 {OB_Cloak,     EQ_Back,    ". cloak"},
-{OB_Water,     EQ_None,    ". water"},
+{OB_Water,     EQ_None,    "- water"},
 {OB_Bandage,   EQ_None,    ". bandage"},
 {OB_Helmet,    EQ_Head,    ". helmet"},
-{OB_ChestArmor,EQ_Chest,   ". chest armor"},
+{OB_ChestArmor,EQ_Chest,   ". breastplate"},
 {OB_SpellBook, EQ_None,    ". spell book"},
 {OB_Key,       EQ_None,    ". key"},
 {OB_Candle,    EQ_None,    ". candle"},
@@ -80,6 +94,7 @@ ObjDef objDefs[] = {
 {OB_Emeralds,  EQ_None,    ". emerald"},
 {OB_Amethysts, EQ_None,    ". amethyst"},
 {OB_Gems,      EQ_None,    ". gem"},
+{OB_LampOil,   EQ_None,    "- lamp oil"}, // Make &/! for a / some.
 };
 
 
@@ -128,6 +143,7 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_Emeralds] = L"emeralds";
     thingKeys[OB_Amethysts] = L"amethysts";
     thingKeys[OB_Gems] = L"gem";
+    thingKeys[OB_LampOil] = L"oil";
   }
 
   if (type < 0 || type >= (int) thingKeys.size()) { return L"out of bounds, thing enum.";  }

@@ -278,23 +278,30 @@ void CChildView::OnPaint() {
         dc.SetTextColor(RGB(255, 255, 255)); // WHITE.
 		    cellR.OffsetRect(-1, -1); dc.DrawText(s, &cellR, fontFlags);
 
-        // Draw level upper right:
-        const int upperRightFlags = DT_RIGHT | DT_TOP | DT_SINGLELINE;
-        dc.SetTextColor(RGB(0,255,0)); // RGB(0, 0, 255)); // RED.
-        s.Format(L"%dL", mob->stats.level());
-		    dc.DrawText(s, &cellR,  upperRightFlags);
+        if (false) {
+          // Draw level upper right:
+          const int upperRightFlags = DT_RIGHT | DT_TOP | DT_SINGLELINE;
+          dc.SetTextColor(RGB(0, 255, 0)); // RGB(0, 0, 255)); // RED.
+          s.Format(L"%dL", mob->stats.level());
+          dc.DrawText(s, &cellR, upperRightFlags);
+        }
 
-        // Draw str upper left:
-        const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
-        dc.SetTextColor(RGB(255,0,0)); //strength is red.
-        s.Format(L"%d", mob->stats.Str.v);
-		    dc.DrawText(s, &cellR,  upperLeftFlags);
 
-        // Draw dex lower left:
-        const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
-        dc.SetTextColor(RGB(0,0,255)); // dex is blue.
-        s.Format(L"%d", mob->stats.Dex.v);
-		    dc.DrawText(s, &cellR,  lowerLeftFlags);
+        if (false) {
+          // Draw str upper left:
+          const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
+          dc.SetTextColor(RGB(255, 0, 0)); //strength is red.
+          s.Format(L"%d", mob->stats.Str.v);
+          dc.DrawText(s, &cellR, upperLeftFlags);
+        }
+
+        if (false) {
+          // Draw dex lower left:
+          const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
+          dc.SetTextColor(RGB(0,0,255)); // dex is blue.
+          s.Format(L"%d", mob->stats.Dex.v);
+		      dc.DrawText(s, &cellR,  lowerLeftFlags);
+        }
       }
 
       if (!cell.hasOverlay()) { 
