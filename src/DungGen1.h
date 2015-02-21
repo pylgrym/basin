@@ -13,12 +13,9 @@ public:
 
 
 enum MarkEnum {
-  M_Unvisited = 0,
+  
   M_Wall = 1,
   M_Open = 2,
-  M_Wall_H = 3,
-  M_OpenB = 4,
-  M_Visited = 5,
   M_Vein = 6
 };
 
@@ -29,19 +26,16 @@ public:
   MarkEnum c;
   int count;
   Mark() {
-    c = M_Unvisited;
+    c = M_Wall;
     count = -1;
   }
 
-  bool visited() const { return c != M_Unvisited; }
-
-  bool blocked() const { return c == M_Wall || c == M_Wall_H || c == M_Unvisited; }
+  bool visited() const { return c != M_Wall; } 
+  bool blocked() const { return c == M_Wall; } 
   void occupyMark(MarkEnum id) { c = id; }
 
   bool isWall() { 
-    // return !(c == M_Open || c == M_OpenB);
-
-    return (c == M_Wall || c == M_Wall_H || c == M_Unvisited); 
+    return (c == M_Wall); 
   }
 
   void makeVein() { c = M_Vein;  }
@@ -55,7 +49,7 @@ int rnd(int n1, int n2); // { return n1 + rand() % (n2 - n1); }
 
 
 struct Pool : public std::vector < CPoint > {
-  void Push(CPoint p) { push_back(p); } // push(p);
+  void Push(CPoint p) { push_back(p); } 
   bool Empty() const { return empty(); }
   int Size() { return size(); }
   CPoint Item(int ix) { return operator [] (ix); }
@@ -74,7 +68,6 @@ struct Grid {
 
   std::vector< std::vector< Mark > > cells;
   int Side;
-  // Mark cells[Side][Side];
 
   Mark& operator [] (CPoint p) { return cell(p); }
 
@@ -94,10 +87,6 @@ struct Laby {
   Laby(int side_) :Side(side_), grid(side_) {}
 
   const int Side;
-  enum Consts {
-    // Side = 101 //31 // 101 // 130, 
-    // Count = 40 // 200
-  };
 
   Grid grid;
 
@@ -113,14 +102,14 @@ struct Laby {
     if (p.x < 1 || p.y < 1 || p.x >= Side - 1 || p.y >= Side - 1) {
       return true;
     }
-    return grid[p].visited(); // cells[p.x][p.y].visited();
+    return grid[p].visited(); 
   }
 
   bool isBlocked(CPoint p) { // Cell-wise, reverse of original
     if (p.x < 1 || p.y < 1 || p.x >= Side - 1 || p.y >= Side - 1) {
       return true;
     }
-    return grid[p].blocked(); // cells[p.x][p.y].blocked();
+    return grid[p].blocked(); 
   }
 
 
@@ -157,7 +146,7 @@ struct Laby {
     for (int x = r.left; x <= r.right; ++x) {
       for (int y = r.top; y <= r.bottom; ++y) {
         CPoint p(x, y);
-        grid[p].c = M_Open; // FIXME, doorways and visited mix strangely.
+        grid[p].c = M_Open; 
       }
     }
   }
@@ -179,7 +168,7 @@ struct Laby {
       CPoint dir = doors[0];
       CPoint hall = p + dir;
       CPoint room = p;
-      grid[hall].c = M_Wall_H;
+      grid[hall].c = M_Wall;
       grid[room].c = M_Wall;
     }
   }

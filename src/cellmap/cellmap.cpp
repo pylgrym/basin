@@ -101,17 +101,17 @@ void Map::initWorld() {
         switch (laby.grid[p].c) {
 
           // This is 'original wall': (of labyrinth - before we start filling tunnels.)
-        case M_Unvisited: etype = EN_Unv;  break;
+        case M_Wall: etype = EN_Wall;  break; // M_Unvisited
 
           // These two are used to fill tunnels:
-        case M_Wall:    etype = EN_Wall1;  break;
-        case M_Wall_H:  etype = EN_Wall2;  break;
+        //case M_Wall:    etype = EN_Wall1;  break;
+        //case M_Wall_H:  etype = EN_Wall2;  break;
 
           // These two are open space:
-        case M_Visited: etype = EN_Vis;  break;
-        case M_Open:    etype = EN_Open;   break;
+        //case M_Visited: etype = EN_Vis;  break; now M_Open
+        case M_Open:    etype = EN_Floor;   break;
 
-        case M_OpenB:   etype = EN_Open2; break; // JG: confused if ever used? will look like cobweb.
+        //case M_OpenB:   etype = EN_Open2; break; // JG: confused if ever used? will look like cobweb.
         case M_Vein:    etype = EN_Vein;  break; 
         }
 

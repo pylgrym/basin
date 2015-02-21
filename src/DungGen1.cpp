@@ -2,8 +2,8 @@
 #include "DungGen1.h"
 
 
-DungGen1::DungGen1() {}
-DungGen1::~DungGen1(){}
+DungGen1::DungGen1()  {}
+DungGen1::~DungGen1() {}
 
 
 
@@ -28,14 +28,14 @@ CPoint dirs[4] = { // index of the 4 cardinal directions:
 
 
 
-void Laby::buildMaze() { // CDC& dc) {
+void Laby::buildMaze() { 
   Pool pool;  // pool of active cells
 
   for (int i = 0; i < 1; ++i) {
-    CPoint seed(rnd(1, Side / 2) * 2 + 1, rnd(1, Side / 2) * 2 + 1); // Side / 2, Side / 2);
+    CPoint seed(rnd(1, Side / 2) * 2 + 1, rnd(1, Side / 2) * 2 + 1);
     if (isVisited(seed)) { continue; }
     pool.Push(seed); // add a seed cell to the pool.    
-    grid[seed].c = M_Visited; // Now taken.
+    grid[seed].c = M_Open; // Now taken.
   }
 
   while (!pool.Empty()) {
@@ -54,8 +54,8 @@ void Laby::buildMaze() { // CDC& dc) {
     } // for dirs.
 
     if (options_count == 0) {
-      if (pool.Size() > 1) { // If more than one left, swap dead with last
-        pool[ix] = pool.back(); // pool.Pop();
+      if (pool.Size() > 1) { // If more than one left, swap dead with last:
+        pool[ix] = pool.back(); 
       }
       pool.resize(pool.Size() - 1);
       continue;
@@ -66,9 +66,9 @@ void Laby::buildMaze() { // CDC& dc) {
     CPoint choice = p + dir + dir;
 
     pool.Push(choice);
-    // mark in cells.
+    // mark in cells:
     grid[p + dir].c = M_Open; // Now taken. (the doorway.)        
-    grid[choice].c = M_Visited; // Now taken. (the next room.)
+    grid[choice].c  = M_Open; // Now taken. (the next room.)
 
     // Draw from p to choice.
     // dc.MoveTo(scale(p));
@@ -134,7 +134,7 @@ bool Laby::veinTrigger(CPoint self)   {
 
 
 bool Mark::veinCat(MarkEnum m)  {
-  if (m == M_OpenB || m == M_Open) { return true; }
+  if (m == M_Open) { return true; }
   return false;
 }
 
@@ -145,14 +145,8 @@ void Laby::drawCell(CPoint p, Mark& m, CDC& dc) {
   CRect r(z, s);
   COLORREF c = RGB(0, 255, 0);
   switch (m.c) {
-  case M_Unvisited: c = RGB(0, 0, 128); break; // wall
-
+  case M_Wall: c = RGB(0, 0, 128); break; // wall // was M_Unvisited
   case M_Open: c = RGB(170, 170, 170); break; // open hallway.
-  case M_Visited: c = RGB(160, 130, 80); break; // room.
-
-  case M_Wall: c = RGB(20, 20, 170); // 120, 120, 120); break; // filled-in room.
-  case M_Wall_H: c = RGB(0, 0, 255); break;   // filled-in hall.
-
   case M_Vein: c = RGB(255, 20, 0); break; // mineral wall/rock.
   }
   CBrush brush(c); // m.c == 1 ? RGB(199, 199, 199) : RGB(0, 0, 64));
