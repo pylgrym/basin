@@ -134,12 +134,12 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_Rune] = L"rune";
 
     // I wish to switch from this to ObjDef system.
-    thingKeys[OB_Gloves] = L"glovey";
+    thingKeys[OB_Gloves] = L"gloves";
     thingKeys[OB_Wrists] = L"bracers";
-    thingKeys[OB_Belt] = L"beltey";
+    thingKeys[OB_Belt] = L"belt";
     thingKeys[OB_Leggings] = L"leggings";
     thingKeys[OB_Boots] = L"boots";
-    thingKeys[OB_Pickaxe] = L"pickaxey";
+    thingKeys[OB_Pickaxe] = L"pickaxe";
     thingKeys[OB_Emeralds] = L"emeralds";
     thingKeys[OB_Amethysts] = L"amethysts";
     thingKeys[OB_Gems] = L"gem";
