@@ -71,14 +71,17 @@ public:
   EquipSlotEnum eqslot;
   int weight; // tenths of kilos, 100g.
   int itemUnits; // food'charges', light'charges', gold 'charges', etc.
+  int ac; // armour item armour class.
 
   virtual ObjEnum otype() const { return type; }
 
-  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0),itemUnits(0),level(0) { clear(); }
 
-  Obj(ObjEnum type_, int level_) :type(type_), level(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0) {
+  Obj():type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), level(0), ac(1) { clear(); }
+
+
+  Obj(ObjEnum type_, int level_) :type(type_), level(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0),ac(1) {
+
     effect = Spell::rndSpell();
-
     const ObjDef& desc = Obj::objDesc(type);
     if (desc.eqtype != EQ_None) {
       eqslot = desc.eqtype; // Equ::rndSlot();
@@ -120,6 +123,24 @@ public:
     dmgDice = Dice(rndC(1, 4), rndC(2, 12));
     weight = rnd(1, 50);
     itemUnits = rnd(20, 400);
+  }
+
+  void setTypeDefaults() {
+    switch (otype()) {
+      // Edible stuff and similar, have ONE charge and is consumed on use:
+    case OB_Potion: case OB_Scroll: case OB_Water: case OB_Bandage: case OB_Food: case OB_Mushroom: case OB_LampOil:
+      this->charges = 1;
+      this->consumed = true;
+
+    case OB_Staff: case OB_Wand:
+      this->consumed = false; // 'chargey' items are not consumed on use-up, so far.
+      this->charges = rnd(0,16);
+    }
+
+    if (eqslot != EQ_None) { // try-out hack:
+      ac = rnd(1, 7);
+    }
+
   }
 
   // BEGIN BEHAVIOUR
