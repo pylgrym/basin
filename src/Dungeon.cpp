@@ -48,7 +48,7 @@ void Dungeon::initMobs() {
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 
-    Mob* monster = new MonsterMob(this->level);
+    Mob* monster = new MonsterMob( rndC( level, this->level+2 ) );
     map.moveMob(*monster, monster->pos);
     mobs.queueMob(monster, 1);
   }

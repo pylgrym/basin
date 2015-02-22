@@ -82,7 +82,9 @@ Stats::Stats(int mlevel)
 
    https://klubkev.org/~ksulliva/ralph/dnd-stats.html
   */
-  setLevel(rnd(1, 30)); 
+
+  // setLevel(rnd(1, 30)); 
+
   debstr() << " level is:" << level() << "\n";
   // for (int i = 1; i < level; ++i) { } // For filling up hit points.
   maxHP = calcMaxHP();
