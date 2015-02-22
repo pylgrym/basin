@@ -87,6 +87,13 @@ public:
   void addRandomObj(int level);
   void addObjAtPos(CPoint pos, int level);
   void scatterObjsAtPos(CPoint pos, int n, int level);
+
+
+  void addStairs();
+  void addStair(EnvirEnum type);
+  CPoint findFreeEnvir(EnvirEnum type);
+  CPoint findNextEnvir(CPoint start, EnvirEnum type);
+
 };
 
 

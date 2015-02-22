@@ -34,10 +34,10 @@ enum ObjEnum {
   OB_Key=20,
   OB_Candle=21,
   OB_Trap=22,
-  OB_StairUp=23,
-  OB_StairDown=24,
-  OB_Rune=25,
+  OB_Gems = 23,
+  OB_LampOil = 24, // FIXME/TODO: make item to refuel lamp!
 
+  OB_Rune=25,
   OB_Gloves=26,
   OB_Wrists=27,
   OB_Belt=28,
@@ -46,8 +46,9 @@ enum ObjEnum {
   OB_Pickaxe=31,
   OB_Emeralds=32,
   OB_Amethysts=33,
-  OB_Gems=34,
-  OB_LampOil=35, // FIXME/TODO: make item to refuel lamp!
+  /// OB_StairUp = 34,
+  /// OB_StairDown = 35,
+
   // Idea: Make a 'wonder' lamp that will 'lightning-flicker' once in a while, temporarily revealing bigger map.
   // Idea: light/lamps that colour the dungeon with coloured light, for flavor.
   OB_MaxLimit // highest nr to size arrays.

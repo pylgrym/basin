@@ -63,6 +63,7 @@ Stats::Stats(int mlevel)
 ,hunger(1500)
 ,confused(0)
 ,gold(0)
+, xp(0)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -87,12 +88,40 @@ Stats::Stats(int mlevel)
 
   debstr() << " level is:" << level() << "\n";
   // for (int i = 1; i < level; ++i) { } // For filling up hit points.
+  calcStats();
+
+  initXP();
+}
+
+
+void Stats::calcStats() {
   maxHP = calcMaxHP();
   hp = maxHP;
   ac = calcAC();
 
   std::stringstream dummy;
   toHit = calcToHit(dummy);
+}
+
+void Stats::initXP() {
+  const int XpLevelScale = 10;
+  xpToLevel = level() * XpLevelScale;
+}
+
+void Stats::gainKillXP(int mobLevel) {
+  logstr log; log << "You gain " << mobLevel << " xp.";
+  xp += mobLevel;
+  if (xp >= xpToLevel) {
+    gainLevel();
+  }
+}
+
+void Stats::gainLevel() {
+  int remainder = xp - xpToLevel;
+  theLevel += 1;
+  calcStats();
+  initXP();
+  logstr log; log << "You have gained a level!";
 }
 
 int Stats::calcAC() {

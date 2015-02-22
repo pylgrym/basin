@@ -7,6 +7,8 @@ enum EnvirEnum {
   EN_Wall=1,
   EN_Border=2,
   EN_Vein=3,
+  EN_StairUp = 4,
+  EN_StairDown = 5,
   EN_MaxLimit // highest nr to size arrays.
 };
 

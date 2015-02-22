@@ -145,6 +145,10 @@ bool HitCmd::Do(std::ostream& err) {
 
   // mob should die if killed:
   if (hittee->isDead()) {
+    if (isPlayer) {
+      PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
+    }
+
     bool bLoot = oneIn(2);
     if (bLoot) {
       CL->map.addObjAtPos(hittee->pos,CL->level);
@@ -164,16 +168,6 @@ bool HitCmd::Do(std::ostream& err) {
 
 
 
-CPoint Map::key2dir(char nChar) {
-  int dx = 0, dy = 0;
-  // determine movement:
-  switch (nChar) { case VK_RIGHT:  case 'L': case 'U': case 'N': dx = 1;  }
-  switch (nChar) { case VK_LEFT:   case 'H': case 'Y': case 'B': dx = -1; } 
-  switch (nChar) { case VK_DOWN:   case 'J': case 'B': case 'N': dy = 1;  } 
-  switch (nChar) { case VK_UP:     case 'K': case 'Y': case 'U': dy = -1; } 
-  CPoint dir(dx, dy);
-  return dir;
-}
 
 
 bool ZapCmd::Do(std::ostream& err) {  
@@ -320,4 +314,39 @@ bool DigCmd::Do(std::ostream& err) {
 
   debstr() << "Digged through the wall.\n";
   return true; 
+}
+
+
+
+bool StairCmd::Do(std::ostream& err) {
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "walking stairs.\n";
+  int dir = 0;
+  if (etype == EN_StairDown) { dir = 1; }
+  if (etype == EN_StairUp) { dir = -1; }
+  PlayerMob* ply = PlayerMob::ply;
+  int newDungLevel = ply->dungLevel + dir;
+  if (newDungLevel < 0) {
+    logstr log; log << "The stairs collapse as you try to ascend them.";
+    return false;
+  }
+  ply->dungLevel = newDungLevel;
+  Dungeons::setCurLevel(newDungLevel);
+
+  /* fixme/consider: player pos should actually be matched to some stairs in this other level!
+  in particular, we risk putting him in the middle of rock! 
+  */
+  EnvirEnum oppo = (dir > 0 ? EN_StairUp : EN_StairDown);
+  CPoint newPos = CL->map.findNextEnvir(ply->pos, oppo);
+  if (newPos.x >= 0) {
+    CL->map.moveMob(*ply, newPos);
+  }
+
+  logstr log; log << "You ";
+  if (dir > 0) { log << "descend"; } else  { log << "ascend"; }
+  log << " to depth level " << newDungLevel;
+
+  Cuss::clear(true);
+  return true;
 }

@@ -129,6 +129,22 @@ public:
 };
 
 
+class StairCmd : public Cmd {
+public:
+  Mob& mob;
+  EnvirEnum etype;
+  StairCmd(Mob& mob_) :mob(mob_) { etype = CL->map[mob.pos].envir.type; }
+  virtual bool silent() const { return !mob.isPlayer(); } 
+
+  virtual bool legal(std::ostream& err) {
+    if (etype != EN_StairDown && etype != EN_StairUp) { err << "There are no stairs here.\n";  return false; }
+    return true;
+  }
+
+  virtual bool Do(std::ostream& err);
+};
+
+
 
 class TakeCmd : public Cmd {
 public:

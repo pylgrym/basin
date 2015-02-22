@@ -82,9 +82,9 @@ ObjDef objDefs[] = {
 {OB_Key,       EQ_None,    ". key"},
 {OB_Candle,    EQ_None,    ". candle"},
 {OB_Trap,      EQ_None,    ". trap"},
-{OB_StairUp,   EQ_None,    ". stair up"},
-{OB_StairDown, EQ_None,    ". stair down"},
-{OB_Rune,      EQ_None,    ". rune"},
+{OB_Gems,      EQ_None,    ". gem" },
+{OB_LampOil,   EQ_None,    "- lamp oil" }, // Make &/! for a / some.
+{OB_Rune,      EQ_None,    ". rune" },
 {OB_Gloves,    EQ_Hands,   ". pair of gloves" },      // Gauntlets/gloves
 {OB_Wrists,    EQ_Wrists,  ". pair of bracers"},     // bracers
 {OB_Belt,      EQ_Waist,   ". belt"},                 //,=11,      // belt
@@ -93,8 +93,6 @@ ObjDef objDefs[] = {
 {OB_Pickaxe,   EQ_2Hands,  ". pickaxe"},
 {OB_Emeralds,  EQ_None,    ". emerald"},
 {OB_Amethysts, EQ_None,    ". amethyst"},
-{OB_Gems,      EQ_None,    ". gem"},
-{OB_LampOil,   EQ_None,    "- lamp oil"}, // Make &/! for a / some.
 };
 
 
@@ -129,8 +127,8 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_Key] = L"key";
     thingKeys[OB_Candle] = L"candle";
     thingKeys[OB_Trap] = L"trap";
-    thingKeys[OB_StairUp] = L"stairup";
-    thingKeys[OB_StairDown] = L"stairdown";
+    thingKeys[OB_Gems] = L"gem";
+    thingKeys[OB_LampOil] = L"oil";
     thingKeys[OB_Rune] = L"rune";
 
     // I wish to switch from this to ObjDef system.
@@ -142,8 +140,6 @@ const TCHAR* Obj::typeAsStr(ObjEnum type) {
     thingKeys[OB_Pickaxe] = L"pickaxe";
     thingKeys[OB_Emeralds] = L"emeralds";
     thingKeys[OB_Amethysts] = L"amethysts";
-    thingKeys[OB_Gems] = L"gem";
-    thingKeys[OB_LampOil] = L"oil";
   }
 
   if (type < 0 || type >= (int) thingKeys.size()) { return L"out of bounds, thing enum.";  }

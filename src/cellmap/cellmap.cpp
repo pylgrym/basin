@@ -143,11 +143,69 @@ void Map::initWorld(int level) {
       }
     }
   } // for x/ create floor.   
+
+  addStairs();
+}
+
+void Map::addStairs() {
+  int numStairs = 3;
+  for (int i = 0; i < numStairs; ++i) {
+    addStair(EN_StairDown);
+    addStair(EN_StairUp);
+  }
+}
+
+void Map::addStair(EnvirEnum type) {
+  CPoint stairPos = findFreeEnvir(EN_Floor);
+  if (stairPos.x < 0) { return;  } // give up.
+  Cell& stairCell = (*this)[stairPos];
+  stairCell.envir.type = type;
+}
+
+CPoint Map::findFreeEnvir(EnvirEnum type) {
+  const int limit = 100;
+  for (int i = 0; i < limit; ++i) {
+    CPoint cand(rnd(1,Map::Width-1), rnd(1,Map::Height-1));
+    if ((*this)[cand].envir.type == type) { return cand; }
+  }
+  CPoint notFound(-1, 1);
+  return notFound;
 }
 
 
 
+CPoint Map::findNextEnvir(CPoint start, EnvirEnum type) {
+  for (CPoint pos = start;;) { // (endless loop)
+    ++pos.x;
+    if (pos.x >= Map::Width) {
+      pos.x = 0;
+      ++pos.y;
+      if (pos.y >= Map::Height) {
+        pos.y = 0;
+      }
+    }
+    Cell& c = (*this)[pos];
+    if (c.envir.type == type) { return pos; }
+    if (pos == start) { 
+      CPoint notFound(-1, -1);
+      return notFound;
+    }
+  }
 
+  return CPoint(-1, -1);
+}
+
+
+CPoint Map::key2dir(char nChar) {
+  int dx = 0, dy = 0;
+  // determine movement:
+  switch (nChar) { case VK_RIGHT:  case 'L': case 'U': case 'N': dx = 1; }
+  switch (nChar) { case VK_LEFT:   case 'H': case 'Y': case 'B': dx = -1; }
+  switch (nChar) { case VK_DOWN:   case 'J': case 'B': case 'N': dy = 1; }
+  switch (nChar) { case VK_UP:     case 'K': case 'Y': case 'U': dy = -1; }
+  CPoint dir(dx, dy);
+  return dir;
+}
 
 
 //Map Map::map; // CL->map;

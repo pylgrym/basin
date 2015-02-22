@@ -44,9 +44,13 @@ public:
   void setLevel(int level_);
   int level() const { return theLevel;  }
 
+  void calcStats();
+
   enum StatEnums { HitDie = 5};
   int maxHP;
   int hp;
+  int xp;
+  int xpToLevel;
   //int baseHP; 
   // std::vector<int> hp_rolls; 
   int ac;
@@ -85,6 +89,10 @@ public:
   void updateConfusion();
 
   void showStats();
+
+  void initXP();
+  void gainKillXP(int mobLevel);
+  void gainLevel();
 
   // static Stats stats;
   static int statModifyEffect[18 + 1];

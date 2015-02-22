@@ -44,6 +44,12 @@ const TCHAR* Envir::typeAsStr(EnvirEnum type) {
     envirKeys[EN_Floor] = L"."; // floor";
     envirKeys[EN_Wall] = L"#"; // wall";
     envirKeys[EN_Border] = L"border"; // @"; // border";
+    envirKeys[EN_Vein] = L"vein"; //
+    envirKeys[EN_StairUp] = L"stairup";
+    envirKeys[EN_StairDown] = L"stairdown";
+
+    /// {OB_StairUp, EQ_None, ". stair up"},
+    /// { OB_StairDown, EQ_None, ". stair down" },
 
     //envirKeys[EN_Unv]   = L"unv"; //
     //envirKeys[EN_Vis]   = L"vis"; //
@@ -51,7 +57,7 @@ const TCHAR* Envir::typeAsStr(EnvirEnum type) {
     //envirKeys[EN_Wall2] = L"wall2"; //
     //envirKeys[EN_Open]  = L"open"; //
     //envirKeys[EN_Open2] = L"open2"; //
-    envirKeys[EN_Vein]  = L"vein"; //
+
 
   }
   if (type < 0 || type >= (int) envirKeys.size()) { return L"out of bounds, envir enum.";  }

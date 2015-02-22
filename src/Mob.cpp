@@ -125,6 +125,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
     case 'Q': if (StatCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // Q is stats (should it be S?)
 
+    case 'C': if (StairCmd(*this).Do(ss))       { actionDuration = 1; bActionDone = true; } break; // C is upstairs/downstairs.
 
 
     // Move/hit/dig: 
