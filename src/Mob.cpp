@@ -77,7 +77,11 @@ void PlayerMob::dashboard() {
   ss << "light:";  addInf(ss, dash);
   ss << "#" << lightStrength() << "#"; addInf(ss, dash);
   ss << "#" << this->theLightUnits << "  "; addInf(ss, dash);
-  ss << "hp" << stats.hp; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  ss << "hp" << stats.hp << "#"; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+
+  ss << "xp:" << stats.xp; addInf(ss, dash);
+  ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
+  ss << "lvl:" << stats.level(); addInf(ss, dash);
 
 }
 

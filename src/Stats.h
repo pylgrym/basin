@@ -77,7 +77,7 @@ public:
   void heal(int percent);
 
   void recoverHP() { // Randomized healing.
-    int frac = maxHP / 10;
+    int frac = (maxHP / 10)+1;
     int inst = rnd(frac / 2, frac+ frac/2);
     int newHP = hp + inst;
     if (newHP > maxHP) { newHP = maxHP;  }

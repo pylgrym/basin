@@ -63,7 +63,7 @@ Stats::Stats(int mlevel)
 ,hunger(1500)
 ,confused(0)
 ,gold(0)
-, xp(0)
+,xp(0)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -106,6 +106,8 @@ void Stats::calcStats() {
 void Stats::initXP() {
   const int XpLevelScale = 10;
   xpToLevel = level() * XpLevelScale;
+  /* fixme: xp should be totals, not just ' to level'.
+  */
 }
 
 void Stats::gainKillXP(int mobLevel) {
@@ -326,6 +328,7 @@ void pr(std::stringstream& ss) {
   Cuss::prtL(s.c_str());  
   ss.str("");
 }
+
 void Stats::showStats() {
   std::stringstream s;
 
@@ -334,6 +337,8 @@ void Stats::showStats() {
   s << "Confused?" << this->confused; pr(s);
   s << "HP:" << this->hp;             pr(s);
   s << "maxHP:" << this->maxHP;       pr(s);
+  s << "XP:" << this->xp;             pr(s);
+  s << "XP-lvl:" << this->xpToLevel;  pr(s);
   s << "Hunger:" << this->hunger;     pr(s);
   s << "Level:" << this->level();     pr(s);
   s << "STR:" << this->Str.v;         pr(s);
