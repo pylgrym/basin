@@ -37,7 +37,7 @@ public:
   Stat& stat(const char* name);
 
   // void addStat(const std::string& name);
-  Stats();
+  Stats(int level_);
   ~Stats();
 
   int theLevel;

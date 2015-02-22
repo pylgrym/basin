@@ -76,17 +76,17 @@ public:
 
   Map();
 
-  void initWorld(); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
+  void initWorld(int level); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
 
   // static Map map;
 
   static CPoint key2dir(char key);
 
 
-  void addRandomMob();
-  void addRandomObj();
-  void addObjAtPos(CPoint pos);
-  void scatterObjsAtPos(CPoint pos, int n);
+  void addRandomMob(int level);
+  void addRandomObj(int level);
+  void addObjAtPos(CPoint pos, int level);
+  void scatterObjsAtPos(CPoint pos, int n, int level);
 };
 
 

@@ -58,8 +58,8 @@ void Stats::setLevel(int level_) {
   theLevel = level_;
 }
 
-Stats::Stats()
-:theLevel(0)
+Stats::Stats(int mlevel)
+:theLevel(mlevel)
 ,hunger(1500)
 ,confused(0)
 ,gold(0)
@@ -245,10 +245,10 @@ void Stats::passTime() {
   if (oneIn(100)) {
     if (oneIn(2)) {
       logstr log; log << "You feel a monster appearing.";
-      CL->map.addRandomMob();
+      CL->map.addRandomMob(CL->level);
     } else {
       logstr log; log << "You feel some item appearing.";
-      CL->map.addRandomObj();
+      CL->map.addRandomObj(CL->level);
     }
   }
 }

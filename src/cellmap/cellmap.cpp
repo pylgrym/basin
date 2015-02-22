@@ -14,43 +14,43 @@
 #include "DungGen1.h"
 
 
-void Map::addRandomMob() {
+void Map::addRandomMob(int level) {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return; }
 
-  Mob* monster = new MonsterMob;
+  Mob* monster = new MonsterMob(level);
   CL->map.moveMob(*monster, monster->pos);
   CL->mobs.queueMob(monster,1);
 }
 
 
 
-void Map::addRandomObj() {
+void Map::addRandomObj(int level) {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
-  addObjAtPos(pos);
+  addObjAtPos(pos,level);
 }
 
-void Map::addObjAtPos(CPoint pos) {
+void Map::addObjAtPos(CPoint pos,int level) {
   assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
   ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-  Obj* newObj = new Obj(otype);
+  Obj* newObj = new Obj(otype,level);
   if (otype == OB_Lamp) {
     newObj->itemUnits += rnd(500, 2500);
   }
   cell.item.setObj(newObj);
 }
 
-void Map::scatterObjsAtPos(CPoint pos, int n) {
+void Map::scatterObjsAtPos(CPoint pos, int n, int level) {
   for (int i = 0; i < n; ++i) {
     CPoint posA = pos;
     posA.x += rndC(-1, 1);
     posA.y += rndC(-1, 1);
-    addObjAtPos(posA);
+    addObjAtPos(posA, level);
   }
 }
 
@@ -80,7 +80,7 @@ Also, treasure in veins should be impl!
 */
 
 
-void Map::initWorld() {
+void Map::initWorld(int level) {
 
   Laby laby(Map::Width); // 101); // 51); // 101);
   laby.combine(); //  buildAll(); // dc);
@@ -121,7 +121,7 @@ void Map::initWorld() {
           bool hasThing = oneIn(4);
           if (hasThing) {
             ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-            cell.item.setObj(new Obj(otype));
+            cell.item.setObj(new Obj(otype,level));
           }
         }
 
@@ -130,7 +130,7 @@ void Map::initWorld() {
           if (hasThing) {
             // bool type2 = oneIn(3);  
             ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-            cell.item.setObj(new Obj(otype));
+            cell.item.setObj(new Obj(otype, level));
           }
         }
         /*

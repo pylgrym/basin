@@ -9,7 +9,10 @@
 #include "Equ.h"
 #include <iomanip>
 
-Mob::Mob() {  
+Mob::Mob(int mlevel)
+  :stats(mlevel)
+{
+
   mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
 
   m_mobType = (CreatureEnum) rnd(CR_Kobold, CR_MaxLimit);
@@ -290,7 +293,7 @@ std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The or
 
 PlayerMob* PlayerMob::ply = NULL;
 
-PlayerMob::PlayerMob() { 
+PlayerMob::PlayerMob():Mob(1) { 
   ply = this;  
   dungLevel = 1;
   theLightStrength = 1;
@@ -500,20 +503,20 @@ PlayerMob* PlayerMob::createPlayer() {
   PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
 
   std::stringstream ignore;
-  Bag::bag.add(new Obj(OB_Hat), ignore);
-  Bag::bag.add(new Obj(OB_Sword), ignore);
+  Bag::bag.add(new Obj(OB_Hat,1), ignore);
+  Bag::bag.add(new Obj(OB_Sword,1), ignore);
 
   // Bag::bag.add(new Obj(OB_Gold),ignore);
-  Obj* firstLamp = new Obj(OB_Lamp);
+  Obj* firstLamp = new Obj(OB_Lamp,1);
   firstLamp->itemUnits = 3700;
   Bag::bag.add(firstLamp, ignore);
 
-  Bag::bag.add(new Obj(OB_Hat), ignore);
+  Bag::bag.add(new Obj(OB_Hat,1), ignore);
 
-  Bag::bag.add(new Obj(OB_Potion), ignore);
-  Bag::bag.add(new Obj(OB_Scroll), ignore);
-  Bag::bag.add(new Obj(OB_Food), ignore);
-  Bag::bag.add(new Obj(OB_Pickaxe), ignore);
+  Bag::bag.add(new Obj(OB_Potion,1), ignore);
+  Bag::bag.add(new Obj(OB_Scroll,1), ignore);
+  Bag::bag.add(new Obj(OB_Food,1), ignore);
+  Bag::bag.add(new Obj(OB_Pickaxe,1), ignore);
   return player;
 }
 

@@ -147,9 +147,9 @@ bool HitCmd::Do(std::ostream& err) {
   if (hittee->isDead()) {
     bool bLoot = oneIn(2);
     if (bLoot) {
-      CL->map.addObjAtPos(hittee->pos);
+      CL->map.addObjAtPos(hittee->pos,CL->level);
       if (oneIn(8)) {
-        CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6));
+        CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6),CL->level);
       }
     }
     CL->mobs.deleteMob(hittee);
@@ -311,9 +311,9 @@ bool DigCmd::Do(std::ostream& err) {
   }
   if (oneIn(3)) { // Loot?
     logstr log; log << "You found something embedded in the rock!";
-    CL->map.addObjAtPos(tgt);
+    CL->map.addObjAtPos(tgt,CL->level);
     if (oneIn(8)) {
-      CL->map.scatterObjsAtPos(tgt, rnd(1,6));
+      CL->map.scatterObjsAtPos(tgt, rnd(1,6),CL->level);
     }
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   }

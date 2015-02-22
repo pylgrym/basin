@@ -63,6 +63,7 @@ struct ObjDef { // For declaring POD struct sets. Intention is to eventually rea
 class Obj {
 public:
   ObjEnum type;
+  int level;
 
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
@@ -72,9 +73,9 @@ public:
 
   virtual ObjEnum otype() const { return type; }
 
-  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0),itemUnits(0) { clear(); }
+  Obj() :type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0),itemUnits(0),level(0) { clear(); }
 
-  Obj(ObjEnum type_) :type(type_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0) {
+  Obj(ObjEnum type_, int level_) :type(type_), level(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0) {
     effect = Spell::rndSpell();
 
     const ObjDef& desc = Obj::objDesc(type);

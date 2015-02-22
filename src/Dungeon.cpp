@@ -16,7 +16,7 @@ Dungeon::~Dungeon()
 
 
 void Dungeon::initDungeon() {
-  map.initWorld();
+  map.initWorld(level);
 
   // Populate world:
   initPlayerForMap();
@@ -48,7 +48,7 @@ void Dungeon::initMobs() {
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 
-    Mob* monster = new MonsterMob;
+    Mob* monster = new MonsterMob(this->level);
     map.moveMob(*monster, monster->pos);
     mobs.queueMob(monster, 1);
   }
