@@ -50,7 +50,7 @@ CString Obj::some_item() const {
   CA2T uslot(aslot, CP_ACP); // CP_UTF8);
 
   CString fmt;
-  fmt.Format(L"%s of %s %dd%d(%d,%d) %s", (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot);
+  fmt.Format(L"%s of %s %dd%d(%d,%d) %s[%d]", (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot, ac);
 
   return fmt;
 }
