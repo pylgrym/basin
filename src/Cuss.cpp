@@ -15,7 +15,7 @@ void Cuss::clear(bool bInvalidate) {
   csr = CPoint(0, 0);  
   // clear map:
   for (int x = 0; x < Term::Width; ++x) {
-    //CellColumn& column = Map::map[x];
+    //CellColumn& column = CL->map[x];
     for (int y = 0; y < Term::Height; ++y) {
       CPoint p(x,y);
       TCell& cell = Term::term[p]; //column[y];
@@ -65,7 +65,7 @@ void Cuss::CRLF() { // Do carriage-return + lineFeed.
 
 bool Cuss::putchar(char c, bool bClip) {
   // debstr() << "[§" << c << "]\n";
-  TCell& cell = Term::term[csr]; //Map::map[csr];
+  TCell& cell = Term::term[csr]; //CL->map[csr];
   cell.c = c;
   TheUI::invalidateVPCell(csr);
 

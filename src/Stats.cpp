@@ -245,10 +245,10 @@ void Stats::passTime() {
   if (oneIn(100)) {
     if (oneIn(2)) {
       logstr log; log << "You feel a monster appearing.";
-      Map::map.addRandomMob();
+      CL->map.addRandomMob();
     } else {
       logstr log; log << "You feel some item appearing.";
-      Map::map.addRandomObj();
+      CL->map.addRandomObj();
     }
   }
 }

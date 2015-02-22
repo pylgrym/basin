@@ -13,6 +13,8 @@
 
 #include "Spell.h" // for attack schools.
 
+#include "Dungeons.h"
+
 struct AttackInf {
   // HIT-OR-MISS info:
   int hitRoll; // the d20 hit roll.
@@ -111,7 +113,7 @@ public:
     for (int dx = -1; dx <= 1; ++dx) {
       for (int dy = -1; dy <= 1; ++dy) {
         CPoint p(pos.x + dx, pos.y + dy);
-        Map::map[p].markWalls(); 
+        CL->map[p].markWalls(); 
       }
     }
   }
@@ -120,8 +122,8 @@ public:
     for (int dx = -radius; dx <= radius; ++dx) {
       for (int dy = -radius; dy <= radius; ++dy) {
         CPoint p(pos.x + dx, pos.y + dy);
-        if (Map::map.legalPos(p)) {
-          Map::map[p].lightCells();//  Walls();
+        if (CL->map.legalPos(p)) {
+          CL->map[p].lightCells();//  Walls();
         }
       }
     }
@@ -157,6 +159,8 @@ public:
   virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "";  } // "you HIT".
 
+  int dungLevel;
+
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)
   int theLightUnits; // how much fuel left.
@@ -173,6 +177,8 @@ public:
   static PlayerMob* ply;
   static int distPly(CPoint p); // raw/true calc. (square)
   static int distPlyLight(CPoint p); // light-adjusted
+
+  static PlayerMob* createPlayer();
 };
 
 

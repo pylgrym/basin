@@ -29,10 +29,10 @@ bool ShowEventsCmd::Do(std::ostream& err) {
 bool WalkCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
-  Map::map.moveMob(mob, newpos);
+  CL->map.moveMob(mob, newpos);
   if (mob.isPlayer()) { mob.lightWalls(mob.pos); } // ; } // ctype() == CR_Player
 
-  if (mob.isPlayer() && Map::map[newpos].item.o != NULL) {  // ctype() == CR_Player
+  if (mob.isPlayer() && CL->map[newpos].item.o != NULL) {  // ctype() == CR_Player
     LookCmd look(mob);
     look.Do(err);
   }
@@ -147,12 +147,12 @@ bool HitCmd::Do(std::ostream& err) {
   if (hittee->isDead()) {
     bool bLoot = oneIn(2);
     if (bLoot) {
-      Map::map.addObjAtPos(hittee->pos);
+      CL->map.addObjAtPos(hittee->pos);
       if (oneIn(8)) {
-        Map::map.scatterObjsAtPos(hittee->pos, rnd(1,6));
+        CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6));
       }
     }
-    MobQueue::mobs.deleteMob(hittee);
+    CL->mobs.deleteMob(hittee);
     logstr log; log << "It died.";
     if (bLoot) {
       log << "An item rolls on the floor.";
@@ -230,15 +230,15 @@ bool ZapCmd::Do(std::ostream& err) {
   const int maxBulletRange = 50;
   for (int shoot = 0; shoot < maxBulletRange; ++shoot) {
     // Clear old bullet pos:
-    Map::map[bullet].overlay = tileNone; // CPoint(0, 0);
+    CL->map[bullet].overlay = tileNone; // CPoint(0, 0);
     CPoint oldBullet = bullet;
 
     // Consider new bullet pos:
     CPoint newBullet = bullet;
     newBullet += dir;
-    if (!Map::map.legalPos(newBullet)) { break; }
+    if (!CL->map.legalPos(newBullet)) { break; }
 
-    if (!Map::map[newBullet].creature.empty()) { // We hit a mob..
+    if (!CL->map[newBullet].creature.empty()) { // We hit a mob..
       CPoint aim = newBullet - tgt;
       { logstr log; log << "The bullet hits the monster."; } 
       // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
@@ -249,9 +249,9 @@ bool ZapCmd::Do(std::ostream& err) {
       break;
     }
 
-    if (Map::map[newBullet].blocked()) { // Did we hit some wall instead?
+    if (CL->map[newBullet].blocked()) { // Did we hit some wall instead?
       if (effect == SP_StoneToMud) { 
-        Map::map[newBullet].envir.setType(EN_Floor);
+        CL->map[newBullet].envir.setType(EN_Floor);
         mob.invalidateGfx(newBullet, oldBullet, true);
         logstr log; log << "The wall turns to mud!";
         TheUI::microSleepForRedraw(7);
@@ -261,20 +261,20 @@ bool ZapCmd::Do(std::ostream& err) {
 
     // It's legal, move to it:
     bullet = newBullet;
-    Map::map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
+    CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
 
     if (effect == SP_WallBuilding) {
-      Map::map[bullet].envir.setType(EN_Wall);
+      CL->map[bullet].envir.setType(EN_Wall);
     }
     if (effect == SP_LightDir) {
-      Map::map[bullet].lightCells();
+      CL->map[bullet].lightCells();
     }
 
     TheUI::microSleepForRedraw(7); // 4);
   }
 
-  Map::map[bullet].overlay = tileNone; // Clear the 'last' bullet.
+  CL->map[bullet].overlay = tileNone; // Clear the 'last' bullet.
   mob.invalidateGfx(bullet, bullet, true);
 
   if (effect == SP_WallBuilding) {
@@ -295,7 +295,7 @@ bool ZapCmd::Do(std::ostream& err) {
 bool DigCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
-  Envir& envir = Map::map[tgt].envir;
+  Envir& envir = CL->map[tgt].envir;
 
   int digStr = mob.digStrength();
   envir.envUnits -= digStr;
@@ -305,17 +305,17 @@ bool DigCmd::Do(std::ostream& err) {
   }
 
   envir.setType(EN_Floor);
-  mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+  mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   {
     logstr log; log << "You'ved dug through the wall!";
   }
   if (oneIn(3)) { // Loot?
     logstr log; log << "You found something embedded in the rock!";
-    Map::map.addObjAtPos(tgt);
+    CL->map.addObjAtPos(tgt);
     if (oneIn(8)) {
-      Map::map.scatterObjsAtPos(tgt, rnd(1,6));
+      CL->map.scatterObjsAtPos(tgt, rnd(1,6));
     }
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   }
 
   debstr() << "Digged through the wall.\n";

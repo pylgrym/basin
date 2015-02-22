@@ -77,9 +77,8 @@ public:
   Map();
 
   void initWorld(); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
-  void initPlayer(); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
 
-  static Map map;
+  // static Map map;
 
   static CPoint key2dir(char key);
 

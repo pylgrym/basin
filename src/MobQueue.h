@@ -69,6 +69,6 @@ public:
   void deleteMob(Mob* toDelete);
   bool dispatchFirst();
 
-  static MobQueue mobs;
+  // static MobQueue mobs;
 };
 

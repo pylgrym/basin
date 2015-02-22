@@ -139,7 +139,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
         
         CPoint target(pos.x + dx, pos.y + dy);
 
-        if (Map::map[target].creature.empty()) {
+        if (CL->map[target].creature.empty()) {
           if (bCtrl) { // CTRL means digging:
             if (DigCmd(*this, dx, dy).Do(ss)) { actionDuration = 1; bActionDone = true; }
           } else { // no control-key - it's a move.
@@ -292,6 +292,7 @@ PlayerMob* PlayerMob::ply = NULL;
 
 PlayerMob::PlayerMob() { 
   ply = this;  
+  dungLevel = 1;
   theLightStrength = 1;
   theLightUnits = 0;
   m_mobType = CR_Player; // (CreatureEnum)rnd(CR_Kobold, CR_MaxLimit);
@@ -491,3 +492,28 @@ CPoint Mob::playerDir() const {
   if (delta.y < 0) { dir.y = -1; }
   return dir;
 }
+
+
+
+
+PlayerMob* PlayerMob::createPlayer() {
+  PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
+
+  std::stringstream ignore;
+  Bag::bag.add(new Obj(OB_Hat), ignore);
+  Bag::bag.add(new Obj(OB_Sword), ignore);
+
+  // Bag::bag.add(new Obj(OB_Gold),ignore);
+  Obj* firstLamp = new Obj(OB_Lamp);
+  firstLamp->itemUnits = 3700;
+  Bag::bag.add(firstLamp, ignore);
+
+  Bag::bag.add(new Obj(OB_Hat), ignore);
+
+  Bag::bag.add(new Obj(OB_Potion), ignore);
+  Bag::bag.add(new Obj(OB_Scroll), ignore);
+  Bag::bag.add(new Obj(OB_Food), ignore);
+  Bag::bag.add(new Obj(OB_Pickaxe), ignore);
+  return player;
+}
+

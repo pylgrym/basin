@@ -17,6 +17,7 @@
 
 #include "MobQueue.h"
 
+#include "Dungeons.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,7 +40,9 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  Map::map.initWorld();
+  PlayerMob* player = PlayerMob::createPlayer();
+  // Dungeon* L1 = Dungeons::get(1);
+  Dungeons::setCurLevel(player->dungLevel);
 
   // This is a little bit bad, because it even
   // atempts to trigger a redraw, at a time where we don't have any HWND yet..
@@ -154,7 +157,7 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	// do stuff..
   debstr() << "Starting queue-process..\n";
   for (bool isRunning=true; isRunning; ) {
-    isRunning = MobQueue::mobs.dispatchFirst();
+    isRunning = CL->mobs.dispatchFirst();
     // debstr() << "isRunning?" << isRunning << "\n";
   }
   debstr() << "ended queue-process.\n";
@@ -249,7 +252,7 @@ void CChildView::OnPaint() {
       CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
 
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
-      CellColumn& column = Map::map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
+      CellColumn& column = CL->map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
       Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
       TCell& tcell = Term::term[vp.p];
 

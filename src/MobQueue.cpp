@@ -3,10 +3,12 @@
 
 #include "Mob.h"
 
-MobQueue MobQueue::mobs;
+//MobQueue CL->mobs;
+
 
 MobQueue::MobQueue():globalClock(0)// ,meat1(0xDEADBEEF), meat2(0xDEADBEEF)   // HOLD OP MED DE SATANS GLOBALE VARIABLE! .. :-).
 {}
+
 
 
 bool MobReady::operator > (const MobReady& rhs) const { 
@@ -18,9 +20,11 @@ bool MobReady::operator > (const MobReady& rhs) const {
 }
 
 
+
+
 void MobQueue::deleteMob(Mob* toDelete) {
 
-  Map::map[toDelete->pos].creature.clearMob(); // Remove it from the map description.
+  CL->map[toDelete->pos].creature.clearMob(); // Remove it from the map description.
   toDelete->invalidateGfx(); // Tell graphics system it needs to be redrawn.
 
   std::vector<Mob*>::iterator i;
@@ -40,6 +44,8 @@ void MobQueue::deleteMob(Mob* toDelete) {
   }
   delete toDelete;
 }
+
+
 
 
 bool MobQueue::dispatchFirst() {
@@ -63,3 +69,5 @@ bool MobQueue::dispatchFirst() {
 
   return !cur.mob->isDead(); 
 } // dispatchFirst.
+
+

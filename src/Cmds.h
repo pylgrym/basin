@@ -30,7 +30,7 @@ public:
   virtual bool legal(std::ostream& err) { 
     if (newpos == old) { err << "Not a move-direction.";  return false; }
 
-    if (Map::map[newpos].blocked()) {
+    if (CL->map[newpos].blocked()) {
       err << "That way is blocked."; // The way ahead is blocked.
       return false;
     }
@@ -49,7 +49,7 @@ class HitCmd : public Cmd {
 public:
   HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_), hitItem(hitItem_) {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
-    hittee = Map::map[tgt].creature.m; 
+    hittee = CL->map[tgt].creature.m; 
   }
 
   virtual bool silent() const { return !mob.isPlayer(); }  
@@ -85,7 +85,7 @@ public:
 
   virtual bool legal(std::ostream& err) { 
     if (tgt == mob.pos) { err << "Not a dig-direction.\n";  return false; }
-    bool canDig = (Map::map[tgt].envir.type == EN_Wall);
+    bool canDig = (CL->map[tgt].envir.type == EN_Wall);
     if (!canDig) { err << "You can't dig through that.";  }
     return canDig;  
   }
@@ -108,7 +108,7 @@ public:
 
   LookCmd(Mob& mob_):mob(mob_) {
     tgt = mob.pos;
-    o = Map::map[tgt].item.o;
+    o = CL->map[tgt].item.o;
   }
 
   virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
@@ -138,13 +138,13 @@ public:
 
   TakeCmd(Mob& mob_):mob(mob_) {
     tgt = mob.pos;
-    o = Map::map[tgt].item.o;
+    o = CL->map[tgt].item.o;
   }
 
   virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
-    bool empty = Map::map[tgt].item.empty(); 
+    bool empty = CL->map[tgt].item.empty(); 
     // debstr() << "empty?" << empty << "\n";
 
     if (empty) { err << "There is nothing to pick up.";  return false; }
@@ -158,9 +158,9 @@ public:
   virtual bool Do(std::ostream& err) {  
     if (!Cmd::Do(err)) { return false; }
 
-    ObjSlot& item = Map::map[tgt].item;
+    ObjSlot& item = CL->map[tgt].item;
     // (No need to invalidate, as we are standing on it)
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
 
 
     if (o->otype() == OB_Gold || o->otype() == OB_Gems || o->otype() == OB_Emeralds || o->otype() == OB_Amethysts ) { // Gold is special - it's consumed on pickup, and added to gold balance:
@@ -200,7 +200,7 @@ public:
   virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
 
   virtual bool legal(std::ostream& err) { 
-    bool empty = Map::map[tgt].item.empty(); 
+    bool empty = CL->map[tgt].item.empty(); 
     debstr() << "empty?" << empty << "\n";
 
     if (!empty) { 
@@ -224,10 +224,10 @@ public:
     debstr deb;
     if (!Bag::bag.remove(obj, deb)) { deb << "\n";  return false; } 
 
-    ObjSlot& item = Map::map[tgt].item;
+    ObjSlot& item = CL->map[tgt].item;
     item.setObj(obj);
     // (No need to invalidate, as we are standing on it)
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on Map::map/Cell! (maybe)
+    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
 
     std::string anItem = obj->an_item();
     err << "You drop " << anItem; 
