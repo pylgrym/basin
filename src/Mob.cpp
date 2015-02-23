@@ -8,12 +8,14 @@
 #include "LogEvents.h"
 #include "Equ.h"
 #include <iomanip>
+#include "Levelize.h"
 
 Mob::Mob(int mlevel)
   :stats(mlevel)
 {
 
-  mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
+  // mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
+  mobDummyWeapon = Levelize::randDiceForLevel(mlevel);
 
   m_mobType = (CreatureEnum) rnd(CR_Kobold, CR_MaxLimit);
 

@@ -159,6 +159,10 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
   for (bool isRunning=true; isRunning; ) {
     isRunning = CL->mobs.dispatchFirst();
     // debstr() << "isRunning?" << isRunning << "\n";
+    if (PlayerMob::ply->isDead()) {
+      logstr log; log << "!You have died!";
+      isRunning = false;
+    }
   }
   debstr() << "ended queue-process.\n";
 }
