@@ -13,6 +13,7 @@
 
 #include "DungGen1.h"
 
+#include "Levelize.h"
 
 void Map::addRandomMob(int level) {
   CPoint pos(rnd(1, Width), rnd(2, Height));
@@ -121,7 +122,8 @@ void Map::initWorld(int level) {
           bool hasThing = oneIn(4);
           if (hasThing) {
             ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-            cell.item.setObj(new Obj(otype,level));
+            int ilevel = Levelize::suggestLevel(level);
+            cell.item.setObj(new Obj(otype,ilevel));
           }
         }
 
@@ -130,7 +132,8 @@ void Map::initWorld(int level) {
           if (hasThing) {
             // bool type2 = oneIn(3);  
             ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-            cell.item.setObj(new Obj(otype, level));
+            int ilevel = Levelize::suggestLevel(level);
+            cell.item.setObj(new Obj(otype, ilevel));
           }
         }
         /*

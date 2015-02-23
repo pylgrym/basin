@@ -258,9 +258,23 @@ void CChildView::OnPaint() {
 
       tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, false, 255); // FLOOR
 
+
+
       if (!cell.item.empty()) { 
         tiles.drawTile(vp.p.x, vp.p.y, cell.item.typeS(), dc, true,255); // false);  // THINGS
+
+        int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+        CString s; s.Format(L"<%d>", cell.item.o->ilevel);
+
+        dc.SelectObject(smallFont);
+        // const int fontFlags = DT_CENTER | DT_VCENTER | DT_SINGLELINE;
+        const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+        dc.SetTextColor(RGB(0,255,0)); // RGB(0, 0, 255)); // RED.
+        dc.DrawText(s, &cellR, fontFlags);
       }
+
+
 
       if (!cell.creature.empty()) { 
         tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, true,255); // false); MOBS
@@ -269,7 +283,7 @@ void CChildView::OnPaint() {
         Mob* mob = cell.creature.m;
 		    int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
 		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-        CString s; s.Format(L"%d", mob->stats.hp);
+        CString s; s.Format(L"%d ", mob->stats.hp);
 
 	      dc.SelectObject(smallFont);
         // const int fontFlags = DT_CENTER | DT_VCENTER | DT_SINGLELINE;

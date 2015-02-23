@@ -2,6 +2,9 @@
 #include "Dungeon.h"
 
 #include "Mob.h"
+#include "Levelize.h"
+
+
 
 Dungeon::Dungeon(int level_)
   :level(level_) 
@@ -30,8 +33,8 @@ void Dungeon::initPlayerForMap() { // JG, FIXME: All this shouldn't really clutt
 
   // Mob* player = PlayerMob::createPlayer();
 
-  //fixme
-  /* fixme: now with multiple levels, player must hook up to
+  //
+  /* beware: now with multiple levels, player must hook up to
   each dungeon correctly,
   including picking an open cell.
   we only need to init once for each level.
@@ -48,7 +51,8 @@ void Dungeon::initMobs() {
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 
-    Mob* monster = new MonsterMob( rndC( level, this->level+2 ) );
+    int mlevel = Levelize::suggestLevel(this->level);
+    Mob* monster = new MonsterMob(mlevel); // rndC(level, this->level + 2));
     map.moveMob(*monster, monster->pos);
     mobs.queueMob(monster, 1);
   }
