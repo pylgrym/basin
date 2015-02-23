@@ -116,6 +116,7 @@
     <ClInclude Include="DungGen1.h" />
     <ClInclude Include="Envir.h" />
     <ClInclude Include="Equ.h" />
+    <ClInclude Include="Levelize.h" />
     <ClInclude Include="LogEvents.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mob.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="DungGen1.cpp" />
     <ClCompile Include="Envir.cpp" />
     <ClCompile Include="Equ.cpp" />
+    <ClCompile Include="Levelize.cpp" />
     <ClCompile Include="LogEvents.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mob.cpp" />

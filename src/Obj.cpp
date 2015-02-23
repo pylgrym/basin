@@ -6,6 +6,8 @@
 
 #include "util/debstr.h"
 
+#include "Levelize.h"
+
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiouy";
   int pos = vowels.Find(c);
@@ -93,6 +95,83 @@ ObjDef objDefs[] = {
 {OB_Pickaxe,   EQ_2Hands,  ". pickaxe"},
 {OB_Emeralds,  EQ_None,    ". emerald"},
 {OB_Amethysts, EQ_None,    ". amethyst"},
+
+// fixme -weapons need proficiencies or similar (maybe just level they appear on?
+// to allow user to utilize the stronger weapons.
+// weapons from  dnd4.wikia.com/wiki/Weapon
+{ OB_Weapon, EQ_MainHand, ". club",        1, "1d6",1.5},
+{ OB_Weapon, EQ_MainHand, ". dagger",      1, "1d4",0.5},
+{ OB_Weapon, EQ_MainHand, ". javelin",     5, "1d6",1  },
+{ OB_Weapon, EQ_MainHand, ". light mace",  3, "1d6",1  },
+{ OB_Weapon, EQ_MainHand, ". mace",        5, "1d8",3  },
+{ OB_Weapon, EQ_MainHand, ". short spear", 2, "1d6",0.5},
+{ OB_Weapon, EQ_MainHand, ". sickle",      2, "1d6",1  },
+{ OB_Weapon, EQ_MainHand, ". spear",       5, "1d8",6  },
+
+{ OB_Weapon, EQ_MainHand, ". greatclub",    1, "2d4",5 },
+{ OB_Weapon, EQ_MainHand, ". morningstar", 10,"1d10",4 },
+{ OB_Weapon, EQ_MainHand, ". quarterstaff", 5, "1d8",2 },
+{ OB_Weapon, EQ_MainHand, ". scythe",       5, "2d4",5 },
+
+{ OB_Weapon, EQ_MainHand, ". battleaxe",    15,"1d10",3  },
+{ OB_Weapon, EQ_MainHand, ". broadsword",   20,"1d10",2.5},
+{ OB_Weapon, EQ_MainHand, ". flail",        10,"1d10",2.5},
+{ OB_Weapon, EQ_MainHand, ". handaxe",       5, "1d6",1.5},
+{ OB_Weapon, EQ_MainHand, ". khopesh",       5, "1d8",4  },
+{ OB_Weapon, EQ_MainHand, ". lance",         5, "1d10",5 },
+{ OB_Weapon, EQ_MainHand, ". light war pick ",5,"1d6",2  },
+{ OB_Weapon, EQ_MainHand, ". longsword",     5, "1d8",2  },
+{ OB_Weapon, EQ_MainHand, ". rapier",        5, "1d8",1  },
+{ OB_Weapon, EQ_MainHand, ". scimitar",      5, "1d8",2  },
+{ OB_Weapon, EQ_MainHand, ". scourge",       5, "1d8",1  },
+{ OB_Weapon, EQ_MainHand, ". short sword",   5, "1d6",1  },
+{ OB_Weapon, EQ_MainHand, ". throwing hammer",5,"1d6",1  },
+{ OB_Weapon, EQ_MainHand, ". trident",       5, "1d8",2  },
+{ OB_Weapon, EQ_MainHand, ". warhammer",     5, "1d10",2.5},
+{ OB_Weapon, EQ_MainHand, ". war pick",      5, "1d8",3  },
+
+{ OB_Weapon, EQ_MainHand, ". falchion",     25, "2d4" ,3.5},
+{ OB_Weapon, EQ_MainHand, ". glaive",       25, "2d4" ,5 },
+{ OB_Weapon, EQ_MainHand, ". greataxe",     30, "1d12",6 },
+{ OB_Weapon, EQ_MainHand, ". greatsword",   30, "1d10",4 },
+{ OB_Weapon, EQ_MainHand, ". halberd",      25, "1d10",6 },
+{ OB_Weapon, EQ_MainHand, ". heavy flail",  25, "2d6" ,5 },
+{ OB_Weapon, EQ_MainHand, ". heavy war pick",20,"1d12",4 },
+{ OB_Weapon, EQ_MainHand, ". long spear",   10, "1d10",4.5},
+{ OB_Weapon, EQ_MainHand, ". maul",         30, "2d6" ,6 },
+{ OB_Weapon, EQ_MainHand, ". pike",         15, "1d10",3 },
+
+{ OB_Weapon, EQ_MainHand, ". bastard sword",   30, "1d10", 3 },
+{ OB_Weapon, EQ_MainHand, ". bola",             5, "1d4",  1 },
+{ OB_Weapon, EQ_MainHand, ". craghammer",      20, "1d10", 3 },
+{ OB_Weapon, EQ_MainHand, ". katar",            3, "1d6",0.5 },
+{ OB_Weapon, EQ_MainHand, ". kukri",           10, "1d6",  1 },
+{ OB_Weapon, EQ_MainHand, ". net",             20, "1d6",  3 },
+{ OB_Weapon, EQ_MainHand, ". parrying dagger",  5, "1d4",0.5 },
+{ OB_Weapon, EQ_MainHand, ". serrated pick",   15, "1d10", 2 },
+{ OB_Weapon, EQ_MainHand, ". tratnyr",         10, "1d8",2.5 },
+{ OB_Weapon, EQ_MainHand, ". triple-headed flail", 15, "1d10",3},
+{ OB_Weapon, EQ_MainHand, ". waraxe",          30, "1d12", 5 },
+{ OB_Weapon, EQ_MainHand, ". whip",            10, "1d4",  1 },
+
+{ OB_Weapon, EQ_MainHand, ". execution axe", 30, "1d12",7 },
+{ OB_Weapon, EQ_MainHand, ". fullblade", 30, "1d12",5 },
+//{ OB_Weapon, EQ_MainHand, ". garrote", 1, "1d4",0.5},
+{ OB_Weapon, EQ_MainHand, ". gouge", 30, "2d6",6 },
+{ OB_Weapon, EQ_MainHand, ". greatspear", 25, "1d6",4 },
+{ OB_Weapon, EQ_MainHand, ". mordenkrad", 30, "2d6",6 },
+{ OB_Weapon, EQ_MainHand, ". spiked chain", 30, "2d4" ,5},
+
+{ OB_Weapon, EQ_MainHand, ". double axe", 40, "1d6",7.5 },
+{ OB_Weapon, EQ_MainHand, ". double flail", 30, "1d6", 5.5},
+{ OB_Weapon, EQ_MainHand, ". double sword", 40, "1d6",4.5 },
+{ OB_Weapon, EQ_MainHand, ". urgrosh", 30, "1d12",4 },
+
+{ OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
+{ OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
+{ OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
+{ OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
+{ OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
 };
 
 
@@ -248,3 +327,16 @@ int Obj::digStrength() const {
   return 4; // Sort of like bare hands.
 }
  
+
+
+void Obj::initRandom() { // - clear should not init.
+  charges = rnd(-1, 7); // 3);
+  consumed = oneIn(2); // true;
+  toHit = rndC(-2, 5);
+  toDmg = rndC(-2, 6);
+  weight = rnd(1, 50);
+  itemUnits = rnd(20, 400);
+
+  // Dice(rndC(1, 4), rndC(2, 12));
+  dmgDice = Levelize::randDiceForLevel(ilevel);
+}

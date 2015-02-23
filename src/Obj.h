@@ -46,6 +46,7 @@ enum ObjEnum {
   OB_Pickaxe=31,
   OB_Emeralds=32,
   OB_Amethysts=33,
+  OB_Weapon = 34,
   /// OB_StairUp = 34,
   /// OB_StairDown = 35,
 
@@ -58,13 +59,16 @@ struct ObjDef { // For declaring POD struct sets. Intention is to eventually rea
   ObjEnum type;
   EquipSlotEnum eqtype;
   const char* desc;
+  int price;
+  const char* defDice;
+  double kilo;
 };
 
 
 class Obj {
 public:
   ObjEnum type;
-  int level;
+  int ilevel;
 
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
@@ -76,10 +80,10 @@ public:
   virtual ObjEnum otype() const { return type; }
 
 
-  Obj():type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), level(0), ac(1) { clear(); }
+  Obj():type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ilevel(0), ac(1) { clear(); }
 
 
-  Obj(ObjEnum type_, int level_) :type(type_), level(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0),ac(1) {
+  Obj(ObjEnum type_, int level_) :type(type_), ilevel(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0),ac(1) {
 
     effect = Spell::rndSpell();
     const ObjDef& desc = Obj::objDesc(type);
@@ -115,15 +119,7 @@ public:
     itemUnits = 0;
   }
 
-  void initRandom() { // FIXME - clear should not init.
-    charges = rnd(-1, 7); // 3);
-    consumed = oneIn(2); // true;
-    toHit = rndC(-2, 5);
-    toDmg = rndC(-2, 6);
-    dmgDice = Dice(rndC(1, 4), rndC(2, 12));
-    weight = rnd(1, 50);
-    itemUnits = rnd(20, 400);
-  }
+  void initRandom();
 
   void setTypeDefaults() {
     switch (otype()) {
