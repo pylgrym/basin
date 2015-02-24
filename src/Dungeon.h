@@ -18,8 +18,8 @@ public:
   void initMobs();
 
   bool persist(class Persist& p) {
-    map.persist(p);
     mobs.persist(p);
+    map.persist(p);
     return true;
   }
 };

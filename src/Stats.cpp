@@ -385,16 +385,17 @@ bool Stats::persist(Persist& p) {
   Wis.persist(p);
   Chr.persist(p);
 
-  p.os << this->theLevel;
-  p.os << this->maxHP;
-  p.os << this->hp;
-  p.os << this->xp;
-  p.os << this->xpToLevel;
-  p.os << this->ac;
-  p.os << this->toHit;
-  p.os << this->hunger;
-  p.os << this->confused;
-  p.os << this->gold;
+
+  p.transfer(theLevel,  "level"); //p.os << this->theLevel;
+  p.transfer(maxHP,     "maxHP"); //p.os << this->maxHP;
+  p.transfer(hp,        "hp"); //p.os << this->hp;
+  p.transfer(xp,        "xp"); //p.os << this->xp;
+  p.transfer(xpToLevel, "xpToLevel"); //p.os << this->xpToLevel;
+  p.transfer(ac,        "ac"); //p.os << this->ac;
+  p.transfer(toHit,     "toHit"); //p.os << this->toHit;
+  p.transfer(hunger,    "hunger"); //p.os << this->hunger;
+  p.transfer(confused,  "confused"); //p.os << this->confused;
+  p.transfer(gold,      "gold"); //p.os << this->gold;
   return true;
 }
 

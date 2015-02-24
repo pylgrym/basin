@@ -11,7 +11,7 @@ MobQueue::MobQueue():globalClock(0)// ,meat1(0xDEADBEEF), meat2(0xDEADBEEF)   //
 
 
 bool MobReady::persist(Persist& p) {
-  p.os << when;
+  p.transfer(when, "when"); // p.os << when;
   return mob->persist(p);
 }
 

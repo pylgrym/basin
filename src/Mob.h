@@ -130,7 +130,10 @@ public:
   }
 
   bool persist(class Persist& p) {
-    p.os << "pos: " << pos.x << " " << pos.y;
+    p.transfer(pos.x, "posx"); //
+    p.transfer(pos.y, "posy"); //
+    // p.os << "pos: " << pos.x << " " << pos.y;
+
     stats.persist(p);
     return true;
   }

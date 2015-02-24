@@ -22,7 +22,9 @@ public:
   int envUnits; // E.g. strength of rock.
 
   bool persist(class Persist& p) {
-    p.os << type;
+    // JG: enums are problematic, require a template or something, or manual approach.
+    // Do I want fixed-width BD AF hex numbers? (for grid appearance and easier parsing.)
+    p.os << type << " "; // p.transfer(type, "envir"); // p.os << type;
     return true;
   }
 
