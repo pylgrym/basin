@@ -46,6 +46,7 @@ public:
   void setLevel(int level_);
   int level() const { return theLevel;  }
 
+  void initStats();
   void calcStats();
 
   enum StatEnums { HitDie = 5};
@@ -53,6 +54,10 @@ public:
   int hp;
   int xp;
   int xpToLevel;
+
+  int mana;
+  int maxMana;
+
   //int baseHP; 
   // std::vector<int> hp_rolls; 
   int ac;
@@ -68,7 +73,9 @@ public:
   bool isConfused() const { return (confused > 0);  }
 
   int calcMaxHP();
-  int calcAC();
+  int calcTotalAC();
+  int calcBaseAC();
+
   int calcToHit(std::ostream& os);
 
   void repToHit(std::ostream& os) {

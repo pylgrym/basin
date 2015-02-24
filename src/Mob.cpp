@@ -76,14 +76,18 @@ void PlayerMob::dashboard() {
   CPoint dash(Viewport::Width, 1);
   std::stringstream ss;
 
-  ss << "light:";  addInf(ss, dash);
-  ss << "#" << lightStrength() << "#"; addInf(ss, dash);
-  ss << "#" << this->theLightUnits << "  "; addInf(ss, dash);
-  ss << "hp" << stats.hp << "#"; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  ss << std::fixed << std::setw(4);
 
-  ss << "xp:" << stats.xp; addInf(ss, dash);
+  ss << "light:";  addInf(ss, dash);
+  ss << "#"   << std::fixed << std::setw(3) << lightStrength() << "#"; addInf(ss, dash);
+  ss << "#"   << std::fixed << std::setw(4) << this->theLightUnits << "  "; addInf(ss, dash);
+  ss << "hp:" << std::fixed << std::setw(3) << stats.hp << "#"; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+
+  ss << "xp:" << std::fixed << std::setw(5) << stats.xp; addInf(ss, dash);
   ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
   ss << "lvl:" << stats.level(); addInf(ss, dash);
+
+  ss << "ac:" << std::fixed << std::setw(3) << stats.ac; addInf(ss, dash);
 
 }
 
@@ -226,7 +230,16 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   } else { // Else, chase the player:
     debstr() << "I am far from player and will chase!\n";
     std::stringstream ss;
-    bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
+    WalkCmd walk(*this, dir.x, dir.y, false);
+    if (!walk.legal(ss)) { // If moving straight across is blocked..
+      CPoint dirV = dir, dirH = dir;
+      dirV.x = 0; dirH.y = 0;
+      walk.newpos = (pos + dirV); // what about going vertical?
+      if (!walk.legal(ss)) { // if vertical doesn't work, what about horizontal?
+        walk.newpos = (pos + dirH);
+      }
+    }
+    bool bLegal = walk.Do(ss);
   }
 
   if (lowHealth()) {
