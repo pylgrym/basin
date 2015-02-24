@@ -230,11 +230,18 @@ const ObjDef& Obj::objDesc(ObjEnum type) {
   static const ObjDef dummy = { OB_None, EQ_None, "bad obj" };
   const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
   if (type >= 0 && type < numObjDefs) {
-    ObjDef* od = &objDefs[type];
+    ObjDef* od = &objDefs[type]; // WARNING - contents of objDefs no longer satisfy this! (ix is not type)
     return *od;
   }
   debstr() << "warning/error, bad objEnum?!\n";
   return dummy;
+}
+
+const ObjDef& Obj::randObjDesc() {
+  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+  int ix = rnd(numObjDefs);
+  ObjDef* od = &objDefs[ix];
+  return *od;
 }
 
 

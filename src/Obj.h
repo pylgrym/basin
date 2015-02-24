@@ -181,6 +181,8 @@ public:
   bool infiniteCharges() const { return (charges == -1);  }
   // END BEHAVIOUR
 
+  static const ObjDef& randObjDesc();
+
   static const ObjDef& objDesc(ObjEnum type);
 
   static const TCHAR* typeAsStr(ObjEnum type);

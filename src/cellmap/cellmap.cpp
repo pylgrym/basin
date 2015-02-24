@@ -131,6 +131,10 @@ void Map::initWorld(int level) {
           bool hasThing = oneIn(9);  
           if (hasThing) {
             // bool type2 = oneIn(3);  
+            const ObjDef& randDescNotYet = Obj::randObjDesc(); // FIXME: Obj doesn't work this way, because ObjEnum rules everything.
+            /* TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent.
+            */
+
             ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
             int ilevel = Levelize::suggestLevel(level);
             cell.item.setObj(new Obj(otype, ilevel));
