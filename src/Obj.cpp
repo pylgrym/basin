@@ -14,7 +14,7 @@ bool IsVowel(TCHAR c) {
   return (pos >= 0);
 }
 
-std::string Obj::an_item() const {
+std::string Obj::an_item() const { // based on some_item.
   CString s = some_item();
   TCHAR first = s[2];
   bool isVowel = IsVowel(first);
@@ -28,21 +28,23 @@ std::string Obj::an_item() const {
   return std::string(CT2A(s));
 }
 
-std::string Obj::the_item() const {
+std::string Obj::the_item() const { // based on some_item.
   CString s = some_item();
   s.Replace(L".", L"the");  
   return std::string(CT2A(s));
 }
 
-std::string Obj::indef_item() const { 
+std::string Obj::indef_item() const { // based on some_item.
   CString s = some_item();
-  s.Replace(L".", L"");  
+  s.Replace(L". ", L"");  
   return std::string(CT2A(s));
 }
 
 
 CString Obj::some_item() const {
-  const char* sA = typeAsDescA(otype());
+  //const char* sA = typeAsDescA(otype());
+  const char* sA = objdef->desc; 
+
   CA2T udesc(sA);
   CString s = udesc;
   CA2T uspell(Spell::type2desc(effect), CP_ACP); // CP_UTF8);
@@ -175,7 +177,7 @@ ObjDef objDefs[] = {
 };
 
 
-const TCHAR* Obj::typeAsStr(ObjEnum type) {
+const TCHAR* Obj::otypeAsStr(ObjEnum type) {
   /* JG: This was/is used for the tilemap-keyname assoc.:
   */
   static std::vector<CString> thingKeys;
@@ -258,7 +260,7 @@ const char* Obj::flavorUse(ObjEnum type) {
 }
 
 
-const char* Obj::typeAsDescA(ObjEnum type) { // TCHAR*
+const char* Obj::typeAsDescA(ObjEnum type) { // not currently used!
   const ObjDef& od = objDesc(type);
   //const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
   //if (type >= 0 && type < numObjDefs) {

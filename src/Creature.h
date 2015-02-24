@@ -71,7 +71,7 @@ public:
     return true;
   }
 
-  const char* typeS() { return typeAsStr(type());  }
+  const char* typeS() { return ctypeAsStr(type());  }
 
   bool empty() const { return type() == CR_None; }
   bool blocked() const { return isBlockingCreature(type());  }
@@ -80,7 +80,7 @@ public:
   void setMob(Mob* m_) { m = m_; }
 
   static const MobDef&  mobDef(CreatureEnum type);
-  static const char* typeAsStr(CreatureEnum type);
+  static const char* ctypeAsStr(CreatureEnum type);
   static const char* ctypeAsDesc(CreatureEnum type);
 
   static bool isBlockingCreature(CreatureEnum type);

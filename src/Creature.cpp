@@ -80,7 +80,7 @@ const MobDef&  Creature::mobDef(CreatureEnum type) {
   return mobDefs[type]; 
 }
 
-const char* Creature::typeAsStr(CreatureEnum type) { // TCHAR
+const char* Creature::ctypeAsStr(CreatureEnum type) { // TCHAR
   /*
   static std::vector<CString> creatureKeys;
   if (creatureKeys.size() == 0) {

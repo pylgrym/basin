@@ -38,9 +38,11 @@ void Map::addObjAtPos(CPoint pos,int level) {
   assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
-  ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-  Obj* newObj = new Obj(otype,level);
-  if (otype == OB_Lamp) {
+
+  const ObjDef& ranDef = Obj::randObjDesc();
+  //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
+  Obj* newObj = new Obj(ranDef,level); // otype
+  if (newObj->otype() == OB_Lamp) {
     newObj->itemUnits += rnd(500, 2500);
   }
   cell.item.setObj(newObj);
@@ -122,8 +124,9 @@ void Map::initWorld(int level) {
           bool hasThing = oneIn(4);
           if (hasThing) {
             ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
+            const ObjDef& goldType = Obj::objDesc(OB_Gold);
             int ilevel = Levelize::suggestLevel(level);
-            cell.item.setObj(new Obj(otype,ilevel));
+            cell.item.setObj(new Obj(goldType,ilevel));
           }
         }
 
@@ -131,13 +134,14 @@ void Map::initWorld(int level) {
           bool hasThing = oneIn(9);  
           if (hasThing) {
             // bool type2 = oneIn(3);  
-            const ObjDef& randDescNotYet = Obj::randObjDesc(); // FIXME: Obj doesn't work this way, because ObjEnum rules everything.
+            //const ObjDef& randDescNotYet = Obj::randObjDesc(); // FIXME: Obj doesn't work this way, because ObjEnum rules everything.
             /* TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent.
             */
 
-            ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
+            //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
+            const ObjDef& objType = Obj::randObjDesc(); // objDesc(OB_Gold);
             int ilevel = Levelize::suggestLevel(level);
-            cell.item.setObj(new Obj(otype, ilevel));
+            cell.item.setObj(new Obj(objType, ilevel));
           }
         }
         /*

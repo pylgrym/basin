@@ -69,7 +69,9 @@ struct ObjDef { // For declaring POD struct sets. Intention is to eventually rea
 
 class Obj {
 public:
-  ObjEnum type;
+  const ObjDef* objdef;
+  //ObjEnum oldtype; // Don't use this, use objdef.
+
   int ilevel;
 
   SpellEnum effect;
@@ -79,16 +81,23 @@ public:
   int itemUnits; // food'charges', light'charges', gold 'charges', etc.
   int ac; // armour item armour class.
 
-  virtual ObjEnum otype() const { return type; }
+  virtual ObjEnum otype() const { 
+    return objdef ? objdef->type : OB_Lamp; // oldtype;
+  }
 
+  /*
+  Obj():objdef(NULL)
+    //,oldtype(OB_None)
+    , effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ilevel(0), ac(1) { clear(); }
+  */
 
-  Obj():type(OB_None), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ilevel(0), ac(1) { clear(); }
-
-
-  Obj(ObjEnum type_, int level_) :type(type_), ilevel(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0),ac(1) {
-
+  // ObjEnum type_,
+  Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
+    //,oldtype(OB_Bandage) // type_)
+    ,ilevel(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ac(1) 
+  {
     effect = Spell::rndSpell();
-    const ObjDef& desc = Obj::objDesc(type);
+    const ObjDef& desc = objdef_; // Obj::objDesc(type);
     if (desc.eqtype != EQ_None) {
       eqslot = desc.eqtype; // Equ::rndSlot();
     } else {
@@ -187,8 +196,8 @@ public:
 
   static const ObjDef& objDesc(ObjEnum type);
 
-  static const TCHAR* typeAsStr(ObjEnum type);
-  static const TCHAR* typeAsDescU(ObjEnum type);
+  static const TCHAR* otypeAsStr(ObjEnum type);
+  // static const TCHAR* typeAsDescU(ObjEnum type);
   static const char* typeAsDescA(ObjEnum type);
 
   static const char* flavorUse(ObjEnum type);
@@ -210,7 +219,7 @@ public:
 
   void setObj(Obj* o_) { o = o_; }
 
-  const TCHAR* typeS() { return Obj::typeAsStr(type());  }
+  const TCHAR* typeS() { return Obj::otypeAsStr(type());  }
 
   bool empty() const { return type() == OB_None; }
 

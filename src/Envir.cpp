@@ -37,7 +37,7 @@ bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
 }
 
 
-const TCHAR* Envir::typeAsStr(EnvirEnum type) {
+const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
   static std::vector<CString> envirKeys;
   if (envirKeys.size() == 0) {
     envirKeys.resize(EN_MaxLimit);

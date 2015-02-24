@@ -529,20 +529,20 @@ PlayerMob* PlayerMob::createPlayer() {
   PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
 
   std::stringstream ignore;
-  Bag::bag.add(new Obj(OB_Hat,1), ignore);
-  Bag::bag.add(new Obj(OB_Sword,1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Hat), 1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Sword), 1), ignore);
 
   // Bag::bag.add(new Obj(OB_Gold),ignore);
-  Obj* firstLamp = new Obj(OB_Lamp,1);
+  Obj* firstLamp = new Obj(Obj::objDesc(OB_Lamp), 1);
   firstLamp->itemUnits = 3700;
   Bag::bag.add(firstLamp, ignore);
 
-  Bag::bag.add(new Obj(OB_Hat,1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Hat), 1), ignore);
 
-  Bag::bag.add(new Obj(OB_Potion,1), ignore);
-  Bag::bag.add(new Obj(OB_Scroll,1), ignore);
-  Bag::bag.add(new Obj(OB_Food,1), ignore);
-  Bag::bag.add(new Obj(OB_Pickaxe,1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Potion), 1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Scroll), 1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
+  Bag::bag.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
   return player;
 }
 
