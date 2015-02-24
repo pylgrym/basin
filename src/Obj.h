@@ -9,6 +9,8 @@
 
 #include "numutil/myrnd.h"
 
+#include "Persist.h"
+
 
 enum ObjEnum {
   OB_None=0,
@@ -198,6 +200,11 @@ public:
   virtual ObjEnum type() const;
   Obj* o;
   ObjSlot():o(NULL) {} 
+
+  bool persist(class Persist& p) {
+    p.os << (void*) o;
+    return true;
+  }
 
   void setObj(Obj* o_) { o = o_; }
 

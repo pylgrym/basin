@@ -1,5 +1,9 @@
 #pragma once
 
+#include <ostream>
+
+#include "Persist.h"
+
 enum CreatureEnum {
   CR_None=0,
   CR_Player=1,
@@ -61,6 +65,11 @@ public:
   CreatureEnum type() const;
   class Mob* m;
   Creature():m(NULL){}
+
+  bool persist(class Persist& p) {
+    p.os << (void*)m;
+    return true;
+  }
 
   const char* typeS() { return typeAsStr(type());  }
 

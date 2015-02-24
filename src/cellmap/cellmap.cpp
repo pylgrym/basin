@@ -323,3 +323,13 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
 }
 
 
+bool Map::persist(Persist& p) {
+  for (int x = 0; x < Width; ++x) {
+    CellColumn& column = (*this)[x];
+    for (int y = 1; y < Height; ++y) {
+      Cell& cell = column[y];
+      cell.persist(p);
+    }
+  }
+  return true;
+}

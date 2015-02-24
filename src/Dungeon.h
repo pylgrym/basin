@@ -16,5 +16,11 @@ public:
   void initDungeon();
   void initPlayerForMap(); // JG, All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
   void initMobs();
+
+  bool persist(class Persist& p) {
+    map.persist(p);
+    mobs.persist(p);
+    return true;
+  }
 };
 

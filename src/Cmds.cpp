@@ -5,6 +5,8 @@
 
 #include "MobQueue.h"
 
+#include <fstream>
+
 /* Todos: 
  - "DONE" a dashboard on the right or bottom, with stats (or just a command to print them?)
    (Q will show current stats.)
@@ -349,4 +351,25 @@ bool StairCmd::Do(std::ostream& err) {
 
   Cuss::clear(true);
   return true;
+}
+
+
+
+bool SaveCmd::Do(std::ostream& err) {
+  const char* file = "basin.sav";
+  std::ofstream os(file);
+  Persist p(os);
+  //status87
+  bool bSaveOK = CL->persist(p);
+  err << "You saved:" << bSaveOK;
+  return bSaveOK;
+  /*fixme/todo: instead of 'save' and ostream,
+  change it to 'persist', called with a persistObj,
+  which includes a 'direction' (save or load), 
+  and add something that allows us to persist integers (and doubles?),
+  with something like '
+  persistObj.transfer(& item, "label");
+  on top, we need something like handling lists with lengths, possibly specifying the length at front.
+  also
+  */
 }

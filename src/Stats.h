@@ -14,6 +14,8 @@ public:
   std::string name;
   void roll();
   int mdf() const; // Beware, I have two different mechanisms active for this..
+
+  bool persist(class Persist& p);
 };
 
 /* I don't like this interface,
@@ -93,6 +95,8 @@ public:
   void initXP();
   void gainKillXP(int mobLevel);
   void gainLevel();
+
+  bool persist(class Persist& p);
 
   // static Stats stats;
   static int statModifyEffect[18 + 1];

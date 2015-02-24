@@ -355,3 +355,32 @@ void Stats::showStats() {
   pr(s);
   // Cuss::prtL(s.str().c_str());  
 }
+
+
+
+bool Stats::persist(Persist& p) {
+  Str.persist(p);
+  Int.persist(p);
+  Dex.persist(p);
+  Con.persist(p);
+  Wis.persist(p);
+  Chr.persist(p);
+
+  p.os << this->theLevel;
+  p.os << this->maxHP;
+  p.os << this->hp;
+  p.os << this->xp;
+  p.os << this->xpToLevel;
+  p.os << this->ac;
+  p.os << this->toHit;
+  p.os << this->hunger;
+  p.os << this->confused;
+  p.os << this->gold;
+  return true;
+}
+
+
+bool Stat::persist(Persist& p) {
+  p.os << this->v;
+  return true;
+}

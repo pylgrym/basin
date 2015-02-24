@@ -1,6 +1,9 @@
 #pragma once
 
 #include "numutil/myrnd.h"
+#include <ostream>
+
+#include "Persist.h"
 
 enum EnvirEnum {
   EN_Floor=0,
@@ -17,6 +20,11 @@ public:
   EnvirEnum type;
   bool permLight;
   int envUnits; // E.g. strength of rock.
+
+  bool persist(class Persist& p) {
+    p.os << type;
+    return true;
+  }
 
   Envir():type(EN_Floor), permLight(false) {
     envUnits = rnd(50, 1500);

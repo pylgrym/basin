@@ -23,15 +23,15 @@ public:
   Envir envir;
   ObjSlot item; 
   Creature creature;
-  char cc;
-  CPoint overlay;
+  char cc;        // doesn't need save.
+  CPoint overlay; // doesn't need save.
 
   Cell() {
-    clearChar(); 
+    zclearChar(); 
   }
 
-  bool charEmpty() const { return cc == '\0';  }
-  void clearChar() { cc = '\0';  }
+  bool zcharEmpty() const { return cc == '\0';  }
+  void zclearChar() { cc = '\0';  }
 
   bool light() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
   void markWalls() { envir.markWalls();  }
@@ -44,6 +44,14 @@ public:
 
   bool hasOverlay() const { return !!(overlay == CPoint(0, 0));  }
   void clearOverlay() { overlay = CPoint(0, 0);  }
+
+  bool persist(class Persist& p) {
+    envir.persist(p);
+    item.persist(p);
+    creature.persist(p);
+    return true;
+  }
+
 };
 
 
@@ -94,6 +102,7 @@ public:
   CPoint findFreeEnvir(EnvirEnum type);
   CPoint findNextEnvir(CPoint start, EnvirEnum type);
 
+  bool persist(class Persist& p);
 };
 
 

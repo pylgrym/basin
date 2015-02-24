@@ -13,6 +13,7 @@ struct MobReady {
   bool operator > (const MobReady& rhs) const;
   
   //  bool operator > (const MobReady& rhs) const { return when > rhs.when; }
+  bool persist(class Persist& p);
 };
 
 
@@ -70,5 +71,13 @@ public:
   bool dispatchFirst();
 
   // static MobQueue mobs;
+  bool persist(class Persist& p) {
+    ReadyQueue::iterator i;
+    for (i = queue.begin(); i != queue.end(); ++i) {
+      MobReady& mr = *i;
+      mr.persist(p);
+    }
+    return true;
+  }
 };
 

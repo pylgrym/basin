@@ -458,3 +458,9 @@ public:
     return true; 
   }
 };
+
+
+class SaveCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};

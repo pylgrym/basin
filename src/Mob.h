@@ -129,6 +129,11 @@ public:
     }
   }
 
+  bool persist(class Persist& p) {
+    p.os << "pos: " << pos.x << " " << pos.y;
+    stats.persist(p);
+    return true;
+  }
 };
 
 
