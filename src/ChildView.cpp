@@ -265,7 +265,8 @@ void CChildView::OnPaint() {
 
 
       if (!cell.item.empty()) { 
-        tiles.drawTile(vp.p.x, vp.p.y, cell.item.typeS(), dc, true,255); // false);  // THINGS
+        CString tile = CA2T(cell.item.atypeS()); // .c_str()
+        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, true,255); // false);  // THINGS
 
         int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));

@@ -196,11 +196,14 @@ public:
 
   static const ObjDef& objDesc(ObjEnum type);
 
+  static const char* objdefAsStr(const ObjDef& def);
   static const TCHAR* otypeAsStr(ObjEnum type);
   // static const TCHAR* typeAsDescU(ObjEnum type);
   static const char* typeAsDescA(ObjEnum type);
 
   static const char* flavorUse(ObjEnum type);
+
+  static std::string make_indef_item(const std::string& s);
 };
 
 
@@ -209,6 +212,7 @@ public:
 class ObjSlot { // We have two layers, so we can have virtuals - otherwise, Obj could just be a 'value' type.
 public:
   virtual ObjEnum type() const;
+  virtual const ObjDef& objDef() const;
   Obj* o;
   ObjSlot():o(NULL) {} 
 
@@ -219,7 +223,9 @@ public:
 
   void setObj(Obj* o_) { o = o_; }
 
-  const TCHAR* typeS() { return Obj::otypeAsStr(type());  }
+  const TCHAR* oldtypeS() { return Obj::otypeAsStr(type()); }
+  //const TCHAR*    utypeS() { return Obj::objdefAsStr(objDef()); }
+  const char*    atypeS()  { return Obj::objdefAsStr(objDef()); }
 
   bool empty() const { return type() == OB_None; }
 

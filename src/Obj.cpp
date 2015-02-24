@@ -8,6 +8,8 @@
 
 #include "Levelize.h"
 
+#include <assert.h>
+
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiouy";
   int pos = vowels.Find(c);
@@ -32,6 +34,14 @@ std::string Obj::the_item() const { // based on some_item.
   CString s = some_item();
   s.Replace(L".", L"the");  
   return std::string(CT2A(s));
+}
+
+
+std::string Obj::make_indef_item(const std::string& s) {
+  //CA2T tmpU(s, CP_ACP);
+  CString sU = CA2T(s.c_str(), CP_ACP); // tmpU;
+  sU.Replace(L". ", L"");
+  return std::string(CT2A(sU));
 }
 
 std::string Obj::indef_item() const { // based on some_item.
@@ -169,13 +179,33 @@ ObjDef objDefs[] = {
 { OB_Weapon, EQ_MainHand, ". double sword", 40, "1d6",4.5 },
 { OB_Weapon, EQ_MainHand, ". urgrosh", 30, "1d12",4 },
 
+/* 
 { OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
 { OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
 { OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
 { OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
 { OB_Weapon, EQ_MainHand, ".", 5, "1d6" },
+*/
 };
 
+const char* Obj::objdefAsStr(const ObjDef& def) {
+  const ObjDef* defptr = &def;
+  int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
+  static std::vector< std::string > shortNames;
+  if (shortNames.size() == 0) {
+    const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+    shortNames.resize(numObjDefs);
+    // std::ofstream theset("theset.key");
+    for (int i = 0; i < numObjDefs; ++i) {
+      std::string sName = Obj::make_indef_item(objDefs[i].desc);
+      shortNames[i] = sName;
+      // theset << "\"" << sName << "\"" << " " << i % 40 << " 11\n";
+    }
+  }
+  assert(ix >= 0);
+  assert(ix < (int) shortNames.size());
+  return shortNames[ix].c_str();
+}
 
 const TCHAR* Obj::otypeAsStr(ObjEnum type) {
   /* JG: This was/is used for the tilemap-keyname assoc.:
@@ -306,6 +336,11 @@ const char* Obj::typeAsDescA(ObjEnum type) { // not currently used!
 ObjEnum ObjSlot::type() const {
   return o != NULL ? o->otype() : OB_None;
 }
+
+const ObjDef& ObjSlot::objDef() const {
+  return o != NULL ? *o->objdef : Obj::objDesc(OB_None);
+}
+
 
 
 
