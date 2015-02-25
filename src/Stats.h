@@ -44,6 +44,7 @@ public:
   void setLevel(int level_);
   int level() const { return theLevel;  }
 
+  void initStats();
   void calcStats();
 
   enum StatEnums { HitDie = 5};
@@ -66,7 +67,9 @@ public:
   bool isConfused() const { return (confused > 0);  }
 
   int calcMaxHP();
-  int calcAC();
+  int calcTotalAC();
+  int calcBaseAC();
+
   int calcToHit(std::ostream& os);
 
   void repToHit(std::ostream& os) {

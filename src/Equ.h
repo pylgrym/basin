@@ -44,6 +44,7 @@ public:
   bool canEquipSlot(EquipSlotEnum slot) const; // { return canUnequipSlot(slot); } // means same thing. (you can only equip, IF you can unequip previous.)
   bool canEquipItem(Obj* item) const; // { return true; } // FIXME: You really need the class/player info to determine this.
 
+  int calcWornAC();
 
   void showWorn();
   Obj* pick(const char* prompt);

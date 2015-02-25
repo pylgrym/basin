@@ -179,6 +179,17 @@ bool Equ::isWeapon(EquipSlotEnum slot) {
 
 
 
+int Equ::calcWornAC() {
+  int totalAC = 0;
+  for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+    EquipSlotEnum slot = (EquipSlotEnum)i;
+    Obj* o = equ[slot];
+    if (o != NULL) {
+      totalAC += o->ac;
+    }
+  }
+  return totalAC;
+}
 
 
 void Equ::showWorn() {

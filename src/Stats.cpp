@@ -58,6 +58,8 @@ void Stats::setLevel(int level_) {
   theLevel = level_;
 }
 
+
+
 Stats::Stats(int mlevel)
 :theLevel(mlevel)
 ,hunger(1500)
@@ -88,20 +90,25 @@ Stats::Stats(int mlevel)
 
   debstr() << " level is:" << level() << "\n";
   // for (int i = 1; i < level; ++i) { } // For filling up hit points.
-  calcStats();
-
+  initStats();
   initXP();
+}
+
+
+void Stats::initStats() {
+  calcStats();
+  hp = maxHP; // We can't do that in 'calcStats', or user would get too many hp.
 }
 
 
 void Stats::calcStats() {
   maxHP = calcMaxHP();
-  hp = maxHP;
-  ac = calcAC();
+  ac = calcTotalAC();
 
   std::stringstream dummy;
   toHit = calcToHit(dummy);
 }
+
 
 void Stats::initXP() {
   const int XpLevelScale = 10;
@@ -121,16 +128,23 @@ void Stats::gainKillXP(int mobLevel) {
 void Stats::gainLevel() {
   int remainder = xp - xpToLevel;
   theLevel += 1;
-  calcStats();
+  calcStats(); // initStats();
   initXP();
   logstr log; log << "You have gained a level!";
 }
 
-int Stats::calcAC() {
+int Stats::calcBaseAC() {
   // s["dex"]
   int dexMod = Dex.mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
   int val_ac = (level()/2) + dexMod; // You get half your level as AC contribution.
   return val_ac;
+}
+
+int Stats::calcTotalAC() {
+  int base = calcBaseAC();
+  int wornAC = Equ::worn.calcWornAC();
+  int total = base + wornAC;
+  return total;
 }
 
 int Stats::calcToHit(std::ostream& os) {
@@ -272,6 +286,9 @@ void Stats::passTime() {
   and cooldowns. Possibly this is not the proper place to handle all than.
   OTOH, a lot of them might affect stats.
   */
+
+  ac = calcTotalAC(); // Don't update all stats, just this one.. so far.
+
   updateHunger();
   updateConfusion();
 

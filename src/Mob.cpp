@@ -220,7 +220,16 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   } else { // Else, chase the player:
     debstr() << "I am far from player and will chase!\n";
     std::stringstream ss;
-    bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
+    WalkCmd walk(*this, dir.x, dir.y, false);
+    if (!walk.legal(ss)) { // If moving straight across is blocked..
+      CPoint dirV = dir, dirH = dir;
+      dirV.x = 0; dirH.y = 0;
+      walk.newpos = (pos + dirV); // what about going vertical?
+      if (!walk.legal(ss)) { // if vertical doesn't work, what about horizontal?
+        walk.newpos = (pos + dirH);
+      }
+    }
+    bool bLegal = walk.Do(ss);
   }
 
   if (lowHealth()) {
