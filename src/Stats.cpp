@@ -66,6 +66,8 @@ Stats::Stats(int mlevel)
 ,confused(0)
 ,gold(0)
 ,xp(0)
+,mana(0)
+,maxMana(0)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 

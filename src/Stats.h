@@ -52,6 +52,10 @@ public:
   int hp;
   int xp;
   int xpToLevel;
+
+  int mana;
+  int maxMana;
+
   //int baseHP; 
   // std::vector<int> hp_rolls; 
   int ac;

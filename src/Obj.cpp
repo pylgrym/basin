@@ -346,4 +346,5 @@ void Obj::initRandom() { // - clear should not init.
 
   // Dice(rndC(1, 4), rndC(2, 12));
   dmgDice = Levelize::randDiceForLevel(ilevel);
+  ac = Levelize::suggestLevel(ilevel);
 }
