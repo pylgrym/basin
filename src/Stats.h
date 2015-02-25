@@ -39,9 +39,10 @@ public:
   Stat& stat(const char* name);
 
   // void addStat(const std::string& name);
-  Stats(int level_);
+  Stats(int level_, bool bPlayer_);
   ~Stats();
 
+  bool isPlayer; // important for some calcs, because of singleton-silliness (no player stats for mobs..)
   int theLevel;
   void setLevel(int level_);
   int level() const { return theLevel;  }

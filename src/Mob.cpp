@@ -10,8 +10,8 @@
 #include <iomanip>
 #include "Levelize.h"
 
-Mob::Mob(int mlevel)
-  :stats(mlevel)
+Mob::Mob(int mlevel, bool bIsPlayer_)
+  :stats(mlevel,bIsPlayer_)
 {
 
   // mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
@@ -319,7 +319,7 @@ std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The or
 
 PlayerMob* PlayerMob::ply = NULL;
 
-PlayerMob::PlayerMob():Mob(1) { 
+PlayerMob::PlayerMob():Mob(1, true) { 
   ply = this;  
   dungLevel = 1;
   theLightStrength = 1;
@@ -405,13 +405,16 @@ int PlayerMob::digStrength() {
 bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
   Obj* oldItem = NULL;
   if (!Equ::worn.replaceItem(obj, &oldItem, err)) { return false;  }
+  debstr() << "after replaceItem, old:" << (void*) oldItem << "\n";
 
   bool bOK = false;
   bOK = Bag::bag.remove(obj, err); // Item must be removed from bag.
   if (!bOK) { return false;  }
   if (oldItem != NULL) { // old item must go back in the bag.
-    logstr log;  log << "You put the old item in your bag.";
+    logstr log; log << "You put the old item in your bag.";
     bOK = Bag::bag.add(oldItem, err);
+  } else {
+    logstr log; log << "No old item..";
   }
   return bOK;
 }

@@ -54,7 +54,7 @@ enum MoodEnum {
 
 class Mob {
 public:
-  Mob(int mlevel); // void);
+  Mob(int mlevel, bool bIsPlayer_); // void);
   ~Mob(void);
 
   CreatureEnum m_mobType; // better access it through ctype.
@@ -194,7 +194,7 @@ public:
 
 class MonsterMob : public Mob {
 public:
-  MonsterMob(int mlevel) :Mob(mlevel){}
+  MonsterMob(int mlevel) :Mob(mlevel, false) {}
 
   virtual double act(); // returns time that action requires (0 means keep doing actions/keep initiative.)
 

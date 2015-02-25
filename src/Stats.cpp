@@ -60,7 +60,7 @@ void Stats::setLevel(int level_) {
 
 
 
-Stats::Stats(int mlevel)
+Stats::Stats(int mlevel, bool bPlayer_)
 :theLevel(mlevel)
 ,hunger(1500)
 ,confused(0)
@@ -68,6 +68,7 @@ Stats::Stats(int mlevel)
 ,xp(0)
 ,mana(0)
 ,maxMana(0)
+,isPlayer(bPlayer_)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
