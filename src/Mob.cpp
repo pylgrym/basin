@@ -414,7 +414,8 @@ bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
     logstr log; log << "You put the old item in your bag.";
     bOK = Bag::bag.add(oldItem, err);
   } else {
-    logstr log; log << "No old item..";
+    // Beware that weapon-unequip will handle stuff by itself (swapping or putting in bag.)
+    //logstr log; log << "No old item..";
   }
   return bOK;
 }

@@ -40,28 +40,27 @@ bool Equ::isWeaponEquipped(EquipSlotEnum newslot) const {
 }
 
 
-bool Equ::unequipWeaponSlot(EquipSlotEnum newslot, std::ostream& err) {
-  Obj* objStash = NULL;
+bool Equ::unequipWeaponSlot(EquipSlotEnum newslot, Obj** objStash, std::ostream& err) {
   //bool Equ::unequipSlot(EquipSlotEnum slot, Obj** objStash, std::ostream& err) { // returns false if not possible (if e.g. worn is cursed.)
 
-  if (isSlotEquipped(EQ_2Hands)) { return unequipSlot(EQ_2Hands, &objStash, err); } // If a 2hander is equipped, it blocks any weapon.
+  if (isSlotEquipped(EQ_2Hands)) { return unequipSlot(EQ_2Hands, objStash, err); } // If a 2hander is equipped, it blocks any weapon.
 
-  if (isSlotEquipped(newslot)) { return unequipSlot(newslot, &objStash, err);  } // If same slot is equipped, it obviously blocks.
+  if (isSlotEquipped(newslot)) { return unequipSlot(newslot, objStash, err);  } // If same slot is equipped, it obviously blocks.
 
   bool bOK = false;
 
   if (newslot == EQ_2Hands) { // If we want to equip a 2hander, any weapon slot blocks.
     if (isSlotEquipped(EQ_MainHand)) { 
       if (!Bag::bag.canAdd()) { err << "Bag is full.";  return false; }
-      if (!unequipSlot(EQ_MainHand, &objStash, err)) { return false;  }      
-      bOK = Bag::bag.add(objStash, err); // unequipped things must go in bag. 
-      objStash = NULL;
+      if (!unequipSlot(EQ_MainHand, objStash, err)) { return false;  }      
+      bOK = Bag::bag.add(*objStash, err); // unequipped things must go in bag. 
+      *objStash = NULL;
     }
     if (isSlotEquipped(EQ_OffHand)) { 
       if (!Bag::bag.canAdd()) { err << "Bag is full.";  return false; }
-      if (!unequipSlot(EQ_OffHand, &objStash, err)) { return false;  }
-      bOK = Bag::bag.add(objStash, err); // unequipped things must go in bag.
-      objStash = NULL;
+      if (!unequipSlot(EQ_OffHand, objStash, err)) { return false;  }
+      bOK = Bag::bag.add(*objStash, err); // unequipped things must go in bag.
+      *objStash = NULL;
     }
     return true;
   }
@@ -126,7 +125,7 @@ bool Equ::replaceItem(Obj* newItem, Obj** objStash, std::ostream& err) { // comb
   if (isWeapon(newItem->eqslot)) {
     if (isWeaponEquipped(newItem->eqslot)) {
       logstr log;  log << "You unequip the old weapon.";
-      if (!unequipWeaponSlot(newItem->eqslot, err)) {
+      if (!unequipWeaponSlot(newItem->eqslot, objStash, err)) {
         return false;
       }
     }

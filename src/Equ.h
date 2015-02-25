@@ -32,7 +32,7 @@ public:
   bool equipItem(Obj* item, std::ostream& err); // returns false if not possible (if e.g. worn is cursed.)
   bool unequipItem(Obj* item, std::ostream& err); // returns false if not possible (if e.g. worn is cursed.)
   bool unequipSlot(EquipSlotEnum slot, Obj** objStash, std::ostream& err);
-  bool unequipWeaponSlot(EquipSlotEnum newslot, std::ostream& err);
+  bool unequipWeaponSlot(EquipSlotEnum newslot, Obj** objStash, std::ostream& err);
 
   // Rule: 'inspectors' don't report errors, only 'actions' report errors.
 
