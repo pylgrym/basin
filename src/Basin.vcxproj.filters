@@ -108,6 +108,9 @@
     <ClInclude Include="Persist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Encumb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -189,6 +192,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Persist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Encumb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

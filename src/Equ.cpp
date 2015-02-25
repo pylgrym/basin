@@ -191,6 +191,19 @@ int Equ::calcWornAC() {
 }
 
 
+double Equ::wornWeight() {
+  double totalWeight = 0;
+  for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+    EquipSlotEnum slot = (EquipSlotEnum)i;
+    Obj* o = equ[slot];
+    if (o != NULL) {
+      totalWeight += o->weight;
+    }
+  }
+  return totalWeight;
+}
+
+
 void Equ::showWorn() {
   if (equ.size() == 0) {
     Cuss::prtL("Zero items. Nothing. Nada."); 
@@ -214,6 +227,15 @@ void Equ::showWorn() {
     ss << ix << " " << label << descA;
     Cuss::prtL(ss.str().c_str());  
   }
+
+  double wornTotal = wornWeight();
+  double everything = Bag::bag.bagWeight() + wornTotal;
+  std::stringstream ss;
+  ss << "Total weight: " << wornTotal / 10.0 << " kg";
+  ss << " (" << everything / 10.0 << ")";
+  Cuss::prtL(ss.str().c_str());
+
+
   Cuss::invalidate();
 
 }

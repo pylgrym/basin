@@ -49,6 +49,8 @@ public:
   void showWorn();
   Obj* pick(const char* prompt);
 
+  double wornWeight();
+
   /* map slot to 'slot desc  - " on hands, chest, head, neck:
   */
  

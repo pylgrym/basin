@@ -27,6 +27,8 @@ public:
 
   Obj* findItem(ObjEnum otype);
 
+  double bagWeight();
+
   Bag();
   ~Bag();
 
