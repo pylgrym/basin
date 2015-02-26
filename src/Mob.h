@@ -180,7 +180,7 @@ public:
   virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "";  } // "you HIT".
 
-  int dungLevel; // FIXME, handle persist!
+  int dungLevel; // NB!, handle persist!
 
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)
