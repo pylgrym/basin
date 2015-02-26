@@ -19,6 +19,9 @@ public:
 
   void initDungeons(bool loadGame);
 
+  void initNewGame();
+  bool initLoadGame();
+
   bool persist(class Persist& p);
 
   private:

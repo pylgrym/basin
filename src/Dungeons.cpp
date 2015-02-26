@@ -75,18 +75,31 @@ void Dungeons::setCurLevel(int level) {
   Dung::CL = dung;
 }
 
-void Dungeons::initDungeons(bool loadGame) {
-  if (!loadGame) {
-    PlayerMob* player = PlayerMob::createPlayer();
-    Dungeons::setCurLevel(player->dungLevel);
-  } else { //curlevel
-    // Consider using LoadCmd here:
-    const char* file = "basin.sav";
-    std::ifstream is(file);
-    Persist p(is);
-    bool bLoadOK = persist(p); // Dungeons::the_dungeons.
 
+void Dungeons::initNewGame() {
+  PlayerMob* player = PlayerMob::createPlayer();
+  Dungeons::setCurLevel(player->dungLevel);
+}
+
+bool Dungeons::initLoadGame() {
+  // Consider using LoadCmd here:
+  const char* file = "basin.sav";
+  std::ifstream is(file);
+  Persist p(is);
+  bool bLoadOK = persist(p); // Dungeons::the_dungeons.
+  return bLoadOK;
+}
+
+void Dungeons::initDungeons(bool loadGame) {
+  bool bDone = false;
+  if (loadGame) {
+    bDone = initLoadGame();
   }
+
+  if (!bDone) {
+    initNewGame();
+  }
+
   PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
 
   // This is a little bit bad(?), because it even

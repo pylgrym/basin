@@ -80,10 +80,29 @@ bool MobReady::persist(Persist& p) {
   int isPlayer = (mob ? mob->isPlayer() : 0);
   p.transfer(isPlayer, "isPlayer");
 
-  if (!p.bOut) { 
-    if (isPlayer) { mob = new PlayerMob; } else { mob = new MonsterMob(1); } // in MobReady::persist.
+  /* FIXME/refactor: figure out a more elegant way to persist player a single time,
+  and still keep him in many queues.
+  */
+  bool bFirstPlayer = false;
+  if (!p.bOut) { // IE it's read-in.
+    if (isPlayer) {
+      if (PlayerMob::ply == NULL) { // Only create a single instance.
+        mob = new PlayerMob; 
+        bFirstPlayer = true;
+      } else {
+        mob = PlayerMob::ply;
+      }
+    } else { 
+      mob = new MonsterMob(1); 
+    } // in MobReady::persist.
   }
-  return mob->persist(p);
+  bool bOK = true;
+
+  if (p.bOut || bFirstPlayer) { // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
+    bOK = mob->persist(p);
+  }
+
+  return bOK;
 }
 
 
