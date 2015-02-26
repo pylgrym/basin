@@ -385,3 +385,30 @@ void Obj::initRandom() { // - clear should not init.
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);
 }
+
+
+bool Obj::persist(Persist& p, CPoint& pos) {
+  // objdef
+  int objdef_ix = 1; // FIXME, ix.
+  p.transfer(objdef_ix, "objdef_ix");
+  if (!p.bOut) {
+    objdef = &Obj::objDesc((ObjEnum) objdef_ix);
+  }
+
+  p.transfer(pos.x, "posx");
+  p.transfer(pos.y, "posy");
+
+  p.transfer(ilevel, "ilevel");
+  p.transfer(weight, "weight");
+  p.transfer(itemUnits, "itemunits");
+  p.transfer(ac, "ac");
+  p.transfer(charges, "charges");
+  p.transfer(consumed, "consumed");
+  p.transfer(toHit, "tohit");
+  p.transfer(toDmg, "todmg");
+  p.transfer(dmgDice.n, "dmgDice_n");
+  p.transfer(dmgDice.x, "dmgDice_x");
+  // eqslot // FIXME, should come from ObjDef anyway (and is enum, on top of that.)
+  // SpellEnum effect; // FIXME.
+  return true;
+}

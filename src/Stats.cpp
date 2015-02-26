@@ -402,6 +402,6 @@ bool Stats::persist(Persist& p) {
 
 
 bool Stat::persist(Persist& p) {
-  p.os << this->v;
+  p.transfer(v, this->name.c_str()); // p.os << this->v;
   return true;
 }

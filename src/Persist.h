@@ -36,6 +36,16 @@ public:
     return true;
   }
 
+  bool transfer(bool& i, const char* label) {
+    if (bOut) {
+      os << label << " " << i << "\n";
+    }
+    else {
+      is >> i;
+    }
+    return true;
+  }
+
   bool transfer(double& i, const char* label) {
     if (bOut) {
       os << label << " " << i << "\n";

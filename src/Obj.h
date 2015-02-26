@@ -71,15 +71,25 @@ class Obj {
 public:
   const ObjDef* objdef;
   //ObjEnum oldtype; // Don't use this, use objdef.
-
   int ilevel;
+
+  bool persist(Persist& p, CPoint& pos);
 
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot;
-  int weight; // tenths of kilos, 100g.
+  int weight; // tenths of kilos, 100g. // fixme, should be virtual func from objdef.
   int itemUnits; // food'charges', light'charges', gold 'charges', etc.
   int ac; // armour item armour class.
+
+  // BEGIN BEHAVIOUR
+  int charges; // -1 means infinite. (use-charges) (food, potions, scrolls will be 1.)
+  bool consumed; // Will be consumed/destroyed at zero charges.
+
+  // ATTACK/Damage compotent:
+  int toHit; // tohit modifier.
+  int toDmg; // todamage modifier.
+  Dice dmgDice; // The damage this object/weapon can deal.
 
   virtual ObjEnum otype() const { 
     return objdef ? objdef->type : OB_Lamp; // oldtype;
@@ -150,14 +160,6 @@ public:
 
   }
 
-  // BEGIN BEHAVIOUR
-  int charges; // -1 means infinite. (use-charges) (food, potions, scrolls will be 1.)
-  bool consumed; // Will be consumed/destroyed at zero charges.
-
-  // ATTACK/Damage compotent:
-  int toHit; // tohit modifier.
-  int toDmg; // todamage modifier.
-  Dice dmgDice; // The damage this object/weapon can deal.
 
   virtual bool use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
     /* FIXME/TODO: multi-messages must 'prompt with <more>',
