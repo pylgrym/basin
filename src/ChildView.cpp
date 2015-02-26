@@ -40,13 +40,7 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  PlayerMob* player = PlayerMob::createPlayer();
-  // Dungeon* L1 = Dungeons::get(1);
-  Dungeons::setCurLevel(player->dungLevel);
-
-  // This is a little bit bad, because it even
-  // atempts to trigger a redraw, at a time where we don't have any HWND yet..
-  PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
+  Dungeons::the_dungeons.initDungeons(); // actually, the player..
 
   //FIXME: (DARKNESS) img-tiles should be BLACK!
 }

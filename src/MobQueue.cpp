@@ -81,7 +81,7 @@ bool MobReady::persist(Persist& p) {
   p.transfer(isPlayer, "isPlayer");
 
   if (!p.bOut) { 
-    if (isPlayer) { mob = new PlayerMob; } else { mob = new MonsterMob(1); }
+    if (isPlayer) { mob = new PlayerMob; } else { mob = new MonsterMob(1); } // in MobReady::persist.
   }
   return mob->persist(p);
 }

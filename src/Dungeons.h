@@ -17,6 +17,8 @@ public:
   static Dungeon* get(int level);
   static void setCurLevel(int level);
 
+  void initDungeons();
+
   bool persist(class Persist& p);
 
   private:

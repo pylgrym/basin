@@ -69,6 +69,15 @@ void Dungeons::setCurLevel(int level) {
   Dung::CL = dung;
 }
 
+void Dungeons::initDungeons() {
+  PlayerMob* player = PlayerMob::createPlayer();
+  Dungeons::setCurLevel(player->dungLevel);
+  PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
+
+  // This is a little bit bad(?), because it even
+  // atempts to trigger a redraw, at a time where we don't have any HWND yet..
+}
+
 
 Dungeons::Dungeons()
 {
