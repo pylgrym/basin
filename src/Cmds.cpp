@@ -360,7 +360,10 @@ bool SaveCmd::Do(std::ostream& err) {
   std::ofstream os(file);
   Persist p(os);
   //status87
-  bool bSaveOK = CL->persist(p);
+
+  //bool bSaveOK = CL->persist(p);
+  bool bSaveOK = Dungeons::the_dungeons.persist(p);
+
   err << "You saved:" << bSaveOK;
   return bSaveOK;
   /*fixme/todo: instead of 'save' and ostream,
@@ -380,7 +383,10 @@ bool LoadCmd::Do(std::ostream& err) {
   std::ifstream is(file);
   Persist p(is);
   //status87
-  bool bLoadOK = CL->persist(p);
+
+  //bool bLoadOK = CL->persist(p);
+  bool bLoadOK = Dungeons::the_dungeons.persist(p);
+
   err << "You loaded:" << bLoadOK;
   return bLoadOK;
   /*fixme/todo: instead of 'save' and ostream,

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Dungeons.h"
 
+#include "Mob.h"
 
 Dungeons Dungeons::the_dungeons;
 
@@ -23,6 +24,10 @@ Dungeon* Dungeons::implGet(int level) {
 }
 
 bool Dungeons::persist(class Persist& p) {
+  int dungLevel = 1;
+  if (p.bOut) { dungLevel = PlayerMob::ply->dungLevel; }
+  p.transfer(dungLevel, "dungLevel");
+
   int dungeonDepth = dungeons.size();
   p.transfer(dungeonDepth, "dungeonDepth");
   if (!p.bOut) { dungeons.resize(dungeonDepth);  }
