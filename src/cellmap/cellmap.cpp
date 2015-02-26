@@ -364,13 +364,57 @@ bool Map::persist(Persist& p) {
     }
   } else { // Use objCount:
     for (int i = 0; i < objCount; ++i) {
-      transferObj(p);
+      transferObj(p); // NB, WILL lead to Obj::persist eventually.
     }
   }
 
   return true;
 }
 
+
+bool Bag::persist(class Persist& p) {
+  int bagCount = objs.size();
+  p.transfer(bagCount, "bagCount");
+
+  if (!p.bOut) { objs.resize(bagCount);  }
+
+  const ObjDef& dummy = Obj::objDesc(OB_None);
+  for (int i = 0; i < bagCount; ++i) {
+    if (!p.bOut) { objs[i] = new Obj(dummy, 1); }
+    Obj* o = objs[i];
+    CPoint unused;
+    o->persist(p, unused);
+  }
+  return true;
+}
+
+
+bool Equ::persist(class Persist& p) {
+  int equCount = wornCount();
+  p.transfer(equCount, "wornCount");
+
+  if (p.bOut) { // if outputting.
+    for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+      if (equ[i] != NULL) {
+        p.transfer(i, "eqSlot");
+        CPoint unused;
+        equ[i]->persist(p, unused);
+      }
+    } // worn-item-loop.
+  } else { // if reading.
+    const ObjDef& dummy = Obj::objDesc(OB_None);
+    for (int i = 0; i <= equCount; ++i) {
+      int eqSlot = 0;
+      p.transfer(eqSlot, "eqSlot");
+      Obj* o = new Obj(dummy, 1);
+      CPoint unused;
+      o->persist(p, unused);
+      equ[eqSlot] = o;
+    } // worn-item-loop.
+  }
+
+  return true;
+}
 
 
 

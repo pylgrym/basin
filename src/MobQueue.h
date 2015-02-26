@@ -6,6 +6,7 @@
 
 struct MobReady {
   MobReady(double when_, class Mob* mob_) :when(when_), mob(mob_) {}
+  MobReady():when(0),mob(NULL) {}
 
   double when;
   Mob* mob;
@@ -53,7 +54,7 @@ public:
   ReadyQueue queue;
   //int meat2;
   // FIXME, maybe should be a set, not a vector:
-  std::vector<Mob*> globalMobs; // an 'owner' of all mobs, no priority.
+  // std::vector<Mob*> globalMobs; // an 'owner' of all mobs, no priority.
   double globalClock;
 
   MobQueue(); // :globalClock(0), meat1(0xDEADBEEF), meat2(0xDEADBEEF) { }
@@ -62,7 +63,7 @@ public:
     double when = globalClock + delay;
     // MobQueue* that = this;
     queue.push(MobReady(when, mob)); // push_heap.
-    globalMobs.push_back(mob);
+    // globalMobs.push_back(mob);
     /* push, top, pop. push_heap, make_heap, pop_heap. (sort_heap?)
     */
   }
@@ -70,14 +71,6 @@ public:
   void deleteMob(Mob* toDelete);
   bool dispatchFirst();
 
-  // static MobQueue mobs;
-  bool persist(class Persist& p) {
-    ReadyQueue::iterator i;
-    for (i = queue.begin(); i != queue.end(); ++i) {
-      MobReady& mr = *i;
-      mr.persist(p);
-    }
-    return true;
-  }
+  bool persist(class Persist& p);
 };
 

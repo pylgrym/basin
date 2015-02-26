@@ -57,6 +57,27 @@ public:
   Mob(int mlevel, bool bIsPlayer_); // void);
   ~Mob(void);
 
+  bool persist(class Persist& p) {
+    p.transfer(pos.x, "posx"); //
+    p.transfer(pos.y, "posy"); //
+    stats.persist(p);
+
+    p.transfer(speed, "speed"); //
+
+    int intMood = mood;
+    p.transfer(intMood, "mood"); //
+    if (!p.bOut) { mood = (MoodEnum)intMood;  }
+
+    int intSchool = defSchool;
+    p.transfer(intSchool, "defSchool"); //
+    if (!p.bOut) { defSchool = (AttackSchool)intSchool; }
+
+    p.transfer(mobDummyWeapon.n, "mobWeapon_n");
+    p.transfer(mobDummyWeapon.x, "mobWeapon_x");
+
+    return true;
+  }
+
   CreatureEnum m_mobType; // better access it through ctype.
   CPoint pos;
   Stats stats;
@@ -129,14 +150,6 @@ public:
     }
   }
 
-  bool persist(class Persist& p) {
-    p.transfer(pos.x, "posx"); //
-    p.transfer(pos.y, "posy"); //
-    // p.os << "pos: " << pos.x << " " << pos.y;
-
-    stats.persist(p);
-    return true;
-  }
 };
 
 
@@ -167,7 +180,7 @@ public:
   virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "";  } // "you HIT".
 
-  int dungLevel;
+  int dungLevel; // FIXME, handle persist!
 
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)

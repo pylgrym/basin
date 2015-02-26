@@ -387,14 +387,13 @@ int Obj::digStrength() const {
 
 
 void Obj::initRandom() { // - clear should not init.
-  charges = rnd(-1, 7); // 3);
-  consumed = oneIn(2); // true;
+  charges = rnd(-1, 7); 
+  consumed = oneIn(2); 
   toHit = rndC(-2, 5);
   toDmg = rndC(-2, 6);
   weight = rnd(1, 50);
   itemUnits = rnd(20, 400);
 
-  // Dice(rndC(1, 4), rndC(2, 12));
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);
 }
@@ -421,7 +420,11 @@ bool Obj::persist(Persist& p, CPoint& pos) {
   p.transfer(toDmg, "todmg");
   p.transfer(dmgDice.n, "dmgDice_n");
   p.transfer(dmgDice.x, "dmgDice_x");
-  // eqslot // FIXME, should come from ObjDef anyway (and is enum, on top of that.)
-  // SpellEnum effect; // FIXME.
+
+  int int_effect = effect;
+  p.transfer(int_effect, "effect"); // FIXME, better handling of enums; possibly we should make them fixedwidth names(?) or at least not numbers.
+  if (!p.bOut) {
+    effect = (SpellEnum) int_effect;
+  }
   return true;
 }

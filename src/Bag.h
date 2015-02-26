@@ -15,7 +15,7 @@ class Bag
 public:
   enum BagEnum { MaxBagSize = 15 }; //  10}; - 10 is too few..
 
-  BagCont objs; // FIXME, change to vector, change 'add' to append!
+  BagCont objs; // is vector.
 
   bool canAdd() const { return objs.size() < MaxBagSize;  }
   bool add(Obj* o, std::ostream& err);
@@ -31,6 +31,8 @@ public:
 
   Bag();
   ~Bag();
+
+  bool persist(class Persist& p);
 
   static Bag bag;
 };

@@ -10,10 +10,6 @@ MobQueue::MobQueue():globalClock(0)// ,meat1(0xDEADBEEF), meat2(0xDEADBEEF)   //
 {}
 
 
-bool MobReady::persist(Persist& p) {
-  p.transfer(when, "when"); // p.os << when;
-  return mob->persist(p);
-}
 
 
 bool MobReady::operator > (const MobReady& rhs) const { 
@@ -32,9 +28,9 @@ void MobQueue::deleteMob(Mob* toDelete) {
   CL->map[toDelete->pos].creature.clearMob(); // Remove it from the map description.
   toDelete->invalidateGfx(); // Tell graphics system it needs to be redrawn.
 
-  std::vector<Mob*>::iterator i;
-  i = std::find(globalMobs.begin(), globalMobs.end(), toDelete);
-  if (i != globalMobs.end()) { globalMobs.erase(i); }
+  /// std::vector<Mob*>::iterator i;
+  /// i = std::find(globalMobs.begin(), globalMobs.end(), toDelete);
+  /// if (i != globalMobs.end()) { globalMobs.erase(i); }
 
   // JG, : I couldn't implement, because I need my own prio-queue-deque-heap to allow removal.
   ReadyQueue::iterator j; 
@@ -76,3 +72,37 @@ bool MobQueue::dispatchFirst() {
 } // dispatchFirst.
 
 
+
+
+bool MobReady::persist(Persist& p) {
+  p.transfer(when, "when");  
+
+  int isPlayer = (mob ? mob->isPlayer() : 0);
+  p.transfer(isPlayer, "isPlayer");
+
+  if (!p.bOut) { 
+    if (isPlayer) { mob = new PlayerMob; } else { mob = new MonsterMob(1); }
+  }
+  return mob->persist(p);
+}
+
+
+bool MobQueue::persist(class Persist& p) {
+  int mobCount = queue.size();
+  p.transfer(mobCount, "mobCount");
+
+  if (p.bOut) {
+    ReadyQueue::iterator i;
+    for (i = queue.begin(); i != queue.end(); ++i) {
+      MobReady& mr = *i;
+      mr.persist(p);
+    }
+  } else {
+    for (int i = 0; i < mobCount; ++i) {
+      MobReady mr;
+      mr.persist(p);
+      queueMob(mr.mob, mr.when);      
+    }
+  }
+  return true;
+}

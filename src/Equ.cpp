@@ -242,6 +242,14 @@ void Equ::showWorn() {
 
 
 
+int Equ::wornCount() const {
+  int count = 0;
+  for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+    if (equ[i] != NULL) { ++count;  }
+  }
+  return count;
+}
+
 
 
 Obj* Equ::pick(const char* prompt) {
