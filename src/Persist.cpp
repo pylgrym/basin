@@ -4,8 +4,16 @@
 
 Persist::Persist(std::ostream& os_)
 :bOut(true)
+//,dummy2("dummy")
 ,os(os_)
-,is("basin2.sav")
+,is(dummy2) //"basin2.sav")
+{
+}
+
+Persist::Persist(std::istream& is_)
+  :bOut(false)
+  , os(dummy_)
+  , is(is_)
 {
 }
 
