@@ -8,7 +8,7 @@
 class Stat {
 public:
   Stat(const std::string& name_):name(name_) { v = 0; roll();  }
-  Stat():name("nostat?") { v = 0; roll();  }
+  // Stat():name("nostat?") { v = 0; roll();  }
 
   int v; // value.
   std::string name;

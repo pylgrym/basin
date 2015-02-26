@@ -69,6 +69,12 @@ Stats::Stats(int mlevel, bool bPlayer_)
 ,mana(0)
 ,maxMana(0)
 ,isPlayer(bPlayer_)
+,Str("str")
+,Int("int")
+,Dex("dex")
+,Con("con")
+,Wis("wis")
+,Chr("chr")
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -254,7 +260,7 @@ Stat& Stats::stat(const char* name) {
   if (sn == "con") { return Con;  }
   if (sn == "chr") { return Chr;  }
   assert(false); // bad stat name. // 'sta' is not a stat.
-  static Stat noStat;
+  static Stat noStat("noStat");
   return noStat;
 }
 
