@@ -11,5 +11,6 @@ public:
   static double totalWeight();
   static EncumbEnum calcEnc(double kilos, class Stats& stats);
   static EncumbEnum enc();
+  static const char* encTxt(EncumbEnum type);
 };
 

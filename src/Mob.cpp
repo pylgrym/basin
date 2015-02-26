@@ -10,6 +10,8 @@
 #include <iomanip>
 #include "Levelize.h"
 
+#include "Encumb.h"
+
 Mob::Mob(int mlevel, bool bIsPlayer_)
   :stats(mlevel,bIsPlayer_)
 {
@@ -88,6 +90,14 @@ void PlayerMob::dashboard() {
   ss << "lvl:" << stats.level(); addInf(ss, dash);
 
   ss << "ac:" << std::fixed << std::setw(3) << stats.ac; addInf(ss, dash);
+
+  // FIXME, should be recalculated per turn, and possibly stored in stats:
+  // FIXME, show as text
+  // FIXME, pick up should check this!
+  Encumb::EncumbEnum encumb = Encumb::enc(); // Encumb::EncumbEnum 
+  const char* sEncumb = Encumb::encTxt(encumb); // encu
+  ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
+  addInf(ss, dash);
 
 }
 

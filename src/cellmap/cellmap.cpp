@@ -294,6 +294,7 @@ Viewport::Viewport() {
 }
 
 
+
 bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   VPoint vp; 
   vp.p = w2v(wpos); //wpos - offset;
@@ -331,16 +332,54 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
 }
 
 
+
+
 bool Map::persist(Persist& p) {
+  int objCount = 0; // (count obj's, to aid later output of obj-list.)
+  // First, output floor-cells:
   for (int x = 0; x < Width; ++x) {
     CellColumn& column = (*this)[x];
     for (int y = 1; y < Height; ++y) {
       Cell& cell = column[y];
       cell.persist(p);
+      if (!cell.item.empty()) {
+        ++objCount;
+      }
     }
   }
 
+  p.transfer(objCount, "objCount");
+
+  if (p.bOut) {
+    // Output objects:
+    for (int x = 0; x < Width; ++x) {
+      CellColumn& column = (*this)[x];
+      for (int y = 1; y < Height; ++y) {
+        Cell& cell = column[y];
+        if (!cell.item.empty()) {
+          CPoint pos(x, y);
+          cell.item.o->persist(p,pos);
+        }
+      }
+    }
+  } else { // Use objCount:
+    for (int i = 0; i < objCount; ++i) {
+      transferObj(p);
+    }
+  }
+
+  return true;
+}
 
 
+
+
+bool Map::transferObj(Persist& p) { // Only works for obj IN, to map:
+  const ObjDef& dummy = Obj::objDesc(OB_None);
+  Obj* o = new Obj(dummy,1);
+  CPoint pos;
+  o->persist(p, pos);
+  Cell& cell = (*this)[pos];
+  cell.item.setObj(o);
   return true;
 }

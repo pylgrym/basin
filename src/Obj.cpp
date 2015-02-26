@@ -59,8 +59,8 @@ CString Obj::some_item() const {
   CString s = udesc;
   CA2T uspell(Spell::type2desc(effect), CP_ACP); // CP_UTF8);
 
-  const char* aslot = Equ::slotDesc(eqslot);
-  if (eqslot == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
+  const char* aslot = Equ::slotDesc(eqslot());
+  if (eqslot() == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
   CA2T uslot(aslot, CP_ACP); // CP_UTF8);
 
   CString fmt;
@@ -269,6 +269,19 @@ const ObjDef& Obj::objDesc(ObjEnum type) {
   return dummy;
 }
 
+int Obj::def2ix(const ObjDef* objdef) {
+  if (objdef == NULL) { return -1; }
+
+  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+
+  int ix = (objdef - &objDefs[0]);
+  assert(ix >= 0);
+  assert(ix < numObjDefs);    
+  if (ix < 0 || ix >= numObjDefs) { ix = 0; }
+  return ix;
+}
+
+
 const ObjDef& Obj::randObjDesc() {
   const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
   int ix = rnd(numObjDefs);
@@ -345,7 +358,7 @@ const ObjDef& ObjSlot::objDef() const {
 
 
 bool Obj::wearable() const {
-  return (eqslot != EQ_Unwearable); // Equippable);
+  return (eqslot() != EQ_Unwearable); // Equippable);
 }
 
 
@@ -384,4 +397,31 @@ void Obj::initRandom() { // - clear should not init.
   // Dice(rndC(1, 4), rndC(2, 12));
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);
+}
+
+
+bool Obj::persist(Persist& p, CPoint& pos) {
+  // objdef
+  int objdef_ix = Obj::def2ix(objdef); // (p.bOut == output: we output the INDEX of the objdef our data uses.)
+  p.transfer(objdef_ix, "objdef_ix");
+  if (!p.bOut) { // IE we are reading in.
+    objdef = &Obj::objDesc((ObjEnum) objdef_ix); // (p.bOut == input: We locate the ObjDef of the objdef_ix we've read in from file.)
+  }
+
+  p.transfer(pos.x, "posx");
+  p.transfer(pos.y, "posy");
+
+  p.transfer(ilevel, "ilevel");
+  p.transfer(weight, "weight");
+  p.transfer(itemUnits, "itemunits");
+  p.transfer(ac, "ac");
+  p.transfer(charges, "charges");
+  p.transfer(consumed, "consumed");
+  p.transfer(toHit, "tohit");
+  p.transfer(toDmg, "todmg");
+  p.transfer(dmgDice.n, "dmgDice_n");
+  p.transfer(dmgDice.x, "dmgDice_x");
+  // eqslot // FIXME, should come from ObjDef anyway (and is enum, on top of that.)
+  // SpellEnum effect; // FIXME.
+  return true;
 }

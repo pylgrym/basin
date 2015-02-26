@@ -40,6 +40,19 @@ Encumb::EncumbEnum Encumb::calcEnc(double kilos, Stats& stats) {
   return CantLiftE;
 }
 
+
+const char* Encumb::encTxt(EncumbEnum type) {
+  switch (type) {
+  case LightE:    return ""; 
+  case MediumE:   return "Heavy"; 
+  case HeavyE:    return "Unwieldy";
+  case CantLiftE: return "Too heavy";
+  }
+  return "errEncumb";
+}
+
+
+
 Encumb::Encumb()
 {
 }

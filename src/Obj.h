@@ -71,15 +71,25 @@ class Obj {
 public:
   const ObjDef* objdef;
   //ObjEnum oldtype; // Don't use this, use objdef.
-
   int ilevel;
+
+  bool persist(Persist& p, CPoint& pos);
 
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
-  EquipSlotEnum eqslot;
-  int weight; // tenths of kilos, 100g.
+  EquipSlotEnum eqslot() const { return (objdef ? objdef->eqtype : EQ_None ); }
+  int weight; // tenths of kilos, 100g. // fixme, should be virtual func from objdef.
   int itemUnits; // food'charges', light'charges', gold 'charges', etc.
   int ac; // armour item armour class.
+
+  // BEGIN BEHAVIOUR
+  int charges; // -1 means infinite. (use-charges) (food, potions, scrolls will be 1.)
+  bool consumed; // Will be consumed/destroyed at zero charges.
+
+  // ATTACK/Damage compotent:
+  int toHit; // tohit modifier.
+  int toDmg; // todamage modifier.
+  Dice dmgDice; // The damage this object/weapon can deal.
 
   virtual ObjEnum otype() const { 
     return objdef ? objdef->type : OB_Lamp; // oldtype;
@@ -94,15 +104,10 @@ public:
   // ObjEnum type_,
   Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
     //,oldtype(OB_Bandage) // type_)
-    ,ilevel(level_), effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ac(1) 
+    ,ilevel(level_), effect(SP_NoSpell), weight(0), itemUnits(0), ac(1)  // , zeqslot(EQ_Unwearable), 
   {
     effect = Spell::rndSpell();
     const ObjDef& desc = objdef_; // Obj::objDesc(type);
-    if (desc.eqtype != EQ_None) {
-      eqslot = desc.eqtype; // Equ::rndSlot();
-    } else {
-      eqslot = desc.eqtype; // JG, FIXME: I could shorten this to just assign it always..
-    }
 
     clear(); 
     initRandom();
@@ -144,20 +149,12 @@ public:
       this->charges = rnd(0,16);
     }
 
-    if (eqslot != EQ_None) { // try-out hack:
+    if (eqslot() != EQ_None) { // try-out hack:
       ac = rnd(1, 7);
     }
 
   }
 
-  // BEGIN BEHAVIOUR
-  int charges; // -1 means infinite. (use-charges) (food, potions, scrolls will be 1.)
-  bool consumed; // Will be consumed/destroyed at zero charges.
-
-  // ATTACK/Damage compotent:
-  int toHit; // tohit modifier.
-  int toDmg; // todamage modifier.
-  Dice dmgDice; // The damage this object/weapon can deal.
 
   virtual bool use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
     /* FIXME/TODO: multi-messages must 'prompt with <more>',
@@ -195,6 +192,8 @@ public:
   static const ObjDef& randObjDesc();
 
   static const ObjDef& objDesc(ObjEnum type);
+
+  static int def2ix(const ObjDef* objdef);
 
   static const char* objdefAsStr(const ObjDef& def);
   static const TCHAR* otypeAsStr(ObjEnum type);

@@ -106,15 +106,15 @@ bool Equ::unequipSlot(EquipSlotEnum slot, Obj** objStash, std::ostream& err) { /
 }
 
 bool Equ::equipItem(Obj* item, std::ostream& err) { // returns false if not possible (if e.g. worn is cursed.)
-  if (isSlotEquipped(item->eqslot)) { err << "You must unequip first."; return false; }
-  equ[item->eqslot] = item;
+  if (isSlotEquipped(item->eqslot())) { err << "You must unequip first."; return false; }
+  equ[item->eqslot()] = item;
   return true;
 } 
 
 bool Equ::unequipItem(Obj* item, std::ostream& err) { // returns false if not possible (if e.g. worn is cursed.)
   // Not really used, currently.
-  if (!canUnequipSlot(item->eqslot)) { err << "You can't unequip that."; return false; }
-  equ[item->eqslot] = NULL;
+  if (!canUnequipSlot(item->eqslot())) { err << "You can't unequip that."; return false; }
+  equ[item->eqslot()] = NULL;
   return true;
 }
 
@@ -122,16 +122,16 @@ bool Equ::replaceItem(Obj* newItem, Obj** objStash, std::ostream& err) { // comb
   // Beware that objStash now is messy: for weapons, we return null, for non-weapons, we return the actual swapped-out object :-(.
 
   // Hack/kludge: weapons, because they 'share hands', are messy:
-  if (isWeapon(newItem->eqslot)) {
-    if (isWeaponEquipped(newItem->eqslot)) {
+  if (isWeapon(newItem->eqslot())) {
+    if (isWeaponEquipped(newItem->eqslot())) {
       logstr log;  log << "You unequip the old weapon.";
-      if (!unequipWeaponSlot(newItem->eqslot, objStash, err)) {
+      if (!unequipWeaponSlot(newItem->eqslot(), objStash, err)) {
         return false;
       }
     }
   } else { // Not a weapon:
-    if (isSlotEquipped(newItem->eqslot)) {
-      if (!unequipSlot(newItem->eqslot, objStash, err)) {
+    if (isSlotEquipped(newItem->eqslot())) {
+      if (!unequipSlot(newItem->eqslot(), objStash, err)) {
         return false;
       }
       logstr log;  log << "You unequip the old "; if (*objStash) { log << (**objStash).indef_item();  } else { log << " item."; }

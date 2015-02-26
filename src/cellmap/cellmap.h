@@ -47,8 +47,8 @@ public:
 
   bool persist(class Persist& p) {
     envir.persist(p);
-    item.persist(p);
-    creature.persist(p);
+    // item.persist(p); // FIXME: No, they should be output separately.
+    // creature.persist(p); // FIXME: No, they should be output separately.
     return true;
   }
 
@@ -103,6 +103,7 @@ public:
   CPoint findNextEnvir(CPoint start, EnvirEnum type);
 
   bool persist(class Persist& p);
+  bool transferObj(Persist& p); // Only works for obj IN, to map:
 };
 
 
