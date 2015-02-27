@@ -108,6 +108,7 @@ bool MobReady::persist(Persist& p) {
     bOK = mob->persist(p);
   }
 
+
   return bOK;
 }
 
