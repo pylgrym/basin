@@ -2,6 +2,7 @@
 #include "Dungeons.h"
 
 #include "Mob.h"
+#include "Bag.h"
 
 Dungeons Dungeons::the_dungeons;
 
@@ -27,6 +28,11 @@ bool Dungeons::persist(class Persist& p) {
   int dungLevel = 1;
   if (p.bOut) { dungLevel = PlayerMob::ply->dungLevel; }
   p.transfer(dungLevel, "dungLevel");
+
+  Viewport::vp.persist(p);
+
+  Bag::bag.persist(p);
+  Equ::worn.persist(p);
 
   int dungeonDepth = dungeons.size();
   p.transfer(dungeonDepth, "dungeonDepth");
@@ -57,6 +63,7 @@ bool Dungeons::persist(class Persist& p) {
       dungeon->persist(p);
     }
   }
+
 
   if (!p.bOut) { 
     PlayerMob::ply->dungLevel = dungLevel;

@@ -81,15 +81,24 @@ void PlayerMob::dashboard() {
   ss << std::fixed << std::setw(4);
 
   ss << "light:";  addInf(ss, dash);
-  ss << "#"   << std::fixed << std::setw(3) << lightStrength() << "#"; addInf(ss, dash);
-  ss << "#"   << std::fixed << std::setw(4) << this->theLightUnits << "  "; addInf(ss, dash);
-  ss << "hp:" << std::fixed << std::setw(3) << stats.hp << "#"; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
+  ss << std::fixed << std::setw(5) << this->theLightUnits; addInf(ss, dash);
 
-  ss << "xp:" << std::fixed << std::setw(5) << stats.xp; addInf(ss, dash);
-  ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
-  ss << "lvl:" << stats.level(); addInf(ss, dash);
+  ss << "" << std::fixed << std::setw(5) << stats.hp << "/" << stats.maxHP << "hp "; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
 
-  ss << "ac:" << std::fixed << std::setw(3) << stats.ac; addInf(ss, dash);
+  ss // << "xp:" 
+    << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
+  //ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
+
+  ss // << "lvl:" 
+    << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
+
+  ss // << "ac:" 
+    << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
+
+  int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
+  ss // << "ac:" 
+    << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
 
   // FIXME, should be recalculated per turn, and possibly stored in stats:
   // FIXME, show as text

@@ -40,7 +40,9 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  Dungeons::the_dungeons.initDungeons(true); // false); // true); // actually, the player..
+  int answer = MessageBox(L"Basin", L"Load?", MB_ICONQUESTION | MB_YESNO);
+  Dungeons::the_dungeons.initDungeons(answer == IDYES); //  true); // false); // true); // false); // true); // actually, the player..
+
 
   //FIXME: (DARKNESS) img-tiles should be BLACK!
 }

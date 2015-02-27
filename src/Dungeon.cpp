@@ -81,7 +81,5 @@ void Dungeon::initMobs() {
 bool Dungeon::persist(class Persist& p) {
   mobs.persist(p);
   map.persist(p);
-  Bag::bag.persist(p); // JG: This feels like it doesn't belong here (maybe because bag should be a property of mob.)
-  Equ::worn.persist(p); // JG: This feels like it doesn't belong here (maybe because bag should be a property of mob.)
   return true;
 }

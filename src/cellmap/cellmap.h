@@ -123,6 +123,12 @@ public:
   CPoint w2v(CPoint w);
   CPoint v2w(CPoint v);
 
+  bool persist(class Persist& p) {
+    p.transfer(offset.x, "offset_x"); 
+    p.transfer(offset.y, "offset_y"); 
+    return true;
+  }
+
   static Viewport vp;
 };
 
