@@ -102,6 +102,8 @@ bool MobReady::persist(Persist& p) {
   // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
   if (isPlayer && !p.bOut && !bFirstPlayer) {
     // do nothing - don't read in player more than once.
+    static MonsterMob dummyPlayer(1);
+    dummyPlayer.persist(p); // We still need to 'eat/parse' that object.
   } else { // if monster, or first-time-the-player, read in:
     bOK = mob->persist(p);
   }
