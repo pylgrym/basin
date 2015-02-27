@@ -39,6 +39,7 @@ bool Dungeons::persist(class Persist& p) {
     }
   }
   p.transfer(dungeonCount, "dungeonCount");
+
   if (p.bOut) { // Output
     for (int i = 0; i < dungeonDepth; ++i) {
       if (dungeons[i] != NULL) {
@@ -48,7 +49,6 @@ bool Dungeons::persist(class Persist& p) {
       }
     }
   } else { // Input.
-    dungeons.resize(dungeonDepth);
     for (int i = 0; i < dungeonCount; ++i) {
       int dungeonLevel = 0;
       p.transfer(dungeonLevel, "dungeonLevel");

@@ -406,7 +406,7 @@ bool Equ::persist(class Persist& p) {
     } // worn-item-loop.
   } else { // if reading.
     const ObjDef& dummy = Obj::objDesc(OB_None);
-    for (int i = 0; i <= equCount; ++i) {
+    for (int i = 0; i < equCount; ++i) {
       int eqSlot = 0;
       p.transfer(eqSlot, "eqSlot");
       Obj* o = new Obj(dummy, 1);

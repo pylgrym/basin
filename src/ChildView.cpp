@@ -40,7 +40,7 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  Dungeons::the_dungeons.initDungeons(false); // true); // actually, the player..
+  Dungeons::the_dungeons.initDungeons(true); // false); // true); // actually, the player..
 
   //FIXME: (DARKNESS) img-tiles should be BLACK!
 }

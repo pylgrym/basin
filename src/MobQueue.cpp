@@ -55,12 +55,13 @@ bool MobQueue::dispatchFirst() {
   MobReady cur = queue.top();
   globalClock = cur.when; // update clock to next 'threshold time'.
   // debstr() << "dispatchFirst begin, mob:" << cur.mob->rep() << ", time:" << globalClock << " " << (void*) cur.mob << "\n";
-  queue.pop(); // pop_heap / take us out of the queue.
 
   // Keep doing actions until a non-zero action is done:
   double duration=0;
   for ( ; duration==0 && !cur.mob->isDead(); ) { duration = cur.mob->act(); } 
-  // while ((duration = ready.mob->act()) == 0 && !ready.mob) { } 
+
+  // We don't pop until after 'act()' are finished (ensures queue always contains 'everybody'.)
+  queue.pop(); // pop_heap / take us out of the queue.
 
   if (!cur.mob->isDead()) { // As long as you are not dead, you get a next turn:
     double nextReady = globalClock += duration;
@@ -75,7 +76,7 @@ bool MobQueue::dispatchFirst() {
 
 
 bool MobReady::persist(Persist& p) {
-  p.transfer(when, "when");  
+  p.transfer(when, "when");
 
   int isPlayer = (mob ? mob->isPlayer() : 0);
   p.transfer(isPlayer, "isPlayer");
@@ -87,18 +88,21 @@ bool MobReady::persist(Persist& p) {
   if (!p.bOut) { // IE it's read-in.
     if (isPlayer) {
       if (PlayerMob::ply == NULL) { // Only create a single instance.
-        mob = new PlayerMob; 
+        mob = new PlayerMob;
         bFirstPlayer = true;
       } else {
         mob = PlayerMob::ply;
       }
-    } else { 
-      mob = new MonsterMob(1); 
+    } else {
+      mob = new MonsterMob(1);
     } // in MobReady::persist.
   }
   bool bOK = true;
 
-  if (p.bOut || bFirstPlayer) { // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
+  // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
+  if (isPlayer && !p.bOut && !bFirstPlayer) {
+    // do nothing - don't read in player more than once.
+  } else { // if monster, or first-time-the-player, read in:
     bOK = mob->persist(p);
   }
 

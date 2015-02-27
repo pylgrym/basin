@@ -6,6 +6,7 @@
 #include <string>
 
 #include <sstream>
+#include "util/debstr.h"
 
 class Persist
 {
@@ -24,14 +25,12 @@ public:
 
   figure out design for objdesc instead of obj type.
   */
-  void eatLabel(std::istream& is) {
-    std::string dummy; is >> dummy;
-  }
+  void eatLabel(std::istream& is, const std::string& expected);
 
   bool transfer(int& i, const char* label) {
     if (bOut) {
       os << label << " " << i << "\n";
-    } else { eatLabel(is);
+    } else { eatLabel(is,label);
       is >> i;
     }
     return true;
@@ -40,8 +39,7 @@ public:
   bool transfer(long& i, const char* label) {
     if (bOut) {
       os << label << " " << i << "\n";
-    }
-    else { eatLabel(is);
+    } else { eatLabel(is, label);
       is >> i;
     }
     return true;
@@ -50,8 +48,7 @@ public:
   bool transfer(bool& i, const char* label) {
     if (bOut) {
       os << label << " " << i << "\n";
-    }
-    else { eatLabel(is); 
+    } else { eatLabel(is, label);
       is >> i;
     }
     return true;
@@ -60,8 +57,7 @@ public:
   bool transfer(double& i, const char* label) {
     if (bOut) {
       os << label << " " << i << "\n";
-    }
-    else { eatLabel(is);
+    } else { eatLabel(is, label);
       is >> i;
     }
     return true;
