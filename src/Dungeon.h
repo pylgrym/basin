@@ -17,10 +17,6 @@ public:
   void initPlayerForMap(); // JG, All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
   void initMobs();
 
-  bool persist(class Persist& p) {
-    mobs.persist(p);
-    map.persist(p);
-    return true;
-  }
+  bool persist(class Persist& p);
 };
 

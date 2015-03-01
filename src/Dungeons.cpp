@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Dungeons.h"
 
+#include "Mob.h"
+#include "Bag.h"
 
 Dungeons Dungeons::the_dungeons;
 
@@ -22,12 +24,93 @@ Dungeon* Dungeons::implGet(int level) {
   return dungeons[level];
 }
 
+bool Dungeons::persist(class Persist& p) {
+  int dungLevel = 1;
+  if (p.bOut) { dungLevel = PlayerMob::ply->dungLevel; }
+  p.transfer(dungLevel, "dungLevel");
+
+  Viewport::vp.persist(p);
+
+  Bag::bag.persist(p);
+  Equ::worn.persist(p);
+
+  int dungeonDepth = dungeons.size();
+  p.transfer(dungeonDepth, "dungeonDepth");
+  if (!p.bOut) { dungeons.resize(dungeonDepth);  }
+
+  int dungeonCount = 0;
+  for (int i = 0; i < (int) dungeons.size(); ++i) {
+    if (dungeons[i] != NULL) {
+      ++dungeonCount;
+    }
+  }
+  p.transfer(dungeonCount, "dungeonCount");
+
+  if (p.bOut) { // Output
+    for (int i = 0; i < dungeonDepth; ++i) {
+      if (dungeons[i] != NULL) {
+        p.transfer(i, "dungeonLevel");
+        Dungeon& dungeon = *dungeons[i];
+        dungeon.persist(p);
+      }
+    }
+  } else { // Input.
+    for (int i = 0; i < dungeonCount; ++i) {
+      int dungeonLevel = 0;
+      p.transfer(dungeonLevel, "dungeonLevel");
+      Dungeon* dungeon = new Dungeon(dungeonLevel);
+      dungeons[dungeonLevel] = dungeon;
+      dungeon->persist(p);
+    }
+  }
+
+
+  if (!p.bOut) { 
+    PlayerMob::ply->dungLevel = dungLevel;
+    setCurLevel(dungLevel);
+  }
+
+  return true;
+}
+
+
 Dungeon* Dung::CL = NULL; // should at least be in a namespace with 'using'.
 
 
 void Dungeons::setCurLevel(int level) {
   Dungeon* dung = get(level);
   Dung::CL = dung;
+}
+
+
+void Dungeons::initNewGame() {
+  PlayerMob* player = PlayerMob::createPlayer();
+  Dungeons::setCurLevel(player->dungLevel);
+}
+
+bool Dungeons::initLoadGame() {
+  // Consider using LoadCmd here:
+  const char* file = "basin.sav";
+  std::ifstream is(file);
+  Persist p(is);
+  bool bLoadOK = persist(p); // Dungeons::the_dungeons.
+  return bLoadOK;
+}
+
+void Dungeons::initDungeons(bool loadGame) {
+  bool bDone = false;
+  if (loadGame) {
+    bDone = initLoadGame();
+  }
+
+  if (!bDone) {
+    initNewGame();
+  }
+
+  PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
+
+  // This is a little bit bad(?), because it even
+  // atempts to trigger a redraw, at a time where we don't have any HWND yet..
 }
 
 

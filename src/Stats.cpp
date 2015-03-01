@@ -61,14 +61,26 @@ void Stats::setLevel(int level_) {
 
 
 Stats::Stats(int mlevel, bool bPlayer_)
-:theLevel(mlevel)
-,hunger(1500)
+: Str("str")
+, Int("int")
+, Dex("dex")
+, Con("con")
+, Wis("wis")
+, Chr("chr")
+, isPlayer(bPlayer_)
+, theLevel(mlevel)
+, hp(0)
+, maxHP(0)
+, xp(0)
+, xpTotal(0)
+, xpToLevel(0)
+, mana(0)
+, maxMana(0)
+, ac(0)
+, toHit(0)
+, hunger(1500)
 ,confused(0)
 ,gold(0)
-,xp(0)
-,mana(0)
-,maxMana(0)
-,isPlayer(bPlayer_)
 {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -115,26 +127,33 @@ void Stats::calcStats() {
 
 void Stats::initXP() {
   const int XpLevelScale = 10;
+
+  int remainder = xp - xpToLevel;
+  xp = remainder; // I reset it, because it's a 'level-local counter'.
   xpToLevel = level() * XpLevelScale;
-  /* fixme: xp should be totals, not just ' to level'.
+  /* consider: xp should be totals, not just 'to level'.
   */
 }
 
 void Stats::gainKillXP(int mobLevel) {
   logstr log; log << "You gain " << mobLevel << " xp.";
-  xp += mobLevel;
+  int xpGain = mobLevel;
+  xp += xpGain;
+  xpTotal += xpGain;
+
   if (xp >= xpToLevel) {
     gainLevel();
   }
 }
 
 void Stats::gainLevel() {
-  int remainder = xp - xpToLevel;
   theLevel += 1;
-  calcStats(); // initStats();
+  calcStats(); 
   initXP();
   logstr log; log << "You have gained a level!";
 }
+
+
 
 int Stats::calcBaseAC() {
   // s["dex"]
@@ -143,12 +162,19 @@ int Stats::calcBaseAC() {
   return val_ac;
 }
 
+
+
 int Stats::calcTotalAC() {
   int base = calcBaseAC();
-  int wornAC = Equ::worn.calcWornAC();
+  int wornAC = 0;
+  if (isPlayer) {
+    wornAC = Equ::worn.calcWornAC();
+  }
   int total = base + wornAC;
   return total;
 }
+
+
 
 int Stats::calcToHit(std::ostream& os) {
   const int globOffset = 9; // A global constant setting, what default chance should be to hit something.
@@ -164,6 +190,8 @@ int Stats::calcToHit(std::ostream& os) {
   int val_hit = globOffset + levelContrib + strMod; // You get half your level as AC contribution.
   return val_hit;
 }
+
+
 
 int Stats::calcMaxHP() {
   /* maximum hitpoints,
@@ -254,7 +282,7 @@ Stat& Stats::stat(const char* name) {
   if (sn == "con") { return Con;  }
   if (sn == "chr") { return Chr;  }
   assert(false); // bad stat name. // 'sta' is not a stat.
-  static Stat noStat;
+  static Stat noStat("noStat");
   return noStat;
 }
 
@@ -387,21 +415,22 @@ bool Stats::persist(Persist& p) {
   Chr.persist(p);
 
 
-  p.transfer(theLevel,  "level"); //p.os << this->theLevel;
-  p.transfer(maxHP,     "maxHP"); //p.os << this->maxHP;
-  p.transfer(hp,        "hp"); //p.os << this->hp;
-  p.transfer(xp,        "xp"); //p.os << this->xp;
-  p.transfer(xpToLevel, "xpToLevel"); //p.os << this->xpToLevel;
-  p.transfer(ac,        "ac"); //p.os << this->ac;
-  p.transfer(toHit,     "toHit"); //p.os << this->toHit;
-  p.transfer(hunger,    "hunger"); //p.os << this->hunger;
-  p.transfer(confused,  "confused"); //p.os << this->confused;
-  p.transfer(gold,      "gold"); //p.os << this->gold;
+  p.transfer(theLevel,  "level"); 
+  p.transfer(maxHP,     "maxHP"); 
+  p.transfer(hp,        "hp"); 
+  p.transfer(xp, "xp"); 
+  // p.transfer(xpTotal, "xpTotal");  // will break savefile.
+  p.transfer(xpToLevel, "xpToLevel"); 
+  p.transfer(ac,        "ac"); 
+  p.transfer(toHit,     "toHit");
+  p.transfer(hunger,    "hunger"); 
+  p.transfer(confused,  "confused"); 
+  p.transfer(gold,      "gold"); 
   return true;
 }
 
 
 bool Stat::persist(Persist& p) {
-  p.os << this->v;
+  p.transfer(v, this->name.c_str()); 
   return true;
 }

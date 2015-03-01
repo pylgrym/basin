@@ -8,7 +8,7 @@
 class Stat {
 public:
   Stat(const std::string& name_):name(name_) { v = 0; roll();  }
-  Stat():name("nostat?") { v = 0; roll();  }
+  // Stat():name("nostat?") { v = 0; roll();  }
 
   int v; // value.
   std::string name;
@@ -51,16 +51,19 @@ public:
   void calcStats();
 
   enum StatEnums { HitDie = 5};
-  int maxHP;
+
+  //int baseHP; 
+  // std::vector<int> hp_rolls; 
   int hp;
+  int maxHP;
+
   int xp;
+  int xpTotal;
   int xpToLevel;
 
   int mana;
   int maxMana;
 
-  //int baseHP; 
-  // std::vector<int> hp_rolls; 
   int ac;
   int toHit;
 

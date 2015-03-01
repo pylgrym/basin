@@ -464,3 +464,8 @@ class SaveCmd : public Cmd {
 public:
   virtual bool Do(std::ostream& err);
 };
+
+class LoadCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};

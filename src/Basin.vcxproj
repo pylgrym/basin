@@ -114,6 +114,7 @@
     <ClInclude Include="Dungeon.h" />
     <ClInclude Include="Dungeons.h" />
     <ClInclude Include="DungGen1.h" />
+    <ClInclude Include="Encumb.h" />
     <ClInclude Include="Envir.h" />
     <ClInclude Include="Equ.h" />
     <ClInclude Include="Levelize.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Dungeons.cpp" />
     <ClCompile Include="DungGen1.cpp" />
+    <ClCompile Include="Encumb.cpp" />
     <ClCompile Include="Envir.cpp" />
     <ClCompile Include="Equ.cpp" />
     <ClCompile Include="Levelize.cpp" />

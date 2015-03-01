@@ -10,6 +10,8 @@
 #include <iomanip>
 #include "Levelize.h"
 
+#include "Encumb.h"
+
 Mob::Mob(int mlevel, bool bIsPlayer_)
   :stats(mlevel,bIsPlayer_)
 {
@@ -79,15 +81,32 @@ void PlayerMob::dashboard() {
   ss << std::fixed << std::setw(4);
 
   ss << "light:";  addInf(ss, dash);
-  ss << "#"   << std::fixed << std::setw(3) << lightStrength() << "#"; addInf(ss, dash);
-  ss << "#"   << std::fixed << std::setw(4) << this->theLightUnits << "  "; addInf(ss, dash);
-  ss << "hp:" << std::fixed << std::setw(3) << stats.hp << "#"; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
+  ss << std::fixed << std::setw(5) << this->theLightUnits; addInf(ss, dash);
 
-  ss << "xp:" << std::fixed << std::setw(5) << stats.xp; addInf(ss, dash);
-  ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
-  ss << "lvl:" << stats.level(); addInf(ss, dash);
+  ss << "" << std::fixed << std::setw(5) << stats.hp << "/" << stats.maxHP << "hp "; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
 
-  ss << "ac:" << std::fixed << std::setw(3) << stats.ac; addInf(ss, dash);
+  ss // << "xp:" 
+    << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
+  //ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
+
+  ss // << "lvl:" 
+    << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
+
+  ss // << "ac:" 
+    << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
+
+  int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
+  ss // << "ac:" 
+    << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
+
+  // FIXME, should be recalculated per turn, and possibly stored in stats:
+  // FIXME, show as text
+  // FIXME, pick up should check this!
+  Encumb::EncumbEnum encumb = Encumb::enc(); // Encumb::EncumbEnum 
+  const char* sEncumb = Encumb::encTxt(encumb); // encu
+  ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
+  addInf(ss, dash);
 
 }
 
@@ -139,7 +158,12 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
     case 'Z': if (ZapCmd(NULL, *this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
 
-    case 'Q': if (StatCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // Q is stats (should it be S?)
+    case 'Q': 
+      if (bCtrl) {
+        if (LoadCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break;
+      } else {
+        if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
+      }
 
     case 'C': if (StairCmd(*this).Do(ss))       { actionDuration = 1; bActionDone = true; } break; // C is upstairs/downstairs.
 

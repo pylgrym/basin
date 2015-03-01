@@ -360,12 +360,38 @@ bool SaveCmd::Do(std::ostream& err) {
   std::ofstream os(file);
   Persist p(os);
   //status87
-  bool bSaveOK = CL->persist(p);
+
+  //bool bSaveOK = CL->persist(p);
+  bool bSaveOK = Dungeons::the_dungeons.persist(p);
+
   err << "You saved:" << bSaveOK;
   return bSaveOK;
   /*fixme/todo: instead of 'save' and ostream,
   change it to 'persist', called with a persistObj,
   which includes a 'direction' (save or load), 
+  and add something that allows us to persist integers (and doubles?),
+  with something like '
+  persistObj.transfer(& item, "label");
+  on top, we need something like handling lists with lengths, possibly specifying the length at front.
+  also
+  */
+}
+
+
+bool LoadCmd::Do(std::ostream& err) {
+  const char* file = "basin.sav";
+  std::ifstream is(file);
+  Persist p(is);
+  //status87
+
+  //bool bLoadOK = CL->persist(p);
+  bool bLoadOK = Dungeons::the_dungeons.persist(p);
+
+  err << "You loaded:" << bLoadOK;
+  return bLoadOK;
+  /*fixme/todo: instead of 'save' and ostream,
+  change it to 'persist', called with a persistObj,
+  which includes a 'direction' (save or load),
   and add something that allows us to persist integers (and doubles?),
   with something like '
   persistObj.transfer(& item, "label");

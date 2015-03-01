@@ -16,7 +16,15 @@ public:
   static Dungeons the_dungeons;
   static Dungeon* get(int level);
   static void setCurLevel(int level);
-private:
+
+  void initDungeons(bool loadGame);
+
+  void initNewGame();
+  bool initLoadGame();
+
+  bool persist(class Persist& p);
+
+  private:
   Dungeon* implGet(int level);
 
 };

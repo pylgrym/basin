@@ -4,6 +4,7 @@
 #include "Mob.h"
 #include "Levelize.h"
 
+#include "Bag.h"
 
 
 Dungeon::Dungeon(int level_)
@@ -77,3 +78,17 @@ void Dungeon::initMobs() {
 }
 
 
+bool Dungeon::persist(class Persist& p) {
+  mobs.persist(p);
+  map.persist(p);
+
+  if (!p.bOut) {
+    ReadyQueue::iterator i;
+    for (i = mobs.queue.begin(); i != mobs.queue.end(); ++i) {
+      MobReady& mr = *i;
+      map.moveMob(*mr.mob, mr.mob->pos);
+    }
+  }
+
+  return true;
+}

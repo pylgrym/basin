@@ -49,16 +49,24 @@ public:
   void showWorn();
   Obj* pick(const char* prompt);
 
+  double wornWeight();
+
+  int wornCount() const;
+
   /* map slot to 'slot desc  - " on hands, chest, head, neck:
   */
  
   // TODO/FIXME: a further check for 'canEquip', is 'can this char/player/class/mob equip this (heavy-heavy, skill-demanding) item?
   ~Equ();
 
+  bool persist(class Persist& p);
+
   static Equ worn;
   static EquipSlotEnum rndSlot();
 
   static const char* slotDesc(EquipSlotEnum slot);
   static bool isWeapon(EquipSlotEnum slot);
+
+
 };
 

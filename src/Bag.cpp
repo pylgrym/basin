@@ -54,6 +54,17 @@ char Bag::letterIx(Obj* item) {
   return '?';
 }
 
+double Bag::bagWeight() {
+  double totalWeight = 0;
+  BagCont::iterator i;
+  for (i = objs.begin(); i != objs.end(); ++i) {
+    Obj& o = **i;
+    totalWeight += o.weight;
+  }
+  return totalWeight;
+}
+
+
 
 void Bag::showInv() {
   if (objs.size() == 0) {
@@ -62,7 +73,9 @@ void Bag::showInv() {
 
   char ix = 'a';
 
-  int totalWeight = 0;
+  double everything = bagWeight() + Equ::worn.wornWeight();
+
+  double totalWeight = 0;
   BagCont::iterator i;
   // FIXME - bag and iterators should be prominent, so you get 'Bag::begin'.
   for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
@@ -91,6 +104,7 @@ void Bag::showInv() {
 
   std::stringstream ss;
   ss << "Total weight: " << totalWeight / 10.0 << " kg";
+  ss << " (" << everything/10.0 << ")";
   Cuss::prtL(ss.str().c_str());  
 
   Cuss::invalidate();

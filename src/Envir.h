@@ -24,7 +24,13 @@ public:
   bool persist(class Persist& p) {
     // JG: enums are problematic, require a template or something, or manual approach.
     // Do I want fixed-width BD AF hex numbers? (for grid appearance and easier parsing.)
-    p.os << type << " "; // p.transfer(type, "envir"); // p.os << type;
+    if (p.bOut) {
+      p.os << type << " "; // p.transfer(type, "envir"); // p.os << type;
+    } else {
+      int intType = 0;
+      p.is >> intType;
+      type = (EnvirEnum) intType;
+    }
     return true;
   }
 

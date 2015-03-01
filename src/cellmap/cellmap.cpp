@@ -294,6 +294,7 @@ Viewport::Viewport() {
 }
 
 
+
 bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   VPoint vp; 
   vp.p = w2v(wpos); //wpos - offset;
@@ -331,13 +332,101 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
 }
 
 
+
+
 bool Map::persist(Persist& p) {
-  for (int x = 0; x < Width; ++x) {
-    CellColumn& column = (*this)[x];
-    for (int y = 1; y < Height; ++y) {
-      Cell& cell = column[y];
+  int objCount = 0; // (count obj's, to aid later output of obj-list.)
+  // First, output floor-cells:
+  for (int y = 1; y < Height; ++y) {
+    for (int x = 0; x < Width; ++x) {
+      CPoint pos(x, y);
+      Cell& cell = (*this)[pos];
       cell.persist(p);
+      if (!cell.item.empty()) {
+        ++objCount;
+      }
+    }
+    if (p.bOut) {
+      p.os << "\n";
     }
   }
+
+  p.transfer(objCount, "objCount");
+
+  if (p.bOut) {
+    // Output objects:
+    for (int x = 0; x < Width; ++x) {
+      CellColumn& column = (*this)[x];
+      for (int y = 1; y < Height; ++y) {
+        Cell& cell = column[y];
+        if (!cell.item.empty()) {
+          CPoint pos(x, y);
+          cell.item.o->persist(p,pos);
+        }
+      }
+    }
+  } else { // Use objCount:
+    for (int i = 0; i < objCount; ++i) {
+      transferObj(p); // NB, WILL lead to Obj::persist eventually.
+    }
+  }
+
+  return true;
+}
+
+
+bool Bag::persist(class Persist& p) {
+  int bagCount = objs.size();
+  p.transfer(bagCount, "bagCount");
+
+  if (!p.bOut) { objs.resize(bagCount);  }
+
+  const ObjDef& dummy = Obj::objDesc(OB_None);
+  for (int i = 0; i < bagCount; ++i) {
+    if (!p.bOut) { objs[i] = new Obj(dummy, 1); }
+    Obj* o = objs[i];
+    CPoint unused;
+    o->persist(p, unused);
+  }
+  return true;
+}
+
+
+bool Equ::persist(class Persist& p) {
+  int equCount = wornCount();
+  p.transfer(equCount, "wornCount");
+
+  if (p.bOut) { // if outputting.
+    for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+      if (equ[i] != NULL) {
+        p.transfer(i, "eqSlot");
+        CPoint unused;
+        equ[i]->persist(p, unused);
+      }
+    } // worn-item-loop.
+  } else { // if reading.
+    const ObjDef& dummy = Obj::objDesc(OB_None);
+    for (int i = 0; i < equCount; ++i) {
+      int eqSlot = 0;
+      p.transfer(eqSlot, "eqSlot");
+      Obj* o = new Obj(dummy, 1);
+      CPoint unused;
+      o->persist(p, unused);
+      equ[eqSlot] = o;
+    } // worn-item-loop.
+  }
+
+  return true;
+}
+
+
+
+bool Map::transferObj(Persist& p) { // Only works for obj IN, to map:
+  const ObjDef& dummy = Obj::objDesc(OB_None);
+  Obj* o = new Obj(dummy,1);
+  CPoint pos;
+  o->persist(p, pos);
+  Cell& cell = (*this)[pos];
+  cell.item.setObj(o);
   return true;
 }
