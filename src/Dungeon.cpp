@@ -28,7 +28,10 @@ void Dungeon::initDungeon() {
 }
 
 
-void Dungeon::initPlayerForMap() { // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
+void Dungeon::initPlayerForMap() { 
+  // JG, FIXME: All this shouldn't really clutter Map/CellMap
+  // -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
+
   // FIXME: new + 'firstmove'+queue should become a single function.
   /* Figure out dependency order of map, creatures, queues, etc.*/
 
@@ -48,7 +51,10 @@ void Dungeon::initPlayerForMap() { // JG, FIXME: All this shouldn't really clutt
 
 
 void Dungeon::initMobs() {
-  const int mobCount = 10; // 100;
+  int area = (Map::Width-2) * (Map::Height-2);
+  int numMobs = area / 70; // 25; // one mob every 25 squares..
+
+  const int mobCount = numMobs; // 10; // 100;
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 

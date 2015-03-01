@@ -177,7 +177,8 @@ int Stats::itemACReduc(int wornAC) {
 
   int acCost = 1;
   int count = 0;
-  for (int i = 0; i < wornAC; ++i, ++count) {
+  for (int i = 0; i < wornAC; ++i) {
+    ++count;
     if (count == acCost) {
       ++actualAC; // We earned one.
       ++acCost; // Next one will cost more.

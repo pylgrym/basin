@@ -190,14 +190,20 @@ ObjDef objDefs[] = {
 
 const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
 
+void Obj::initPrices() {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+    if (def.price == 0) {
+      def.price = rndC(1, 11);
+    }
+  }
+}
 
 const ObjDef& Obj::randObjDesc() {
-  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
   int ix = rnd(numObjDefs);
   ObjDef* od = &objDefs[ix];
   return *od;
 }
-
 
 const ObjDef& Obj::randObjDesc2() {
   static std::map<ObjEnum, std::vector<ObjDef*> > descs;
@@ -205,6 +211,9 @@ const ObjDef& Obj::randObjDesc2() {
     for (int i = 0; i < numObjDefs; ++i) {
       ObjDef& def = objDefs[i];
       descs[def.type].push_back(&def);
+      if (def.price == 0) {
+        def.price = rndC(1, 11);
+      }
     }
   }
 
@@ -225,8 +234,12 @@ const char* Obj::objdefAsStr(const ObjDef& def) {
     shortNames.resize(numObjDefs);
     // std::ofstream theset("theset.key");
     for (int i = 0; i < numObjDefs; ++i) {
-      std::string sName = Obj::make_indef_item(objDefs[i].desc);
+      ObjDef& def = objDefs[i];
+      std::string sName = Obj::make_indef_item(def.desc);
       shortNames[i] = sName;
+      if (def.price == 0) {
+        def.price = rndC(1, 11);
+      }
       // theset << "\"" << sName << "\"" << " " << i % 40 << " 11\n";
     }
   }
@@ -416,6 +429,8 @@ void Obj::initRandom() { // - clear should not init.
   toDmg = rndC(-2, 6);
   weight = rnd(1, 50);
   itemUnits = rnd(20, 400);
+
+
 
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);

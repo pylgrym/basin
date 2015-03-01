@@ -9,7 +9,7 @@
 #include "MainFrm.h"
 
 #include "util/debstr.h"
-
+#include "obj.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,6 +56,9 @@ BOOL CBasinApp::InitInstance()
   debstr() << "Set RANDOM seed!\n";
   unsigned int myRandSeed = 318;
   srand(myRandSeed); // I want my player character, on start-up, to have some different stats..
+
+  Obj::initPrices();
+
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable

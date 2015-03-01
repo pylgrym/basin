@@ -337,7 +337,7 @@ bool DigCmd::Do(std::ostream& err) {
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   }
 
-  debstr() << "Digged through the wall.\n";
+  debstr() << "Digged through the wall.\n"; // I know it's 'dug'.
   return true; 
 }
 
@@ -401,16 +401,91 @@ bool LoadCmd::Do(std::ostream& err) {
 
 
 
+
+bool BuyCmd::Do(std::ostream& err) {
+  Obj* buy = Bag::shop.pickAction();
+  if (buy == NULL) {
+    return false;
+  }
+  if (buy->price() > PlayerMob::ply->stats.gold) {
+    logstr log; log << "It costs too much for you to buy.";
+    return false;
+  }
+
+  PlayerMob::ply->stats.gold -= buy->price();
+  Bag::shop.remove(buy, err);
+  Bag::bag.add(buy,err);
+
+  logstr log; log << "You buy it for " << buy->price() << " gold.";
+  return true;
+}
+
+
 bool ShopCmd::Do(std::ostream& err) {
-  // err << "You shop:";
 
-  Cuss::clear(false);
-  Cuss::prtL("  Welcome to my shop, traveller!");
+  bool mustClear = true;
 
-  Bag::bag.showShopInv();
+  for (; ;) { 
+    std::stringstream ss; 
+    ss << "B to Buy, S to Sell.";
+    ss << " You have " << PlayerMob::ply->stats.gold << " gold."; // const char* keyPrompt = 
+    std::string keyPrompt = ss.str();
 
-  TheUI::promptForAnyKey();
+    if (mustClear) {
+      Cuss::clear(false);
+      Cuss::prtL("  Welcome to my shop, traveller!");
+      Bag::shop.showShopInv();
+      mustClear = false;
+    }
+
+    int cmdKey = TheUI::promptForKey(keyPrompt.c_str());
+    switch (cmdKey) {
+    case VK_ESCAPE: Cuss::clear(true); return false; // Cancelled shopping.
+    case 'B':       { BuyCmd  cmd; cmd.Do(err); mustClear = true; } break;
+    case 'S':       { SellCmd cmd; cmd.Do(err); mustClear = true; } break;
+    default:        TheUI::BeepWarn(); break; // Not a CMD key.
+    }
+  } // Loop until command key or escape.
 
   Cuss::clear(true);
+  return true;
+}
+
+
+
+bool SellCmd::Do(std::ostream& err) {
+  Obj* obj = Bag::bag.pickBag("  Sell what?");
+  if (obj == NULL) { return false; }
+
+  PlayerMob::ply->stats.gold += obj->price();
+  Bag::bag.remove(obj, err);
+  Bag::shop.add(obj, err);
+  logstr log; log << "You sell it for " << obj->price() << " gold.";
+  return true;
+}
+
+
+
+
+bool DropCmd::Do(std::ostream& err) {
+  debstr() << "drop-cmd do begin..\n";
+  if (!Cmd::Do(err)) {
+    return false;
+  }
+
+  debstr() << "doing drop item-command.\n";
+  Obj* obj = Bag::bag.pickBag("  Drop what?");
+  if (obj == NULL) { return false; }
+
+  debstr deb;
+  if (!Bag::bag.remove(obj, deb)) { deb << "\n";  return false; }
+
+  ObjSlot& item = CL->map[tgt].item;
+  item.setObj(obj);
+  // (No need to invalidate, as we are standing on it)
+  mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
+
+  std::string anItem = obj->an_item();
+  err << "You drop " << anItem;
   return true;
 }

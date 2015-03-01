@@ -28,6 +28,7 @@ END_MESSAGE_MAP()
 
 CMainFrame::CMainFrame() {
   debstr() << "CMainFrame ctor hello\n";
+
   // JG: SOmething is weird,  in debugger (and behaviour, it seems we only enter here at very late stage - after childview is set up.
 
 	// TODO: add member initialization code here

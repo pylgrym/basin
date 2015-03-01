@@ -207,7 +207,9 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
       if (bCtrl) {
         if (LoadCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break;
       } else {
-        if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
+        // Didn't this use-to-be statscmd?
+        if (StatCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break;
+        //if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
       }
 
     case 'C': if (StairCmd(*this).Do(ss))       { actionDuration = 1; bActionDone = true; } break; // C is upstairs/downstairs.
@@ -434,6 +436,18 @@ PlayerMob* PlayerMob::createPlayer() {
   Bag::bag.add(new Obj(Obj::objDesc(OB_Scroll), 1), ignore);
   Bag::bag.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
   Bag::bag.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
+
+
+
+  // Create shop - shouldn't be in this function I think..
+  Bag::shop.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
+  Bag::shop.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
+  Obj* firstLamp2 = new Obj(Obj::objDesc(OB_Lamp), 1);
+  firstLamp2->itemUnits = 3700;
+  Bag::shop.add(firstLamp, ignore);
+  Bag::shop.add(new Obj(Obj::objDesc(OB_LampOil), 1), ignore);
+
+
   return player;
 }
 

@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "Bag.h"
-
 #include "Cuss.h"
-
 #include "theUI.h"
+#include <iomanip>
 
 Bag::Bag()
 {
@@ -191,19 +190,12 @@ void Bag::showShopInv() {
     std::string descA = o.an_item();
     ss
       << ix
-      << " " << o.price()
+      << std::fixed << std::setw(4) << o.price()
       << " " << descA
       ;
     Cuss::prtL(ss.str().c_str());
   }
 
-  Cuss::prtL("B to buy, S to sell..");
-
-
-  // std::stringstream ss;
-  // ss << "Total weight: " << totalWeight / 10.0 << " kg";
-  // ss << " (" << everything / 10.0 << ")";
-  // Cuss::prtL(ss.str().c_str());
-
+  // Cuss::prtL("B to buy, S to sell..");
   Cuss::invalidate();
 }

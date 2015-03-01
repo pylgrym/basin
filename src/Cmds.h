@@ -227,28 +227,7 @@ public:
   }
 
 
-  virtual bool Do(std::ostream& err) {  
-    debstr() << "drop-cmd do begin..\n";
-    if (!Cmd::Do(err)) { 
-      return false; 
-    }
-
-    debstr() << "doing drop item-command.\n";
-    Obj* obj = Bag::bag.pickBag("  Drop what?");
-    if (obj == NULL) { return false;  }
-
-    debstr deb;
-    if (!Bag::bag.remove(obj, deb)) { deb << "\n";  return false; } 
-
-    ObjSlot& item = CL->map[tgt].item;
-    item.setObj(obj);
-    // (No need to invalidate, as we are standing on it)
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
-
-    std::string anItem = obj->an_item();
-    err << "You drop " << anItem; 
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 
@@ -472,6 +451,16 @@ public:
 
 
 class ShopCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};
+
+class BuyCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};
+
+class SellCmd : public Cmd {
 public:
   virtual bool Do(std::ostream& err);
 };
