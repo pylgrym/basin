@@ -72,45 +72,82 @@ void addInf(std::stringstream& ss, CPoint& dash) {
   dash.y += 1;
 }
 
+
+void addInfS(const char* label, std::string right, int width,  CPoint& dash) {
+  std::string row = label;
+
+  //std::stringstream ss; ss << val; std::string right = ss.str();
+  std::string filler = "................";
+
+  // Make a row 'FULL WIDTH', by padding with 'filler':
+  row = row + filler.substr(0, (width - row.length()));
+
+  // overwrite rightmost part of row with 'right':
+  int delta = (width - right.length());
+  if (delta < 0) { delta = 0;  }
+  row = row.substr(0, delta) + right;
+
+  Cuss::move(dash);
+  Cuss::prt(row.c_str(), true);
+  dash.y += 1;
+}
+
+
+void addInf1(const char* label, int val, int width,  CPoint& dash) {
+  std::stringstream ss; ss << val; std::string right = ss.str();
+  addInfS(label, right, width, dash);
+}
+
+void addInf2(const char* label, int val1, int val2, int width,  CPoint& dash) {
+  std::stringstream ss; ss << val1 << "/" << val2; std::string right = ss.str();
+  addInfS(label, right, width, dash);
+}
+
+
 void PlayerMob::dashboard() {
+  const int width = 8; // 10;
   /* FIXME - make functions for these.
   */
   CPoint dash(Viewport::Width, 1);
-  std::stringstream ss;
+  // std::stringstream ss;
 
-  ss << std::fixed << std::setw(4);
+  addInf1("lght", lightStrength(), width, dash);
+  // ss << std::fixed << std::setw(4) << "light:";  addInf(ss, dash);
+  // ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
 
-  ss << "light:";  addInf(ss, dash);
-  ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
-  ss << std::fixed << std::setw(5) << this->theLightUnits; addInf(ss, dash);
+  addInf1("unit", theLightUnits, width, dash);
+  // ss << std::fixed << std::setw(5) << this->theLightUnits; addInf(ss, dash);
 
-  ss << "" << std::fixed << std::setw(5) << stats.hp << "/" << stats.maxHP << "hp "; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  //addInf2("hp", stats.hp, width, dash);
+  //ss << "" << std::fixed << std::setw(5) << stats.hp << "/" << stats.maxHP << "hp "; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
+  addInf2("hp", stats.hp, stats.maxHP, width, dash);
 
-  ss // << "xp:" 
-    << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
+  // ss // << "xp:" << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
   //ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
+  addInf2("hp", stats.xp, stats.xpToLevel, width, dash);
 
-  ss // << "lvl:" 
-    << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
 
-  ss // << "ac:" 
-    << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
+  addInf1("L", stats.level(), width, dash);
+  //ss // << "lvl:"   << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
+
+  addInf1("ac", stats.ac, width, dash);
+  // ss // << "ac:"  << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
-  ss // << "ac:" 
-    << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
+  addInf1("depth", depth, width, dash);
+  // ss // << "ac:"  << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
 
   int acEffect = Stats::calcAvgACeffect();
-  ss // << "ac effect:" 
-    << std::fixed << std::setw(3) << acEffect << "%ac"; addInf(ss, dash);
+  addInf1("ac%", acEffect, width, dash);
+  // ss // << "ac effect:"  << std::fixed << std::setw(3) << acEffect << "%ac"; addInf(ss, dash);
 
   // FIXME, should be recalculated per turn, and possibly stored in stats:
   // FIXME, show as text
   // FIXME, pick up should check this!
   Encumb::EncumbEnum encumb = Encumb::enc(); // Encumb::EncumbEnum 
   const char* sEncumb = Encumb::encTxt(encumb); // encu
-  ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
-  addInf(ss, dash);
+  // ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
+  addInfS("Enc", sEncumb, width, dash); // (ss, dash);
 
 }
 

@@ -186,7 +186,7 @@ int Stats::calcTotalAC() {
 
 
 int Stats::calcToHit(std::ostream& os) {
-  const int globOffset = 16; // 9; // A global constant, what default chance should be to hit something.
+  const int globOffset = 18; // 9; // A global constant, what default chance should be to hit something.
   /* JG: 9 gives '50-50'. But actually, I want 'unarmoured' to be more hittable, like 90%..
   So instead, I should give mobs more armour!
   */
