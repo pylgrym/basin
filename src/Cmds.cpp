@@ -32,9 +32,9 @@ bool WalkCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
 
   CL->map.moveMob(mob, newpos);
-  if (mob.isPlayer()) { mob.lightWalls(mob.pos); } // ; } // ctype() == CR_Player
+  if (mob.isPlayer()) { mob.lightWalls(mob.pos); } 
 
-  if (mob.isPlayer() && CL->map[newpos].item.o != NULL) {  // ctype() == CR_Player
+  if (mob.isPlayer() && CL->map[newpos].item.o != NULL) {  
     LookCmd look(mob);
     look.Do(err);
   }
@@ -234,15 +234,29 @@ bool ZapCmd::Do(std::ostream& err) {
     newBullet += dir;
     if (!CL->map.legalPos(newBullet)) { break; }
 
-    if (!CL->map[newBullet].creature.empty()) { // We hit a mob..
+    if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       CPoint aim = newBullet - tgt;
       { logstr log; log << "The bullet hits the monster."; } 
-      // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
-      // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
-      // this way it can both use item and weapon..
-      HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
-      bool bOK = cmd.Do(err);
-      break;
+
+      Mob* target = CL->map[newBullet].creature.m;
+      switch (effect) {
+      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_ConfuseMob: case SP_Teleport: case SP_Heal: case SP_Sick:
+        {
+          logstr log;
+          bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem);
+          break;
+        }
+      default:
+        {
+          // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
+          // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
+          // this way it can both use item and weapon..
+          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
+          bool bOK = cmd.Do(err);
+
+        }
+      } // (End switch (which-spell-type-hit-mob-target).)
+      break; // (Skip out of bullet-travel-loop.)
     }
 
     if (CL->map[newBullet].blocked()) { // Did we hit some wall instead?

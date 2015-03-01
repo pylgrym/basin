@@ -2,8 +2,13 @@
 #include "myrnd.h"
 
 #include <ostream>
+#include <assert.h>
 
-int rnd(int range) { return rand() % range;  }
+int rnd(int range) { 
+  assert(range != 0);
+  // if (range == 0) { return 0; }
+  return rand() % range;  
+}
 
 int rnd(int from,int to) { 
   int delta = to - from;

@@ -8,6 +8,8 @@
 #include "MainFrm.h"
 #include "util/debstr.h"
 
+#include "theUI.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -19,6 +21,7 @@ IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
+  ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
@@ -111,5 +114,16 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 
 	// otherwise, do default handling
 	return CFrameWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
+}
+
+
+
+void CMainFrame::OnClose()
+{
+  // TODO: Add your message handler code here and/or call default
+
+  CFrameWnd::OnClose();
+
+  TheUI::hasQuit = true;
 }
 

@@ -26,7 +26,7 @@ std::string Obj::an_item() const { // based on some_item.
     s.Replace(L".", L"a"); // a/an for vowels..
   }
 
-  s.Replace(L"-", L"some"); // FIXME - a/an for vowels..
+  s.Replace(L"- ", L"some "); // FIXME - a/an for vowels..
   return std::string(CT2A(s));
 }
 
@@ -64,7 +64,7 @@ CString Obj::some_item() const {
   CA2T uslot(aslot, CP_ACP); // CP_UTF8);
 
   CString fmt;
-  fmt.Format(L"%s of %s %dd%d(%d,%d) %s[%d]", (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot, ac);
+  fmt.Format(L"%d %s of %s %dd%d(%d,%d) %s[%d]", this->charges, (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot, ac);
 
   return fmt;
 }
@@ -188,6 +188,34 @@ ObjDef objDefs[] = {
 */
 };
 
+const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+
+
+const ObjDef& Obj::randObjDesc() {
+  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
+  int ix = rnd(numObjDefs);
+  ObjDef* od = &objDefs[ix];
+  return *od;
+}
+
+
+const ObjDef& Obj::randObjDesc2() {
+  static std::map<ObjEnum, std::vector<ObjDef*> > descs;
+  if (descs.size() == 0) { // Do first-time init.
+    for (int i = 0; i < numObjDefs; ++i) {
+      ObjDef& def = objDefs[i];
+      descs[def.type].push_back(&def);
+    }
+  }
+
+  ObjEnum ranType = (ObjEnum) rnd(OB_MaxLimit);
+  std::vector<ObjDef*>& defs = descs[ranType];
+  int choice = rnd(defs.size());
+  ObjDef* od = defs[choice];
+  return *od;
+}
+
+
 const char* Obj::objdefAsStr(const ObjDef& def) {
   const ObjDef* defptr = &def;
   int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
@@ -207,7 +235,7 @@ const char* Obj::objdefAsStr(const ObjDef& def) {
   return shortNames[ix].c_str();
 }
 
-const TCHAR* Obj::otypeAsStr(ObjEnum type) {
+const TCHAR* Obj::not_used_otypeAsStr(ObjEnum type) {
   /* JG: This was/is used for the tilemap-keyname assoc.:
   */
   static std::vector<CString> thingKeys;
@@ -269,6 +297,7 @@ const ObjDef& Obj::objDesc(ObjEnum type) {
   return dummy;
 }
 
+
 int Obj::def2ix(const ObjDef* objdef) {
   if (objdef == NULL) { return -1; }
 
@@ -282,12 +311,6 @@ int Obj::def2ix(const ObjDef* objdef) {
 }
 
 
-const ObjDef& Obj::randObjDesc() {
-  const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
-  int ix = rnd(numObjDefs);
-  ObjDef* od = &objDefs[ix];
-  return *od;
-}
 
 
 const char* Obj::flavorUse(ObjEnum type) {
@@ -396,7 +419,48 @@ void Obj::initRandom() { // - clear should not init.
 
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);
+
+  setTypeDefaults(); // Bring some sanity back..
 }
+
+void Obj::setTypeDefaults() {
+  switch (otype()) {
+    // Edible stuff and similar, have ONE charge and is consumed on use:
+  case OB_Potion: case OB_Scroll: case OB_Water: case OB_Bandage: case OB_Food: case OB_Mushroom: case OB_LampOil:
+    this->charges = 1;
+    this->consumed = true;
+
+    if (otype() == OB_Food) {
+      if (oneIn(2)) { 
+        effect = SP_Eat;  
+        this->itemUnits = rnd(700, 4500);
+      }
+    }
+    break;
+
+
+  case OB_Staff: case OB_Wand:
+    this->consumed = false; // 'chargey' items are not consumed on use-up, so far.
+    this->charges = rnd(0,16);
+    switch (this->effect) {
+    case SP_MagicMissile: dmgDice = Dice(2, 4); break;
+    case SP_StinkCloud:   dmgDice = Dice(3, 4); break;
+    case SP_FrostBolt:    dmgDice = Dice(4, 5); break; 
+    case SP_FireBolt:     dmgDice = Dice(5, 6); break;
+    case SP_FireBall:     dmgDice = Dice(6, 7); break;
+    case SP_StoneToMud:   dmgDice = Dice(7, 8); break;
+    case SP_WallBuilding: dmgDice = Dice(8, 9); break;
+    case SP_Earthquake:   dmgDice = Dice(9, 10); break;
+    }
+    break;
+  }
+
+  if (eqslot() != EQ_None) { // try-out hack:
+    ac = rnd(1, 7);
+  }
+
+}
+
 
 
 bool Obj::persist(Persist& p, CPoint& pos) {

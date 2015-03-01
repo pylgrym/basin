@@ -4,8 +4,8 @@
 class TheUI { // namespace for UI functions..
 public:
   static unsigned int getNextKey();
-  static void waitForKey(); // silently pause until user presses some key.
-  static void promptForAnyKey(); // ("auto-")PROMPT user to press any key.
+  static int waitForKey(); // silently pause until user presses some key.
+  static int promptForAnyKey(); // ("auto-")PROMPT user to press any key.
   static int promptForKey(const char* prompt); // Specifically prompt user to press keys, ie with a description.
 
   static int microSleepForRedraw(int maxCount); // allow redraw
@@ -20,6 +20,7 @@ public:
   static bool ctrlKey();
   static void BeepWarn();
 
+  static bool hasQuit;
 };
 
 #endif // THE_UI_H

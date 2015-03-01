@@ -111,7 +111,7 @@ void PlayerMob::dashboard() {
   CPoint dash(Viewport::Width, 1);
   // std::stringstream ss;
 
-  addInf1("lght", lightStrength(), width, dash);
+  addInf1("light", lightStrength(), width, dash);
   // ss << std::fixed << std::setw(4) << "light:";  addInf(ss, dash);
   // ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
 
@@ -127,15 +127,15 @@ void PlayerMob::dashboard() {
   addInf2("hp", stats.xp, stats.xpToLevel, width, dash);
 
 
-  addInf1("L", stats.level(), width, dash);
+  addInf1("level", stats.level(), width, dash);
   //ss // << "lvl:"   << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
-
-  addInf1("ac", stats.ac, width, dash);
-  // ss // << "ac:"  << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   addInf1("depth", depth, width, dash);
   // ss // << "ac:"  << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
+
+  addInf1("ac", stats.ac, width, dash);
+  // ss // << "ac:"  << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
 
   int acEffect = Stats::calcAvgACeffect();
   addInf1("ac%", acEffect, width, dash);
@@ -147,7 +147,11 @@ void PlayerMob::dashboard() {
   Encumb::EncumbEnum encumb = Encumb::enc(); // Encumb::EncumbEnum 
   const char* sEncumb = Encumb::encTxt(encumb); // encu
   // ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
-  addInfS("Enc", sEncumb, width, dash); // (ss, dash);
+  addInfS("enc", sEncumb, width, dash); // (ss, dash);
+
+  addInf1("food", stats.hunger, width, dash);
+  addInf1("conf.?", (int) stats.isConfused(), width, dash);
+  addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
 
 }
 
@@ -158,7 +162,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
   double actionDuration = 1.0; // seconds. // WalkCmd/Cmd's might set this instead.
 
   bool bActionDone = false;
-  for (;!bActionDone;) {
+  for (;!bActionDone && !TheUI::hasQuit;) { // JG: this seems to have been the important one, of 'hasQuit' checks..
     passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. FIXME - probably should respect action-duration.
 
 	  // Prompt user for command, then move:

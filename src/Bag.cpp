@@ -161,3 +161,23 @@ Obj* Bag::pick(const char* prompt) {
   Cuss::clear(true);
   return obj;
 }
+
+
+
+bool Bag::persist(class Persist& p) {
+  int bagCount = objs.size();
+  p.transfer(bagCount, "bagCount");
+
+  if (!p.bOut) { objs.resize(bagCount);  }
+
+  const ObjDef& dummy = Obj::objDesc(OB_None);
+  for (int i = 0; i < bagCount; ++i) {
+    if (!p.bOut) { objs[i] = new Obj(dummy, 1); }
+    Obj* o = objs[i];
+    CPoint unused;
+    o->persist(p, unused);
+  }
+  return true;
+}
+
+

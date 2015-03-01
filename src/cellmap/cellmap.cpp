@@ -102,20 +102,9 @@ void Map::initWorld(int level) {
         EnvirEnum etype = EN_Floor;
         bool isWall = laby.grid[p].isWall(); // oneIn(3);
         switch (laby.grid[p].c) {
-
-          // This is 'original wall': (of labyrinth - before we start filling tunnels.)
         case M_Wall: etype = EN_Wall;  break; // M_Unvisited
-
-          // These two are used to fill tunnels:
-        //case M_Wall:    etype = EN_Wall1;  break;
-        //case M_Wall_H:  etype = EN_Wall2;  break;
-
-          // These two are open space:
-        //case M_Visited: etype = EN_Vis;  break; now M_Open
-        case M_Open:    etype = EN_Floor;   break;
-
-        //case M_OpenB:   etype = EN_Open2; break; // JG: confused if ever used? will look like cobweb.
-        case M_Vein:    etype = EN_Vein;  break; 
+        case M_Open: etype = EN_Floor; break;
+        case M_Vein: etype = EN_Vein;  break; 
         }
 
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
@@ -133,24 +122,14 @@ void Map::initWorld(int level) {
         if (!isWall) {
           bool hasThing = oneIn(9);  
           if (hasThing) {
-            // bool type2 = oneIn(3);  
-            //const ObjDef& randDescNotYet = Obj::randObjDesc(); // FIXME: Obj doesn't work this way, because ObjEnum rules everything.
-            /* TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent.
-            */
-
+            // TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent. 
             //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-            const ObjDef& objType = Obj::randObjDesc(); // objDesc(OB_Gold);
+
+            const ObjDef& objType = Obj::randObjDesc2(); 
             int ilevel = Levelize::suggestLevel(level);
             cell.item.setObj(new Obj(objType, ilevel));
           }
         }
-        /*
-        bool hasCreature = oneIn(17);  
-        if (hasCreature) {
-          bool type2 = oneIn(3);  
-          cell.creature.type = (type2 ? CR_Kobold : CR_Dragon);
-        }
-        */
       }
     }
   } // for x/ create floor.   
@@ -375,49 +354,7 @@ bool Map::persist(Persist& p) {
 }
 
 
-bool Bag::persist(class Persist& p) {
-  int bagCount = objs.size();
-  p.transfer(bagCount, "bagCount");
 
-  if (!p.bOut) { objs.resize(bagCount);  }
-
-  const ObjDef& dummy = Obj::objDesc(OB_None);
-  for (int i = 0; i < bagCount; ++i) {
-    if (!p.bOut) { objs[i] = new Obj(dummy, 1); }
-    Obj* o = objs[i];
-    CPoint unused;
-    o->persist(p, unused);
-  }
-  return true;
-}
-
-
-bool Equ::persist(class Persist& p) {
-  int equCount = wornCount();
-  p.transfer(equCount, "wornCount");
-
-  if (p.bOut) { // if outputting.
-    for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
-      if (equ[i] != NULL) {
-        p.transfer(i, "eqSlot");
-        CPoint unused;
-        equ[i]->persist(p, unused);
-      }
-    } // worn-item-loop.
-  } else { // if reading.
-    const ObjDef& dummy = Obj::objDesc(OB_None);
-    for (int i = 0; i < equCount; ++i) {
-      int eqSlot = 0;
-      p.transfer(eqSlot, "eqSlot");
-      Obj* o = new Obj(dummy, 1);
-      CPoint unused;
-      o->persist(p, unused);
-      equ[eqSlot] = o;
-    } // worn-item-loop.
-  }
-
-  return true;
-}
 
 
 

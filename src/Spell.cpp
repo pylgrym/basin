@@ -151,7 +151,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
-  case SP_Confuse:      return updateConfused(actor, rnd(3, 20)); break;
+  case SP_Confuse:      return updateConfused(actor, rnd(5, 25)); break;
   case SP_Unconfuse:    return updateConfused(actor, 0); break;
   case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..?
   case SP_Teleport:     return teleportSpell(actor, 4); break;
@@ -166,7 +166,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   case SP_WallBuilding: return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_Earthquake:   return bulletSpell(actor, item, effect, SC_Earth); break;
 
-  case SP_Eat:          return eatSpell(actor,300); break;
+  case SP_Eat:          return eatSpell(actor,item->itemUnits); break;
   case SP_Heal:         return healSpell(actor,35); break;
   case SP_Sick:         return healSpell(actor,-35); break;
   // case SP_Poison:       healSpell(actor); break;

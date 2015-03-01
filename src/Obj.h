@@ -95,19 +95,12 @@ public:
     return objdef ? objdef->type : OB_Lamp; // oldtype;
   }
 
-  /*
-  Obj():objdef(NULL)
-    //,oldtype(OB_None)
-    , effect(SP_NoSpell), eqslot(EQ_Unwearable), weight(0), itemUnits(0), ilevel(0), ac(1) { clear(); }
-  */
 
-  // ObjEnum type_,
   Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
-    //,oldtype(OB_Bandage) // type_)
-    ,ilevel(level_), effect(SP_NoSpell), weight(0), itemUnits(0), ac(1)  // , zeqslot(EQ_Unwearable), 
+    ,ilevel(level_), effect(SP_NoSpell), weight(0), itemUnits(0), ac(1)  
   {
     effect = Spell::rndSpell();
-    const ObjDef& desc = objdef_; // Obj::objDesc(type);
+    const ObjDef& desc = objdef_; 
 
     clear(); 
     initRandom();
@@ -137,23 +130,7 @@ public:
 
   void initRandom();
 
-  void setTypeDefaults() {
-    switch (otype()) {
-      // Edible stuff and similar, have ONE charge and is consumed on use:
-    case OB_Potion: case OB_Scroll: case OB_Water: case OB_Bandage: case OB_Food: case OB_Mushroom: case OB_LampOil:
-      this->charges = 1;
-      this->consumed = true;
-
-    case OB_Staff: case OB_Wand:
-      this->consumed = false; // 'chargey' items are not consumed on use-up, so far.
-      this->charges = rnd(0,16);
-    }
-
-    if (eqslot() != EQ_None) { // try-out hack:
-      ac = rnd(1, 7);
-    }
-
-  }
+  void setTypeDefaults();
 
 
   virtual bool use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
@@ -190,13 +167,14 @@ public:
   // END BEHAVIOUR
 
   static const ObjDef& randObjDesc();
+  static const ObjDef& randObjDesc2();
 
   static const ObjDef& objDesc(ObjEnum type);
 
   static int def2ix(const ObjDef* objdef);
 
   static const char* objdefAsStr(const ObjDef& def);
-  static const TCHAR* otypeAsStr(ObjEnum type);
+  static const TCHAR* not_used_otypeAsStr(ObjEnum type);
   // static const TCHAR* typeAsDescU(ObjEnum type);
   static const char* typeAsDescA(ObjEnum type);
 
@@ -222,8 +200,8 @@ public:
 
   void setObj(Obj* o_) { o = o_; }
 
-  const TCHAR* oldtypeS() { return Obj::otypeAsStr(type()); }
-  //const TCHAR*    utypeS() { return Obj::objdefAsStr(objDef()); }
+  // const TCHAR* oldtypeS() { return Obj::otypeAsStr(type()); }
+  // const TCHAR*    utypeS() { return Obj::objdefAsStr(objDef()); }
   const char*    atypeS()  { return Obj::objdefAsStr(objDef()); }
 
   bool empty() const { return type() == OB_None; }

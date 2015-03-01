@@ -286,3 +286,32 @@ Obj* Equ::pick(const char* prompt) {
   Cuss::clear(true);
   return obj;
 }
+
+
+bool Equ::persist(class Persist& p) {
+  int equCount = wornCount();
+  p.transfer(equCount, "wornCount");
+
+  if (p.bOut) { // if outputting.
+    for (int i = EQ_Unwearable + 1; i <= EQ_MaxSlot; ++i) {
+      if (equ[i] != NULL) {
+        p.transfer(i, "eqSlot");
+        CPoint unused;
+        equ[i]->persist(p, unused);
+      }
+    } // worn-item-loop.
+  } else { // if reading.
+    const ObjDef& dummy = Obj::objDesc(OB_None);
+    for (int i = 0; i < equCount; ++i) {
+      int eqSlot = 0;
+      p.transfer(eqSlot, "eqSlot");
+      Obj* o = new Obj(dummy, 1);
+      CPoint unused;
+      o->persist(p, unused);
+      equ[eqSlot] = o;
+    } // worn-item-loop.
+  }
+
+  return true;
+}
+

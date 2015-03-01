@@ -40,8 +40,8 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  int answer = MessageBox(L"Basin", L"Load?", MB_ICONQUESTION | MB_YESNO);
-  Dungeons::the_dungeons.initDungeons(answer == IDYES); //  true); // false); // true); // false); // true); // actually, the player..
+  int answer = MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);
+  Dungeons::the_dungeons.initDungeons(answer == IDYES); // actually, the player..
 
 
   //FIXME: (DARKNESS) img-tiles should be BLACK!
@@ -70,6 +70,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 END_MESSAGE_MAP()
 
 
+bool TheUI::hasQuit = false;
+
 
 bool TheUI::shiftKey() {
   SHORT state = GetAsyncKeyState(VK_SHIFT);
@@ -81,10 +83,17 @@ bool TheUI::ctrlKey() { return (GetAsyncKeyState(VK_CONTROL) < 0); }
 
 unsigned int TheUI::getNextKey() {  // UINT
 	// GetMessage loop example. // http://www.cplusplus.com/forum/beginner/38860/	
+  if (TheUI::hasQuit) { debstr() << "bail\n";  return VK_CANCEL; }
+
   debstr() << "WAITING for user keyboard input (getNextKey)\n";
 	MSG msg;
   while (GetMessage(&msg, NULL, 0, 0) > 0) {
-		// if (msg.message == WM_KEYDOWN) {
+    // debstr() << "msg:" << msg.message << "\n";
+    if (msg.message == WM_QUIT || TheUI::hasQuit) {
+      debstr() << "TheUI::getNextKey, user is quitting!\n";
+      TheUI::hasQuit = true;
+      return VK_CANCEL;
+    }
 		// 	UINT keyCode = msg.wParam;
 		// 	return keyCode;
 		// }
@@ -112,6 +121,13 @@ unsigned int TheUI::getNextKey() {  // UINT
 	MSG msg;
   // GetMessage(&msg, NULL, 0, 0) > 0 
   while ( PeekMessage(&msg,NULL,0,0, PM_REMOVE) > 0 && count < maxCount) {
+
+    if (msg.message == WM_QUIT  || TheUI::hasQuit) {
+      debstr() << "TheUI::microSleepForRedraw, user is quitting!\n";
+      TheUI::hasQuit = true;
+      return VK_CANCEL;
+    }
+
     ++count;
     const int sleepMS = 10; // 4;
     Sleep(sleepMS);
@@ -152,7 +168,7 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	KillTimer(timerID);
 	// do stuff..
   debstr() << "Starting queue-process..\n";
-  for (bool isRunning=true; isRunning; ) {
+  for (bool isRunning=true; isRunning && !TheUI::hasQuit; ) {
     isRunning = CL->mobs.dispatchFirst();
     // debstr() << "isRunning?" << isRunning << "\n";
     if (PlayerMob::ply->isDead()) {
@@ -178,10 +194,11 @@ void doFont(CFont& largeFont, CFont& smallFont, CPaintDC& dc) {
 	// -17 and terminal, 'fits', but is too spaced out.
 	// -28 and terminal, has proper widths, but breaks gyjgyj outliers.
 	// -24 is a compromise.
-	double fontScale = (18.0/20.0);
+  double fontScale = (23.0 / 20.0); // (18.0 / 20.0);
 	logFont.lfHeight = (int) (-Tiles::TileWidth * fontScale); //-18; //-24; // 14*1.3f; //-50; //22;
 	// const char* fontName = "Terminal"; //"STENCIL"; // "Terminal"
-	const TCHAR* fontName = L"Rockwell Extra Bold"; //"STENCIL"; // "Terminal"
+	const TCHAR* fontName2 = L"Rockwell Extra Bold"; //"STENCIL"; // "Terminal"
+	const TCHAR* fontName = L"Courier New"; //"STENCIL"; // "Terminal"
 
   // strncpy_s
 	wcsncpy_s(logFont.lfFaceName, sizeof logFont.lfFaceName / sizeof (TCHAR), fontName, sizeof logFont.lfFaceName / sizeof (TCHAR));
@@ -332,7 +349,9 @@ void CChildView::OnPaint() {
         dc.SetTextColor(txtColor);  
 		    int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
 		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-        dc.FillRect(&cellR, &txtBk);
+        dc.FillRect(&cellR, &txtBk); // FIXMEXE
+        // dc.DrawEdge(&cellR, BDR_SUNKENINNER, BF_RECT); // For debugging/diagnostics.
+
         CString s; s.Format(L"%c", tcell.c);
 		    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
       } else { // Only draw light-shading when not text-cell:

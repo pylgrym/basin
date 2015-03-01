@@ -89,13 +89,13 @@ void Cuss::invalidate() {
 }
 
 
-void TheUI::waitForKey() { 
-  getNextKey();  
+int TheUI::waitForKey() { 
+  return getNextKey();  
 }
 
-void TheUI::promptForAnyKey() { 
+int TheUI::promptForAnyKey() { 
   Cuss::prtL("  Press any key.");
-  getNextKey();  
+  return getNextKey();  
 }
 
 int TheUI::promptForKey(const char* prompt) { 
