@@ -121,7 +121,9 @@
     <ClInclude Include="LogEvents.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mob.h" />
+    <ClInclude Include="MobCombat.h" />
     <ClInclude Include="MobQueue.h" />
+    <ClInclude Include="MonsterMob.h" />
     <ClInclude Include="numutil\myrnd.h" />
     <ClInclude Include="Obj.h" />
     <ClInclude Include="Persist.h" />
@@ -154,7 +156,9 @@
     <ClCompile Include="LogEvents.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mob.cpp" />
+    <ClCompile Include="MobCombat.cpp" />
     <ClCompile Include="MobQueue.cpp" />
+    <ClCompile Include="MonsterMob.cpp" />
     <ClCompile Include="numutil\myrnd.cpp" />
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="Persist.cpp" />

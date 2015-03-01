@@ -111,6 +111,12 @@
     <ClInclude Include="Encumb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MobCombat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterMob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -195,6 +201,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Encumb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MobCombat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterMob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
