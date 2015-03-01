@@ -75,6 +75,8 @@ public:
 
   bool persist(Persist& p, CPoint& pos);
 
+  virtual int price() const { return objdef->price;  }
+
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot() const { return (objdef ? objdef->eqtype : EQ_None ); }

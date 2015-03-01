@@ -402,6 +402,15 @@ bool LoadCmd::Do(std::ostream& err) {
 
 
 bool ShopCmd::Do(std::ostream& err) {
-  err << "You shop:";
+  // err << "You shop:";
+
+  Cuss::clear(false);
+  Cuss::prtL("  Welcome to my shop, traveller!");
+
+  Bag::bag.showShopInv();
+
+  TheUI::promptForAnyKey();
+
+  Cuss::clear(true);
   return true;
 }

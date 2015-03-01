@@ -22,8 +22,10 @@ public:
   bool remove(Obj* obj, std::ostream& err);
   char letterIx(Obj* obj);
 
-  void showInv();
-  Obj* pick(const char* prompt);
+  void showBagInv();
+  void showShopInv();
+  Obj* pickBag(const char* prompt);
+  Obj* pickAction(); // helper for pick 
 
   Obj* findItem(ObjEnum otype);
 
@@ -35,5 +37,6 @@ public:
   bool persist(class Persist& p);
 
   static Bag bag;
+  static Bag shop; // hack
 };
 

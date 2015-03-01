@@ -66,7 +66,7 @@ double Bag::bagWeight() {
 
 
 
-void Bag::showInv() {
+void Bag::showBagInv() {
   if (objs.size() == 0) {
     Cuss::prtL("Zero items. Nothing. Nada."); 
   }
@@ -81,19 +81,8 @@ void Bag::showInv() {
   for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
     Obj& o = **i;
     std::stringstream ss;
-
-    /*
-    CString desc = o.typeAsDesc(o.otype());
-    desc.Replace(L".", L"a"); // FIXME: 'an' for vowels..
-    CT2A descA(desc, CP_ACP);
-    */
     std::string descA = o.an_item();
-
-    // CT2A abbrA(o.typeAsStr(o.otype()), CP_ACP);  
-
     ss 
-      // << " " << abbrA[0] // Icon-letter first.
-      // << " " 
       << ix 
       << " " << o.weight/10.0  
       << " " << descA
@@ -108,7 +97,6 @@ void Bag::showInv() {
   Cuss::prtL(ss.str().c_str());  
 
   Cuss::invalidate();
-
 }
 
 
@@ -124,12 +112,18 @@ Obj* Bag::findItem(ObjEnum otype) {
 
 
 
-Obj* Bag::pick(const char* prompt) {
+Obj* Bag::pickBag(const char* prompt) {
   Cuss::clear(false);
-  Cuss::prtL(prompt); 
+  Cuss::prtL(prompt);
 
-  showInv(); // Bag::bag.
-  const char firstKey = 'A';
+  showBagInv(); // Bag::bag.
+  return pickAction();
+}
+
+
+
+Obj* Bag::pickAction() { // const char* prompt) {
+    const char firstKey = 'A';
   char lastKey = firstKey + objs.size()-1; // Bag::bag.
   char lower = lastKey - ('A' - 'a');
   CString s; 
@@ -181,3 +175,35 @@ bool Bag::persist(class Persist& p) {
 }
 
 
+Bag Bag::shop;
+
+
+void Bag::showShopInv() {
+  if (objs.size() == 0) {
+    Cuss::prtL("Zero items. Nothing. Nada.");
+  }
+
+  char ix = 'a';
+  BagCont::iterator i;
+  for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
+    Obj& o = **i;
+    std::stringstream ss;
+    std::string descA = o.an_item();
+    ss
+      << ix
+      << " " << o.price()
+      << " " << descA
+      ;
+    Cuss::prtL(ss.str().c_str());
+  }
+
+  Cuss::prtL("B to buy, S to sell..");
+
+
+  // std::stringstream ss;
+  // ss << "Total weight: " << totalWeight / 10.0 << " kg";
+  // ss << " (" << everything / 10.0 << ")";
+  // Cuss::prtL(ss.str().c_str());
+
+  Cuss::invalidate();
+}

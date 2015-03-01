@@ -78,11 +78,11 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , maxMana(0)
 , ac(0)
 , baseMobAC(0)
+, wornAC_input(0), wornAC_output(0)
 , toHit(0)
 , hunger(1500)
-,confused(0)
-,gold(0)
-
+, confused(0)
+, gold(0)
 {
   baseMobAC = nDx(2, 3);
 
@@ -171,12 +171,34 @@ int Stats::mobAC() {
 }
 
 
+
+int Stats::itemACReduc(int wornAC) {
+  int actualAC = 0;
+
+  int acCost = 1;
+  int count = 0;
+  for (int i = 0; i < wornAC; ++i, ++count) {
+    if (count == acCost) {
+      ++actualAC; // We earned one.
+      ++acCost; // Next one will cost more.
+      count = 0;
+    }
+  }
+  return actualAC;
+}
+
+
+
 int Stats::calcTotalAC() {
   int base = calcBaseAC();
   int wornAC = 0;
   if (isPlayer) {
     wornAC = Equ::worn.calcWornAC();
-  } else {
+    wornAC_input = wornAC;
+    wornAC = itemACReduc(wornAC);
+    wornAC_output = wornAC;
+  }
+  else {
     wornAC = mobAC();
   }
   int total = base + wornAC;

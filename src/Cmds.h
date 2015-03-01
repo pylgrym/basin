@@ -234,7 +234,7 @@ public:
     }
 
     debstr() << "doing drop item-command.\n";
-    Obj* obj = Bag::bag.pick("  Drop what?");
+    Obj* obj = Bag::bag.pickBag("  Drop what?");
     if (obj == NULL) { return false;  }
 
     debstr deb;
@@ -264,7 +264,7 @@ public:
     Cuss::clear(false);
     Cuss::prtL("  Your bag contains:"); 
 
-    Bag::bag.showInv();
+    Bag::bag.showBagInv();
 
     TheUI::promptForAnyKey(); 
 
@@ -334,7 +334,7 @@ public:
     if (!Cmd::Do(err)) { return false; }
 
     debstr() << "doing use item-command.\n";
-    Obj* obj = Bag::bag.pick("  Use what?");
+    Obj* obj = Bag::bag.pickBag("  Use what?");
     if (obj == NULL) { return false;  }
 
     if (obj->wearable()) {
@@ -369,7 +369,7 @@ public:
     if (!Cmd::Do(err)) { return false; }
 
     debstr() << "doing examine item-command.\n";
-    Obj* obj = Bag::bag.pick("  Examine what?");
+    Obj* obj = Bag::bag.pickBag("  Examine what?");
     if (obj == NULL) { return false;  }
 
     logstr log; 

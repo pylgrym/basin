@@ -76,6 +76,7 @@ public:
   int ac;
   int toHit;
   int baseMobAC; // a varying dice roll for mob ac, a 'delta' (to make mobs not always equal)
+  int wornAC_input, wornAC_output;
 
   // Temp/fluctuating state: Might deserve its own sub-struct; 
   // OTOH, actually all stats might need to follow..
@@ -92,6 +93,7 @@ public:
   int calcBaseAC();
   int mobAC(); // the AC a mob gets to have, since he doesn't have 'worn items'.
 
+  int itemACReduc(int wornAC); // Player will earn diminished AC from items.
 
   int calcToHit(std::ostream& os);
 

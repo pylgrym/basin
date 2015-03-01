@@ -111,7 +111,7 @@ ObjDef objDefs[] = {
 // fixme -weapons need proficiencies or similar (maybe just level they appear on?
 // to allow user to utilize the stronger weapons.
 // weapons from  dnd4.wikia.com/wiki/Weapon
-{ OB_Weapon, EQ_MainHand, ". club",        1, "1d6",1.5},
+{ OB_Weapon, EQ_MainHand, ". club",        1, "1d6",1.5 }, 
 { OB_Weapon, EQ_MainHand, ". dagger",      1, "1d4",0.5},
 { OB_Weapon, EQ_MainHand, ". javelin",     5, "1d6",1  },
 { OB_Weapon, EQ_MainHand, ". light mace",  3, "1d6",1  },

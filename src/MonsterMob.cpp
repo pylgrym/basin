@@ -23,7 +23,7 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
 
 
 double MonsterMob::actSleep() { // returns time that action requires (0 means keep doing actions/keep initiative.)
-  bool wake = oneIn(10); 
+  bool wake = oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
   if (wake) {
     logstr log; log << "Something awakens!";
     bool angry = oneIn(2);  

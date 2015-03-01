@@ -124,8 +124,7 @@ void PlayerMob::dashboard() {
 
   // ss // << "xp:" << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
   //ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
-  addInf2("hp", stats.xp, stats.xpToLevel, width, dash);
-
+  addInf2("xp", stats.xp, stats.xpToLevel, width, dash);
 
   addInf1("level", stats.level(), width, dash);
   //ss // << "lvl:"   << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
@@ -136,6 +135,7 @@ void PlayerMob::dashboard() {
 
   addInf1("ac", stats.ac, width, dash);
   // ss // << "ac:"  << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
+  addInf2("worn", stats.wornAC_input, stats.wornAC_output, width, dash);
 
   int acEffect = Stats::calcAvgACeffect();
   addInf1("ac%", acEffect, width, dash);
