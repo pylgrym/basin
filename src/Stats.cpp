@@ -77,11 +77,15 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , mana(0)
 , maxMana(0)
 , ac(0)
+, baseMobAC(0)
 , toHit(0)
 , hunger(1500)
 ,confused(0)
 ,gold(0)
+
 {
+  baseMobAC = nDx(2, 3);
+
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
   /*
@@ -162,6 +166,9 @@ int Stats::calcBaseAC() {
   return val_ac;
 }
 
+int Stats::mobAC() {
+  return level() + 3 + baseMobAC; 
+}
 
 
 int Stats::calcTotalAC() {
@@ -169,6 +176,8 @@ int Stats::calcTotalAC() {
   int wornAC = 0;
   if (isPlayer) {
     wornAC = Equ::worn.calcWornAC();
+  } else {
+    wornAC = mobAC();
   }
   int total = base + wornAC;
   return total;
@@ -177,7 +186,10 @@ int Stats::calcTotalAC() {
 
 
 int Stats::calcToHit(std::ostream& os) {
-  const int globOffset = 9; // A global constant setting, what default chance should be to hit something.
+  const int globOffset = 16; // 9; // A global constant, what default chance should be to hit something.
+  /* JG: 9 gives '50-50'. But actually, I want 'unarmoured' to be more hittable, like 90%..
+  So instead, I should give mobs more armour!
+  */
 
   // s["str"]
   int strMod = Str.mdf(); // Your dex-modifier becomes (part of) your armour class (you move quickly to avoid being hit.)
@@ -433,4 +445,20 @@ bool Stats::persist(Persist& p) {
 bool Stat::persist(Persist& p) {
   p.transfer(v, this->name.c_str()); 
   return true;
+}
+
+
+int Stats::calcAvgACeffect() {
+  int level = PlayerMob::ply->stats.level();
+  Stats avgStats(level, false); // Make stats for an avg same-level monster.
+  avgStats.makeAvg();
+  avgStats.calcStats();
+
+  int mobToHit = avgStats.toHit;
+  int playerAC = PlayerMob::ply->stats.ac;
+  int thres = (mobToHit - playerAC);
+  double hitRatio = thres / 20.0;
+  double missRatio = ( 1.0 - hitRatio);
+  int pct = int(missRatio*100.0 + 0.5);
+  return pct;
 }

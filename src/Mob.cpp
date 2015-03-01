@@ -100,6 +100,10 @@ void PlayerMob::dashboard() {
   ss // << "ac:" 
     << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
 
+  int acEffect = Stats::calcAvgACeffect();
+  ss // << "ac effect:" 
+    << std::fixed << std::setw(3) << acEffect << "%ac"; addInf(ss, dash);
+
   // FIXME, should be recalculated per turn, and possibly stored in stats:
   // FIXME, show as text
   // FIXME, pick up should check this!
@@ -363,20 +367,6 @@ bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
 
 
 
-bool Mob::nearPlayer() const {
-  int dist = PlayerMob::distPly(pos);
-  return (dist <= 1);
-}
-
-CPoint Mob::playerDir() const {
-  CPoint delta = (PlayerMob::ply->pos - pos);
-  CPoint dir;
-  if (delta.x > 0) { dir.x = 1; }
-  if (delta.x < 0) { dir.x = -1; }
-  if (delta.y > 0) { dir.y = 1; }
-  if (delta.y < 0) { dir.y = -1; }
-  return dir;
-}
 
 
 

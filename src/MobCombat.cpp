@@ -12,11 +12,6 @@ MobCombat::~MobCombat()
 {
 }
 
-int Mob::takeDamage(int dmg, AttackSchool damageType) { // returns dmgTaken
-  int dmgTaken = dmg; // Might be adjusted by resistances or vulnerabilities. (should we calculate this here, or outside in dmg code?)
-  stats.hp -= dmgTaken;
-  return dmgTaken;
-}
 
 
 double AttackInf::calcHitChance() const {
@@ -24,12 +19,37 @@ double AttackInf::calcHitChance() const {
   return hitRatio;
 }
 
+
 void AttackInf::repHitChance(std::ostream& os) {
   double chance = calcHitChance();
   int percent = int(chance*100.0 + 0.5);
   //os << std::fixed << std::setw(4) << std::setprecision(2) << chance;
   os << percent;
 }
+
+
+
+bool Mob::hitTest(class Mob& adv, AttackInf& ai) { 
+  // int& hitRoll, int hitBonus) { // FIXME: consider passing entire weapon-obj instead of just the hitbonus.
+  ai.hitRoll = Dx(20);
+
+  // toHit is your ability to hit,
+  // your opponent's ac will counter your ability to hit.
+  ai.advAC = adv.stats.ac;
+  ai.finalToHit = (stats.toHit + ai.wpHitBonus);
+  ai.hitThres = ai.finalToHit - ai.advAC;
+
+  bool bHit = false;
+  if (ai.hitRoll == 20) { // a 20 is automatic MISS.
+    bHit = false; 
+  } else if (ai.hitRoll == 1) { // a 1 is automatic HIT.
+    bHit = true;
+  } else {
+    bHit = (ai.hitRoll <= ai.hitThres);
+  }
+  return bHit;
+}
+
 
 
 bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, std::ostream& os) { 
@@ -70,25 +90,12 @@ bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchoo
 
 
 
-bool Mob::hitTest(class Mob& adv, AttackInf& ai) { // int& hitRoll, int hitBonus) { // FIXME: consider passing entire weapon-obj instead of just the hitbonus.
-  ai.hitRoll = Dx(20);
 
-  // toHit is your ability to hit,
-  // your opponent's ac will counter your ability to hit.
-  ai.advAC = adv.stats.ac;
-  ai.finalToHit = (stats.toHit + ai.wpHitBonus);
-  ai.hitThres = ai.finalToHit - ai.advAC;
 
-  bool bHit = false;
-  if (ai.hitRoll == 20) { // a 20 is automatic MISS.
-    bHit = false; 
-  } else if (ai.hitRoll == 1) { // a 1 is automatic HIT.
-    bHit = true;
-  } else {
-    bHit = (ai.hitRoll <= ai.hitThres);
-  }
-  return bHit;
+int Mob::takeDamage(int dmg, AttackSchool damageType) { // returns dmgTaken
+  int dmgTaken = dmg; // Might be adjusted by resistances or vulnerabilities. (should we calculate this here, or outside in dmg code?)
+  stats.hp -= dmgTaken;
+  return dmgTaken;
 }
-
 
 

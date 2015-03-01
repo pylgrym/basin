@@ -15,11 +15,14 @@ public:
   void roll();
   int mdf() const; // Beware, I have two different mechanisms active for this..
 
+  void makeAvg() { v = 11; }
+
   bool persist(class Persist& p);
 };
 
 /* I don't like this interface,
 I think I'll roll a mix of named fields and enums. */
+/*
 enum StatsEnum { 
   STREN,
   INTEL,
@@ -28,6 +31,7 @@ enum StatsEnum {
   WISDO,
   CHARI,
 };
+*/
 
 class Stats // Actually, ability stats..
 {
@@ -41,6 +45,11 @@ public:
   // void addStat(const std::string& name);
   Stats(int level_, bool bPlayer_);
   ~Stats();
+
+  void makeAvg() {
+    Str.makeAvg(); Int.makeAvg(); Dex.makeAvg(); 
+    Con.makeAvg(); Wis.makeAvg(); Chr.makeAvg();
+  }
 
   bool isPlayer; // important for some calcs, because of singleton-silliness (no player stats for mobs..)
   int theLevel;
@@ -66,6 +75,7 @@ public:
 
   int ac;
   int toHit;
+  int baseMobAC; // a varying dice roll for mob ac, a 'delta' (to make mobs not always equal)
 
   // Temp/fluctuating state: Might deserve its own sub-struct; 
   // OTOH, actually all stats might need to follow..
@@ -77,8 +87,11 @@ public:
   bool isConfused() const { return (confused > 0);  }
 
   int calcMaxHP();
+
   int calcTotalAC();
   int calcBaseAC();
+  int mobAC(); // the AC a mob gets to have, since he doesn't have 'worn items'.
+
 
   int calcToHit(std::ostream& os);
 
@@ -114,6 +127,6 @@ public:
   int statMod(const std::string& stat);
   static int mdf(int stat); // Alternative approach
 
-
+  static int calcAvgACeffect();
 };
 

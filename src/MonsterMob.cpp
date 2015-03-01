@@ -82,6 +82,22 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
 
 
 
+bool Mob::nearPlayer() const {
+  int dist = PlayerMob::distPly(pos);
+  return (dist <= 1);
+}
+
+CPoint Mob::playerDir() const {
+  CPoint delta = (PlayerMob::ply->pos - pos);
+  CPoint dir;
+  if (delta.x > 0) { dir.x = 1; }
+  if (delta.x < 0) { dir.x = -1; }
+  if (delta.y > 0) { dir.y = 1; }
+  if (delta.y < 0) { dir.y = -1; }
+  return dir;
+}
+
+
 
 void Mob::makeAngry() {
   if (mood == M_Sleeping || mood == M_Wandering) {
@@ -106,12 +122,31 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   debstr() << "I am afraid and will flee from player.\n";
 
   std::stringstream ss;
-  bool bLegal = WalkCmd(*this, dir.x, dir.y, false).Do(ss);
-  if (!bLegal) { // if we can't flee in that dir, try a random dir:
-	  // stagger to a random location:
+  WalkCmd walk(*this, dir.x, dir.y, false);
+  if (!walk.legal(ss)) { // if we can't flee in that dir, try a random dir:
+
+    // try to stagger to a random location:
     int dx = rndC(-1, 1), dy = rndC(-1, 1);
-    bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
+    walk.newpos = (pos + CPoint(dx, dy));
+    if (!walk.legal(ss)) {
+
+      CPoint dirV = dir, dirH = dir;
+      dirV.x = 0; dirH.y = 0;
+      walk.newpos = (pos + dirV); // what about going vertical?
+      if (!walk.legal(ss)) { // if vertical doesn't work, what about horizontal?
+        walk.newpos = (pos + dirH);
+        if (!walk.legal(ss)) { // if horizontal doesn't work, what about fighting back..
+          if (nearPlayer()) {
+            logstr log; log << "Cornered, the scared monster fights back!";
+            HitCmd(NULL, *this, dir.x, dir.y, SC_Phys).Do(ss);  
+            return 1.0;
+          }
+        }
+      }
+
+    }
   }
+  bool bLegal = walk.Do(ss);
 
   return 1.0; // duration.
 }
