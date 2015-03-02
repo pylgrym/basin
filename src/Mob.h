@@ -101,6 +101,12 @@ public:
 
   void makeAngry();
 
+  //bool noticeAdv(Mob* adv);
+  bool noticePlayer(); // Adv(Mob* adv);
+
+  static double noticePlayerProb(CPoint coords);
+
+
   Dice mobWeaponDice() { return mobDummyWeapon;  }
 
   bool nearPlayer() const;

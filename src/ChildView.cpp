@@ -275,6 +275,18 @@ void CChildView::OnPaint() {
 
       tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, false, 255); // FLOOR
 
+      bool floorStat = true;
+      if (floorStat) {
+        int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+        CString s; s.Format(L"%d ", (int) Mob::noticePlayerProb(wp));
+
+        dc.SelectObject(smallFont);
+        const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+        dc.SetTextColor(RGB(255,255,0));  
+        dc.DrawText(s, &cellR, fontFlags);
+      }
+
 
 
       if (!cell.item.empty()) { 

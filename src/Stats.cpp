@@ -441,6 +441,9 @@ void Stats::showStats() {
   s << "CHR:" << this->Chr.v();       pr(s);
   s << "CON:" << this->Con.v();       pr(s);
 
+  s << "stealth:" << this->stealth(); pr(s);
+  s << "alertness:" << this->alertness(); pr(s);
+
   int lightStr = PlayerMob::ply->lightStrength();
   int lightUnits = PlayerMob::ply->theLightUnits;
   s << "Light:" << lightStr;          
@@ -497,3 +500,24 @@ int Stats::calcAvgACeffect() {
   int pct = int(missRatio*100.0 + 0.5);
   return pct;
 }
+
+
+int Stats::stealth() const { // based on dex mod + level.
+  int base = Dex.mdf();
+  int total = lvlAdj(base);
+  return total;
+}
+
+int Stats::alertness() const { // based on WIS mod + level.
+  int base = Wis.mdf();
+  int total = lvlAdj(base);
+  return total;
+}
+
+
+int Stats::lvlAdj(int in) const {
+  int delta = level() / 2;
+  int adj = in + delta;
+  return adj;
+}
+

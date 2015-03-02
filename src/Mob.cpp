@@ -28,7 +28,14 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
 
   defSchool = (AttackSchool) rnd(0, SC_MaxSchools);
 
-  mood = (MoodEnum) rnd(0, M_MaxMoods);
+  bool badMood = oneIn(12);
+  if (badMood) { 
+    mood = (MoodEnum) rnd(0, M_MaxMoods);
+  } else { // Most monsters start out sleeping, or wandering.
+    bool awake = oneIn(6);
+    mood = (awake ? M_Wandering : M_Sleeping);
+  }
+  
 }
 
 

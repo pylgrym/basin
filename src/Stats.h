@@ -62,6 +62,8 @@ public:
   int theLevel;
   void setLevel(int level_);
   int level() const { return theLevel;  }
+  int lvlAdj(int in) const;
+
 
   void initStats();
   void calcStats();
@@ -108,6 +110,10 @@ public:
     // os << "xyz";
     calcToHit(os);
   }
+
+  // DERIVED STATS:
+  int stealth() const; // based on dex mod + level.
+  int alertness() const; // based on WIS mod + level.
 
   void heal(int percent);
 

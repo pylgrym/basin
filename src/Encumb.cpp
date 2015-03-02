@@ -18,6 +18,10 @@ double Encumb::totalWeight() {
 
 Encumb::EncumbEnum Encumb::enc() {
   double kilos = totalWeight();
+  if (PlayerMob::ply == NULL) { 
+    debstr() << "Warning, Encumb::enc, no player yet to calculate..\n";
+    return MediumE;  
+  }
   Stats& stats = PlayerMob::ply->stats;
   EncumbEnum encumbrance = calcEnc(kilos, stats);
   return encumbrance;

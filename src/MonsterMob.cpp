@@ -21,10 +21,47 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
 }
 
 
+double Mob::noticePlayerProb(CPoint coords) {
+  int dist = PlayerMob::distPly(coords);
+  //return dist;
+  int plyStealth = PlayerMob::ply->stats.stealth();
+  int mobAlert = 0;
+  int avoidBalance = plyStealth - mobAlert;
+  int threshold = dist + avoidBalance;
+
+  // Now calc percent-prob of threshold and D20.
+  double pct = 1.0 - (threshold / 20.0);
+  int intPct = int(pct*100.0 + 0.5);
+  return intPct;
+}
+
+
+bool Mob::noticePlayer() {  
+  /* We are actually checking player's ability to stealth, not mob's ability to notice (they are inverse).
+  */
+  int dist = PlayerMob::distPly(pos);
+
+  int plyStealth = PlayerMob::ply->stats.stealth();
+  int mobAlert = stats.alertness();
+
+  int avoidBalance = plyStealth - mobAlert;
+  int noticeBalance = mobAlert - plyStealth;
+
+  int threshold = dist + avoidBalance;
+
+  int roll = Dx(20);
+
+  bool avoid = (roll <= threshold);
+  bool notice = !avoid;
+
+  return notice;
+}
+
 
 double MonsterMob::actSleep() { // returns time that action requires (0 means keep doing actions/keep initiative.)
-  bool wake = oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
-  if (wake) {
+  bool wakeUp = noticePlayer(); // PlayerMob::ply); // oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
+
+  if (wakeUp) {
     logstr log; log << "Something awakens!";
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
