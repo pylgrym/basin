@@ -86,6 +86,9 @@ public:
 
   void initWorld(int level); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
 
+  void initTown(int level);
+  void initTunnels(int level);
+
   // static Map map;
 
   static CPoint key2dir(char key);

@@ -6,12 +6,13 @@
 #include "Persist.h"
 
 enum EnvirEnum {
-  EN_Floor=0,
-  EN_Wall=1,
-  EN_Border=2,
-  EN_Vein=3,
-  EN_StairUp = 4,
-  EN_StairDown = 5,
+  EN_Floor='.',
+  EN_Wall='#',
+  EN_Border='&',
+  EN_Vein='%',
+  EN_StairUp = '<',
+  EN_StairDown = '>',
+  EN_Shop = 'S',
   EN_MaxLimit // highest nr to size arrays.
 };
 
@@ -25,11 +26,12 @@ public:
     // JG: enums are problematic, require a template or something, or manual approach.
     // Do I want fixed-width BD AF hex numbers? (for grid appearance and easier parsing.)
     if (p.bOut) {
-      p.os << type << " "; // p.transfer(type, "envir"); // p.os << type;
+      p.os << (char) type << " "; // p.transfer(type, "envir"); // p.os << type;
     } else {
-      int intType = 0;
-      p.is >> intType;
-      type = (EnvirEnum) intType;
+      // int intType = 0;
+      char charType = 0;
+      p.is >> charType;
+      type = (EnvirEnum) charType;
     }
     return true;
   }
