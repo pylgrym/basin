@@ -7,6 +7,8 @@
 
 #include <fstream>
 
+#include "util/debstr.h"
+
 /* Todos: 
  - "DONE" a dashboard on the right or bottom, with stats (or just a command to print them?)
    (Q will show current stats.)
@@ -192,7 +194,7 @@ bool ZapCmd::Do(std::ostream& err) {
   Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
   const char* keyPrompt = "Zap which direction?";
   for (;!bFound;) {
-    dirKey = TheUI::promptForKey(keyPrompt); 
+    dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
 
     if (dirKey == VK_ESCAPE) {
       Cuss::clear(true);
@@ -438,7 +440,7 @@ bool ShopCmd::Do(std::ostream& err) {
       mustClear = false;
     }
 
-    int cmdKey = TheUI::promptForKey(keyPrompt.c_str());
+    int cmdKey = TheUI::promptForKey(keyPrompt.c_str(), __FILE__, __LINE__, "buy-or-sell-shop-choice");
     switch (cmdKey) {
     case VK_ESCAPE: Cuss::clear(true); return false; // Cancelled shopping.
     case 'B':       { BuyCmd  cmd; cmd.Do(err); mustClear = true; } break;
@@ -460,7 +462,9 @@ bool SellCmd::Do(std::ostream& err) {
   PlayerMob::ply->stats.gold += obj->price();
   Bag::bag.remove(obj, err);
   Bag::shop.add(obj, err);
+  debstr() << "sold" << (void*) obj << "\n";
   logstr log; log << "You sell it for " << obj->price() << " gold.";
+  debstr() << "after notif." << (void*) obj << "\n";
   return true;
 }
 

@@ -267,7 +267,7 @@ Obj* Equ::pick(const char* prompt) {
   int objIx = -1;
   int key = 0;
   for (;;) {
-    key = TheUI::promptForKey(keyPrompt); 
+    key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "equip-pick"); 
     if (key == VK_ESCAPE) {
       Cuss::clear(true);
       return NULL; // Cancelled pick operation.

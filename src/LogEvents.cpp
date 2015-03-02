@@ -25,7 +25,7 @@ void LogEvents::respectMultiNotif() {
   if (log.multiNotif()) {
     Cuss::move(CPoint(Map::Width-5,0));
     Cuss::prt("MORE",true);
-    TheUI::waitForKey();
+    TheUI::waitForKey(__FILE__, __LINE__, "more-pause");
   }
 }
 
@@ -80,6 +80,6 @@ void LogEvents::show() {
     Cuss::prtL(s.c_str());  
   }
 
-  TheUI::promptForAnyKey(); 
+  TheUI::promptForAnyKey(__FILE__, __LINE__, "log-pause");
   Cuss::clear(true);
 }

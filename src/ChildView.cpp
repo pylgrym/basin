@@ -81,11 +81,11 @@ bool TheUI::shiftKey() {
 bool TheUI::ctrlKey() { return (GetAsyncKeyState(VK_CONTROL) < 0); }
 
 
-unsigned int TheUI::getNextKey() {  // UINT
+unsigned int TheUI::getNextKey(const char* file, int line, const char* reason) {  // UINT
 	// GetMessage loop example. // http://www.cplusplus.com/forum/beginner/38860/	
   if (TheUI::hasQuit) { debstr() << "bail\n";  return VK_CANCEL; }
 
-  debstr() << "WAITING for user keyboard input (getNextKey)\n";
+  debstr() << "WAITING for user keyboard input (getNextKey)" << file << " L" << line << " (" << reason << ")\n";
 	MSG msg;
   while (GetMessage(&msg, NULL, 0, 0) > 0) {
     // debstr() << "msg:" << msg.message << "\n";

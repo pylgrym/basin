@@ -3,10 +3,10 @@
 
 class TheUI { // namespace for UI functions..
 public:
-  static unsigned int getNextKey();
-  static int waitForKey(); // silently pause until user presses some key.
-  static int promptForAnyKey(); // ("auto-")PROMPT user to press any key.
-  static int promptForKey(const char* prompt); // Specifically prompt user to press keys, ie with a description.
+  static unsigned int getNextKey(const char* file, int line, const char* reason);
+  static int waitForKey(const char* file, int line, const char* reason); // silently pause until user presses some key.
+  static int promptForAnyKey(const char* file, int line, const char* reason); // ("auto-")PROMPT user to press any key.
+  static int promptForKey(const char* prompt, const char* file, int line, const char* reason); // Specifically prompt user to press keys, ie with a description.
 
   static int microSleepForRedraw(int maxCount); // allow redraw
 

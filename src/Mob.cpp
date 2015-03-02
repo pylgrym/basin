@@ -166,7 +166,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. FIXME - probably should respect action-duration.
 
 	  // Prompt user for command, then move:
-	  int nChar = TheUI::getNextKey(); 
+	  int nChar = TheUI::getNextKey(__FILE__, __LINE__, "user-choose-action"); // in PlayerMob::act.
 
     LogEvents::log.resetNotif();
 

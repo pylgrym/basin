@@ -245,7 +245,7 @@ public:
 
     Bag::bag.showBagInv();
 
-    TheUI::promptForAnyKey(); 
+    TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
 
     Cuss::clear(true);
     return true; 
@@ -260,14 +260,6 @@ public:
     if (!Cmd::Do(err)) { return false; }
 
     debstr() << "doing unequip item-command.\n";
-
-    /*
-    Cuss::clear(false);
-    Cuss::prtL("  You are wearing:"); 
-    Equ::worn.showWorn();
-    TheUI::promptForAnyKey(); 
-    Cuss::clear(true);
-    */
 
     Obj* obj = Equ::worn.pick("  Unequip what?");
     if (obj == NULL) { return false;  }
@@ -431,7 +423,7 @@ public:
     Cuss::prtL("  Your stats:"); 
 
     PlayerMob::ply->stats.showStats(); 
-    TheUI::promptForAnyKey(); 
+    TheUI::promptForAnyKey(__FILE__, __LINE__, "stat-pause");
 
     Cuss::clear(true);
     return true; 

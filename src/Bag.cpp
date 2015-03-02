@@ -131,7 +131,7 @@ Obj* Bag::pickAction() { // const char* prompt) {
 
   int key = 0;
   for (;;) {
-    key = TheUI::promptForKey(keyPrompt); 
+    key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-item"); 
     if (key == VK_ESCAPE) {
       Cuss::clear(true);
       return NULL; // Cancelled pick operation.

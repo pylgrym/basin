@@ -89,18 +89,18 @@ void Cuss::invalidate() {
 }
 
 
-int TheUI::waitForKey() { 
-  return getNextKey();  
+int TheUI::waitForKey(const char* file, int line, const char* reason) { 
+  return getNextKey(file, line, reason); // in waitForKey.
 }
 
-int TheUI::promptForAnyKey() { 
+int TheUI::promptForAnyKey(const char* file, int line, const char* reason) {
   Cuss::prtL("  Press any key.");
-  return getNextKey();  
+  return getNextKey(file, line, reason); // in promptForAnyKey.
 }
 
-int TheUI::promptForKey(const char* prompt) { 
+int TheUI::promptForKey(const char* prompt, const char* file, int line, const char* reason) {
   Cuss::prtL(prompt, true);
-  int key = getNextKey();  
+  int key = getNextKey(file, line, reason); // in promptForKey.
   return key;
 }
 
