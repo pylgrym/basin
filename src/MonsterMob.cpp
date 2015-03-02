@@ -23,7 +23,8 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
 
 double Mob::noticePlayerProb(CPoint coords) {
   int dist = PlayerMob::distPly(coords);
-  //return dist;
+  return 1.0/(dist+1.0);
+
   int plyStealth = PlayerMob::ply->stats.stealth();
   int mobAlert = 0;
   int avoidBalance = plyStealth - mobAlert;

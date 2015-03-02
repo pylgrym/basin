@@ -279,7 +279,7 @@ void CChildView::OnPaint() {
       if (floorStat) {
         int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
-        CString s; s.Format(L"%d ", (int) Mob::noticePlayerProb(wp));
+        CString s; s.Format(L"%.3f ",  Mob::noticePlayerProb(wp));
 
         dc.SelectObject(smallFont);
         const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
