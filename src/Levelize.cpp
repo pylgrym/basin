@@ -20,7 +20,7 @@ Levelize::~Levelize()
 
 void Levelize::catHP() { // categorize HP into levels.
   Stats stats(1,false); // not a player mob..
-  stats.Con.v = 11; // Middlish no-modifier stat.
+  stats.Con.base = 11; // Middlish no-modifier stat.
   for (Level L = 0; L < MaxLevel; ++L) {
     stats.setLevel(L);
     stats.calcStats();

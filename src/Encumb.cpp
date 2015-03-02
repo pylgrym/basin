@@ -28,13 +28,13 @@ Encumb::EncumbEnum Encumb::calcEnc(double kilos, Stats& stats) {
   // Strength 10 can carry 20,40,60 kilos.
   // max 20 'light', max 40 'medium', max 60 'heavy', >60 = can't lift.
   // We take str 10 *2, *4, *6.
-  int lightEnc = stats.Str.v * 2;
+  int lightEnc = stats.Str.v() * 2;
   if (kilos <= lightEnc) { return LightE; }
 
-  int mediumEnc = stats.Str.v * 4;
+  int mediumEnc = stats.Str.v() * 4;
   if (kilos <= mediumEnc) { return MediumE; }
 
-  int heavyEnc = stats.Str.v * 6;
+  int heavyEnc = stats.Str.v() * 6;
   if (kilos <= heavyEnc) { return HeavyE; }
 
   return CantLiftE;

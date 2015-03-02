@@ -326,7 +326,7 @@ void CChildView::OnPaint() {
           // Draw str upper left:
           const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
           dc.SetTextColor(RGB(255, 0, 0)); //strength is red.
-          s.Format(L"%d", mob->stats.Str.v);
+          s.Format(L"%d", mob->stats.Str.v());
           dc.DrawText(s, &cellR, upperLeftFlags);
         }
 
@@ -334,7 +334,7 @@ void CChildView::OnPaint() {
           // Draw dex lower left:
           const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
           dc.SetTextColor(RGB(0,0,255)); // dex is blue.
-          s.Format(L"%d", mob->stats.Dex.v);
+          s.Format(L"%d", mob->stats.Dex.v());
 		      dc.DrawText(s, &cellR,  lowerLeftFlags);
         }
       }

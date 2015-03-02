@@ -17,6 +17,8 @@
 
 #include <assert.h>
 
+#include "Encumb.h"
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -121,11 +123,19 @@ void Stats::initStats() {
 
 
 void Stats::calcStats() {
+  if (isPlayer) { // NB! Beware of SEQUENCE of dependent-effects, so you don't get recursive stat-feedback..
+    // Right now, encumbrance is punishing - you get your stats reduced by -1, -4, -10!
+    Encumb::EncumbEnum enc = Encumb::enc();
+    Dex.onusBonus = -enc; // dex-AC will suffer.
+    Str.onusBonus = -enc; // toHit will suffer.
+  }
+
   maxHP = calcMaxHP();
   ac = calcTotalAC();
 
   std::stringstream dummy;
   toHit = calcToHit(dummy);
+
 }
 
 
@@ -236,7 +246,7 @@ int Stats::calcMaxHP() {
    -  the '6' should probably be a fixed roll of hit die.
   */
   // s["sta"]
-  int val = Con.v + (HitDie + Con.mdf()) * level(); 
+  int val = Con.v() + (HitDie + Con.mdf()) * level(); 
   //int val = s["sta"].v + (HitDie *level + statMod("sta")*level); // alternative, illustrating that statMod might fluctuate.
   return val;
 }
@@ -251,7 +261,7 @@ Stats::~Stats()
 
 void Stat::roll() {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
-  v = nDx(3, 6);
+  base = nDx(3, 6);
   // JG: Version 2 - instead, roll 4d6, and pick highest 3 (or rather, throw away minimum.)
 }
 
@@ -323,7 +333,7 @@ Stat& Stats::stat(const char* name) {
 
 int Stats::statMod(const std::string& thestat) {
   Stat& theStat = stat(thestat.c_str()); // s[stat]; // stats.
-  int mod = statModifyEffect[theStat.v];
+  int mod = statModifyEffect[theStat.v()];
   return mod;
   /* Conclusion - stats cause bonus modifiers [-4;4] on other things.
   */
@@ -342,7 +352,7 @@ http://www.monkeysushi.net/gaming/DnD/math.html
 
 
 int Stat::mdf() const {
-  return Stats::mdf(v);
+  return Stats::mdf(v());
 }
 
 
@@ -424,12 +434,12 @@ void Stats::showStats() {
   s << "XP-lvl:" << this->xpToLevel;  pr(s);
   s << "Hunger:" << this->hunger;     pr(s);
   s << "Level:" << this->level();     pr(s);
-  s << "STR:" << this->Str.v;         pr(s);
-  s << "INT:" << this->Int.v;         pr(s);
-  s << "DEX:" << this->Dex.v;         pr(s);
-  s << "WIS:" << this->Wis.v;         pr(s);
-  s << "CHR:" << this->Chr.v;         pr(s);
-  s << "CON:" << this->Con.v;         pr(s);
+  s << "STR:" << this->Str.v();       pr(s);
+  s << "INT:" << this->Int.v();       pr(s);
+  s << "DEX:" << this->Dex.v();       pr(s);
+  s << "WIS:" << this->Wis.v();       pr(s);
+  s << "CHR:" << this->Chr.v();       pr(s);
+  s << "CON:" << this->Con.v();       pr(s);
 
   int lightStr = PlayerMob::ply->lightStrength();
   int lightUnits = PlayerMob::ply->theLightUnits;
@@ -466,7 +476,9 @@ bool Stats::persist(Persist& p) {
 
 
 bool Stat::persist(Persist& p) {
-  p.transfer(v, this->name.c_str()); 
+  p.transfer(base, name.c_str());
+  std::string onusTag = name + "_onus";
+  p.transfer(onusBonus, onusTag.c_str());
   return true;
 }
 

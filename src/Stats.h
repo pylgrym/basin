@@ -7,15 +7,22 @@
 
 class Stat {
 public:
-  Stat(const std::string& name_):name(name_) { v = 0; roll();  }
+  Stat(const std::string& name_) :name(name_) { base = 0; onusBonus = 0; roll(); }
   // Stat():name("nostat?") { v = 0; roll();  }
 
-  int v; // value.
+  int v() const { return base + onusBonus;  }
+  int base; // value.
+
+  /* onusBonus: temporary penalties,bonuses, adjustments to stat (must be made in a different way, so we can keep track of different contributions - 
+  e.g. a push/pop stack of 'tags', added to a map, e.g. std::map< std::string(tag), deltaInt >
+  */
+  int onusBonus; 
+   
   std::string name;
   void roll();
   int mdf() const; // Beware, I have two different mechanisms active for this..
 
-  void makeAvg() { v = 11; }
+  void makeAvg() { base = 11; }
 
   bool persist(class Persist& p);
 };
