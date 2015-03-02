@@ -85,7 +85,7 @@ unsigned int TheUI::getNextKey(const char* file, int line, const char* reason) {
 	// GetMessage loop example. // http://www.cplusplus.com/forum/beginner/38860/	
   if (TheUI::hasQuit) { debstr() << "bail\n";  return VK_CANCEL; }
 
-  debstr() << "WAITING for user keyboard input (getNextKey)" << file << " L" << line << " (" << reason << ")\n";
+  debstr() << "WAITING for user keyboard input (getNextKey)" << file << " L" << line << " (" << reason << ")" << std::endl;
 	MSG msg;
   while (GetMessage(&msg, NULL, 0, 0) > 0) {
     // debstr() << "msg:" << msg.message << "\n";

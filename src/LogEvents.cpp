@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "LogEvents.h"
-
 #include "Cuss.h"
-
 #include "theUI.h"
-
 #include "util/debstr.h"
-
 #include "cellmap/cellmap.h"
+#include "Term.h"
 
 LogEvents::LogEvents()
 {
@@ -22,8 +19,10 @@ LogEvents LogEvents::log;
 
 
 void LogEvents::respectMultiNotif() {
+  debstr() << "respectMultiNotif, counter:" << log.notifCounter << std::endl;
+
   if (log.multiNotif()) {
-    Cuss::move(CPoint(Map::Width-5,0));
+    Cuss::move(CPoint(Term::Width-5, 0)); // was: Map::Width  (bug)
     Cuss::prt("MORE",true);
     TheUI::waitForKey(__FILE__, __LINE__, "more-pause");
   }
@@ -56,10 +55,17 @@ logstr::~logstr() {
 	std::string s = str();
   if (s.empty()) { return;  } // Don't log empty stuff.
 
+  CA2T uc(s.c_str(), CP_ACP);
+  OutputDebugString(uc);
+
   LogEvents::log.add(s);
 
-	CA2T uc(s.c_str(), CP_ACP);  
-	OutputDebugString(uc);
+  if (pauseAfter) { // used, if you know you want to display a different screen after the msg 
+    //              // (the screen is not a logmsg, but it means you must more-pause first, to let the msg be read.)
+    LogEvents::respectMultiNotif(); // will show 'more', based on log.add putting us in 'multi-mode'.
+    LogEvents::log.resetNotif();    // Will clean up the multi-mode, so we avoid double-triggering the effect. (because the 'after' mode should display immediately, and not itself trigger a 'prev-more'.)
+  }
+
 }
 
 

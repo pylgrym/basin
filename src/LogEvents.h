@@ -23,4 +23,15 @@ public:
   void show();
 };
 
-class logstr : public std::stringstream { public: ~logstr(); };
+class logstr : public std::stringstream { 
+  public: 
+  ~logstr(); 
+  logstr() { pauseAfter = false;  }
+  logstr(bool bAfter) { pauseAfter = bAfter; }
+  bool pauseAfter;
+};
+
+class pauselog : public logstr {
+public:
+  pauselog() :logstr(true){}
+};

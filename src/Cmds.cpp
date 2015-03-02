@@ -410,23 +410,25 @@ bool BuyCmd::Do(std::ostream& err) {
     return false;
   }
   if (buy->price() > PlayerMob::ply->stats.gold) {
-    logstr log; log << "It costs too much for you to buy.";
+    { pauselog log; log << "It costs too much for you to buy.";  }
     return false;
   }
 
   PlayerMob::ply->stats.gold -= buy->price();
   Bag::shop.remove(buy, err);
   Bag::bag.add(buy,err);
+  { pauselog log; log << "You buy it for " << buy->price() << " gold."; }
 
-  logstr log; log << "You buy it for " << buy->price() << " gold.";
   return true;
 }
 
 
 bool ShopCmd::Do(std::ostream& err) {
 
-  bool mustClear = true;
+  // NB! we use 'respectMultiNotif' to '-more'-pause after our actions,
+  // because we want to re-display the menu afterwards (pauselog handles this automatically.)
 
+  bool mustClear = true;
   for (; ;) { 
     std::stringstream ss; 
     ss << "B to Buy, S to Sell.";
@@ -463,8 +465,9 @@ bool SellCmd::Do(std::ostream& err) {
   Bag::bag.remove(obj, err);
   Bag::shop.add(obj, err);
   debstr() << "sold" << (void*) obj << "\n";
-  logstr log; log << "You sell it for " << obj->price() << " gold.";
-  debstr() << "after notif." << (void*) obj << "\n";
+  { pauselog log; log << "You sell it for " << obj->price() << " gold."; }
+
+  debstr() << "after notif." << (void*)obj << "\n";
   return true;
 }
 
