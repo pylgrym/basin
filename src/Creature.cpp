@@ -72,42 +72,13 @@ MobDef mobDefs[] = {
   { CR_WaterElemental, "waterelemental", ". water elemental" },
 };
 
+const int maxMob = (sizeof mobDefs / sizeof MobDef);
 
 const MobDef&  Creature::mobDef(CreatureEnum type) {
   static MobDef badMob = { CR_None, "§", "bad mtype" };
-  const int maxMob = (sizeof mobDefs / sizeof MobDef);
   if (type < 0 || type >= maxMob) { return badMob; } //  L"out of bounds, creature enum.";
   return mobDefs[type]; 
 }
 
-const char* Creature::ctypeAsStr(CreatureEnum type) { // TCHAR
-  /*
-  static std::vector<CString> creatureKeys;
-  if (creatureKeys.size() == 0) {
-    creatureKeys.resize(CR_MaxLimit);
-    // creatureKeys[CR_None] = L"notInMap"; 
-    creatureKeys[CR_Player] = L"@"; 
-    creatureKeys[CR_Kobold] = L"k"; 
-    creatureKeys[CR_Dragon] = L"d"; 
-  }
-  */
-  const int maxMob = (sizeof mobDefs / sizeof MobDef);
-  if (type < 0 || type >= maxMob) { return "out of bounds, creature enum.";  } // (int) creatureKeys.size()
-  return mobDefs[type].tilekey; // creatureKeys[type];
-}
-
-
-const char* Creature::ctypeAsDesc(CreatureEnum type) {
-  /*
-  switch (type) {
-  case CR_None:   return L". nothing"; 
-  case CR_Player: return L"you"; 
-  case CR_Kobold: return L". kobold"; 
-  case CR_Dragon: return L". dragon"; 
-  }
-  return L". creature";
-  */
-  const int maxMob = (sizeof mobDefs / sizeof MobDef);
-  if (type < 0 || type >= maxMob) { return "out of bounds, creature enum.";  } // (int) creatureKeys.size()
-  return mobDefs[type].desc; // creatureKeys[type];
-}
+const char* Creature::ctypeAsStr(CreatureEnum type) { return mobDef(type).tilekey; }
+const char* Creature::ctypeAsDesc(CreatureEnum type) { return mobDef(type).desc; }
