@@ -469,3 +469,9 @@ class LoadCmd : public Cmd {
 public:
   virtual bool Do(std::ostream& err);
 };
+
+
+class ShopCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};

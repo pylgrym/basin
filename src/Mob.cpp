@@ -291,7 +291,11 @@ PlayerMob* PlayerMob::ply = NULL;
 
 PlayerMob::PlayerMob():Mob(1, true) { 
   ply = this;  
-  dungLevel = 1;
+
+  dungLevel = 0; // 1;
+  pos.x = 15; 
+  pos.y = 15; // FIXME; must be free!
+
   theLightStrength = 1;
   theLightUnits = 0;
   m_mobType = CR_Player; // (CreatureEnum)rnd(CR_Kobold, CR_MaxLimit);

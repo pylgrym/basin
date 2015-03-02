@@ -47,6 +47,13 @@ const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
     envirKeys[EN_Vein] = L"vein"; //
     envirKeys[EN_StairUp] = L"stairup";
     envirKeys[EN_StairDown] = L"stairdown";
+    envirKeys[EN_Shop] = L"shop"; 
+
+    envirKeys[EN_Tree] = L"tree"; 
+    envirKeys[EN_Green] = L"green"; 
+    envirKeys[EN_Water] = L"waterlight"; 
+    // envirKeys[EN_] = L""; 
+    // envirKeys[EN_] = L""; 
 
     /// {OB_StairUp, EQ_None, ". stair up"},
     /// { OB_StairDown, EQ_None, ". stair down" },

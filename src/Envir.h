@@ -13,6 +13,11 @@ enum EnvirEnum {
   EN_StairUp = '<',
   EN_StairDown = '>',
   EN_Shop = 'S',
+
+  EN_Tree = 'T',
+  EN_Green = 'G',
+  EN_Water = 'W',
+
   EN_MaxLimit // highest nr to size arrays.
 };
 
@@ -52,6 +57,10 @@ public:
     permLight = true;
     //if (type == EN_Wall) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.
     //}
+  }
+
+  bool interacts() const {  // FIXME, make a differentiate-mechanism
+    return (type == EN_Shop);
   }
 
   void setType(EnvirEnum type_) { type = type_;  }

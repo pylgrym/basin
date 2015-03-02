@@ -23,15 +23,9 @@ public:
   Envir envir;
   ObjSlot item; 
   Creature creature;
-  char cc;        // doesn't need save.
   CPoint overlay; // doesn't need save.
 
-  Cell() {
-    zclearChar(); 
-  }
-
-  bool zcharEmpty() const { return cc == '\0';  }
-  void zclearChar() { cc = '\0';  }
+  Cell() { }
 
   bool light() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
   void markWalls() { envir.markWalls();  }
@@ -88,6 +82,7 @@ public:
 
   void initTown(int level);
   void initTunnels(int level);
+  void initOuterBorders();
 
   // static Map map;
 

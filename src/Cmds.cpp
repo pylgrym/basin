@@ -34,10 +34,19 @@ bool WalkCmd::Do(std::ostream& err) {
   CL->map.moveMob(mob, newpos);
   if (mob.isPlayer()) { mob.lightWalls(mob.pos); } 
 
-  if (mob.isPlayer() && CL->map[newpos].item.o != NULL) {  
-    LookCmd look(mob);
-    look.Do(err);
+  if (mob.isPlayer()) {
+    if (mob.isPlayer() && CL->map[newpos].envir.interacts()) {
+      ShopCmd shop;
+      bool bOK = shop.Do(err);
+    } else { // Don't look if it was a shop.
+      if (CL->map[newpos].item.o != NULL) {
+        LookCmd look(mob);
+        look.Do(err);
+      }
+    }
+
   }
+
 
   mob.invalidateGfx(newpos, old, false);
   TheUI::invalidateWndJG(NULL, false);
@@ -373,22 +382,10 @@ bool SaveCmd::Do(std::ostream& err) {
   const char* file = "basin.sav";
   std::ofstream os(file);
   Persist p(os);
-  //status87
-
-  //bool bSaveOK = CL->persist(p);
   bool bSaveOK = Dungeons::the_dungeons.persist(p);
 
   err << "You saved:" << bSaveOK;
   return bSaveOK;
-  /*fixme/todo: instead of 'save' and ostream,
-  change it to 'persist', called with a persistObj,
-  which includes a 'direction' (save or load), 
-  and add something that allows us to persist integers (and doubles?),
-  with something like '
-  persistObj.transfer(& item, "label");
-  on top, we need something like handling lists with lengths, possibly specifying the length at front.
-  also
-  */
 }
 
 
@@ -396,20 +393,15 @@ bool LoadCmd::Do(std::ostream& err) {
   const char* file = "basin.sav";
   std::ifstream is(file);
   Persist p(is);
-  //status87
-
-  //bool bLoadOK = CL->persist(p);
   bool bLoadOK = Dungeons::the_dungeons.persist(p);
 
   err << "You loaded:" << bLoadOK;
   return bLoadOK;
-  /*fixme/todo: instead of 'save' and ostream,
-  change it to 'persist', called with a persistObj,
-  which includes a 'direction' (save or load),
-  and add something that allows us to persist integers (and doubles?),
-  with something like '
-  persistObj.transfer(& item, "label");
-  on top, we need something like handling lists with lengths, possibly specifying the length at front.
-  also
-  */
+}
+
+
+
+bool ShopCmd::Do(std::ostream& err) {
+  err << "You shop:";
+  return true;
 }
