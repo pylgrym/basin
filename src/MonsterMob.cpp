@@ -41,6 +41,7 @@ bool Mob::noticePlayer() {
   /* We are actually checking player's ability to stealth, not mob's ability to notice (they are inverse).
   */
   int dist = PlayerMob::distPly(pos);
+  int prob = int(0.5 + 20.0 / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
 
   int plyStealth = PlayerMob::ply->stats.stealth();
   int mobAlert = stats.alertness();
@@ -48,7 +49,7 @@ bool Mob::noticePlayer() {
   int avoidBalance = plyStealth - mobAlert;
   int noticeBalance = mobAlert - plyStealth;
 
-  int threshold = dist + avoidBalance;
+  int threshold = prob + avoidBalance;
 
   int roll = Dx(20);
 
