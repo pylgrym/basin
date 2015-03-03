@@ -434,9 +434,9 @@ void Stats::showStats() {
   s << "XP-lvl:" << this->xpToLevel;  pr(s);
   s << "Hunger:" << this->hunger;     pr(s);
   s << "Level:" << this->level();     pr(s);
-  s << "STR:" << this->Str.v();       pr(s);
+  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s);
   s << "INT:" << this->Int.v();       pr(s);
-  s << "DEX:" << this->Dex.v();       pr(s);
+  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s);
   s << "WIS:" << this->Wis.v();       pr(s);
   s << "CHR:" << this->Chr.v();       pr(s);
   s << "CON:" << this->Con.v();       pr(s);
