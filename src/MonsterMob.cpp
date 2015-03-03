@@ -21,51 +21,49 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
 }
 
 
-double Mob::noticePlayerProb(CPoint coords) {
-  int dist = PlayerMob::distPly(coords);
-  return 1.0/(dist+1.0);
+/* Because these risks are small chances (percent, promille..), we don't want to do crude 5% D20 tests. */
+const double noticeDSize = 1000.0;
 
+double Mob::noticePlayerProb(CPoint coords, int mobAlert) {
+
+  // NB! These are 1/20=5%'s, must be adjusted.
   int plyStealth = PlayerMob::ply->stats.stealth();
-  int mobAlert = 0;
-  int avoidBalance = plyStealth - mobAlert;
-  int threshold = dist + avoidBalance;
+  //int mobAlert = 0; // Now an arg.
+  double noticeBalance = mobAlert - plyStealth;
 
-  // Now calc percent-prob of threshold and D20.
-  double pct = 1.0 - (threshold / 20.0);
-  int intPct = int(pct*100.0 + 0.5);
-  return intPct;
+  double dist = PlayerMob::distPly(coords);
+  if (noticeBalance > 0) {
+    dist /= noticeBalance;
+  } else if (noticeBalance < 0) {
+    dist *= (-noticeBalance);
+  }
+
+  int baseNoticeProb = int(0.5 + noticeDSize / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
+  //return baseNoticeProb;
+
+  int noticeThreshold = baseNoticeProb; // nt(0.5 + baseNoticeProb + (noticeBalance * (noticeDSize / 20.0))); // it's 5%-ratings, which we convert to promille.
+
+  return noticeThreshold;
 }
 
-
-bool Mob::noticePlayer() {  
-  /* We are actually checking player's ability to stealth, not mob's ability to notice (they are inverse).
-  */
-  int dist = PlayerMob::distPly(pos);
-  int noticeProb = int(0.5 + 20.0 / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
-
-  int plyStealth = PlayerMob::ply->stats.stealth();
-  int mobAlert = stats.alertness();
-
-  int avoidBalance = plyStealth - mobAlert;
-  int noticeBalance = mobAlert - plyStealth;
-
-  int noticeThreshold = noticeProb + noticeBalance;
-
-  int roll = Dx(20);
-  bool notice = (roll <= noticeThreshold);
-  return notice;
+bool Mob::noticePlayer(double& noticeChance) {
+  noticeChance = noticePlayerProb( pos, stats.alertness() ); 
+  int roll = Dx( (int) noticeDSize);
+  bool noticed = (roll <= noticeChance);  
+  return noticed;
 }
 
 
 double MonsterMob::actSleep() { // returns time that action requires (0 means keep doing actions/keep initiative.)
-  bool wakeUp = noticePlayer(); // PlayerMob::ply); // oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
+  double chance = 0.0;
+  bool wakeUp = noticePlayer(chance); // PlayerMob::ply); // oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
 
   if (wakeUp) {
     {
       logstr log; log << "Something awakens!";
     }
     {      
-      logstr log; log << a_mob() << " notices you!";
+      logstr log; log << chance << ":" << a_mob() << " notices you!";
     }
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;

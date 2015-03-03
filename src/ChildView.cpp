@@ -40,7 +40,7 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  int answer = MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);
+  int answer = IDNO; // MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);
   Dungeons::the_dungeons.initDungeons(answer == IDYES); // actually, the player..
 
 
@@ -205,7 +205,7 @@ void doFont(CFont& largeFont, CFont& smallFont, CPaintDC& dc) {
 
 	largeFont.CreateFontIndirect(&logFont);
 
-	double smallScale = (7.0/20.0); // was: 9.0
+	double smallScale = (6.0/20.0); // was: 9.0
 	logFont.lfHeight = (int) (-Tiles::TileWidth * smallScale);
 	logFont.lfWeight = FW_THIN;
 	smallFont.CreateFontIndirect(&logFont);
@@ -279,7 +279,9 @@ void CChildView::OnPaint() {
       if (floorStat) {
         int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
-        CString s; s.Format(L"%.3f ",  Mob::noticePlayerProb(wp));
+
+        int zeroMobAlert = 0;
+        CString s; s.Format(L"%3.0f ",  (double) Mob::noticePlayerProb(wp, zeroMobAlert)); 
 
         dc.SelectObject(smallFont);
         const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;

@@ -102,9 +102,9 @@ public:
   void makeAngry();
 
   //bool noticeAdv(Mob* adv);
-  bool noticePlayer(); // Adv(Mob* adv);
+  bool noticePlayer(double& chance); // Adv(Mob* adv);
 
-  static double noticePlayerProb(CPoint coords);
+  static double noticePlayerProb(CPoint coords, int mobAlert);
 
 
   Dice mobWeaponDice() { return mobDummyWeapon;  }
@@ -121,7 +121,7 @@ public:
 
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 
-  virtual std::string Mob::a_mob() const = 0;
+  virtual std::string Mob::a_mob()  const = 0;
   virtual std::string pronoun() const = 0; // "You"/"The orc".
   virtual std::string verbS() const = 0; // "he hitS".
 
@@ -184,7 +184,7 @@ public:
 
   virtual CreatureEnum ctype() const { return CR_Player; } // Consider not having this.. (instead just relying on base ctype)
 
-  virtual std::string Mob::a_mob() const { return "youse"; }
+  virtual std::string Mob::a_mob()  const { return "youse"; }
   virtual std::string pronoun() const { return "you"; } // "You"/"The orc".
   virtual std::string verbS() const { return ""; } // "you HIT".
 
