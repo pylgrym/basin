@@ -197,7 +197,7 @@ double Equ::wornWeight() {
     EquipSlotEnum slot = (EquipSlotEnum)i;
     Obj* o = equ[slot];
     if (o != NULL) {
-      totalWeight += o->weight;
+      totalWeight += o->kweight();
     }
   }
   return totalWeight;
@@ -231,8 +231,8 @@ void Equ::showWorn() {
   double wornTotal = wornWeight();
   double everything = Bag::bag.bagWeight() + wornTotal;
   std::stringstream ss;
-  ss << "Total weight: " << wornTotal / 10.0 << " kg";
-  ss << " (" << everything / 10.0 << ")";
+  ss << "Total weight: " << wornTotal << " kg";
+  ss << " (" << everything << ")";
   Cuss::prtL(ss.str().c_str());
 
 

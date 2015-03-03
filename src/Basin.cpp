@@ -58,6 +58,7 @@ BOOL CBasinApp::InitInstance()
   srand(myRandSeed); // I want my player character, on start-up, to have some different stats..
 
   Obj::initPrices();
+  Obj::initWeights();
 
 
 	// InitCommonControlsEx() is required on Windows XP if an application

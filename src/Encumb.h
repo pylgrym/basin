@@ -12,5 +12,7 @@ public:
   static EncumbEnum calcEnc(double kilos, class Stats& stats);
   static EncumbEnum enc();
   static const char* encTxt(EncumbEnum type);
+
+  static int encLimits(EncumbEnum encType); // double kilos, 
 };
 

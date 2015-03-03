@@ -58,7 +58,7 @@ double Bag::bagWeight() {
   BagCont::iterator i;
   for (i = objs.begin(); i != objs.end(); ++i) {
     Obj& o = **i;
-    totalWeight += o.weight;
+    totalWeight += o.kweight();
   }
   return totalWeight;
 }
@@ -83,16 +83,16 @@ void Bag::showBagInv() {
     std::string descA = o.an_item();
     ss 
       << ix 
-      << " " << o.weight/10.0  
+      << " " << o.kweight() 
       << " " << descA
     ;
     Cuss::prtL(ss.str().c_str());  
-    totalWeight += o.weight;
+    totalWeight += o.kweight();
   }
 
   std::stringstream ss;
-  ss << "Total weight: " << totalWeight / 10.0 << " kg";
-  ss << " (" << everything/10.0 << ")";
+  ss << "Total weight: " << totalWeight << " kg";
+  ss << " (" << everything << ")";
   Cuss::prtL(ss.str().c_str());  
 
   Cuss::invalidate();

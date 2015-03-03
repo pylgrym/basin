@@ -199,6 +199,15 @@ void Obj::initPrices() {
   }
 }
 
+void Obj::initWeights() {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+    if (def.kilo == 0) {
+      def.kilo = rndC(1, 50) *0.1;
+    }
+  }
+}
+
 const ObjDef& Obj::randObjDesc() {
   int ix = rnd(numObjDefs);
   ObjDef* od = &objDefs[ix];
@@ -427,7 +436,6 @@ void Obj::initRandom() { // - clear should not init.
   consumed = oneIn(2); 
   toHit = rndC(-2, 5);
   toDmg = rndC(-2, 6);
-  weight = rnd(1, 50);
   itemUnits = rnd(20, 400);
 
 
@@ -490,7 +498,7 @@ bool Obj::persist(Persist& p, CPoint& pos) {
   p.transfer(pos.y, "posy");
 
   p.transfer(ilevel, "ilevel");
-  p.transfer(weight, "weight");
+  // p.transfer(fakeWeight, "weight");
   p.transfer(itemUnits, "itemunits");
   p.transfer(ac, "ac");
   p.transfer(charges, "charges");

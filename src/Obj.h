@@ -80,7 +80,9 @@ public:
   SpellEnum effect;
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot() const { return (objdef ? objdef->eqtype : EQ_None ); }
-  int weight; // tenths of kilos, 100g. // fixme, should be virtual func from objdef.
+
+  double kweight() { return (objdef ? objdef->kilo : 10); } // NO ITS KILOS / tenths of kilos, 100g. // fixme, should be virtual func from objdef.
+
   int itemUnits; // food'charges', light'charges', gold 'charges', etc.
   int ac; // armour item armour class.
 
@@ -99,7 +101,7 @@ public:
 
 
   Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
-    ,ilevel(level_), effect(SP_NoSpell), weight(0), itemUnits(0), ac(1)  
+    ,ilevel(level_), effect(SP_NoSpell), itemUnits(0), ac(1)  
   {
     effect = Spell::rndSpell();
     const ObjDef& desc = objdef_; 
@@ -126,7 +128,6 @@ public:
     toHit = 0; // rndC(-2, 5);
     toDmg = 0; // rndC(-2, 6);
     dmgDice = Dice(1, 2); // rndC(1, 4), rndC(2, 12));
-    weight = 1; // rnd(1, 50);
     itemUnits = 0;
   }
 
@@ -185,6 +186,7 @@ public:
   static std::string make_indef_item(const std::string& s);
 
   static void initPrices();
+  static void initWeights();
 
 };
 

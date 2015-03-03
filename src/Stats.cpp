@@ -449,6 +449,13 @@ void Stats::showStats() {
   s << "Light:" << lightStr;          
   s << ", fuel left:" << lightUnits;          
   pr(s);
+
+  int enc1 = Encumb::encLimits(Encumb::LightE);
+  int enc2 = Encumb::encLimits(Encumb::MediumE);
+  int enc3 = Encumb::encLimits(Encumb::HeavyE);
+  //int enc4 = Encumb::encLimits(Encumb::CantLiftE);
+  s << "enc.limits:" << enc1 << "/" << enc2 << "/" << enc3;   pr(s);
+
   // Cuss::prtL(s.str().c_str());  
 }
 

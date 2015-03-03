@@ -28,17 +28,30 @@ Encumb::EncumbEnum Encumb::enc() {
 }
 
 
+int Encumb::encLimits(EncumbEnum encType) { // double kilos, 
+  Stats& stats = PlayerMob::ply->stats;
+
+  int factor = 1;
+  switch (encType) {
+  case LightE:  factor = 2; break;
+  case MediumE: factor = 4; break;
+  case HeavyE:  factor = 6; break;
+  }
+  int kiloLimit = stats.Str.base*factor; // be careful not to use adjusted str here..
+  return kiloLimit;
+}
+
 Encumb::EncumbEnum Encumb::calcEnc(double kilos, Stats& stats) {
   // Strength 10 can carry 20,40,60 kilos.
   // max 20 'light', max 40 'medium', max 60 'heavy', >60 = can't lift.
   // We take str 10 *2, *4, *6.
-  int lightEnc = stats.Str.v() * 2;
+  int lightEnc = stats.Str.base * 2;
   if (kilos <= lightEnc) { return LightE; }
 
-  int mediumEnc = stats.Str.v() * 4;
+  int mediumEnc = stats.Str.base * 4;
   if (kilos <= mediumEnc) { return MediumE; }
 
-  int heavyEnc = stats.Str.v() * 6;
+  int heavyEnc = stats.Str.base * 6;
   if (kilos <= heavyEnc) { return HeavyE; }
 
   return CantLiftE;
