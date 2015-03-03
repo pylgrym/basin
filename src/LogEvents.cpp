@@ -28,6 +28,7 @@ void LogEvents::respectMultiNotif() {
   }
 }
 
+
 void LogEvents::add(const std::string& s) {
   lines.push_back(s);
 

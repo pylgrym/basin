@@ -22,9 +22,9 @@ public:
   bool remove(Obj* obj, std::ostream& err);
   char letterIx(Obj* obj);
 
-  void showBagInv();
+  void showBagInv(bool bShowPrice);
   void showShopInv();
-  Obj* pickBag(const char* prompt);
+  Obj* pickBag(const char* prompt, bool bShowPrice);
   Obj* pickAction(); // helper for pick 
 
   Obj* findItem(ObjEnum otype);

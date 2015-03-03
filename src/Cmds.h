@@ -243,7 +243,7 @@ public:
     Cuss::clear(false);
     Cuss::prtL("  Your bag contains:"); 
 
-    Bag::bag.showBagInv();
+    Bag::bag.showBagInv(false);
 
     TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
 
@@ -305,7 +305,7 @@ public:
     if (!Cmd::Do(err)) { return false; }
 
     debstr() << "doing use item-command.\n";
-    Obj* obj = Bag::bag.pickBag("  Use what?");
+    Obj* obj = Bag::bag.pickBag("  Use what?", false);
     if (obj == NULL) { return false;  }
 
     if (obj->wearable()) {
@@ -340,7 +340,7 @@ public:
     if (!Cmd::Do(err)) { return false; }
 
     debstr() << "doing examine item-command.\n";
-    Obj* obj = Bag::bag.pickBag("  Examine what?");
+    Obj* obj = Bag::bag.pickBag("  Examine what?", false);
     if (obj == NULL) { return false;  }
 
     logstr log; 

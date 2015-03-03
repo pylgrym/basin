@@ -68,6 +68,7 @@ enum SpellEnum {
   SP_Sick ,
   SP_LightArea , // "DONE"
   SP_LightDir ,  // "DONE"
+  // SP_x
   SP_MaxSpells
 };
 

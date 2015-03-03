@@ -458,7 +458,7 @@ bool ShopCmd::Do(std::ostream& err) {
 
 
 bool SellCmd::Do(std::ostream& err) {
-  Obj* obj = Bag::bag.pickBag("  Sell what?");
+  Obj* obj = Bag::bag.pickBag("  Sell what?", true);
   if (obj == NULL) { return false; }
 
   PlayerMob::ply->stats.gold += obj->price();
@@ -481,7 +481,7 @@ bool DropCmd::Do(std::ostream& err) {
   }
 
   debstr() << "doing drop item-command.\n";
-  Obj* obj = Bag::bag.pickBag("  Drop what?");
+  Obj* obj = Bag::bag.pickBag("  Drop what?", false);
   if (obj == NULL) { return false; }
 
   debstr deb;

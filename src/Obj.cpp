@@ -75,40 +75,40 @@ CString Obj::some_item() const {
 
 
 ObjDef objDefs[] = {
-{OB_None,      EQ_None,    "nothing"}, 
-{OB_Lamp,      EQ_None,    ". lamp"}, 
-{OB_Sword,     EQ_MainHand,". sword"}, 
-{OB_Hat,       EQ_Head,    ". hat"}, 
-{OB_Gold,      EQ_None,    "- gold"},
-{OB_Potion,    EQ_None,    ". potion"},
-{OB_Scroll,    EQ_None,    ". scroll"},
-{OB_Staff,     EQ_None,    ". staff"},
-{OB_Wand,      EQ_None,    ". wand"},
-{OB_Amulet,    EQ_Neck,    ". amulet"},
-{OB_Food,      EQ_None,    "- food"},
-{OB_Mushroom,  EQ_None,    ". mushroom"},
-{OB_Shield,    EQ_OffHand, ". shield"},
-{OB_Ring,      EQ_FingerLeft,". ring"}, // FIXME, rings can be worn both left and right.
-{OB_Cloak,     EQ_Back,    ". cloak"},
-{OB_Water,     EQ_None,    "- water"},
-{OB_Bandage,   EQ_None,    ". bandage"},
-{OB_Helmet,    EQ_Head,    ". helmet"},
-{OB_ChestArmor,EQ_Chest,   ". breastplate"},
-{OB_SpellBook, EQ_None,    ". spell book"},
-{OB_Key,       EQ_None,    ". key"},
-{OB_Candle,    EQ_None,    ". candle"},
-{OB_Trap,      EQ_None,    ". trap"},
-{OB_Gems,      EQ_None,    ". gem" },
-{OB_LampOil,   EQ_None,    "- lamp oil" }, // Make &/! for a / some.
-{OB_Rune,      EQ_None,    ". rune" },
-{OB_Gloves,    EQ_Hands,   ". pair of gloves" },      // Gauntlets/gloves
-{OB_Wrists,    EQ_Wrists,  ". pair of bracers"},     // bracers
-{OB_Belt,      EQ_Waist,   ". belt"},                 //,=11,      // belt
-{OB_Leggings,  EQ_Legs,    ". pair of leggings"},      // = 13,       // Pants/leggings.
-{OB_Boots,     EQ_Feet,    ". pair of boots" },           //  = 14,       // Boots/shoes/sandals
-{OB_Pickaxe,   EQ_2Hands,  ". pickaxe"},
-{OB_Emeralds,  EQ_None,    ". emerald"},
-{OB_Amethysts, EQ_None,    ". amethyst"},
+{OB_None,      EQ_None,    "nothing",           0, "1d1", 0.0 },
+{OB_Lamp,      EQ_None,    ". lamp",            2, "1d2", 0.5 }, 
+{OB_Sword,     EQ_MainHand,". sword",           7, "1d6", 1.5 }, // longsword: 1.5kg, claymore 2.5 
+{OB_Hat,       EQ_Head,    ". hat",             3, "1d2", 0.5 }, 
+{OB_Gold,      EQ_None,    "- gold",           25, "1d2", 1.5 },
+{OB_Potion,    EQ_None,    ". potion",          3, "1d2", 0.2 }, // or even less, mainly to avoid tons of them? in practice, less than 0.1..
+{OB_Scroll,    EQ_None,    ". scroll",          2, "1d2", 0.1 }, // scrolls should weight very little, however they might be BULKY, so count weight anyway.
+{OB_Staff,     EQ_None,    ". staff",           4, "2d3", 2.0 },
+{OB_Wand,      EQ_None,    ". wand",            2, "1d2", 0.2 }, // vej selv en istedet..
+{OB_Amulet,    EQ_Neck,    ". amulet",          6, "1d2", 0.3 },
+{OB_Food,      EQ_None,    "- food",            2, "1d2", 0.8 }, // 1.6lbs
+{OB_Mushroom,  EQ_None,    ". mushroom",        2, "1d2", 0.4 },
+{OB_Shield,    EQ_OffHand, ". shield",          4, "2d3", 7.5 },
+{OB_Ring,      EQ_FingerLeft,". ring",          7, "1d2", 0.1 }, // FIXME, rings can be worn both left and right.
+{OB_Cloak,     EQ_Back,    ". cloak",           4, "1d2", 2.5 },
+{OB_Water,     EQ_None,    "- water",           1, "1d2", 1.0 },
+{OB_Bandage,   EQ_None,    ". bandage",         1, "1d2", 0.5 },
+{OB_Helmet,    EQ_Head,    ". helmet",          4, "1d3", 2.0 },
+{OB_ChestArmor,EQ_Chest,   ". breastplate",     6, "1d3", 3.5 },
+{OB_SpellBook, EQ_None,    ". spell book",      4, "1d2", 0.7 },
+{OB_Key,       EQ_None,    ". key",             0, "1d2", 0.2 },
+{OB_Candle,    EQ_None,    ". candle",          0, "1d2", 0.2 },
+{OB_Trap,      EQ_None,    ". trap",            0, "1d2", 0.5 },
+{OB_Gems,      EQ_None,    ". gem",             0, "1d2", 0.5 },
+{OB_LampOil,   EQ_None,    "- lamp oil",        0, "1d2", 1.0 }, // Make &/! for a / some.
+{OB_Rune,      EQ_None,    ". rune",            0, "1d2", 0.5 },
+{OB_Gloves,    EQ_Hands,   ". pair of gloves",  0, "1d2", 0.5 },      // Gauntlets/gloves
+{OB_Wrists,    EQ_Wrists,  ". pair of bracers", 0, "1d2", 1.0 },     // bracers
+{OB_Belt,      EQ_Waist,   ". belt",            0, "1d2", 1.0 },                 //,=11,      // belt
+{OB_Leggings,  EQ_Legs,    ". pair of leggings",0, "1d2", 1.5 },      // = 13,       // Pants/leggings.
+{OB_Boots,     EQ_Feet,    ". pair of boots",   0, "1d2", 3.5 },           //  = 14,       // Boots/shoes/sandals
+{OB_Pickaxe,   EQ_2Hands,  ". pickaxe",         8, "1d5", 3.5 },
+{OB_Emeralds,  EQ_None,    ". emerald",        14, "1d2", 0.5 },
+{OB_Amethysts, EQ_None,    ". amethyst",       12, "1d2", 0.5 },
 
 // fixme -weapons need proficiencies or similar (maybe just level they appear on?
 // to allow user to utilize the stronger weapons.

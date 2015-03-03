@@ -37,6 +37,101 @@ const SpellDesc Spell::spells[SP_MaxSpells] = {
 {"sick", "Sickness" }, // = 15,
 {"lightarea", "Light area" }, // = 16,
 {"lightbeam", "Light beam" }, // = 17,
+/*
+{"detectmagic",""}, // 
+{"light",""}, // 
+{"burninghands",""}, // 
+{"charmanimal",""}, // 
+{"charmperson",""}, // 
+{"curelightwounds",""}, // 
+{"curemoderatewounds",""}, // 
+{"cureseriouswounds",""}, // 
+{"curecriticalwounds",""}, // 
+{"detectdoors",""}, // 
+{"magicmissile",""}, // 
+{"darkness",""}, // 
+{"dazemonster",""}, // 
+{"delaypoison",""}, // 
+{"ghoultouch",""}, // 
+{"invisibility",""}, // 
+{"levitate",""}, // 
+{"acidarrow",""}, // 
+{"shatter",""}, // 
+{"silence",""}, // 
+{"summonmonster",""}, // 
+{"web",""}, // 
+{"polymorph",""}, // 
+{"lightning",""}, // 
+{"dispelmagic",""}, // 
+{"searinglight",""}, // 
+{"fear",""}, // 
+{"icestorm",""}, // 
+{"curepoison",""}, // 
+{"poison",""}, // 
+{"walloffire",""}, // 
+{"chaoshammer",""}, // 
+{"holysmite",""}, // 
+{"orderswrath",""}, // 
+{"unholyblight",""}, // 
+{"restoration",""}, // 
+{"stoneskin",""}, // http://www.d20srd.org/srd/magicItems/wands.htm
+
+charming
+fire
+swarminginsects
+healing
+illumination
+frost
+defense
+abjuration
+conjuration
+enchantment
+evocation
+illusion
+necromancy
+life
+passage
+power
+summonswarm, cloudkill,shieldoflaw
+locateobjects
+locatetreasure
+locatedoors
+sensemonsters
+sensesurroundings
+glimpsesurroundings
+sleep, mass x.
+coneofcold
+removedisease
+cureblindness
+sunburst
+haltundead
+circleofdeath
+passwall
+phasedoor
+teleport
+dimensiondoor
+invulnerable
+freeaction
+light
+stayinglight
+blink
+disintegrate
+barkskin   http://www.d20srd.org/srd/magicItems/staffs.htm
+wallofthorns http://www.d20srd.org/srd/magicItems/potionsAndOils.htm
+removefear
+bless
+sanctuary/rune/ward
+blindness/seeing
+featherfall
+trap
+curse/removecurse
+rage
+calm
+neutralize-cure-poison
+heroism,haste,speed.
+flamearrow,daylight.
+removeparalysis
+*/
 };
 /* JG: - an idea: These could be auto-assigned to items,
 and auto-added to description - "A WAND OF X".

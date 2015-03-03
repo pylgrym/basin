@@ -65,7 +65,7 @@ double Bag::bagWeight() {
 
 
 
-void Bag::showBagInv() {
+void Bag::showBagInv(bool bShowPrice) {
   if (objs.size() == 0) {
     Cuss::prtL("Zero items. Nothing. Nada."); 
   }
@@ -81,19 +81,24 @@ void Bag::showBagInv() {
     Obj& o = **i;
     std::stringstream ss;
     std::string descA = o.an_item();
-    ss 
-      << ix 
-      << " " << o.kweight() 
-      << " " << descA
-    ;
+    ss << ix;
+    if (bShowPrice) {
+      ss << " " << o.price() << "g";
+    } else {
+      ss << " " << o.kweight();
+    }
+    ss << " " << descA;
+    
     Cuss::prtL(ss.str().c_str());  
     totalWeight += o.kweight();
   }
 
-  std::stringstream ss;
-  ss << "Total weight: " << totalWeight << " kg";
-  ss << " (" << everything << ")";
-  Cuss::prtL(ss.str().c_str());  
+  if (!bShowPrice) { // Then show weights instead:
+    std::stringstream ss;
+    ss << "Total weight: " << totalWeight << " kg";
+    ss << " (" << everything << ")";
+    Cuss::prtL(ss.str().c_str());  
+  }
 
   Cuss::invalidate();
 }
@@ -111,11 +116,11 @@ Obj* Bag::findItem(ObjEnum otype) {
 
 
 
-Obj* Bag::pickBag(const char* prompt) {
+Obj* Bag::pickBag(const char* prompt, bool bShowPrice) {
   Cuss::clear(false);
   Cuss::prtL(prompt);
 
-  showBagInv(); // Bag::bag.
+  showBagInv(bShowPrice); // Bag::bag.
   return pickAction();
 }
 
@@ -188,11 +193,13 @@ void Bag::showShopInv() {
     Obj& o = **i;
     std::stringstream ss;
     std::string descA = o.an_item();
-    ss
-      << ix
-      << std::fixed << std::setw(4) << o.price()
-      << " " << descA
-      ;
+
+    ss << ix;
+    ss // << std::fixed << std::setw(4) 
+       << " " << o.price() << "g";
+
+    ss << " " << descA;
+
     Cuss::prtL(ss.str().c_str());
   }
 
