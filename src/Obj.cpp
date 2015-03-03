@@ -345,6 +345,7 @@ const char* Obj::flavorUse(ObjEnum type) {
 
   case OB_Food:     return "You eat the food."; // drink, sip, ?
   case OB_Mushroom: return "You eat the mushroom."; // drink, sip, ?
+  case OB_LampOil:  return NULL; // IE don't show flavor-text.
   }
   return "You use the thingey.";
 }
@@ -493,20 +494,21 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
   /* Multi-messages must 'prompt with <more>',
   ie whenever too much info to print, guide the user through it. */
 
-  if (otype() == OB_LampOil) {
-    return FillLampCmd(this).Do(err);
-  }
 
   /*
   Also, make monsters attack.
   */
   const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
-  { // JG, FIXME - why doesn't this display?
+  if (flavor != NULL) { 
     logstr log; log << flavor;
   }
 
   if (!infiniteCharges()) {
     if (!eatCharge(err)) { return false; }
+  }
+
+  if (otype() == OB_LampOil) {
+    return FillLampCmd(this).Do(err);
   }
 
   logstr log;

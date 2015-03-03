@@ -511,5 +511,12 @@ bool DexModCmd::Do(std::ostream& err) {
 
 bool FillLampCmd::Do(std::ostream& err) {
   logstr log; log << "You fill the lamp.";
+  Obj* lamp = PlayerMob::ply->findLight();
+  if (lamp == NULL) {
+    err << "but you have no lamp?"; return false;
+  }
+  lamp->itemUnits += oil->itemUnits;
+  err << "You refill your lamp. It burns brighter!";
+  Cuss::clear(true); // Redraw so we can see updated lamp oil stats, and the brighter light.
   return true;
 }
