@@ -23,16 +23,13 @@ bool MobReady::operator > (const MobReady& rhs) const {
 
 
 
-void MobQueue::deleteMob(Mob* toDelete) {
+void MobQueue::deleteMob(Mob* toDelete) {  // called by HitCmd::Do.
+  // FIXME, deleting is dangerous - any other dangling pointers? - what about 'dispatchFirst'?
 
   CL->map[toDelete->pos].creature.clearMob(); // Remove it from the map description.
   toDelete->invalidateGfx(); // Tell graphics system it needs to be redrawn.
 
-  /// std::vector<Mob*>::iterator i;
-  /// i = std::find(globalMobs.begin(), globalMobs.end(), toDelete);
-  /// if (i != globalMobs.end()) { globalMobs.erase(i); }
-
-  // JG, : I couldn't implement, because I need my own prio-queue-deque-heap to allow removal.
+  // JG, : I couldn't implement this before, because I need my own prio-queue-deque-heap to allow removal.
   ReadyQueue::iterator j; 
   for (j = queue.begin(); j != queue.end(); ++j) { // FIXME - is there a better way to search?
     MobReady& mr = *j;
@@ -43,16 +40,31 @@ void MobQueue::deleteMob(Mob* toDelete) {
     queue.makeHeap(); // re-establish heap.
     // http://www.linuxtopia.org/online_books/programming_books/c++_practical_programming/c++_practical_programming_189.html
   }
-  delete toDelete;
+
+  // Don't delete here - let 'dispatchFirst' handle it.
+  // if (toDelete != PlayerMob::ply) { // Only delete, if we are not the player!
+  //  delete toDelete;
+  //}
 }
 
 
 
 
 bool MobQueue::dispatchFirst() {
-  if (queue.empty()) { debstr() << "mob queue is empty, bailing out.\n"; return false; }
 
-  MobReady cur = queue.top();
+  MobReady cur;
+  for ( ; ; ) { // Locate next LIVING scheduled mob:
+    if (queue.empty()) { debstr() << "mob queue is empty, bailing out.\n"; return false; }
+    cur = queue.top();
+    if (!cur.mob->isDead()) { break; } // OK, we found a live specimen.
+    // It's dead, clean it up:
+    queue.pop(); // pop_heap / take the dead mob out of the queue.
+    if (cur.mob != PlayerMob::ply) { // Don't delete player object.
+      deleteMob(cur.mob);
+      delete cur.mob;
+    }
+  }
+
   globalClock = cur.when; // update clock to next 'threshold time'.
   // debstr() << "dispatchFirst begin, mob:" << cur.mob->rep() << ", time:" << globalClock << " " << (void*) cur.mob << "\n";
 
@@ -60,7 +72,7 @@ bool MobQueue::dispatchFirst() {
   double duration=0;
   for ( ; duration==0 && !cur.mob->isDead(); ) { duration = cur.mob->act(); } 
 
-  // We don't pop until after 'act()' are finished (ensures queue always contains 'everybody'.)
+  // We don't pop until after 'act()' have finished (ensures queue always contains 'everybody'.)
   queue.pop(); // pop_heap / take us out of the queue.
 
   if (!cur.mob->isDead()) { // As long as you are not dead, you get a next turn:

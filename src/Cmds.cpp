@@ -169,7 +169,7 @@ bool HitCmd::Do(std::ostream& err) {
         CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6),CL->level);
       }
     }
-    CL->mobs.deleteMob(hittee);
+    CL->mobs.deleteMob(hittee); // in HitCmd::Do.
     logstr log; log << "It died.";
     if (bLoot) {
       log << "An item rolls on the floor.";
@@ -516,7 +516,9 @@ bool FillLampCmd::Do(std::ostream& err) {
     err << "but you have no lamp?"; return false;
   }
   lamp->itemUnits += oil->itemUnits;
-  err << "You refill your lamp. It burns brighter!";
-  Cuss::clear(true); // Redraw so we can see updated lamp oil stats, and the brighter light.
+  {
+    logstr log; log << "You refill your lamp. It burns brighter!";
+  }
+  Cuss::clear(true); // Redraw, so we can see updated lamp oil stats, and the brighter light.
   return true;
 }
