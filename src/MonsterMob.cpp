@@ -41,7 +41,7 @@ bool Mob::noticePlayer() {
   /* We are actually checking player's ability to stealth, not mob's ability to notice (they are inverse).
   */
   int dist = PlayerMob::distPly(pos);
-  int prob = int(0.5 + 20.0 / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
+  int noticeProb = int(0.5 + 20.0 / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
 
   int plyStealth = PlayerMob::ply->stats.stealth();
   int mobAlert = stats.alertness();
@@ -49,13 +49,10 @@ bool Mob::noticePlayer() {
   int avoidBalance = plyStealth - mobAlert;
   int noticeBalance = mobAlert - plyStealth;
 
-  int threshold = prob + avoidBalance;
+  int noticeThreshold = noticeProb + noticeBalance;
 
   int roll = Dx(20);
-
-  bool avoid = (roll <= threshold);
-  bool notice = !avoid;
-
+  bool notice = (roll <= noticeThreshold);
   return notice;
 }
 
@@ -64,7 +61,12 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
   bool wakeUp = noticePlayer(); // PlayerMob::ply); // oneIn(10); // FIXME: distance to player, and player-dex, should govern risk of monster disturbed!
 
   if (wakeUp) {
-    logstr log; log << "Something awakens!";
+    {
+      logstr log; log << "Something awakens!";
+    }
+    {      
+      logstr log; log << a_mob() << " notices you!";
+    }
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
   } else {
@@ -111,7 +113,8 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
 
   if (lowHealth()) {
     if (oneIn(3)) {
-      logstr log; log << "The monster flees, feeling hurt.";
+      // monster 
+      logstr log; log << "The " << pronoun() << " flees, feeling hurt.";
       mood = M_Afraid;
     }
   }

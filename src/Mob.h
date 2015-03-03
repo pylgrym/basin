@@ -121,6 +121,7 @@ public:
 
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 
+  virtual std::string Mob::a_mob() const = 0;
   virtual std::string pronoun() const = 0; // "You"/"The orc".
   virtual std::string verbS() const = 0; // "he hitS".
 
@@ -183,8 +184,9 @@ public:
 
   virtual CreatureEnum ctype() const { return CR_Player; } // Consider not having this.. (instead just relying on base ctype)
 
-  virtual std::string pronoun() const { return "you";  } // "You"/"The orc".
-  virtual std::string verbS() const { return "";  } // "you HIT".
+  virtual std::string Mob::a_mob() const { return "youse"; }
+  virtual std::string pronoun() const { return "you"; } // "You"/"The orc".
+  virtual std::string verbS() const { return ""; } // "you HIT".
 
   int dungLevel; // NB!, handle persist!
 
@@ -222,8 +224,7 @@ public:
   virtual double actAngry();
   virtual double actFlee();
 
-
-  // virtual CreatureEnum ctype() const { return CR_Kobold; }
+  virtual std::string Mob::a_mob() const;
   virtual std::string pronoun() const; // { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".
 };

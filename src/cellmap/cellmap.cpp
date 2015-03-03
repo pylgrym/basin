@@ -194,7 +194,7 @@ void Map::initTown(int level) {
     ""
   };
 
-  const char* layout[] = {
+  const char* layout[] = { 
     "&", // First row for messages (fixme with viewport offset.)
     "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&",
     "&...............................................&",
