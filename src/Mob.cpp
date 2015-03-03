@@ -201,6 +201,10 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case '.': 
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
+    case VK_ADD:      if (DexModCmd(+1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+    case VK_SUBTRACT: if (DexModCmd(-1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+
+
     case 'S': 
       if (bCtrl) {
         if (SaveCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break;
@@ -458,6 +462,8 @@ PlayerMob* PlayerMob::createPlayer() {
   Bag::bag.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
   Bag::bag.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
 
+  // IMPORTANT: once inventory has weight in bag, we must recalc for encumbrance stats!
+  PlayerMob::ply->stats.calcStats();
 
 
   // Create shop - shouldn't be in this function I think..
@@ -467,6 +473,7 @@ PlayerMob* PlayerMob::createPlayer() {
   firstLamp2->itemUnits = 3700;
   Bag::shop.add(firstLamp, ignore);
   Bag::shop.add(new Obj(Obj::objDesc(OB_LampOil), 1), ignore);
+
 
 
   return player;

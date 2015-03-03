@@ -496,3 +496,13 @@ bool DropCmd::Do(std::ostream& err) {
   err << "You drop " << anItem;
   return true;
 }
+
+
+
+bool DexModCmd::Do(std::ostream& err) {
+  debstr() << "dexmod-cmd do begin..\n";
+  PlayerMob::ply->stats.Dex.base += delta;
+  PlayerMob::ply->stats.calcStats();
+  Cuss::clear(true);
+  return true;
+}

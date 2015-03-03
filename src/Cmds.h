@@ -456,3 +456,12 @@ class SellCmd : public Cmd {
 public:
   virtual bool Do(std::ostream& err);
 };
+
+
+
+class DexModCmd : public Cmd {
+public:
+  int delta;
+  DexModCmd(int delta_) :delta(delta_){}
+  virtual bool Do(std::ostream& err);
+};

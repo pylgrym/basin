@@ -32,6 +32,8 @@ double Mob::noticePlayerProb(CPoint coords, int mobAlert) {
   double noticeBalance = mobAlert - plyStealth;
 
   double dist = PlayerMob::distPly(coords);
+  dist = (dist*dist) / 3.5;
+
   if (noticeBalance > 0) {
     dist /= noticeBalance;
   } else if (noticeBalance < 0) {
