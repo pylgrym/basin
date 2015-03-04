@@ -506,3 +506,10 @@ bool DexModCmd::Do(std::ostream& err) {
   Cuss::clear(true);
   return true;
 }
+
+
+
+bool FillLampCmd::Do(std::ostream& err) {
+  logstr log; log << "You fill the lamp.";
+  return true;
+}

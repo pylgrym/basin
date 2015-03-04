@@ -136,27 +136,7 @@ public:
   void setTypeDefaults();
 
 
-  virtual bool use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
-    /* FIXME/TODO: multi-messages must 'prompt with <more>',
-    ie whenever too much info to print, guide the user through it.
-
-    Also, make monsters attack.
-    */
-    const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
-    { // JG, FIXME - why doesn't this display?
-      logstr log; log << flavor;
-    }
-
-    if (!infiniteCharges()) {
-      if (!eatCharge(err)) { return false; }
-    }
-
-    logstr log;
-    // Act on obj.effect:
-    Spell::doSpell(effect, who, log, this);
-
-    return true;
-  } 
+  virtual bool use(class Mob& who, std::ostream& err);
 
   bool eatCharge(std::ostream& err) {
     if (charges == 0) { err << "It doesn't have any charges left.";  return false; }

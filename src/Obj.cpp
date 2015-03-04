@@ -10,6 +10,8 @@
 
 #include <assert.h>
 
+#include "Cmds.h"
+
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiouy";
   int pos = vowels.Find(c);
@@ -483,6 +485,36 @@ void Obj::setTypeDefaults() {
   }
 
 }
+
+
+
+
+bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
+  /* Multi-messages must 'prompt with <more>',
+  ie whenever too much info to print, guide the user through it. */
+
+  if (otype() == OB_LampOil) {
+    return FillLampCmd(this).Do(err);
+  }
+
+  /*
+  Also, make monsters attack.
+  */
+  const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
+  { // JG, FIXME - why doesn't this display?
+    logstr log; log << flavor;
+  }
+
+  if (!infiniteCharges()) {
+    if (!eatCharge(err)) { return false; }
+  }
+
+  logstr log;
+  // Act on obj.effect:
+  Spell::doSpell(effect, who, log, this);
+
+  return true;
+} 
 
 
 

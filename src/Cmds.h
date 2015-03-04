@@ -465,3 +465,11 @@ public:
   DexModCmd(int delta_) :delta(delta_){}
   virtual bool Do(std::ostream& err);
 };
+
+
+class FillLampCmd : public Cmd {
+public:
+  Obj* oil;
+  FillLampCmd(Obj* oil_) :oil(oil_){}
+  virtual bool Do(std::ostream& err);
+};
