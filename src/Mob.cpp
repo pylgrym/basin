@@ -354,15 +354,15 @@ int PlayerMob::distPlyLight(CPoint p) {
 }
 
 void PlayerMob::updateLight() {
-  Obj* light = findLight();
-  if (light != NULL) {
-    int activeStr = light->getLightStrength();
-    if (light->itemUnits == 0) { activeStr = 1; } else { activeStr *= 1;  }
-    setLightStrength(activeStr, light->itemUnits); 
+  Obj* lamp = findLight();
+  if (lamp != NULL) {
+    int activeStr = lamp->getLightStrength();
+    if (lamp->itemUnits == 0) { activeStr = 1; } // else { activeStr *= 1;  }
+    setLightStrength(activeStr, lamp->itemUnits); // We just cache the units to hud-dashboard-monitor them.
 
     bool burnout = false;
-    if (light->itemUnits == 1) { burnout = true;  } // Is it the last flicker, burning out now?
-    light->burnUnits(1);
+    if (lamp->itemUnits == 1) { burnout = true; } // Is it the last flicker, burning out now?
+    lamp->burnUnits(1);
     if (burnout) { logstr log; log << "Your light flickers out!"; }
 
   } else {
@@ -452,7 +452,7 @@ PlayerMob* PlayerMob::createPlayer() {
 
   // Bag::bag.add(new Obj(OB_Gold),ignore);
   Obj* firstLamp = new Obj(Obj::objDesc(OB_Lamp), 1);
-  firstLamp->itemUnits = 3700;
+  firstLamp->itemUnits = 300;
   Bag::bag.add(firstLamp, ignore);
 
   Bag::bag.add(new Obj(Obj::objDesc(OB_Hat), 1), ignore);
@@ -461,6 +461,14 @@ PlayerMob* PlayerMob::createPlayer() {
   Bag::bag.add(new Obj(Obj::objDesc(OB_Scroll), 1), ignore);
   Bag::bag.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
   Bag::bag.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
+
+  Obj* oil1 = new Obj(Obj::objDesc(OB_LampOil),1);
+  oil1->itemUnits = 900;
+  Bag::bag.add(oil1, ignore);
+
+  Obj* oil2 = new Obj(Obj::objDesc(OB_LampOil), 1);
+  oil2->itemUnits = 2900;
+  Bag::bag.add(oil2, ignore);
 
   // IMPORTANT: once inventory has weight in bag, we must recalc for encumbrance stats!
   PlayerMob::ply->stats.calcStats();

@@ -95,7 +95,7 @@ ObjDef objDefs[] = {
 {OB_Helmet,    EQ_Head,    ". helmet",          4, "1d3", 2.0 },
 {OB_ChestArmor,EQ_Chest,   ". breastplate",     6, "1d3", 3.5 },
 {OB_SpellBook, EQ_None,    ". spell book",      4, "1d2", 0.7 },
-{OB_Key,       EQ_None,    ". key",             0, "1d2", 0.2 },
+{OB_Key,       EQ_None,    ". key",             0, "1d2", 0.1 },
 {OB_Candle,    EQ_None,    ". candle",          0, "1d2", 0.2 },
 {OB_Trap,      EQ_None,    ". trap",            0, "1d2", 0.5 },
 {OB_Gems,      EQ_None,    ". gem",             0, "1d2", 0.5 },
