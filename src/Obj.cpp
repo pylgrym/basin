@@ -511,11 +511,17 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
     return FillLampCmd(this).Do(err);
   }
 
-  logstr log;
-  // Act on obj.effect:
-  Spell::doSpell(effect, who, log, this);
+  bool bOK = false;
+  { // Act on obj.effect:
+    logstr log;
+    bOK = Spell::doSpell(effect, who, log, this);
+  }
 
-  return true;
+  {
+    logstr log;
+    log << charges << " charges remain. ";
+  }
+  return bOK;
 } 
 
 
