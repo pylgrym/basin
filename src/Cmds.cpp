@@ -138,7 +138,7 @@ bool HitCmd::Do(std::ostream& err) {
       err << "It misses. "; 
     }
 
-    err << "(";
+    err << "(th";
     ai.repHitChance(err);
     err << "%)";
 
@@ -150,7 +150,7 @@ bool HitCmd::Do(std::ostream& err) {
     logstr log;
     log
       << mob.pronoun()
-      << " hit" << mob.verbS() << " "
+      << " hit" << mob.verbS() << mob.stats.level() << " "
       << hittee->pronoun() << " for " << ai.dmgTaken;
 
     log << "(";

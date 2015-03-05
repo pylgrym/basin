@@ -141,10 +141,6 @@ public:
   bool eatCharge(std::ostream& err) {
     if (charges == 0) { err << "It doesn't have any charges left.";  return false; }
     --charges; 
-
-    logstr log;
-    log << charges << " charges remain. ";
-    return true;
   }
   bool infiniteCharges() const { return (charges == -1);  }
   // END BEHAVIOUR

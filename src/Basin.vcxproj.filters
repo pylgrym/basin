@@ -117,6 +117,12 @@
     <ClInclude Include="MonsterMob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Qual.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\ParseCSV.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -207,6 +213,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MonsterMob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Qual.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\ParseCSV.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -37,7 +37,7 @@ struct AttackInf {
   void repHitChance(std::ostream& os);
 
   void rep(std::ostream& os, Stats& stats) {
-    os << 'r' << hitRoll << "<=" << hitThres << " (th" << finalToHit << "-ac" << advAC << ")+" << wpHitBonus;
+    os << 'r' << hitRoll << "<=" << hitThres << " (th" << finalToHit << "-ac" << advAC << ")++" << wpHitBonus;
     os << " "; // Where does the horrible toHit come from..
     stats.repToHit(os);
   }

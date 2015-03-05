@@ -3,8 +3,9 @@
 
 #include <sstream>
 
-ParseCSV::ParseCSV(std::istream& is_)
+ParseCSV::ParseCSV(std::istream& is_,ParseObj& pobj_)
 :is(is_) //"color.csv")
+, pobj(pobj_)
 {
   clearBuf();
 }
@@ -15,6 +16,8 @@ ParseCSV::~ParseCSV()
 }
 
 void ParseCSV::clearBuf() {
+  // error C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+
   strncpy(buf, "", sizeof buf); // Clear/init buf.
   err = NULL;
 }
@@ -92,4 +95,11 @@ std::string& ParseObj::field(const char* column, int ix) {
   int col = column_map[column];
   if (col >= (int) row.size()) { row.resize(col + 1); }
   return row[col];
+}
+
+int ParseObj::Int(const char* column, int ix) {
+  std::string& s = field(column, ix);
+  std::stringstream ss(s);
+  int i = 0; ss >> i;
+  return i;
 }

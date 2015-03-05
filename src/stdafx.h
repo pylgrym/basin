@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif

@@ -482,7 +482,7 @@ void Obj::setTypeDefaults() {
   }
 
   if (eqslot() != EQ_None) { // try-out hack:
-    ac = rnd(1, 7);
+    ac = rnd(1, 7) + (ilevel/2); // Item level will give us better items.
   }
 
 }
