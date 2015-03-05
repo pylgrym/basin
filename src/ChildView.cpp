@@ -5,19 +5,21 @@
 #include "stdafx.h"
 #include "Basin.h"
 #include "ChildView.h"
-
 #include "util/debstr.h"
-
 #include "./theUI.h"
-
 #include "numutil/myrnd.h"
-
 #include "Bag.h"
 #include "Term.h"
-
 #include "MobQueue.h"
-
 #include "Dungeons.h"
+
+
+
+#include <gdiplus.h>
+using namespace Gdiplus;
+#pragma comment (lib,"Gdiplus.lib")
+
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -386,6 +388,63 @@ void CChildView::OnPaint() {
 
 	
 }
+
+
+
+
+
+void tintTile(CRect& dest, Gdiplus::Graphics& graphics, COLORREF matColor) {
+  Gdiplus::Image sprites2(L"tiles.png"); // (L"potion.png"); // RotationInput.bmp");
+  //:sprites2(tileFile) 
+
+  // COLORREF matColor = colors[matIndex].color;
+  int col = 0, row = 0;
+  int cellWidth = 32, cellHeight = 32;
+  int offset_x = col * cellWidth;
+  int offset_y = row * cellHeight;
+
+  Gdiplus::Rect dest2( dest.left,dest.top,  dest.Width(),dest.Height()); 
+
+  Color tintingColor( GetRValue(matColor), GetGValue(matColor), GetBValue(matColor) ); // 255, 0, 0);
+  // int angle = 154;
+	// tintingColor.SetValue( Color::MakeARGB(255, angle, 255-angle, tintingColor.GetBlue() )); // tintingColor.GetGreen()
+
+	float cr = tintingColor.GetRed()   / 255.0f;
+  float cg = tintingColor.GetGreen() / 255.0f;
+  float cb = tintingColor.GetBlue()  / 255.0f;
+
+  ColorMatrix colorMatrix = {
+    // 1,0,0,0,0, 
+    cr, cg, cb, 0, 0,
+    // 0,1,0,0,0, 
+    cb, cr, cg, 0, 0,
+    // 0,0,1,0,0, 
+    cg, cb, cr, 0, 0,
+    0, 0, 0, 1, 0,
+    0, 0, 0, 0, 1
+  }; 
+  ImageAttributes  imageAttributes;
+
+	imageAttributes.SetColorMatrix(
+	   &colorMatrix, 
+	   ColorMatrixFlagsDefault,
+	   ColorAdjustTypeBitmap);   
+
+
+  // UINT             zzwidth = sprites2.GetWidth();
+	graphics.DrawImage(
+	   &sprites2, 
+	   dest2, // Rect(32, 5, width, height),  // destination rectangle 
+	   offset_x, offset_y, // 0, 0,        // upper-left corner of source rectangle 
+	   cellWidth, // width,       // width of source rectangle
+	   cellHeight, // height,      // height of source rectangle
+	   UnitPixel,
+	   &imageAttributes
+  );
+
+}
+
+
 
 
 

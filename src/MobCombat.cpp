@@ -79,7 +79,9 @@ bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchoo
     ai.dmgRoll = ai.attackDice.roll(log); 
   }
 
-  ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg.
+  if (school == SC_Phys) {
+    ai.dmgMod = stats.statMod("str"); // You get your strength bonus added to dmg. IF it's physical.
+  }
   ai.dmg += ai.dmgRoll + ai.dmgMod + ai.dmgBonus;
   if (ai.dmg < 1) { ai.dmg = 1; } // You always hit for at least 1
 
