@@ -86,7 +86,7 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , confused(0)
 , gold(0)
 {
-  baseMobAC = nDx(2, 3);
+  baseMobAC = nDx(2, 2);
 
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -177,7 +177,7 @@ int Stats::calcBaseAC() {
 }
 
 int Stats::mobAC() {
-  return level() + 3 + baseMobAC; 
+  return level() + 2 + baseMobAC;  // This is too much, I think..?
 }
 
 
@@ -208,8 +208,7 @@ int Stats::calcTotalAC() {
     wornAC_input = wornAC;
     wornAC = itemACReduc(wornAC);
     wornAC_output = wornAC;
-  }
-  else {
+  } else {
     wornAC = mobAC();
   }
   int total = base + wornAC;

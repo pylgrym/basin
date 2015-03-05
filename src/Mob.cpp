@@ -188,6 +188,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     logstr ss;
 
     switch (nChar) {
+    case ' ': { actionDuration = 0; bActionDone = false; } break; // space shouldn't do anything.
     case 'W': // W=wield/wear, same as a=activate/use.
     case 'A': if ( UseCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; // Use is.. A..?
     case 'E': if ( ExamineCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break; // Use is.. A..?
@@ -212,7 +213,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
         if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
       }
 
-    case 'Z': if (ZapCmd(NULL, *this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 0; bActionDone = true; } break; 
+    case 'Z': if (ZapCmd(NULL, *this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 1; bActionDone = true; } break; 
 
     case 'Q': 
       if (bCtrl) {

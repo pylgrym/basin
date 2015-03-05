@@ -19,7 +19,7 @@ int rndC(int from,int toC) { return from + rand() % (1+toC-from);  } // from, AN
 bool oneIn(int Nth) { return (rand() % Nth) == 0;  } // "one out of N", e.g. 1/6 chance.
 
 int Dx(int x) { // 1 x-die.
-  return rnd(1, x);
+  return rndC(1, x);
 }
 
 int nDx(int n, int x) { // roll n Dice-x and add them. 
