@@ -24,12 +24,19 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
 /* Because these risks are small chances (percent, promille..), we don't want to do crude 5% D20 tests. */
 const double noticeDSize = 1000.0;
 
+// descs should be shorter for 48 chars, so leave out 'head, shoulder'etc
 double Mob::noticePlayerProb(CPoint coords, int mobAlert) {
+  /* dex 11 stealth seemed to be ok at the outset - 4th tile away, 1%. dex 38 is what we want at 18
+     dex -6 is what we want for 3.
+  */
 
   // NB! These are 1/20=5%'s, must be adjusted.
   int plyStealth = PlayerMob::ply->stats.stealth();
   //int mobAlert = 0; // Now an arg.
   double noticeBalance = mobAlert - plyStealth;
+  // we want (18-3 = 15) to match (38- -6=44), ie 15 to 44, ie *3.
+  noticeBalance = 3*noticeBalance; // we want the stealth/alert stat to have higher jumps, and offset it a bit.
+  // Consider: just using an y=ax+b may not be enough to give a good balance.
 
   double dist = PlayerMob::distPly(coords);
   dist = (dist*dist) / 3.5;

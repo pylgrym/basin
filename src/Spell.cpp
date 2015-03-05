@@ -37,6 +37,11 @@ const SpellDesc Spell::spells[SP_MaxSpells] = {
 {"sick", "Sickness" }, // = 15,
 {"lightarea", "Light area" }, // = 16,
 {"lightbeam", "Light beam" }, // = 17,
+{"phasedoor", "Phase door" }, // = 15,
+{"detectdoor", "Detect door" },// = 15,
+{"detecttrap", "Detect trap" }, // = 15,
+{"detecttreasure", "Detect treasure" }, // = 15,
+{"detectobject", "Detect object" }, // = 15,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -133,6 +138,7 @@ flamearrow,daylight.
 removeparalysis
 */
 };
+
 /* JG: - an idea: These could be auto-assigned to items,
 and auto-added to description - "A WAND OF X".
 */

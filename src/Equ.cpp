@@ -217,7 +217,7 @@ void Equ::showWorn() {
     std::string descA; std::string label;
     if (o != NULL) {
       descA = o->an_item();
-      label = std::string(slotDesc(slot)) + ":";
+      label = ""; // std::string(slotDesc(slot)) + ":";
     } else  {
       descA = " - ";
     }

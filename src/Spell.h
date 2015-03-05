@@ -68,6 +68,12 @@ enum SpellEnum {
   SP_Sick ,
   SP_LightArea , // "DONE"
   SP_LightDir ,  // "DONE"
+  SP_MagicMap,
+  SP_PhaseDoor,
+  SP_DetectDoor,
+  SP_DetectTrap,
+  SP_DetectTreasure,
+  SP_DetectObject,
   // SP_x
   SP_MaxSpells
 };
