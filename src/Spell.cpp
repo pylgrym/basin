@@ -6,6 +6,7 @@
 #include "Mob.h"
 
 #include "Cmds.h"
+#include "Qual.h"
 
 Spell::Spell()
 {
@@ -16,7 +17,7 @@ Spell::~Spell()
 {
 }
 
-const SpellDesc Spell::spells[SP_MaxSpells] = {
+SpellDesc Spell::spells[SP_MaxSpells] = {
 {"nospell", "No spell" }, // = 0,
 {"speedup", "Haste" }, // = 1,
 {"slowdown", "Slow" }, // = 2,
@@ -156,12 +157,34 @@ const char* Spell::type2desc(SpellEnum type) {
   return spells[type].desc;
 }
 
+const char* Spell::type2descB(SpellEnum type) {
+  assert(type >= 0);
+  assert(type < SP_MaxSpells);
+  SpellDesc& sd = spells[type];
+  if (sd.ident) {
+    return sd.desc;
+  } else {
+    return sd.qual.c_str();
+  }
+}
+
 const SpellDesc& Spell::spell(SpellEnum type) {
+  assert(type >= 0);
+  assert(type < SP_MaxSpells);
+
+  static bool bInit = false;
+  if (!bInit) {
+    bInit = true;
+    initQual();
+  }
+  return spells[type];
+}
+
+SpellDesc& Spell::spellNC(SpellEnum type) {
   assert(type >= 0);
   assert(type < SP_MaxSpells);
   return spells[type];
 }
-
 
 
 SpellEnum Spell::str2type(const char* str) {
@@ -180,6 +203,15 @@ SpellEnum Spell::rndSpell() {
   return (SpellEnum)ix;
 }
 
+
+void Spell::initQual() {
+  for (int i = 0; i < SP_MaxSpells; ++i) {
+    SpellDesc& desc = spellNC( (SpellEnum) i);
+    QualItem& qa = Qual::qual.getItem(i);
+    desc.qual = qa.name;
+    desc.color = qa.color;
+  }
+}
 
 bool updateSpeed(Mob& actor, double factor) {
   logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }

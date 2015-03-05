@@ -10,6 +10,7 @@
 
 #include "util/debstr.h"
 #include "obj.h"
+#include "Spell.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -59,6 +60,8 @@ BOOL CBasinApp::InitInstance()
 
   Obj::initPrices();
   Obj::initWeights();
+
+  Spell::initQual();
 
 
 	// InitCommonControlsEx() is required on Windows XP if an application

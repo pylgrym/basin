@@ -257,6 +257,7 @@ CPoint Viewport::v2w(CPoint v) { return v + offset; }
 
 void CChildView::OnPaint() {
 	CPaintDC dc(this); // device context for painting
+	Graphics gr(dc);
 
   CFont largeFont, smallFont;
   doFont(largeFont,smallFont, dc);
@@ -275,9 +276,9 @@ void CChildView::OnPaint() {
       Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
       TCell& tcell = Term::term[vp.p];
 
-      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, false, 255); // FLOOR
+      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone); // FLOOR // COLORREF (1,2,3)
 
-      bool floorStat = true;
+      bool floorStat = false; // true;
       if (floorStat) {
         int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
@@ -295,7 +296,8 @@ void CChildView::OnPaint() {
 
       if (!cell.item.empty()) { 
         CString tile = CA2T(cell.item.atypeS()); // .c_str()
-        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, true,255); // false);  // THINGS
+        const SpellDesc& sd = Spell::spell(cell.item.o->effect);
+        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color); // false);  // THINGS
 
         int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
@@ -311,7 +313,7 @@ void CChildView::OnPaint() {
 
 
       if (!cell.creature.empty()) { 
-        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, true,255); // false); MOBS
+        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255); // false); MOBS
 
         // Draw stats/HP:
         Mob* mob = cell.creature.m;
@@ -355,11 +357,11 @@ void CChildView::OnPaint() {
         }
       }
 
-      if (!cell.hasOverlay()) { 
-        tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, true,255); // false);  // THINGS
+      if (cell.hasOverlay()) { 
+        tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone); // draws bullet sprites, spell effects, rain etc.
       }
 
-      if (!tcell.charEmpty()) { 
+      if (!tcell.charEmpty()) { // Term cell.
 	      dc.SelectObject(largeFont);
         const COLORREF txtColor = RGB(255, 255, 255);
         dc.SetTextColor(txtColor);  
@@ -379,7 +381,7 @@ void CChildView::OnPaint() {
           int blend = (int) (255.0 - (255.0 / (dist+1)));
 
           CPoint blendTile(29,20); 
-          tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, true, blend); 
+          tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, colorNone); 
         }
       }
 
@@ -393,7 +395,7 @@ void CChildView::OnPaint() {
 
 
 
-void tintTile(CRect& dest, Gdiplus::Graphics& graphics, COLORREF matColor) {
+void tintTileDemoCode(CRect& dest, Gdiplus::Graphics& graphics, COLORREF matColor) {
   Gdiplus::Image sprites2(L"tiles.png"); // (L"potion.png"); // RotationInput.bmp");
   //:sprites2(tileFile) 
 

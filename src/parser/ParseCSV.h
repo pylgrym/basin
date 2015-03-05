@@ -25,11 +25,14 @@ class ParseCSV
 {
 public:
   ParseCSV(std::istream& is_, ParseObj& pobj_);
+  // ParseCSV(ParseObj& pobj_);
   ~ParseCSV();
 
 
   ParseObj& pobj;
-  std::istream& is; // std::ifstream is;
+  std::istream& is; 
+  // std::istream& os; 
+  //std::stringstream dummy; // for os.
 
   const char* err;
   char buf[4096];
@@ -39,7 +42,7 @@ public:
   bool parseRows();
   bool parseRow();
 
-
+  void store(std::ostream& os);
 
   void clearBuf();
   bool fileOK() { return is.good() && !is.bad(); }

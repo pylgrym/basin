@@ -64,23 +64,6 @@ void Dungeon::initMobs() {
     mobs.queueMob(monster, 1);
   }
 
-  /*
-  const int itemCount = 10; // 100;
-  for (int i = 0; i < itemCount; ++i) {
-  debstr() << "i:" << i << "\n";
-
-  CPoint pos;
-  pos.x = rnd(1, Map::Width-1);
-  pos.y = rnd(1, Map::Height-1);
-  if (CL->map[pos].blocked()) { continue; } // Don't add item on blocked floor.
-
-  Obj* obj = new Obj(OB_Gold); // (L"Lamp");
-
-  // color = RGB(rand()%255,rand()%255,rand()%255);
-  CL->map.addObj(*obj, pos);
-  }
-  */
-
 }
 
 

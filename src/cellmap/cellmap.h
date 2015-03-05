@@ -36,7 +36,7 @@ public:
     return envir.blocked() || creature.blocked();
   }
 
-  bool hasOverlay() const { return !!(overlay == CPoint(0, 0));  }
+  bool hasOverlay() const { return !!(overlay != CPoint(0, 0));  }
   void clearOverlay() { overlay = CPoint(0, 0);  }
 
   bool persist(class Persist& p) {

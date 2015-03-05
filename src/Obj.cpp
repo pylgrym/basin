@@ -12,6 +12,8 @@
 
 #include "Cmds.h"
 
+// #include "Qual.h"
+
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiouy";
   int pos = vowels.Find(c);
@@ -59,7 +61,8 @@ CString Obj::some_item() const {
 
   CA2T udesc(sA);
   CString s = udesc;
-  CA2T uspell(Spell::type2desc(effect), CP_ACP); // CP_UTF8);
+
+  CA2T uspell(Spell::type2descB(effect), CP_ACP); // CP_UTF8);
 
   const char* aslot = Equ::slotDesc(eqslot());
   if (eqslot() == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.

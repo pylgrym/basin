@@ -343,7 +343,7 @@ bool DigCmd::Do(std::ostream& err) {
   envir.setType(EN_Floor);
   mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   {
-    logstr log; log << "You'ved dug through the wall!";
+    logstr log; log << "You've dug through the wall!";
   }
   if (oneIn(3)) { // Loot?
     logstr log; log << "You found something embedded in the rock!";

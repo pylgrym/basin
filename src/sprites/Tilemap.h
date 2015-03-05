@@ -7,6 +7,7 @@
 
 #include <assert.h>
 
+#include <gdiplus.h>
 
 class Assoc {
 public:
@@ -44,6 +45,7 @@ public:
 };
 
 
+const COLORREF colorNone = RGB(1, 2, 3);
 
 class Tiles {
 public:
@@ -53,16 +55,12 @@ public:
   Tilemap keys;
   CImage img;
 
+  Gdiplus::Image* imgPlus;
+
   CString keyFile() const { return tileFile + L".key";  }
   CString imgFile() const { return tileFile + L".png";  }
 
-  Tiles() {
-    tileFile = L"sprites\\tiles1"; 
-    bool bKeyOK = keys.load(keyFile());
-    keys.buildHashes();
-
-    bool bImgOK = (img.Load(imgFile()) > 0);
-  }
+  Tiles();
 
   CPoint tile(const CString& key) { 
     assert(keys.tileAssocs.size() > 0);
@@ -75,8 +73,11 @@ public:
     return nonePos;
   }
 
-  void drawTile(int x, int y, const TCHAR* key, CDC& dc, bool bTransp, int factor);
-  void drawTileB(int x, int y, CPoint tilePos, CDC& dc, bool bTransp, int factor);
-  void drawTileA(int x, int y, const char* key, CDC& dc, bool bTransp, int factor);
+  void drawTile( int x, int y, const TCHAR* key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color);
+  void drawTileB(int x, int y, CPoint tilePos,   CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color);
+  void drawTileA(int x, int y, const char*  key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor);
+
+  // requires gdi+:
+  void tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORREF matColor);
 };
 

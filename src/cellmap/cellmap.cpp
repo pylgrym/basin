@@ -146,7 +146,7 @@ void Map::initTunnels(int level) {
         }
 
         if (!isWall) {
-          bool hasThing = oneIn(90); // was: 9);
+          bool hasThing = oneIn(9); // 90); // was: 9);
           if (hasThing) {
             // TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent. 
             //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);

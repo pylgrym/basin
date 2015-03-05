@@ -81,22 +81,32 @@ enum SpellEnum {
 struct SpellDesc {
   const char* abbr;
   const char* desc;
+  std::string qual;
+  COLORREF color;
+  bool ident; // known or not.
 };
 
-class Spell
-{
+
+
+class Spell {
 public:
   Spell();
   ~Spell();
   static const char* type2str(SpellEnum);
-  static const char* type2desc(SpellEnum);
+
+  static const char* type2desc(SpellEnum); // Will always return 'identified'/proper name.
+  static const char* type2descB(SpellEnum type); // Will return a 'quality' if not identified.
+
   static SpellEnum str2type(const char* str);
   static const SpellDesc& spell(SpellEnum);
+  static SpellDesc& spellNC(SpellEnum);
   static SpellEnum rndSpell();
 
   static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
 
+  static void initQual();
+
 private:
-  static const SpellDesc spells[SP_MaxSpells];
+  static SpellDesc spells[SP_MaxSpells];
 };
 

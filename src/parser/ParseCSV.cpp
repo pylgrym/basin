@@ -37,6 +37,35 @@ bool ParseCSV::parse() {
   return true;
 }
 
+void ParseCSV::store(std::ostream& os) {
+  //First line is tablename:
+  os << pobj.tableName << std::endl;
+
+  //Second line is columns:
+  std::vector< std::string >::iterator i;
+  for (i = pobj.columns.begin(); i != pobj.columns.end(); ++i) {
+    std::string column = *i;
+    if (i != pobj.columns.begin()) {
+      os << delim;
+    }
+    os << column;
+  }
+  os << std::endl;
+
+  for (int i = 0; i < pobj.size(); ++i) {
+    PRow& row = pobj[i];
+    PRow::iterator j; 
+    for (j = row.begin(); j != row.end(); ++j) {
+      std::string field = *j;
+      if (j != row.begin()) {
+        os << delim;
+      }
+      os << field;
+    }
+    os << std::endl;
+  }
+}
+
 
 bool ParseCSV::parseTableName() {
   // Get table name from first line:

@@ -4,11 +4,16 @@
 #include <fstream>
 #include "../util/debstr.h"
 
+#include <gdiplus.h>
+using namespace Gdiplus;
+#pragma comment (lib,"Gdiplus.lib")
+
 
 
 Tilemap::Tilemap()
 {
 }
+
 
 
 Tilemap::~Tilemap()
@@ -102,105 +107,52 @@ void Tilemap::buildHashes() {
 
 
 
-/*
-(Moria-specific) void Tilemap::buildCreatureHash() { 
+Tiles::Tiles()
+:imgPlus(NULL) //L"") 
+{
+  tileFile = L"sprites\\tiles1"; 
+  bool bKeyOK = keys.load(keyFile());
+  keys.buildHashes();
 
-  for (int j = 0; j < MAX_CREATURES; ++j) {
-    creature_type& creatureType = c_list[j];
-    // CT2A ac(assoc.key, CP_UTF8); // CP_ACP);  // s.c_str()
-    CA2T uc(creatureType.name, CP_ACP);  // s.c_str()
-    CString myKey=uc; 
+  bool bImgOK = (img.Load(imgFile()) > 0);
 
-    Assoc* pAssoc = getAssoc(myKey);
-    if (pAssoc != NULL) {
-      creatureTile[j] = pAssoc->tilepos;
-    }
-  }
-
+  Gdiplus::Image readImg(imgFile());
+  imgPlus = readImg.Clone();
 }
 
 
-
-(Moria-specific) void Tilemap::buildThingHash() {
-
-  for (int j = 0; j < MAX_OBJECTS; ++j) {
-    treasure_type& objectType = object_list[j]; // c_list
-    // CT2A ac(assoc.key, CP_UTF8); // CP_ACP);  // s.c_str()
-    CA2T uc(objectType.name, CP_ACP);  // s.c_str()
-    CString myKey=uc; 
-
-    Assoc* pAssoc = getAssoc(myKey);
-    if (pAssoc != NULL) {
-      thingTile[j] = pAssoc->tilepos;
-    }
-  }
-
-}
-
-
-(Moria-specific) bool Tilemap::charFromHash(int myChar, int& x, int& y, int creatureThingIndex, TileEnum tileType) {
-  if (creatureThingIndex > 1 && tileType == Ti_Creature) {
-    std::map<int, CPoint>::iterator j;
-    j = creatureTile.find(creatureThingIndex); // Maps from monster-index to tilepos.
-    if (j != creatureTile.end()) {
-      x = j->second.x;
-      y = j->second.y;
-      return true;
-    }
-  }
-
-  if (creatureThingIndex > -1 && (tileType == Ti_Thing || tileType == Ti_Potion) ) {
-    std::map<int, CPoint>::iterator j;
-    j = thingTile.find(creatureThingIndex); // Maps from thing-index to tilepos.
-    if (j != thingTile.end()) {
-      x = j->second.x;
-      y = j->second.y;
-      return true;
-    }
-  }
-
-
-  std::map<CString, Assoc>::iterator i;
-
-  char buf[2] = "a"; buf[0] = myChar;
-
-  CA2T uc(buf, CP_ACP);  
-  CString myKey=uc; 
-
-  i = hash.find(myKey);
-  if (i == hash.end()) {
-    x = 0; y = 0;
-    return false;
-  }
-
-  x = i->second.tilepos.x;
-  y = i->second.tilepos.y;
-  return true;
-}
-*/
-
-void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, bool bTransp, int factor) {
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor) {
   CA2T ukey(key, CP_ACP);
   CPoint tilePos = tile(CString(ukey));
-  drawTileB(x, y, tilePos, dc, bTransp, factor);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone);
 }
 
 
-void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, bool bTransp, int factor) {
+void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color) {
   CPoint tilePos = tile(key);
-  drawTileB(x, y, tilePos, dc, bTransp, factor);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color);
 }
 
-void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, bool bTransp, int factor) {
-  CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
-  CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
-
-  if (bTransp) {
     // JG: NO, this doesn't really work, FIXME/TODO: I still lack something,
     // that will draw/stencil sprites on top of each other!
     // img.Draw(dc, tgt, src); // TransparentBlt is good(no..), AlphaBlend is 'not good', and AlphaBlend is what Draw did.
     // Alpha may still be useful for colouring effects?, e.g. color of a potion fluid.
     //img.TransparentBlt(dc, tgt, src);
+
+
+void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color) {
+  CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
+  CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
+
+  if (color != colorNone) {
+    // CBrush brush(color); // Just testing the color..
+    // dc.FillRect(&tgt, &brush);
+    tintTile(src, tgt, gr, color);
+    return;
+  }
+  
+  
+  if (bTransp) { // TransparentBlt too!
     img.AlphaBlend(dc, tgt, src, factor); // blendOp:AC_SRC_OVER == 0.
   } else {
     img.StretchBlt(dc, tgt, src);
@@ -208,3 +160,39 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, bool bTransp, int f
 
 }
 
+
+
+void Tiles::tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORREF matColor) {
+
+  Gdiplus::Rect dest2( tgt.left,tgt.top,  tgt.Width(),tgt.Height()); 
+  Color tintingColor( GetRValue(matColor), GetGValue(matColor), GetBValue(matColor) ); 
+
+	float cr = tintingColor.GetRed()   / 255.0f;
+  float cg = tintingColor.GetGreen() / 255.0f;
+  float cb = tintingColor.GetBlue()  / 255.0f;
+
+  ColorMatrix colorMatrix = {
+    // 1,0,0,0,0, 
+    cr, cg, cb, 0, 0,
+    // 0,1,0,0,0, 
+    cb, cr, cg, 0, 0,
+    // 0,0,1,0,0, 
+    cg, cb, cr, 0, 0,
+    0, 0, 0, 1, 0,
+    0, 0, 0, 0, 1
+  }; 
+
+  ImageAttributes  imageAttributes;
+	imageAttributes.SetColorMatrix( &colorMatrix,  ColorMatrixFlagsDefault, ColorAdjustTypeBitmap );   
+
+	graphics.DrawImage(
+	   imgPlus,  
+	   dest2,             // destination rectangle 
+	   src.left, src.top, // upper-left corner of source rectangle 
+	   TileWidth,         // width of source rectangle
+	   TileHeight,        // height of source rectangle
+	   UnitPixel,
+	   &imageAttributes
+  );
+
+}
