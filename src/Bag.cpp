@@ -3,6 +3,7 @@
 #include "Cuss.h"
 #include "theUI.h"
 #include <iomanip>
+#include <assert.h>
 
 Bag::Bag()
 {
@@ -37,6 +38,14 @@ bool Bag::remove(Obj* obj, std::ostream& err) {
   if (i == objs.end()) { err << "bag: Err, obj not found?"; return false; }
   objs.erase(i);
   return true;
+}
+
+void Bag::destroy(int ix) {
+  assert(ix >= 0 && ix < (int) objs.size());
+  Obj* o = objs[ix];
+  BagCont::iterator i = objs.begin() + ix;
+  objs.erase(i);
+  delete o;
 }
 
 

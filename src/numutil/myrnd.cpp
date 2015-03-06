@@ -18,6 +18,8 @@ int rnd(int from,int to) {
 int rndC(int from,int toC) { return from + rand() % (1+toC-from);  } // from, AND including 'to'. 
 bool oneIn(int Nth) { return (rand() % Nth) == 0;  } // "one out of N", e.g. 1/6 chance.
 
+bool XinY(int x, int y) { return (rnd(y) < x); }
+
 int Dx(int x) { // 1 x-die.
   return rndC(1, x);
 }

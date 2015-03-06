@@ -16,10 +16,13 @@ public:
   enum BagEnum { MaxBagSize = 15 }; //  10}; - 10 is too few..
 
   BagCont objs; // is vector.
+  int size() const { return objs.size();  }
+  bool empty() const { return objs.empty();  }
 
   bool canAdd() const { return objs.size() < MaxBagSize;  }
   bool add(Obj* o, std::ostream& err);
   bool remove(Obj* obj, std::ostream& err);
+  void destroy(int ix);
   char letterIx(Obj* obj);
 
   void showBagInv(bool bShowPrice);

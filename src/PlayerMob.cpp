@@ -38,16 +38,7 @@ PlayerMob* PlayerMob::createPlayer() {
   // IMPORTANT: once inventory has weight in bag, we must recalc for encumbrance stats!
   PlayerMob::ply->stats.calcStats();
 
-
-  // Create shop - shouldn't be in this function I think..
-  ShopInv::shop.add(new Obj(Obj::objDesc(OB_Food), 1), ignore);
-  ShopInv::shop.add(new Obj(Obj::objDesc(OB_Pickaxe), 1), ignore);
-  Obj* firstLamp2 = new Obj(Obj::objDesc(OB_Lamp), 1);
-  firstLamp2->itemUnits = 3700;
-  ShopInv::shop.add(firstLamp, ignore);
-  ShopInv::shop.add(new Obj(Obj::objDesc(OB_LampOil), 1), ignore);
-
-
+  ShopInv::initShop();
 
   return player;
 }
@@ -57,11 +48,6 @@ PlayerMob* PlayerMob::createPlayer() {
 
 
 
-void PlayerMob::passTime() {
-	stats.passTime();
-	updateLight();
-	dashboard();
-}
 
 void addInf(std::stringstream& ss, CPoint& dash) {
   Cuss::move(dash);
@@ -157,12 +143,24 @@ void PlayerMob::dashboard() {
 
 
 
+void PlayerMob::passTime() {
+	stats.passTime();
+	updateLight();
+  ShopInv::updateShop();
+}
+
+
 double PlayerMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   double actionDuration = 1.0; // seconds. // WalkCmd/Cmd's might set this instead.
 
+  //  maybe must happen in mobqueue:
+  // FIXME - probably should respect action-duration.
+  // FIXME - when paralyse/sleep/such effects 'steal' the player's turn, passTime must reflect this correctly (mobqueue instead?)
+  passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. 
+
   bool bActionDone = false;
   for (;!bActionDone && !TheUI::hasQuit;) { // JG: this seems to have been the important one, of 'hasQuit' checks..
-    passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. FIXME - probably should respect action-duration.
+	  dashboard();
 
 	  // Prompt user for command, then move:
 	  int nChar = TheUI::getNextKey(__FILE__, __LINE__, "user-choose-action"); // in PlayerMob::act.
