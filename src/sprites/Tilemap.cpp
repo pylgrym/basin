@@ -146,12 +146,12 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
-  if (color != colorNone && oneIn(2) ) {
+  if (color != colorNone) { //  && oneIn(2) ) {
     // CBrush brush(color); // Just testing the color..
     // dc.FillRect(&tgt, &brush);
     tintTile(src, tgt, gr, color);
     return;
-  }
+  } // http://www.codeproject.com/Articles/5034/How-to-implement-Alpha-blending
   
   
   if (bTransp) { // TransparentBlt too!
@@ -196,6 +196,7 @@ void Tiles::tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORR
   ImageAttributes  imageAttributes;
 	imageAttributes.SetColorMatrix( &colorMatrix,  ColorMatrixFlagsDefault, ColorAdjustTypeBitmap );   
 
+  // graphics.SetCompositingMode(CompositingModeSourceOver); // CompositingModeSourceCopy); // CompositingModeSourceOver);
 	graphics.DrawImage(
 	   imgPlus,  
 	   dest2,             // destination rectangle 

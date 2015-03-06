@@ -305,8 +305,8 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 
 
-bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) { // , Mob* target, 
-  // log << "Do:" << effect << ". "; 
+bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) {  
+
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
@@ -344,4 +344,16 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   default: log << "err spell unknown.";  return false;
   }
   return true; 
+}
+
+
+void Spell::trySpellIdent(SpellEnum effect) {
+  SpellDesc& desc = spellNC(effect);
+  if (desc.ident) { debstr() << "(already known)\n"; return;  }
+  if (oneIn(2)) { // Maybe every use should identify automatically.. 
+    // NB; Selling should ID it! 
+    // NB!  - spells should cost differently! 
+    // NB, spells should be divided by levels, also monsters, and monsters should have some way to use obj/spells..?
+    desc.ident = true; 
+  }
 }

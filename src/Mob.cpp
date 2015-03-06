@@ -446,6 +446,7 @@ bool Mob::wear(Obj* obj, std::ostream& err) { // Obj will go to/from bag.
 
 PlayerMob* PlayerMob::createPlayer() {
   PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
+  player->stats.setLevel(20);
 
   std::stringstream ignore;
   Bag::bag.add(new Obj(Obj::objDesc(OB_Hat), 1), ignore);

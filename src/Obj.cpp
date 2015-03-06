@@ -518,6 +518,11 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
   { // Act on obj.effect:
     logstr log;
     bOK = Spell::doSpell(effect, who, log, this);
+    if (bOK) {
+      if (bOK && who.isPlayer()) {
+        Spell::trySpellIdent(effect);
+      }
+    }
   }
 
   {

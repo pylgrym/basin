@@ -265,7 +265,10 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         {
           logstr log;
-          bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem);
+          bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem); // hitting a mob.
+          if (bSpellOK && mob.isPlayer()) {
+            Spell::trySpellIdent(effect);
+          }
           break;
         }
       default:

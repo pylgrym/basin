@@ -110,7 +110,10 @@ public:
 
   static void initQual();
 
+  static void trySpellIdent(SpellEnum effect);
+
 private:
   static SpellDesc spells[SP_MaxSpells];
+
 };
 
