@@ -128,8 +128,10 @@
     <ClInclude Include="Obj.h" />
     <ClInclude Include="parser\ParseCSV.h" />
     <ClInclude Include="Persist.h" />
+    <ClInclude Include="PlayerMob.h" />
     <ClInclude Include="Qual.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ShopInv.h" />
     <ClInclude Include="Spell.h" />
     <ClInclude Include="sprites\Tilemap.h" />
     <ClInclude Include="Stats.h" />
@@ -165,7 +167,9 @@
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="parser\ParseCSV.cpp" />
     <ClCompile Include="Persist.cpp" />
+    <ClCompile Include="PlayerMob.cpp" />
     <ClCompile Include="Qual.cpp" />
+    <ClCompile Include="ShopInv.cpp" />
     <ClCompile Include="Spell.cpp" />
     <ClCompile Include="sprites\Tilemap.cpp" />
     <ClCompile Include="Stats.cpp" />

@@ -37,6 +37,5 @@ public:
   bool persist(class Persist& p);
 
   static Bag bag;
-  static Bag shop; // hack
 };
 

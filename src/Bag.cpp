@@ -179,7 +179,6 @@ bool Bag::persist(class Persist& p) {
 }
 
 
-Bag Bag::shop;
 
 
 void Bag::showShopInv() {
@@ -196,7 +195,8 @@ void Bag::showShopInv() {
 
     ss << ix;
     ss // << std::fixed << std::setw(4) 
-       << " " << o.price() << "g";
+       << " " << 
+       o.price() << "g";
 
     ss << " " << descA;
 

@@ -414,20 +414,7 @@ public:
 
 class StatCmd : public Cmd {
 public:
-  virtual bool Do(std::ostream& err) {  
-    if (!Cmd::Do(err)) { return false; }
-
-    debstr() << "show stats command.\n";
-
-    Cuss::clear(false);
-    Cuss::prtL("  Your stats:"); 
-
-    PlayerMob::ply->stats.showStats(); 
-    TheUI::promptForAnyKey(__FILE__, __LINE__, "stat-pause");
-
-    Cuss::clear(true);
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 

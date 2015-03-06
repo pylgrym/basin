@@ -2,11 +2,11 @@
 #include "MobQueue.h"
 
 #include "Mob.h"
+#include "PlayerMob.h"
 
-//MobQueue CL->mobs;
 
 
-MobQueue::MobQueue():globalClock(0)// ,meat1(0xDEADBEEF), meat2(0xDEADBEEF)   // HOLD OP MED DE SATANS GLOBALE VARIABLE! .. :-).
+MobQueue::MobQueue():globalClock(0) 
 {}
 
 

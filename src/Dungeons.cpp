@@ -3,6 +3,9 @@
 
 #include "Mob.h"
 #include "Bag.h"
+#include "ShopInv.h"
+
+#include "PlayerMob.h"
 
 Dungeons Dungeons::the_dungeons;
 
@@ -33,6 +36,7 @@ bool Dungeons::persist(class Persist& p) {
 
   Bag::bag.persist(p);
   Equ::worn.persist(p);
+  ShopInv::shop.persist(p);
 
   int dungeonDepth = dungeons.size();
   p.transfer(dungeonDepth, "dungeonDepth");

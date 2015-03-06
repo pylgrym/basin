@@ -62,7 +62,8 @@ CString Obj::some_item() const {
   CA2T udesc(sA);
   CString s = udesc;
 
-  CA2T uspell(Spell::type2descB(effect), CP_ACP); // CP_UTF8);
+  const char* spellDesc = soloident ? Spell::type2desc_Id(effect) : Spell::type2desc_Mys(effect);
+  CA2T uspell(spellDesc, CP_ACP); // CP_UTF8);
 
   const char* aslot = Equ::slotDesc(eqslot());
   if (eqslot() == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
@@ -558,6 +559,8 @@ bool Obj::persist(Persist& p, CPoint& pos) {
 
   int int_effect = effect;
   p.transfer(int_effect, "effect"); // FIXME, better handling of enums; possibly we should make them fixedwidth names(?) or at least not numbers.
+  p.transfer(soloident, "soloident"); 
+
   if (!p.bOut) {
     effect = (SpellEnum) int_effect;
   }

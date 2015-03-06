@@ -8,6 +8,8 @@
 #include "Equ.h"
 #include "Bag.h"
 #include "Mob.h"
+#include "PlayerMob.h"
+
 
 double Encumb::totalWeight() {
   double bagWeight = Bag::bag.bagWeight();

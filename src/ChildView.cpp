@@ -11,6 +11,7 @@
 #include "Bag.h"
 #include "Term.h"
 #include "MobQueue.h"
+#include "PlayerMob.h"
 #include "Dungeons.h"
 
 

@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "MonsterMob.h"
-
 #include "Mob.h"
-
 #include "Cmds.h"
+#include "PlayerMob.h"
 
 
 double MonsterMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
@@ -198,4 +197,36 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   bool bLegal = walk.Do(ss);
 
   return 1.0; // duration.
+}
+
+
+
+
+std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The orc".
+  CreatureEnum theCtype = ctype();
+  std::string s = Creature::ctypeAsDesc(theCtype); // CString s = 
+  CA2T us(s.c_str(), CP_ACP);
+
+  // The lack of 'replace' on std::string sucks.
+  CString s2 = us; // us = s;
+  s2.Replace(L".", L"the");
+  // std::replace(s.begin(), s.end(), ".", "the");
+
+  CT2A asc(s2, CP_ACP);
+  std::string sAsc = asc;
+  return sAsc;
+}
+
+std::string MonsterMob::a_mob() const { // { return "you";  } // "You"/"An orc".
+  CreatureEnum theCtype = ctype();
+  std::string s = Creature::ctypeAsDesc(theCtype); 
+  CA2T us(s.c_str(), CP_ACP);
+
+  // The lack of 'replace' on std::string sucks.
+  CString s2 = us; 
+  s2.Replace(L".", L"a");
+
+  CT2A asc(s2, CP_ACP);
+  std::string sAsc = asc;
+  return sAsc;
 }

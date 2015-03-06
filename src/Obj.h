@@ -78,6 +78,8 @@ public:
   virtual int price() const { return objdef->price;  }
 
   SpellEnum effect;
+  bool soloident;
+
   // std::set < SpellEnum > ;  // JG: Might become a set instead of a single effect.
   EquipSlotEnum eqslot() const { return (objdef ? objdef->eqtype : EQ_None ); }
 
@@ -101,7 +103,7 @@ public:
 
 
   Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
-    ,ilevel(level_), effect(SP_NoSpell), itemUnits(0), ac(1)  
+    ,ilevel(level_), effect(SP_NoSpell), soloident(false), itemUnits(0), ac(1)  
   {
     effect = Spell::rndSpell();
     const ObjDef& desc = objdef_; 

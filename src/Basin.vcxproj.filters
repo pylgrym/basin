@@ -123,6 +123,12 @@
     <ClInclude Include="parser\ParseCSV.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShopInv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -219,6 +225,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="parser\ParseCSV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShopInv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

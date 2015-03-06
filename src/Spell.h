@@ -98,8 +98,8 @@ public:
   ~Spell();
   static const char* type2str(SpellEnum);
 
-  static const char* type2desc(SpellEnum); // Will always return 'identified'/proper name.
-  static const char* type2descB(SpellEnum type); // Will return a 'quality' if not identified.
+  static const char* type2desc_Id(SpellEnum);       // ('IDed')    Will always return 'identified'/proper name.
+  static const char* type2desc_Mys(SpellEnum type); // ('Mystery') Will return a 'quality' if not identified.
 
   static SpellEnum str2type(const char* str);
   static const SpellDesc& spell(SpellEnum);

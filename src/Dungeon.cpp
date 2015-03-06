@@ -5,6 +5,7 @@
 #include "Levelize.h"
 
 #include "Bag.h"
+#include "PlayerMob.h"
 
 
 Dungeon::Dungeon(int level_)

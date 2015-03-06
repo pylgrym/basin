@@ -1,22 +1,14 @@
 #include "stdafx.h"
 #include "Stats.h"
-
 #include "numutil/myrnd.h"
-
 #include <sstream>
-
 #include "util/debstr.h"
-
 #include "LogEvents.h"
-
 #include "cellmap/cellmap.h"
-
 #include "cuss.h"
-
 #include "Mob.h"
-
+#include "PlayerMob.h"
 #include <assert.h>
-
 #include "Encumb.h"
 
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html

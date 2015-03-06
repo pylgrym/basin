@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "Cmds.h"
-
 #include "LogEvents.h"
-
 #include "MobQueue.h"
-
 #include <fstream>
-
 #include "util/debstr.h"
+#include "ShopInv.h"
+#include "PlayerMob.h"
+
+
 
 #include <MMSystem.h>
 #pragma comment(lib, "winmm.lib")
@@ -425,7 +425,7 @@ bool LoadCmd::Do(std::ostream& err) {
 
 
 bool BuyCmd::Do(std::ostream& err) {
-  Obj* buy = Bag::shop.pickAction();
+  Obj* buy = ShopInv::shop.pickAction();
   if (buy == NULL) {
     return false;
   }
@@ -435,7 +435,7 @@ bool BuyCmd::Do(std::ostream& err) {
   }
 
   PlayerMob::ply->stats.gold -= buy->price();
-  Bag::shop.remove(buy, err);
+  ShopInv::shop.remove(buy, err);
   Bag::bag.add(buy,err);
   playSound(L"sounds\\split.wav"); // buying
   { pauselog log; log << "You buy it for " << buy->price() << " gold."; }
@@ -459,7 +459,7 @@ bool ShopCmd::Do(std::ostream& err) {
     if (mustClear) {
       Cuss::clear(false);
       Cuss::prtL("  Welcome to my shop, traveller!");
-      Bag::shop.showShopInv();
+      ShopInv::shop.showShopInv();
       mustClear = false;
     }
 
@@ -484,7 +484,7 @@ bool SellCmd::Do(std::ostream& err) {
 
   PlayerMob::ply->stats.gold += obj->price();
   Bag::bag.remove(obj, err);
-  Bag::shop.add(obj, err);
+  ShopInv::shop.add(obj, err);
   debstr() << "sold" << (void*) obj << "\n";
 
   playSound(L"sounds\\sfxr\\coinJingle1.wav"); // selling
@@ -547,4 +547,21 @@ bool FillLampCmd::Do(std::ostream& err) {
   }
   Cuss::clear(true); // Redraw, so we can see updated lamp oil stats, and the brighter light.
   return true;
+}
+
+
+
+bool StatCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "show stats command.\n";
+
+  Cuss::clear(false);
+  Cuss::prtL("  Your stats:"); 
+
+  PlayerMob::ply->stats.showStats(); 
+  TheUI::promptForAnyKey(__FILE__, __LINE__, "stat-pause");
+
+  Cuss::clear(true);
+  return true; 
 }

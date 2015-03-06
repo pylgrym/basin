@@ -147,7 +147,7 @@ removeparalysis
 */
 };
 
-/* JG: - an idea: These could be auto-assigned to items,
+/* JG: - (DONE) an idea: These could be auto-assigned to items,
 and auto-added to description - "A WAND OF X".
 */
 
@@ -158,13 +158,13 @@ const char* Spell::type2str(SpellEnum type) {
   return spells[type].abbr;
 }
 
-const char* Spell::type2desc(SpellEnum type) {
+const char* Spell::type2desc_Id(SpellEnum type) {
   assert(type >= 0);
   assert(type < SP_MaxSpells);
   return spells[type].desc;
 }
 
-const char* Spell::type2descB(SpellEnum type) {
+const char* Spell::type2desc_Mys(SpellEnum type) {
   assert(type >= 0);
   assert(type < SP_MaxSpells);
   SpellDesc& sd = spells[type];
