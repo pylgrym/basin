@@ -1,120 +1,30 @@
-colors
-Color;Dummy;R;G;B
-indian red;;176;23;31
-crimson;;220;20;60
-light pink;;255;182;193
-pink;;255;192;203
-pale violetred;;219;112;147
-hotpink;;255;105;180
-raspberry;;135;38;87
-violetred;;208;32;144
-orchid;;218;112;214
-thistle;;216;191;216
-plum;;221;160;221
-violet;;238;130;238
-magenta;;255;0;255
-purple;;128;0;128
-dark violet;;148;0;211
-dark orchid;;153;50;204
-indigo;;75;0;130
-blueviolet;;138;43;226
-dark slateblue;;72;61;139
-light slateblue;;132;112;255
-slateblue;;106;90;205
-ghostwhite;;248;248;255
-lavender;;230;230;250
-blue;;0;0;255
-navy;;0;0;128
-midnight blue;;25;25;112
-cobalt;;61;89;171
-royalblue;;65;105;225
-cornflowerblue;;100;149;237
-light steelblue;;176;196;222
-light slategray;;119;136;153
-slategray;;112;128;144
-aliceblue;;240;248;255
-steelblue;;70;130;180
-light skyblue;;135;206;250
-skyblue;;135;206;235
-peacock;;51;161;201
-light blue;;173;216;230
-powderblue;;176;224;230
-cadetblue;;95;158;160
-dark turquoise;;0;206;209
-dark slategray;;47;79;79
-cyan;;0;255;255
-teal;;0;128;128
-light seagreen;;32;178;170
-manganese blue;;3;168;158
-turquoise;;64;224;208
-cold grey;;128;138;135
-turquoiseblue;;0;199;140
-mint cream;;245;255;250
-spring green;;0;255;127
-emerald green;;0;201;87
-mint;;189;252;201
-cobalt green;;61;145;64
-dark seagreen;;143;188;143
-pale green;;152;251;152
-lime green;;50;205;50
-forest green;;34;139;34
-green;;0;128;0
-dark green;;0;100;0
-sap green;;48;128;20
-lawn green;;124;252;0
-greenyellow;;173;255;47
-dark olivegreen;;85;107;47
-olive drab;;107;142;35
-beige;;245;245;220
-light goldenrodyellow;;250;250;210
-warm grey;;128;128;105
-olive*;;128;128;0
-darkk haki;;189;183;107
-khaki;;240;230;140
-pale goldenrod;;238;232;170
-banana;;227;207;87
-goldenrod;;218;165;32
-dark goldenrod;;184;134;11
-floral white;;255;250;240
-oldlace;;253;245;230
-wheat;;245;222;179
-moccasin;;255;228;181
-papayawhip;;255;239;213
-blanched almond;;255;235;205
-eggshell;;252;230;201
-tan;;210;180;140
-brick;;156;102;31
-cadmium yellow;;255;153;18
-antique white;;250;235;215
-burlywood;;222;184;135
-melon;;227;168;105
-carrot;;237;145;33
-dark orange;;255;140;0
-orange;;255;128;0
-linen;;250;240;230
-sandy brown;;244;164;96
-raw sienna;;199;97;20
-chocolate;;210;105;30
-ivory black;;41;36;33
-flesh;;255;125;64
-cadmium orange;;255;97;3
-burnt sienna;;138;54;15
-sienna;;160;82;45
-coral;;255;127;80
-sepia;;94;38;18
-dark salmon;;233;150;122
-burnt umber;;138;51;36
-salmon;;250;128;114
-rosy brown;;188;143;143
-light coral;;240;128;128
-indian red;;205;92;92
-brown;;165;42;42
-firebrick;;178;34;34
-maroon;;128;0;0
-white;;255;255;255
-gainsboro;;220;220;220
-light grey;;211;211;211
-silver;;192;192;192
-dark gray;;169;169;169
-gray;;128;128;128
-black;;0;0;0
+colors;;;
+Color;R;G;B
+blue;0;0;255
+cyan;0;255;255
+crimson;220;20;60
+golden;255;215;0
+chartreuse;127;255;0
+turquoise;64;224;208
+indigo;75;0;130
+sea green;46;139;87
+deep pink;255;20;147
+olive drab;107;142;35
+teal;0;128;128
+red;255;0;0
+yellow;255;255;0
+sienna;160;82;45
+lime green;50;205;50
+aqua marine;127;255;212
+purple;128;0;128
+pink;255;192;203
+rosy brown;188;143;143
+corn flower;100;149;237
+orange red;255;69;0
+spring green;0;255;127
+tan;210;180;140
+steel blue;70;130;180
+magenta;255;0;255
+orange;255;165;0
+khaki;240;230;140
+sky blue;135;206;235

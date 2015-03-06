@@ -84,6 +84,9 @@ public:
   void initTunnels(int level);
   void initOuterBorders();
 
+  void addColDemo(int x, int y);
+
+
   // static Map map;
 
   static CPoint key2dir(char key);

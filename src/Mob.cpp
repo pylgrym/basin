@@ -453,7 +453,7 @@ PlayerMob* PlayerMob::createPlayer() {
 
   // Bag::bag.add(new Obj(OB_Gold),ignore);
   Obj* firstLamp = new Obj(Obj::objDesc(OB_Lamp), 1);
-  firstLamp->itemUnits = 300;
+  firstLamp->itemUnits = 4700; // 300;
   Bag::bag.add(firstLamp, ignore);
 
   Bag::bag.add(new Obj(Obj::objDesc(OB_Hat), 1), ignore);

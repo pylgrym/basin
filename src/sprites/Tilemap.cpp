@@ -4,6 +4,8 @@
 #include <fstream>
 #include "../util/debstr.h"
 
+#include "../numutil/myrnd.h"
+
 #include <gdiplus.h>
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
@@ -144,7 +146,7 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
-  if (color != colorNone) {
+  if (color != colorNone && oneIn(2) ) {
     // CBrush brush(color); // Just testing the color..
     // dc.FillRect(&tgt, &brush);
     tintTile(src, tgt, gr, color);
@@ -153,8 +155,17 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
   
   
   if (bTransp) { // TransparentBlt too!
+    // Why doesn't this work?
+    //COLORREF colTrans2 = RGB(1, 2, 3);
+    //COLORREF colTrans = RGB(64, 128, 192);
+    //img.TransparentBlt(dc, tgt, src, colTrans); // blendOp:AC_SRC_OVER == 0.
     img.AlphaBlend(dc, tgt, src, factor); // blendOp:AC_SRC_OVER == 0.
-  } else {
+
+    // if (color != colorNone && ) {
+    //  tintTile(src, tgt, gr, color);
+    //}
+  }
+  else {
     img.StretchBlt(dc, tgt, src);
   }
 

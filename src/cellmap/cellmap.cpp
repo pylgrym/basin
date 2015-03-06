@@ -231,9 +231,26 @@ void Map::initTown(int level) {
       //int envirInt = row[x] - '0';
       char envirChar = row[x];
       cell.envir.setType((EnvirEnum)envirChar); // Int);
+
+      if (y == 16) {
+        addColDemo(x, y);
+      }
     }
   }
   initOuterBorders(); // Ensure we have borders..
+}
+
+
+void Map::addColDemo(int x, int y) {
+  CPoint pos(x, y);
+  Cell& cell = (*this)[pos];
+
+  const ObjDef& def = Obj::objDesc(OB_Potion);
+
+  SpellEnum spell = (SpellEnum) (x % SP_MaxSpells);
+  Obj* newObj = new Obj(def, 1); 
+  newObj->effect = spell;
+  cell.item.setObj(newObj);
 }
 
 
