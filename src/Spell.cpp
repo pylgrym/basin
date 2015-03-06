@@ -351,6 +351,7 @@ void Spell::trySpellIdent(SpellEnum effect) {
   SpellDesc& desc = spellNC(effect);
   if (desc.ident) { debstr() << "(already known)\n"; return;  }
   if (oneIn(2)) { // Maybe every use should identify automatically.. 
+    logstr log; log << "you get a sense of what this item does!";
     // NB; Selling should ID it! 
     // NB!  - spells should cost differently! 
     // NB, spells should be divided by levels, also monsters, and monsters should have some way to use obj/spells..?
