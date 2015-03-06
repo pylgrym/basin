@@ -398,7 +398,7 @@ void Stats::updateConfusion() {
 }
 
 
-void Stats::heal(int percent) { // May also be used negative.
+void Stats::healPct(int percent) { // May also be used negative.
   int deltaHP = hp*percent / 100;
   int newHP = hp + deltaHP;
   if (newHP > maxHP) {
@@ -410,6 +410,22 @@ void Stats::heal(int percent) { // May also be used negative.
   if (percent > 0) {
     log << "You feel your health returning.";
   } else {
+    log << "Your health worsens.";
+  }
+}
+
+void Stats::healAbs(int val) { // May also be used negative.
+  int newHP = hp + val;
+  if (newHP > maxHP) {
+    newHP = maxHP;
+  }
+  hp = newHP;
+
+  logstr log;
+  if (val > 0) {
+    log << "You feel your health returning.";
+  }
+  else {
     log << "Your health worsens.";
   }
 }

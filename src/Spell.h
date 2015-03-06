@@ -64,8 +64,12 @@ enum SpellEnum {
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
   SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_Eat ,
-  SP_Heal ,
-  SP_Sick ,
+  SP_Heal_light,
+  SP_Heal_minor,
+  SP_Heal_mod,
+  SP_Heal_serious,
+  SP_Heal_crit,
+  SP_Sick,
   SP_LightArea , // "DONE"
   SP_LightDir ,  // "DONE"
   SP_MagicMap,

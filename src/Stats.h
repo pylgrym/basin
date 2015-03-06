@@ -131,7 +131,9 @@ public:
   int stealth() const; // based on dex mod + level.
   int alertness() const; // based on WIS mod + level.
 
-  void heal(int percent);
+  void healPct(int percent);
+  void healAbs(int val);
+
 
   void recoverHP() { // Randomized healing.
     int frac = (maxHP / 10)+1;

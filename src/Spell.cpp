@@ -37,7 +37,11 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 {"earthquake", "Earthquake" }, // = 11,
 {"stinkcloud", "Stinking cloud" }, // = 12,
 {"eat", "Food" }, // = 13,
-{"heal", "Healing" }, // = 14,
+{"heal_light", "Heal light" }, // = 14,
+{"heal_minor", "Heal minor" }, // = 14,
+{"heal_mod", "Heal moderate" }, // = 14,
+{"heal_serious", "Heal serious" }, // = 14,
+{"heal_crit", "Healing critical" }, // = 14,
 {"sick", "Sickness" }, // = 15,
 {"lightarea", "Light area" }, // = 16,
 {"lightbeam", "Light beam" }, // = 17,
@@ -255,18 +259,30 @@ bool eatSpell(Mob& actor, int deltaFood) {
     logstr log; log << "You eat a bit and feel less hungry!";
     actor.stats.hunger += deltaFood; // Eat 300 something.
   }
-  actor.stats.heal(25);
+  actor.stats.healPct(25);
   return true; 
 }
 
 
-bool healSpell(Mob& actor, int percent) {
+bool healSpellPct(Mob& actor, int percent) {
   {
     logstr log; 
     if (percent > 0) { log << "You feel healing energies."; }
     if (percent < 0) { log << "You feel sick."; }
   }
-  actor.stats.heal(percent);
+  actor.stats.healPct(percent);
+  return true;
+}
+
+bool healSpellDice(Mob& actor, Dice dice) {
+  std::stringstream dummy;
+  int val = dice.roll(dummy);
+  {
+    logstr log;
+    if (val > 0) { log << "You feel healing energies."; }
+    if (val < 0) { log << "You feel sick."; }
+  }
+  actor.stats.healAbs(val);
   return true;
 }
 
@@ -297,7 +313,8 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   case SP_Confuse:      return updateConfused(actor, rnd(5, 25)); break;
   case SP_Unconfuse:    return updateConfused(actor, 0); break;
   case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..?
-  case SP_Teleport:     return teleportSpell(actor, 4); break;
+  case SP_Teleport:     return teleportSpell(actor, 44); break;
+  case SP_PhaseDoor:     return teleportSpell(actor, 9); break;
 
   case SP_MagicMissile: return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_FireBolt:     return bulletSpell(actor, item, effect, SC_Fire); break;
@@ -310,10 +327,19 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   case SP_Earthquake:   return bulletSpell(actor, item, effect, SC_Earth); break;
 
   case SP_Eat:          return eatSpell(actor,item->itemUnits); break;
-  case SP_Heal:         return healSpell(actor,35); break;
-  case SP_Sick:         return healSpell(actor,-35); break;
+
+  // case SP_Heal:         return healSpellPct(actor,35); break;
+  case SP_Sick:         return healSpellPct(actor,-35); break;
+
+  // Heal dice design: lots of small dice, so you always get some healing.
+  case SP_Heal_light:   return healSpellDice(actor, Dice(4,  3)); break;
+  case SP_Heal_minor:   return healSpellDice(actor, Dice(6,  3)); break;
+  case SP_Heal_mod:     return healSpellDice(actor, Dice(8,  3)); break;
+  case SP_Heal_serious: return healSpellDice(actor, Dice(10, 3)); break;
+  case SP_Heal_crit:    return healSpellDice(actor, Dice(12, 3)); break;
+
   // case SP_Poison:       healSpell(actor); break;
-  case SP_LightArea:   return lightSpell(actor, actor.pos,2); break;
+  case SP_LightArea:   return lightSpell(actor, actor.pos,4); break;
   case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
   default: log << "err spell unknown.";  return false;
   }

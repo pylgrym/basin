@@ -261,7 +261,8 @@ bool ZapCmd::Do(std::ostream& err) {
 
       Mob* target = CL->map[newBullet].creature.m;
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_ConfuseMob: case SP_Teleport: case SP_Heal: case SP_Sick:
+      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_ConfuseMob: case SP_Teleport: 
+      case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         {
           logstr log;
           bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem);
