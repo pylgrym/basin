@@ -8,6 +8,9 @@
 #include "Cmds.h"
 #include "Qual.h"
 
+
+extern void playSound(CString soundFile);
+
 Spell::Spell()
 {
 }
@@ -214,12 +217,17 @@ void Spell::initQual() {
 }
 
 bool updateSpeed(Mob& actor, double factor) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }
   actor.speed *= factor;
   return true;
 }
 
 bool updateConfused(Mob& actor, int confuseCount) {
+  if (confuseCount > 0) { // If counter is set positive, a confusion-spell has been cast on someone.
+    playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
+  }
+
   logstr log; if (confuseCount > 0) { log << "You feel confused."; } else { log << "You feel less confused."; }
   actor.stats.confused = confuseCount; 
   return true;
@@ -227,6 +235,8 @@ bool updateConfused(Mob& actor, int confuseCount) {
 
 
 bool teleportSpell(Mob& actor, int range) {
+  playSound(L"sounds\\sfxr\\teleport.wav"); // teleport-spell cast.
+
   { logstr log; log << "Your body shifts in time and space."; }
 
   for (int i = 0; i < 10; ++i) { // We try a number of times, to avoid teleporting into rock.

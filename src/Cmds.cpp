@@ -44,7 +44,7 @@ bool WalkCmd::Do(std::ostream& err) {
   if (mob.isPlayer()) { mob.lightWalls(mob.pos); } 
 
   if (mob.isPlayer()) {
-    playSound(L"sounds\\walk2.wav");
+    playSound(L"sounds\\sfxr\\walk@.wav"); // was: walk2.wav
     if (mob.isPlayer() && CL->map[newpos].envir.interacts()) {
       ShopCmd shop;
       bool bOK = shop.Do(err);
@@ -132,7 +132,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, isPlayer ? err : dummy); 
   if (!bHit) { 
     if (mob.isPlayer()) {  
-      playSound(L"sounds\\punch.wav");
+      playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
       err << "You miss! "; 
     } else {
       err << "It misses. "; 
@@ -181,7 +181,7 @@ bool HitCmd::Do(std::ostream& err) {
     CL->mobs.deleteMob(hittee); // in HitCmd::Do.
     logstr log; log << "It died.";
     if (bLoot) {
-      playSound(L"sounds\\krlorrk.wav");
+      playSound(L"sounds\\sfxr\\pickaxe1@.wav"); // loot drops
       log << "An item rolls on the floor.";
     }
   }
@@ -272,7 +272,7 @@ bool ZapCmd::Do(std::ostream& err) {
           // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
           // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
           // this way it can both use item and weapon..
-          playSound(L"sounds\\krlorrk.wav");
+          playSound(L"sounds\\sfxr\\firebolt@.wav"); // zap-spell-projectile
           HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
           bool bOK = cmd.Do(err);
 
@@ -285,7 +285,7 @@ bool ZapCmd::Do(std::ostream& err) {
       if (effect == SP_StoneToMud) { 
         CL->map[newBullet].envir.setType(EN_Floor);
         mob.invalidateGfx(newBullet, oldBullet, true);
-        playSound(L"sounds\\krlorrk.wav");
+        playSound(L"sounds\\sfxr\\explodeDeep@.wav"); // stone-to-mud
         logstr log; log << "The wall turns to mud!";
         TheUI::microSleepForRedraw(7);
       }
@@ -311,11 +311,11 @@ bool ZapCmd::Do(std::ostream& err) {
   mob.invalidateGfx(bullet, bullet, true);
 
   if (effect == SP_WallBuilding) {
-    playSound(L"sounds\\krlorrk.wav");
+    playSound(L"sounds\\sfxr\\thunder.wav"); // wall-building
     logstr log; log << "Solid rock forms out of thin air!";
   }
   if (effect == SP_LightDir) {
-    playSound(L"sounds\\krlorrk.wav");
+    playSound(L"sounds\\sfxr\\zap2.wav"); // light-beam // krlorrk.wav
     logstr log; log << "A beam of shimmering light appears!";
   }
 
@@ -335,7 +335,7 @@ bool DigCmd::Do(std::ostream& err) {
   int digStr = mob.digStrength();
   envir.envUnits -= digStr;
   if (envir.envUnits > 0) {
-    playSound(L"sounds\\krlorrk.wav");
+    playSound(L"sounds\\sfxr\\anvil1@.wav"); // digging
     logstr log; log << "You dig in the wall. " << digStr << "/" << envir.envUnits;
     return true;
   }
@@ -385,7 +385,7 @@ bool StairCmd::Do(std::ostream& err) {
     CL->map.moveMob(*ply, newPos);
   }
 
-  playSound(L"sounds\\krlorrk.wav");
+  playSound(L"sounds\\chirp4.wav"); // go stairs
   logstr log; log << "You ";
   if (dir > 0) { log << "descend"; } else  { log << "ascend"; }
   log << " to depth level " << newDungLevel;
@@ -433,7 +433,7 @@ bool BuyCmd::Do(std::ostream& err) {
   PlayerMob::ply->stats.gold -= buy->price();
   Bag::shop.remove(buy, err);
   Bag::bag.add(buy,err);
-  playSound(L"sounds\\krlorrk.wav");
+  playSound(L"sounds\\split.wav"); // buying
   { pauselog log; log << "You buy it for " << buy->price() << " gold."; }
 
   return true;
@@ -483,7 +483,7 @@ bool SellCmd::Do(std::ostream& err) {
   Bag::shop.add(obj, err);
   debstr() << "sold" << (void*) obj << "\n";
 
-  playSound(L"sounds\\krlorrk.wav");
+  playSound(L"sounds\\sfxr\\coinJingle1.wav"); // selling
   { pauselog log; log << "You sell it for " << obj->price() << " gold."; }
 
   debstr() << "after notif." << (void*)obj << "\n";
@@ -513,7 +513,7 @@ bool DropCmd::Do(std::ostream& err) {
 
   std::string anItem = obj->an_item();
 
-  playSound(L"sounds\\krlorrk.wav");
+  playSound(L"sounds\\sfxr\\thump.wav"); // drop item.
   err << "You drop " << anItem;
   return true;
 }
@@ -538,7 +538,7 @@ bool FillLampCmd::Do(std::ostream& err) {
   }
   lamp->itemUnits += oil->itemUnits;
   {
-    playSound(L"sounds\\krlorrk.wav");
+    playSound(L"sounds\\krlorrk.wav"); // fill lamp
     logstr log; log << "You refill your lamp. It burns brighter!";
   }
   Cuss::clear(true); // Redraw, so we can see updated lamp oil stats, and the brighter light.
