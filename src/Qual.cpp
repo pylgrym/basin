@@ -6,6 +6,77 @@
 #include "util/debstr.h"
 #include <assert.h>
 
+/* Good colours for flavor:
+http://www.rapidtables.com/web/color/RGB_Color.htm
+maroon
+brown
+crimson
+red
+coral
+orange red
+dark orange
+orange
+gold
+khaki
+olive
+yellow
+yellow green
+olive drab
+chartreuse
+lime
+light green
+pale green
+spring green
+sea green
+aqua marine
+teal
+cyan
+turquoise
+pale turquoise
+powder blue
+cadet blue
+steel blue
+corn flower blue
+dodger blue
+sky blue
+midnight blue
+navy
+blue
+royal blue
+blue violet
+indigo
+slate blue
+purple
+thistle
+plum
+violet
+magenta
+orchid
+deep pink
+hot pink
+pink
+beige
+bisque
+wheat
+corn silk
+lemon chiffon
+sienna
+chocolate
+peru
+sandy brown
+burly wood
+tan
+moccasin
+misty rose
+lavender
+ivory
+azure
+black
+grey
+silver
+white
+*/
+
 Qual::Qual()
 {
   std::ifstream is("parser\\color.csv");
