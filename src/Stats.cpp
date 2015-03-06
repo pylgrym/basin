@@ -101,7 +101,10 @@ Stats::Stats(int mlevel, bool bPlayer_)
 
   // setLevel(rnd(1, 30)); 
 
-  debstr() << " level is:" << level() << "\n";
+  // Note a 'stats' is made
+  // every turn, just for avg ac calc..
+  //debstr() << " level is:" << level() << "\n";
+
   // for (int i = 1; i < level; ++i) { } // For filling up hit points.
   initStats();
   initXP();
@@ -221,7 +224,8 @@ int Stats::calcToHit(std::ostream& os) {
 
   int levelContrib = (level() / 2);
   os << "L+" << levelContrib;
-  debstr() << level() << "/" << levelContrib << "\n";
+
+  // debstr() << "L:" << level() << "/LC:" << levelContrib << "\n";
 
   int val_hit = globOffset + levelContrib + strMod; // You get half your level as AC contribution.
   return val_hit;

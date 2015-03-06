@@ -4,6 +4,7 @@
 #include "Cmds.h"
 #include "PlayerMob.h"
 
+const bool ML = false; // ML is 'monster log/verbose output'.
 
 double MonsterMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   double duration = 1.0; // actionDuration  // seconds.
@@ -76,7 +77,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
   } else {
-    debstr() << "I stay asleep.\n"; // on.";
+    if (ML) { debstr() << "I stay asleep.\n"; } 
   }
 
   return 1.0; // duration.
@@ -86,7 +87,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
 
 double MonsterMob::actWander() { // returns time that action requires (0 means keep doing actions/keep initiative.)
 	// stagger to a random location:
-  debstr() << "I wander around randomly.\n";
+  if (ML) { debstr() << "I wander around randomly.\n"; }
   int dx = rndC(-1, 1), dy = rndC(-1, 1);
   std::stringstream ss;
   bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
@@ -103,7 +104,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     logstr log;
     HitCmd(NULL, *this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // Else, chase the player:
-    debstr() << "I am far from player and will chase!\n";
+    if (ML) { debstr() << "I am far from player and will chase!\n"; }
     std::stringstream ss;
     WalkCmd walk(*this, dir.x, dir.y, false);
     if (!walk.legal(ss)) { // If moving straight across is blocked..
@@ -167,7 +168,7 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   CPoint dir = playerDir();
   dir.x = -dir.x; dir.y = -dir.y; // Flee in the opposite dir.
 
-  debstr() << "I am afraid and will flee from player.\n";
+  if (ML) { debstr() << "I am afraid and will flee from player.\n"; }
 
   std::stringstream ss;
   WalkCmd walk(*this, dir.x, dir.y, false);

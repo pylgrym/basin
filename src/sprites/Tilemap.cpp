@@ -123,16 +123,16 @@ Tiles::Tiles()
 }
 
 
-void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor) {
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, int& cost) {
   CA2T ukey(key, CP_ACP);
   CPoint tilePos = tile(CString(ukey));
-  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost);
 }
 
 
-void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color) {
+void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
   CPoint tilePos = tile(key);
-  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color,cost);
 }
 
     // JG: NO, this doesn't really work, FIXME/TODO: I still lack something,
@@ -142,11 +142,12 @@ void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool
     //img.TransparentBlt(dc, tgt, src);
 
 
-void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color) {
+void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
   if (color != colorNone) { //  && oneIn(2) ) {
+    ++cost;
     // CBrush brush(color); // Just testing the color..
     // dc.FillRect(&tgt, &brush);
     tintTile(src, tgt, gr, color);

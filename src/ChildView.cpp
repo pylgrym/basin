@@ -106,7 +106,7 @@ unsigned int TheUI::getNextKey(const char* file, int line, const char* reason) {
 
     if (msg.message == WM_KEYDOWN) { // WM_CHAR) {
       unsigned int charCode = msg.wParam;
-      debstr() << "got key:" << (char) charCode << " " << (void*) charCode << "\n";
+      // debstr() << "got key:" << (char) charCode << " " << (void*) charCode << "\n";
       return charCode;
     }
 
@@ -267,6 +267,8 @@ void CChildView::OnPaint() {
   dc.SetBkMode(TRANSPARENT);
   CBrush txtBk(RGB(0, 0, 20));
 
+  int cost = 0;
+
   VPoint vp;
   for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
     for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
@@ -277,12 +279,14 @@ void CChildView::OnPaint() {
       Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
       TCell& tcell = Term::term[vp.p];
 
-      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone); // FLOOR // COLORREF (1,2,3)
+      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
+
+      // Used by 'all' that follow:
+      int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+      CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
       bool floorStat = false; // true;
       if (floorStat) {
-        int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-        CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
         int zeroMobAlert = 0;
         CString s; s.Format(L"%3.0f ",  (double) Mob::noticePlayerProb(wp, zeroMobAlert)); 
@@ -296,12 +300,13 @@ void CChildView::OnPaint() {
 
 
       if (!cell.item.empty()) { 
+        ++cost;
         CString tile = CA2T(cell.item.atypeS()); // .c_str()
         const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color); // false);  // THINGS
+        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,cost); // false);  // THINGS
 
-        int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-        CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+        // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        // CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
         CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
         dc.SelectObject(smallFont);
@@ -314,16 +319,16 @@ void CChildView::OnPaint() {
 
 
       if (!cell.creature.empty()) { 
-        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255); // false); MOBS
+        ++cost;
+        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255,cost); // false); MOBS
 
         // Draw stats/HP:
         Mob* mob = cell.creature.m;
-		    int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
+		    // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight)); // we modify, so need our own.
         CString s; s.Format(L"%d ", mob->stats.hp);
 
 	      dc.SelectObject(smallFont);
-        // const int fontFlags = DT_CENTER | DT_VCENTER | DT_SINGLELINE;
         const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
         dc.SetTextColor(mob->color); // RGB(0, 0, 255)); // RED.
 		    dc.DrawText(s, &cellR,  fontFlags);
@@ -359,14 +364,16 @@ void CChildView::OnPaint() {
       }
 
       if (cell.hasOverlay()) { 
-        tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone); // draws bullet sprites, spell effects, rain etc.
+        ++cost;
+        tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); // draws bullet sprites, spell effects, rain etc.
       }
 
       if (!tcell.charEmpty()) { // Term cell.
+        ++cost;
 	      dc.SelectObject(largeFont);
         const COLORREF txtColor = RGB(255, 255, 255);
         dc.SetTextColor(txtColor);  
-		    int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+		    // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
 		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
         dc.FillRect(&cellR, &txtBk); // FIXMEXE
         // dc.DrawEdge(&cellR, BDR_SUNKENINNER, BF_RECT); // For debugging/diagnostics.
@@ -382,14 +389,15 @@ void CChildView::OnPaint() {
           int blend = (int) (255.0 - (255.0 / (dist+1)));
 
           CPoint blendTile(29,20); 
-          tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, colorNone); 
+          ++cost;
+          tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, colorNone,cost); 
         }
       }
 
     }
   }
 
-	
+  debstr() << "cost:" << cost << "\n";
 }
 
 
