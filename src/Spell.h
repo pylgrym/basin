@@ -85,6 +85,7 @@ enum SpellEnum {
 struct SpellDesc {
   const char* abbr;
   const char* desc;
+  // const char* bullet;
   std::string qual;
   COLORREF color;
   bool ident; // known or not.
@@ -100,6 +101,8 @@ public:
 
   static const char* type2desc_Id(SpellEnum);       // ('IDed')    Will always return 'identified'/proper name.
   static const char* type2desc_Mys(SpellEnum type); // ('Mystery') Will return a 'quality' if not identified.
+
+  static const char* bulletTxt(SpellEnum effect);
 
   static SpellEnum str2type(const char* str);
   static const SpellDesc& spell(SpellEnum);

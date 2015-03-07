@@ -54,22 +54,27 @@ enum MoodEnum {
 
 class Mob {
 public:
-  Mob(int mlevel, bool bIsPlayer_); // void);
+  Mob(int mlevel, bool bIsPlayer_); 
   ~Mob(void);
 
   bool persist(class Persist& p) {
-    p.transfer(pos.x, "posx"); //
-    p.transfer(pos.y, "posy"); //
+    p.transfer(pos.x, "posx"); 
+    p.transfer(pos.y, "posy"); 
+
+    int intMobType = m_mobType;
+    p.transfer(intMobType, "mobType"); 
+    if (!p.bOut) { m_mobType = (CreatureEnum)intMobType;  }
+      
     stats.persist(p);
 
-    p.transfer(speed, "speed"); //
+    p.transfer(speed, "speed"); 
 
     int intMood = mood;
-    p.transfer(intMood, "mood"); //
+    p.transfer(intMood, "mood"); 
     if (!p.bOut) { mood = (MoodEnum)intMood;  }
 
     int intSchool = defSchool;
-    p.transfer(intSchool, "defSchool"); //
+    p.transfer(intSchool, "defSchool"); 
     if (!p.bOut) { defSchool = (AttackSchool)intSchool; }
 
     p.transfer(mobDummyWeapon.n, "mobWeapon_n");

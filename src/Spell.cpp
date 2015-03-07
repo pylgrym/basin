@@ -175,6 +175,12 @@ const char* Spell::type2desc_Mys(SpellEnum type) {
   }
 }
 
+const char* Spell::bulletTxt(SpellEnum effect) {
+  const SpellDesc& desc = spell(effect);
+  return desc.desc; // bullet; // Desc is already a projectile, in context.
+}
+
+
 const SpellDesc& Spell::spell(SpellEnum type) {
   assert(type >= 0);
   assert(type < SP_MaxSpells);
@@ -341,7 +347,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   // case SP_Poison:       healSpell(actor); break;
   case SP_LightArea:   return lightSpell(actor, actor.pos,4); break;
   case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
-  default: log << "err spell unknown.";  return false;
+  default: log << "err spell unknown:" << effect;  return false;
   }
   return true; 
 }

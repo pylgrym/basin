@@ -87,6 +87,20 @@ Dice Levelize::DiceSet::randDice() { // Pick a random choice from the set:
 }
 
 
+
+
+int Levelize::suggestExtra(Level ilevel) {
+  // Reuse mechanism from suggestLevel
+
+  // was: int bonus = suggestLevel(0);
+  const int limitPct = 38 + (ilevel/2); 
+  int delta = -1;
+  for (int roll = 0; (roll < limitPct); ++delta, roll = rnd(100)) { }
+  
+  return delta;
+}
+
+
 Levelize::Level Levelize::suggestLevel(Level outset) {
   /* will suggest a randomized 'appropriate' level based on 'level outset'.
   IE mostly you get same level, 

@@ -132,7 +132,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, isPlayer ? err : dummy); 
   if (!bHit) { 
     if (mob.isPlayer()) {  
-      playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
+      playSound(L"sounds\\sfxr\\failure2.wav"); // HIT MOB
       err << "You miss! "; 
     } else {
       err << "It misses. "; 
@@ -146,7 +146,10 @@ bool HitCmd::Do(std::ostream& err) {
     return false; 
   }
 
-  {
+  { // It HITS!
+    if (mob.isPlayer()) {
+      playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
+    }
     logstr log;
     log
       << mob.pronoun()
@@ -242,6 +245,7 @@ bool ZapCmd::Do(std::ostream& err) {
   default:       tile = tileWeird; break;
   }
 
+  playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
   CPoint dir = Map::key2dir(dirKey); 
   CPoint bullet = tgt;
   const int maxBulletRange = 50;
@@ -255,11 +259,17 @@ bool ZapCmd::Do(std::ostream& err) {
     newBullet += dir;
     if (!CL->map.legalPos(newBullet)) { break; }
 
-    if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
-      CPoint aim = newBullet - tgt;
-      { logstr log; log << "The bullet hits the monster."; } 
+    // It's legal, move to it:
+    bullet = newBullet;
+    CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
+    mob.invalidateGfx(bullet, oldBullet, true);
 
+    if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       Mob* target = CL->map[newBullet].creature.m;
+      { logstr log; log << "The " << Spell::bulletTxt(effect) << " hits " << target->pronoun() << "."; } // monster."; } 
+
+      CPoint aim = newBullet - tgt;
+
       switch (effect) {
       case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_ConfuseMob: case SP_Teleport: 
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
@@ -296,10 +306,7 @@ bool ZapCmd::Do(std::ostream& err) {
       break;
     }
 
-    // It's legal, move to it:
-    bullet = newBullet;
-    CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
-    mob.invalidateGfx(bullet, oldBullet, true);
+    // WAS: redraw was here..
 
     if (effect == SP_WallBuilding) {
       CL->map[bullet].envir.setType(EN_Wall);

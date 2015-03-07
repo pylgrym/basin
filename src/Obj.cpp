@@ -441,8 +441,11 @@ int Obj::digStrength() const {
 void Obj::initRandom() { // - clear should not init.
   charges = rnd(-1, 7); 
   consumed = oneIn(2); 
-  toHit = rndC(-2, 5);
-  toDmg = rndC(-2, 6);
+
+  // Plusses need to become a lot rarer: (and more -levelizer?)
+  toHit = Levelize::suggestExtra(ilevel) - 1; // rndC(-2, ilevel); // 5);
+  toDmg = Levelize::suggestExtra(ilevel) - 1; // rndC(-2, ilevel); // 6);
+
   itemUnits = rnd(20, 400);
 
 
@@ -508,7 +511,8 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
   }
 
   if (!infiniteCharges()) {
-    if (!eatCharge(err)) { return false; }
+    // if (!eatCharge(err)) { return false; }
+    if (!anyChargesLeft()) { err << "It doesn't have any charges left."; return false; }
   }
 
   if (otype() == OB_LampOil) {
@@ -522,6 +526,8 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
     if (bOK) {
       if (bOK && who.isPlayer()) {
         Spell::trySpellIdent(effect);
+        // Now eat the charge (fixme - doSpell should indicate how we failed - user cancel or not?)
+        if (!eatCharge(err)) { return false; }
       }
     }
   }
