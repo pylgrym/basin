@@ -96,6 +96,9 @@ public:
   void recoverHP() {  // Delegate to stats class:
     stats.recoverHP();
   }
+  void recoverMana() {  // Delegate to stats class:
+    stats.recoverMana();
+  }
 
   virtual int digStrength() { return 3;  }
 

@@ -144,6 +144,14 @@ public:
     hp = newHP;
   }
 
+  void recoverMana() { // Randomized mana recov.
+    int frac = (maxMana / 10)+1;
+    int inst = rnd(frac / 2, frac+ frac/2);
+    int newMana = mana + inst;
+    if (newMana > maxMana) { newMana = maxMana;  }
+    mana = newMana;
+  }
+
   void passTime();
   void updateHunger();
   void updateConfusion();
