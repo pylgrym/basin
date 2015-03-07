@@ -146,6 +146,7 @@ public:
     return true;
   }
   bool infiniteCharges() const { return (charges == -1);  }
+  bool anyChargesLeft() const { return (charges > 0);  }
   // END BEHAVIOUR
 
   static const ObjDef& randObjDesc();

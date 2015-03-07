@@ -43,8 +43,12 @@ CChildView::CChildView() {
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
 
-  int answer = IDNO; // MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);
-  Dungeons::the_dungeons.initDungeons(answer == IDYES); // actually, the player..
+  int shiftKey = GetAsyncKeyState(VK_SHIFT);
+  bool isShiftDown = (shiftKey < 0);
+
+  // Load normally, re-init if shift is down.
+  int answerLoad = (isShiftDown ? IDNO : IDYES); // MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);
+  Dungeons::the_dungeons.initDungeons(answerLoad == IDYES); // actually, the player..
 
 
   //FIXME: (DARKNESS) img-tiles should be BLACK!

@@ -49,6 +49,7 @@ public:
   static Dice randDiceForLevel(Level L);
 
   static Level suggestLevel(Level outset);
+  static int suggestExtra(Level ilevel); // (was:) Ilevel is ignored for now, but shouldn't be.
 
   static Levelize izer;
 };
