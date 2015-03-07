@@ -443,12 +443,16 @@ void Obj::initRandom() { // - clear should not init.
   consumed = oneIn(2); 
 
   // Plusses need to become a lot rarer: (and more -levelizer?)
-  toHit = Levelize::suggestExtra(ilevel) - 1; // rndC(-2, ilevel); // 5);
-  toDmg = Levelize::suggestExtra(ilevel) - 1; // rndC(-2, ilevel); // 6);
+  toHit = Levelize::suggestExtra(ilevel); // rndC(-2, ilevel); // 5);
+  toDmg = Levelize::suggestExtra(ilevel); // rndC(-2, ilevel); // 6);
+  if (XinY(3,11)) { // Make more trash..
+    toHit = -toHit;
+  }
+  if (XinY(3,11)) {
+    toDmg = -toDmg;
+  }
 
   itemUnits = rnd(20, 400);
-
-
 
   dmgDice = Levelize::randDiceForLevel(ilevel);
   ac = Levelize::suggestLevel(ilevel);
