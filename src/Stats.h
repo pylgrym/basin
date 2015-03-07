@@ -113,6 +113,7 @@ public:
   bool isConfused() const { return (confused > 0);  }
 
   int calcMaxHP();
+  int calcMaxMana();
 
   int calcTotalAC();
   int calcBaseAC();

@@ -113,7 +113,8 @@ Stats::Stats(int mlevel, bool bPlayer_)
 
 void Stats::initStats() {
   calcStats();
-  hp = maxHP; // We can't do that in 'calcStats', or user would get too many hp.
+  hp = maxHP; // We can't do that in 'calcStats', or user would get too many hp. / regain too often.
+  mana = maxMana; // We can't do that in 'calcStats', or user would get too many mana.
 }
 
 
@@ -126,6 +127,7 @@ void Stats::calcStats() {
   }
 
   maxHP = calcMaxHP();
+  maxMana = calcMaxMana();
   ac = calcTotalAC();
 
   std::stringstream dummy;
@@ -243,6 +245,47 @@ int Stats::calcMaxHP() {
   // s["sta"]
   int val = Con.v() + (HitDie + Con.mdf()) * level(); 
   //int val = s["sta"].v + (HitDie *level + statMod("sta")*level); // alternative, illustrating that statMod might fluctuate.
+  return val;
+}
+
+
+int fixedRoll(int dSide, int promille) {
+  int roll = (dSide * promille / 1000) + 1;
+  return roll;
+}
+
+
+int Stats::calcMaxMana() {
+  /* maximum mana,
+  is based on something like
+   - you get an offset equal to your int
+   - for each level, you get 2 or your int modifier.
+   -  the '2' should probably be a fixed roll of hit die.
+  */
+  //int val = Int.v() + (HitDie + Int.mdf()) * level(); 
+  //int val = s["sta"].v + (HitDie *level + statMod("sta")*level); // alternative, illustrating that statMod might fluctuate.
+
+  int base = (Int.v() - 7); // below 8, you get nothing.
+  if (base < 0) { base = 0; } 
+  // so, 18 gives us '11'. But we should get 3-4.
+  int L1mana = base / 3; // will give 18 a 3,'almost 4'.
+  // We want a high-level to get 90 mana, and 'high' is 40, so we need 2 mana every level. You get '1dx'(your modifier.)
+
+  static std::vector<int> manaRolls; // These are fixed from start - they must be persisted!
+  if (manaRolls.empty()) {
+    for (int i = 0; i < 40; ++i) {
+      manaRolls.push_back(rnd(1000));
+    }
+  }
+
+  int growth = 0;
+  int manaMDF = Int.mdf(); if (manaMDF < 1) { manaMDF = 1;  } // always positive.
+  for (int L = 2; L <= level(); ++L) { // add all rolls, adjusted for int-modifier.
+    int manaPart = fixedRoll(manaMDF, manaRolls[L]);
+    growth += manaPart;
+  }
+
+  int val = (L1mana + growth);
   return val;
 }
 
