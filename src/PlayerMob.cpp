@@ -92,53 +92,34 @@ void addInf2(const char* label, int val1, int val2, int width,  CPoint& dash) {
 
 void PlayerMob::dashboard() {
   const int width = 8; // 10;
-  /* FIXME - make functions for these.
-  */
+  /* FIXME - make functions for these. */
   CPoint dash(Viewport::Width, 1);
-  // std::stringstream ss;
 
   addInf1("light", lightStrength(), width, dash);
-  // ss << std::fixed << std::setw(4) << "light:";  addInf(ss, dash);
-  // ss << std::fixed << std::setw(5) << lightStrength(); addInf(ss, dash);
-
   addInf1("unit", theLightUnits, width, dash);
-  // ss << std::fixed << std::setw(5) << this->theLightUnits; addInf(ss, dash);
-
-  //addInf2("hp", stats.hp, width, dash);
-  //ss << "" << std::fixed << std::setw(5) << stats.hp << "/" << stats.maxHP << "hp "; addInf(ss, dash); //  << "/" << stats.maxHP << " ";
   addInf2("hp", stats.hp, stats.maxHP, width, dash);
-
-  // ss // << "xp:" << std::fixed << std::setw(5) << stats.xp << "/" << stats.xpToLevel << "xp "; addInf(ss, dash);
-  //ss << "mXxp:" << stats.xpToLevel; addInf(ss, dash);
+  addInf2("mana", stats.mana, stats.maxMana, width, dash);
   addInf2("xp", stats.xp, stats.xpToLevel, width, dash);
-
   addInf1("level", stats.level(), width, dash);
-  //ss // << "lvl:"   << std::fixed << std::setw(3) << stats.level() << "L "; addInf(ss, dash);
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   addInf1("depth", depth, width, dash);
-  // ss // << "ac:"  << std::fixed << std::setw(3) << depth << "dung"; addInf(ss, dash);
-
   addInf1("ac", stats.ac, width, dash);
-  // ss // << "ac:"  << std::fixed << std::setw(3) << stats.ac << "ac"; addInf(ss, dash);
   addInf2("worn", stats.wornAC_input, stats.wornAC_output, width, dash);
 
   int acEffect = Stats::calcAvgACeffect();
   addInf1("ac%", acEffect, width, dash);
-  // ss // << "ac effect:"  << std::fixed << std::setw(3) << acEffect << "%ac"; addInf(ss, dash);
 
-  // FIXME, should be recalculated per turn, and possibly stored in stats:
+  // (DONE..?), should be recalculated per turn, and possibly stored in stats:
   // FIXME, show as text
   // FIXME, pick up should check this!
-  Encumb::EncumbEnum encumb = Encumb::enc(); // Encumb::EncumbEnum 
-  const char* sEncumb = Encumb::encTxt(encumb); // encu
-  // ss << "W:" << sEncumb; //  std::fixed << std::setw(2) << encumb;
-  addInfS("enc", sEncumb, width, dash); // (ss, dash);
+  Encumb::EncumbEnum encumb = Encumb::enc(); 
+  const char* sEncumb = Encumb::encTxt(encumb); 
+  addInfS("enc", sEncumb, width, dash); 
 
   addInf1("food", stats.hunger, width, dash);
   addInf1("conf.?", (int) stats.isConfused(), width, dash);
   addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
-
 }
 
 

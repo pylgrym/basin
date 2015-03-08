@@ -275,9 +275,9 @@ bool ZapCmd::Do(std::ostream& err) {
   CPoint tile = tileMagic;
   switch (school) {
   case SC_Magic: tile = tileMagic; break;
-  case SC_Fire:  tile = tileFire; break;
+  case SC_Fire:  tile = tileFire;  break;
   case SC_Frost: tile = tileFrost; break;
-  case SC_Earth: tile = tileYellow; break;
+  case SC_Earth: tile = tileYellow;break;
   case SC_Gas:   tile = tileGreenBall; break;
   case SC_Light: tile = tileLight; break;
   default:       tile = tileWeird; break;
@@ -712,9 +712,10 @@ bool CastCmd::Do(std::ostream& err) {
   SpellEnum choice = Spell::pickASpell("cast which spell?");
   if (choice == SP_NoSpell) { return false;  }
 
+  const SpellDesc& desc = Spell::spell(choice);
   // SpellInvCmd().Do(err);
 
-  ZapCmd zapCmd(NULL, mob, choice, SC_Holy); // SP_FireBolt
+  ZapCmd zapCmd(NULL, mob, choice, desc.school); // SC_Holy); // SP_FireBolt
   zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
   return zapCmd.Do(err);
 }

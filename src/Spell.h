@@ -17,7 +17,8 @@ will trigger the spell effect of the item.
 
 enum AttackSchool {
   // Ideas for different kinds of attack, for weakness/strength against.
-  SC_Phys=0,
+  SC_None=0,
+  SC_Phys=1,
   SC_Fire,
   SC_Frost,
   SC_Water,
@@ -85,8 +86,10 @@ enum SpellEnum {
 struct SpellDesc {
   int level;
   int manaCost;
+  AttackSchool school;
   const char* abbr;
   const char* desc;
+
   // const char* bullet;
   std::string qual;
   COLORREF color;
