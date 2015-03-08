@@ -661,7 +661,7 @@ bool SpellInvCmd::Do(std::ostream& err) {
   Cuss::clear(false);
   Cuss::prtL("  You know these spells:"); 
 
-  Bag::bag.showBagInv(false);
+  Spell::showSpellInv();
 
   TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
 

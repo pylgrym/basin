@@ -119,6 +119,8 @@ public:
   static void trySpellIdent(SpellEnum effect);
   static int manaCost(SpellEnum effect);
 
+  static void showSpellInv();
+
   static bool persist(class Persist& p);
 
 private:

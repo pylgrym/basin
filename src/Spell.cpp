@@ -27,31 +27,32 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 2, 2,"speedup", "Haste" }, // = 1,
 { 4, 2,"slowdown", "Slow" }, // = 2,
 { 2, 1,"confuse", "Confuse" }, // = 3,
-{ 1, 1,"unconfuse", "Unconfuse" }, // = 3,
-{ 2, 1,"confusemob", "Confuse monster" }, // = 3,
-{ 5, 2,"teleport", "Teleport" }, // = 4,
-{ 1, 1,"magicmissile", "Magic missile"}, // = 5,
-{ 3, 2,"firebolt", "Fire bolt" }, // = 6,
-{ 5, 4,"frostbolt", "Frost bolt" }, // = 7,
-{ 7, 6,"fireball", "Fire ball" }, // = 8,
-{ 8, 2,"stonetomud", "Stone to mud" }, // = 9,
-{ 9, 4,"wallbuilding", "Wallbuilding" }, // = 10
-{10, 1,"earthquake", "Earthquake" }, // = 11,
-{ 5, 2,"stinkcloud", "Stinking cloud" }, // = 12,
-{ 9, 2,"eat", "Food" }, // = 13,
-{ 1, 1,"heal_light", "Heal light" }, // = 14,
-{ 2, 2,"heal_minor", "Heal minor" }, // = 14,
-{ 3, 4,"heal_mod", "Heal moderate" }, // = 14,
-{ 4, 8,"heal_serious", "Heal serious" }, // = 14,
-{ 5,12,"heal_crit", "Healing critical" }, // = 14,
-{ 1, 1,"sick", "Sickness" }, // = 15,
-{ 3, 2,"lightarea", "Light area" }, // = 16,
-{ 5, 3,"lightbeam", "Light beam" }, // = 17,
-{ 2, 1,"phasedoor", "Phase door" }, // = 15,
-{ 3, 2,"detectdoor", "Detect door" },// = 15,
-{ 4, 1,"detecttrap", "Detect trap" }, // = 15,
-{ 5, 4,"detecttreasure", "Detect treasure" }, // = 15,
-{ 6, 2,"detectobject", "Detect object" }, // = 15,
+{ 1, 1,"unconfuse", "Unconfuse" }, // = 4,
+{ 2, 1,"confusemob", "Confuse monster" }, // = 5,
+{ 5, 2,"teleport", "Teleport" }, // = 6,
+{ 1, 1,"magicmissile", "Magic missile"}, // = 7,
+{ 3, 2,"firebolt", "Fire bolt" }, // = 8,
+{ 5, 4,"frostbolt", "Frost bolt" }, // = 9,
+{ 7, 6,"fireball", "Fire ball" }, // = 10,
+{ 8, 2,"stonetomud", "Stone to mud" }, // = 11,
+{ 9, 4,"wallbuilding", "Wallbuilding" }, // = 12
+{10, 1,"earthquake", "Earthquake" }, // = 13,
+{ 5, 2,"stinkcloud", "Stinking cloud" }, // = 14,
+{ 9, 2,"eat", "Food" }, // = 15,
+{ 1, 1,"heal_light", "Heal light" }, // = 16,
+{ 2, 2,"heal_minor", "Heal minor" }, // = 17,
+{ 3, 4,"heal_mod", "Heal moderate" }, // = 18,
+{ 4, 8,"heal_serious", "Heal serious" }, // = 19,
+{ 5,12,"heal_crit", "Healing critical" }, // = 20,
+{ 1, 1,"sick", "Sickness" }, // = 21,
+{ 3, 2,"lightarea", "Light area" }, // = 22,
+{ 5, 3,"lightbeam", "Light beam" }, // = 23,
+{ 2, 1,"magicmap", "Magic mapping" }, // = 24,
+{ 2, 1,"phasedoor", "Phase door" }, // = 25,
+{ 3, 2,"detectdoor", "Detect door" },// = 26,
+{ 4, 1,"detecttrap", "Detect trap" }, // = 27,
+{ 5, 4,"detecttreasure", "Detect treasure" }, // = 28,
+{ 6, 2,"detectobject", "Detect object" }, // = 29,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -367,10 +368,55 @@ void Spell::trySpellIdent(SpellEnum effect) {
   if (oneIn(2)) { // Maybe every use should identify automatically.. 
     logstr log; log << "you get a sense of what this item does!";
     // NB; Selling should ID it! 
-    // NB!  - spells should cost differently! 
-    // NB, spells should be divided by levels, also monsters, and monsters should have some way to use obj/spells..?
+    // DONE NB!  - spells should cost differently! 
+    // DONE NB, spells should be divided by levels, 
+    // also monsters, and monsters should have some way to use obj/spells..?
     desc.ident = true; 
   }
+}
+
+
+
+
+void Spell::showSpellInv() { 
+
+  // NB: Selling should ID objs'! 
+  char ix = 'a';
+
+  // Put column headers in front
+  std::stringstream ss1;
+  ss1 << "L I A M Desc (level,ident.,learned,cost)";
+    Cuss::prtL(ss1.str().c_str());  
+
+  int count = 0;
+  for (int i = SP_NoSpell+1; i < SP_MaxSpells; ++i) {
+    SpellDesc& d = spellNC( (SpellEnum) i); 
+    SpellEnum checkType = (SpellEnum)i;
+
+    std::stringstream ss;
+    ss << ix;
+    ss << " " << d.level << "L";
+    ss << " " << (d.ident ? "!" : "?") << "I";
+    ss << " " << (d.ability ? "+" : "-") << "A";
+    ss << " " << d.manaCost << "M";
+    ss << " " << d.desc << "";
+    
+    Cuss::prtL(ss.str().c_str());  
+
+    count += (d.ability);
+  }
+
+  if (count == 0) {
+    Cuss::prtL("You don't know any spells! Nothing. Nada."); 
+  }
+
+  if (false) { 
+    std::stringstream ss;
+    ss << "Totalkg";
+    Cuss::prtL(ss.str().c_str());  
+  }
+
+  Cuss::invalidate();
 }
 
 
