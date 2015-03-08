@@ -63,10 +63,15 @@ void Cuss::CRLF() { // Do carriage-return + lineFeed.
   if (csr.y >= Term::Height) { csr.y = 0;  }
 }
 
+
+void Cuss::setTxtColor(COLORREF tcol) { curTxtColor = tcol; }
+COLORREF Cuss::curTxtColor = RGB(255,255,255);
+
+
 bool Cuss::putchar(char c, bool bClip) {
   // debstr() << "[§" << c << "]\n";
   TCell& cell = Term::term[csr]; //CL->map[csr];
-  cell.c = c;
+  cell.c = c; cell.tcolor = curTxtColor;
   TheUI::invalidateVPCell(csr);
 
   ++csr.x;

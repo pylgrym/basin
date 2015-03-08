@@ -4,6 +4,7 @@
 #include "numutil/myrnd.h"
 
 #include "Mob.h"
+#include "PlayerMob.h"
 
 #include "Cmds.h"
 #include "Qual.h"
@@ -382,11 +383,12 @@ void Spell::trySpellIdent(SpellEnum effect) {
 
 
 void Spell::showSpellInv() { 
+  /* FIXME; how about more than one page?
+  */
 
-  // NB: Selling should ID objs'! 
   char ix = 'a';
 
-  // Put column headers in front
+  // Put column headers in front:
   std::stringstream ss1;
   ss1 << "K  L I A M Desc (key,level,ident.,learned,cost)";
     Cuss::prtL(ss1.str().c_str());  
@@ -404,20 +406,20 @@ void Spell::showSpellInv() {
     ss << " " << (d.ability ? "+" : "-"); // << "A";
     ss << " " << d.manaCost; // << "M";
     ss << " " << d.desc << "";
+
+    COLORREF rowColor = RGB(255, 255, 255);
+    rowColor = (d.ability ? RGB(0, 255, 0) : RGB(100,100,100) ); // Green is known, grey is unknown, red is too high.
+    if (d.level > PlayerMob::ply->stats.level()) { rowColor = RGB(175, 0, 0);  }
+    Cuss::setTxtColor(rowColor);
     
     Cuss::prtL(ss.str().c_str());  
 
     count += (d.ability);
   }
+  Cuss::setTxtColor(); // Reset to default
 
   if (count == 0) {
     Cuss::prtL("You don't know any spells! Nothing. Nada."); 
-  }
-
-  if (false) { 
-    std::stringstream ss;
-    ss << "Totalkg";
-    Cuss::prtL(ss.str().c_str());  
   }
 
   Cuss::invalidate();

@@ -6,10 +6,11 @@ class TCell {
 public:
   enum Consts { EmptyChar = '\0' };
   char c;
+  COLORREF tcolor;
   TCell() { clearChar(); } // c = '\0'; }
   TCell(char c_):c(c_) {}
 
-  void clearChar() { c = EmptyChar; } // '\0'; }
+  void clearChar() { c = EmptyChar; tcolor = RGB(255, 255, 255);  } // Consider if def tcolor can be set, to e.g. green.
   bool charEmpty() const { return c == EmptyChar; }
 };
 

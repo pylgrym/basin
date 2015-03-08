@@ -545,6 +545,10 @@ bool SellCmd::Do(std::ostream& err) {
   { pauselog log; log << "You sell it for " << obj->price() << " gold."; }
 
   debstr() << "after notif." << (void*)obj << "\n";
+
+  // NB: Selling should ID objs'! 
+  obj->soloident = true; // When in shop, its known.
+
   return true;
 }
 

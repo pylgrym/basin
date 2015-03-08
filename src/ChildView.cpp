@@ -375,12 +375,10 @@ void CChildView::OnPaint() {
       if (!tcell.charEmpty()) { // Term cell.
         ++cost;
 	      dc.SelectObject(largeFont);
-        const COLORREF txtColor = RGB(255, 255, 255);
+        const COLORREF txtColor = tcell.tcolor; // RGB(255, 255, 255);
         dc.SetTextColor(txtColor);  
-		    // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
 		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-        dc.FillRect(&cellR, &txtBk); // FIXMEXE
-        // dc.DrawEdge(&cellR, BDR_SUNKENINNER, BF_RECT); // For debugging/diagnostics.
+        dc.FillRect(&cellR, &txtBk); // FIXMEXE ?
 
         CString s; s.Format(L"%c", tcell.c);
 		    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
