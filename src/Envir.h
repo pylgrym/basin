@@ -18,7 +18,13 @@ enum EnvirEnum {
   EN_Green = 'G',
   EN_Water = 'W',
 
-  EN_MaxLimit // highest nr to size arrays.
+  EN_DoorOpen = '1',
+  EN_DoorClosed = '2',
+  EN_DoorLocked = '3',
+  EN_DoorStuck = '4',
+  EN_DoorBroken = '5',
+
+  EN_MaxLimit = 127 // highest nr to size arrays.
 };
 
 class Envir {

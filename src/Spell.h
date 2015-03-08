@@ -59,7 +59,7 @@ enum SpellEnum {
   SP_MagicMissile , // SC_Magic
   SP_FireBolt ,     // SC_Fire
   SP_FrostBolt ,    // SC_Frost
-  SP_FireBall ,     // SC_Fire
+  SP_FireBall ,     // SC_Fire  10
   SP_StoneToMud ,   // SC_Air/Elm? // "DONE"
   SP_WallBuilding , // SC_Earth    // "DONE"
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
@@ -69,16 +69,16 @@ enum SpellEnum {
   SP_Heal_minor,
   SP_Heal_mod,
   SP_Heal_serious,
-  SP_Heal_crit,
+  SP_Heal_crit, // 20
   SP_Sick,
   SP_LightArea , // "DONE"
   SP_LightDir ,  // "DONE"
-  SP_MagicMap,
-  SP_PhaseDoor,
+  SP_MagicMap,   // 24
+  SP_PhaseDoor,  // 25
   SP_DetectDoor,
   SP_DetectTrap,
   SP_DetectTreasure,
-  SP_DetectObject,
+  SP_DetectObject, // 30
   // SP_x
   SP_MaxSpells
 };

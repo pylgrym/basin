@@ -366,11 +366,15 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   // case SP_Poison:       healSpell(actor); break;
   case SP_LightArea:   return lightSpell(actor, actor.pos,4); break;
   case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
+
+  case SP_MagicMap: log << "(magicmap not impl yet.)"; return false;
+
   default: log << "err spell unknown:" << effect;  return false;
   }
   return true; 
 }
 
+// Make doors!
 
 void Spell::trySpellIdent(SpellEnum effect) {
   SpellDesc& desc = spellNC(effect);

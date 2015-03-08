@@ -551,7 +551,9 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
   }
 
   if (otype() == OB_LampOil) {
-    return FillLampCmd(this).Do(err);
+    bool bOK = FillLampCmd(this).Do(err);
+    if (bOK) { eatCharge(err);  }
+    return bOK;
   }
 
   if (otype() == OB_SpellBook && who.isPlayer()) { // Is this the right place? (eating-food is handled in doSpell.)

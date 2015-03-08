@@ -122,6 +122,7 @@ void PlayerMob::dashboard() {
   addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
 
   addInf1("au", stats.gold, width, dash);
+  addInf1("speed", (int) speed, width, dash); // FIXME - shouldn't speed be a stat?
 }
 
 
@@ -200,6 +201,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
       }
 
     case 'C': if (StairCmd(*this).Do(ss))       { actionDuration = 1; bActionDone = true; } break; // C is upstairs/downstairs.
+
+    case 'V': if (DoorToggleCmd(*this).Do(ss))  { actionDuration = 1; bActionDone = true; } break; 
 
 
     // Move/hit/dig: 

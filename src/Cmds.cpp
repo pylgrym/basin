@@ -719,3 +719,12 @@ bool CastCmd::Do(std::ostream& err) {
   zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
   return zapCmd.Do(err);
 }
+
+
+
+bool DoorToggleCmd::Do(std::ostream& err) {
+  if (!Cmd::Do(err)) { return false; }
+  debstr() << "doing open/close door - command.\n";
+  // TOdo - ask for direction key.
+  return false;
+}

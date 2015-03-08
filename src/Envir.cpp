@@ -29,6 +29,10 @@ bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
   case EN_Border:
     return true; 
 
+  case EN_DoorOpen:   case EN_DoorBroken: return false;  // they don't block..
+  case EN_DoorClosed: case EN_DoorLocked: case EN_DoorStuck: return true; // they block..
+
+
   // everything else is not blocking movement..
   // case:
   // EN_Floor:  
@@ -52,6 +56,13 @@ const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
     envirKeys[EN_Tree] = L"tree"; 
     envirKeys[EN_Green] = L"green"; 
     envirKeys[EN_Water] = L"waterlight"; 
+
+    envirKeys[EN_DoorOpen]   = L"door_open"; 
+    envirKeys[EN_DoorClosed] = L"door_closed";
+    envirKeys[EN_DoorLocked] = L"door_locked";
+    envirKeys[EN_DoorStuck]  = L"door_stuck";
+    envirKeys[EN_DoorBroken] = L"door_broken";
+
     // envirKeys[EN_] = L""; 
     // envirKeys[EN_] = L""; 
 

@@ -307,6 +307,8 @@ public:
     log << "Charges:" << obj->charges;
     log << ", perish:" << obj->consumed;
     log << ", units:" << obj->itemUnits;
+
+    // FIX to show better info!
     return true; 
   }
 };
@@ -431,5 +433,13 @@ class CastCmd : public Cmd {
 public:
   Mob& mob;
   CastCmd(Mob& mob_):mob(mob_) {}
+  virtual bool Do(std::ostream& err);
+};
+
+
+class DoorToggleCmd : public Cmd {
+public:
+  Mob& mob;
+  DoorToggleCmd(Mob& mob_):mob(mob_) {}
   virtual bool Do(std::ostream& err);
 };
