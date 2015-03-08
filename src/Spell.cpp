@@ -20,36 +20,38 @@ Spell::~Spell()
 {
 }
 
+// Format:
+// Level, manaCost - semi-random suggestions..
 SpellDesc Spell::spells[SP_MaxSpells] = {
-{"nospell", "No spell" }, // = 0,
-{"speedup", "Haste" }, // = 1,
-{"slowdown", "Slow" }, // = 2,
-{"confuse", "Confuse" }, // = 3,
-{"unconfuse", "Unconfuse" }, // = 3,
-{"confusemob", "Confuse monster" }, // = 3,
-{"teleport", "Teleport" }, // = 4,
-{"magicmissile", "Magic missile" }, // = 5,
-{"firebolt", "Fire bolt" }, // = 6,
-{"frostbolt", "Frost bolt" }, // = 7,
-{"fireball", "Fire ball" }, // = 8,
-{"stonetomud", "Stone to mud" }, // = 9,
-{"wallbuilding", "Wallbuilding" }, // = 10
-{"earthquake", "Earthquake" }, // = 11,
-{"stinkcloud", "Stinking cloud" }, // = 12,
-{"eat", "Food" }, // = 13,
-{"heal_light", "Heal light" }, // = 14,
-{"heal_minor", "Heal minor" }, // = 14,
-{"heal_mod", "Heal moderate" }, // = 14,
-{"heal_serious", "Heal serious" }, // = 14,
-{"heal_crit", "Healing critical" }, // = 14,
-{"sick", "Sickness" }, // = 15,
-{"lightarea", "Light area" }, // = 16,
-{"lightbeam", "Light beam" }, // = 17,
-{"phasedoor", "Phase door" }, // = 15,
-{"detectdoor", "Detect door" },// = 15,
-{"detecttrap", "Detect trap" }, // = 15,
-{"detecttreasure", "Detect treasure" }, // = 15,
-{"detectobject", "Detect object" }, // = 15,
+{ 1, 1,"nospell", "No spell" }, // = 0,
+{ 2, 2,"speedup", "Haste" }, // = 1,
+{ 4, 2,"slowdown", "Slow" }, // = 2,
+{ 2, 1,"confuse", "Confuse" }, // = 3,
+{ 1, 1,"unconfuse", "Unconfuse" }, // = 3,
+{ 2, 1,"confusemob", "Confuse monster" }, // = 3,
+{ 5, 2,"teleport", "Teleport" }, // = 4,
+{ 1, 1,"magicmissile", "Magic missile"}, // = 5,
+{ 3, 2,"firebolt", "Fire bolt" }, // = 6,
+{ 5, 4,"frostbolt", "Frost bolt" }, // = 7,
+{ 7, 6,"fireball", "Fire ball" }, // = 8,
+{ 8, 2,"stonetomud", "Stone to mud" }, // = 9,
+{ 9, 4,"wallbuilding", "Wallbuilding" }, // = 10
+{10, 1,"earthquake", "Earthquake" }, // = 11,
+{ 5, 2,"stinkcloud", "Stinking cloud" }, // = 12,
+{ 9, 2,"eat", "Food" }, // = 13,
+{ 1, 1,"heal_light", "Heal light" }, // = 14,
+{ 2, 2,"heal_minor", "Heal minor" }, // = 14,
+{ 3, 4,"heal_mod", "Heal moderate" }, // = 14,
+{ 4, 8,"heal_serious", "Heal serious" }, // = 14,
+{ 5,12,"heal_crit", "Healing critical" }, // = 14,
+{ 1, 1,"sick", "Sickness" }, // = 15,
+{ 3, 2,"lightarea", "Light area" }, // = 16,
+{ 5, 3,"lightbeam", "Light beam" }, // = 17,
+{ 2, 1,"phasedoor", "Phase door" }, // = 15,
+{ 3, 2,"detectdoor", "Detect door" },// = 15,
+{ 4, 1,"detecttrap", "Detect trap" }, // = 15,
+{ 5, 4,"detecttreasure", "Detect treasure" }, // = 15,
+{ 6, 2,"detectobject", "Detect object" }, // = 15,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -179,6 +181,12 @@ const char* Spell::bulletTxt(SpellEnum effect) {
   const SpellDesc& desc = spell(effect);
   return desc.desc; // bullet; // Desc is already a projectile, in context.
 }
+
+int Spell::manaCost(SpellEnum effect) {
+  const SpellDesc& desc = spell(effect);
+  return desc.manaCost; 
+}
+
 
 
 const SpellDesc& Spell::spell(SpellEnum type) {

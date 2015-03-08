@@ -194,6 +194,44 @@ bool HitCmd::Do(std::ostream& err) {
 
 
 
+bool ZapCmd::legal(std::ostream& err) {
+  if (!Cmd::legal(err)) { return false;  }
+  // Consider - prompt the user, if he wants to risk it.
+  if (!consumeMana) { return true; }
+
+  if (mob.stats.mana >= Spell::manaCost(effect)) {
+    return true; 
+  }
+
+  // ""
+  // FIXME, make a general prompter helper func, that integrates all this:
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false);
+  const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
+  int YN_Key = 0;
+  bool bFound = false;
+  for (;!bFound;) {
+    YN_Key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "risk cast,Y/N"); 
+
+    if (YN_Key == VK_ESCAPE || YN_Key == 'N') {
+      Cuss::clear(true);
+      return false; // Cancelled zap operation.
+    }
+    if (YN_Key == 'Y') {bFound = true;  break;}
+  } // Loop until Y/N/Esc key.
+
+  bool bFail = oneIn(3); 
+  if (!bFail) {
+    logstr log; log << "You pull it off! ..";
+    return true;
+  }
+
+  err << "You fumble and damage your health.";
+  int severity = rnd(25, 50);
+  debstr() << "hurt-severity-pct:" << severity << "\n";
+  mob.stats.healPct(-severity);
+  return false;
+}
 
 
 bool ZapCmd::Do(std::ostream& err) {  
@@ -244,6 +282,10 @@ bool ZapCmd::Do(std::ostream& err) {
   case SC_Light: tile = tileLight; break;
   default:       tile = tileWeird; break;
   }
+
+  // At this point, we eat the mana:
+  int manaCost = Spell::manaCost(effect);
+  mob.stats.mana =- manaCost;
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
   CPoint dir = Map::key2dir(dirKey); 
@@ -570,5 +612,36 @@ bool StatCmd::Do(std::ostream& err) {
   TheUI::promptForAnyKey(__FILE__, __LINE__, "stat-pause");
 
   Cuss::clear(true);
+  return true; 
+}
+
+
+
+bool TakeCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  ObjSlot& item = CL->map[tgt].item;
+  // (No need to invalidate, as we are standing on it)
+  mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
+
+
+  if (Obj::isCurrency(o->otype())) { // Gold is special - it's consumed on pickup, and added to gold balance:
+    mob.stats.gold += o->itemUnits;
+    std::string idesc = o->indef_item();
+    err << "You pick up " << o->itemUnits << " worth of " << idesc; // gold pieces.";
+    item.setObj(NULL);
+    delete o; 
+    return true; 
+  } // special-case gold.
+
+  // Everything else non-gold, goes in bag:
+
+  if (!Bag::bag.add(o, err)) { return false; } // err << "Couldn't fit item in bag.";  
+
+  char itemIx = Bag::bag.letterIx(o);
+  // std::string anItem = o->an_item();
+  std::string theItem = o->the_item();
+  err << "You pick up (" << itemIx << ") " << theItem;
+  item.setObj(NULL);
   return true; 
 }

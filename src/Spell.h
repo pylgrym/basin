@@ -83,6 +83,8 @@ enum SpellEnum {
 };
 
 struct SpellDesc {
+  int level;
+  int manaCost;
   const char* abbr;
   const char* desc;
   // const char* bullet;
@@ -114,6 +116,7 @@ public:
   static void initQual();
 
   static void trySpellIdent(SpellEnum effect);
+  static int manaCost(SpellEnum effect);
 
 private:
   static SpellDesc spells[SP_MaxSpells];

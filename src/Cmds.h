@@ -170,35 +170,7 @@ public:
     return true;  
   }
 
-
-  virtual bool Do(std::ostream& err) {  
-    if (!Cmd::Do(err)) { return false; }
-
-    ObjSlot& item = CL->map[tgt].item;
-    // (No need to invalidate, as we are standing on it)
-    mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
-
-
-    if (Obj::isCurrency(o->otype())) { // Gold is special - it's consumed on pickup, and added to gold balance:
-      mob.stats.gold += o->itemUnits;
-      std::string idesc = o->indef_item();
-      err << "You pick up " << o->itemUnits << " worth of " << idesc; // gold pieces.";
-      item.setObj(NULL);
-      delete o; 
-      return true; 
-    } // special-case gold.
-
-    // Everything else non-gold, goes in bag:
-
-    if (!Bag::bag.add(o, err)) { return false; } // err << "Couldn't fit item in bag.";  
-
-    char itemIx = Bag::bag.letterIx(o);
-    // std::string anItem = o->an_item();
-    std::string theItem = o->the_item();
-    err << "You pick up (" << itemIx << ") " << theItem;
-    item.setObj(NULL);
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 
@@ -400,14 +372,15 @@ public:
   SpellEnum effect;
   AttackSchool school;
   Obj* zapHitItem;
+  bool consumeMana; // HACK - can we control this more elegantly? also, mana cost on spells.
 
   ZapCmd(Obj* hitItem_, Mob& mob_, SpellEnum effect_, AttackSchool school_)
-  :mob(mob_), effect(effect_),school(school_), zapHitItem(hitItem_) {
+  :mob(mob_), effect(effect_),school(school_), zapHitItem(hitItem_), consumeMana(false) {
     tgt = mob.pos;
   }
 
   virtual bool silent() const { return !mob.isPlayer(); } 
-  virtual bool legal(std::ostream& err) {  return true; }
+  virtual bool legal(std::ostream& err);
 
   virtual bool Do(std::ostream& err);
 };

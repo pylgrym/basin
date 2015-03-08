@@ -203,7 +203,12 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
         if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
       }
 
-    case 'Z': if (ZapCmd(NULL, *this, SP_FireBolt, SC_Holy).Do(ss))  { actionDuration = 1; bActionDone = true; } break; 
+    case 'Z':
+      {
+        ZapCmd zapCmd(NULL, *this, SP_FireBolt, SC_Holy);
+        zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
+        if (zapCmd.Do(ss))  { actionDuration = 1; bActionDone = true; } break;
+      }
 
     case 'Q': 
       if (bCtrl) {

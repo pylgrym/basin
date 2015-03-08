@@ -105,6 +105,9 @@ public:
     stats.recoverMana();
   }
 
+  // Delegate to stats class:
+  //void useMana(int manaCost) { stats.useMana(manaCost); }
+
   virtual int digStrength() { return 3;  }
 
   void makeAngry();
