@@ -520,7 +520,7 @@ bool learnSpell(SpellEnum effect, std::ostream& err, bool force) {
   }
 
   if (desc.level > PlayerMob::ply->stats.level()) {
-    err << "You cannot grasp this complicated spell."; return false;
+    err << "You cannot yet grasp this complex spell."; return false;
   }
 
   err << "You suddenly realize how this spell works!"; 
@@ -533,21 +533,16 @@ bool learnSpell(SpellEnum effect, std::ostream& err, bool force) {
 }
 
 
-bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
+bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use succeeded.
   /* Multi-messages must 'prompt with <more>',
   ie whenever too much info to print, guide the user through it. */
 
-
-  /*
-  Also, make monsters attack.
-  */
-  const char* flavor = Obj::flavorUse(otype()); // ObjEnum type) {
+  const char* flavor = Obj::flavorUse(otype()); 
   if (flavor != NULL) { 
     logstr log; log << flavor;
   }
 
-  if (!infiniteCharges()) {
-    // if (!eatCharge(err)) { return false; }
+  if (!infiniteCharges()) { // NB! - we can't eat the charge up front, because aiming-spells or risks might abort with 'cancel'.
     if (!anyChargesLeft()) { err << "It doesn't have any charges left."; return false; }
   }
 
@@ -555,8 +550,12 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
     return FillLampCmd(this).Do(err);
   }
 
-  if (otype() == OB_SpellBook && who.isPlayer()) { // Is this the right place? where is eating-food handled?
-    learnSpell(effect,err,false);
+  if (otype() == OB_SpellBook && who.isPlayer()) { // Is this the right place? (eating-food is handled in doSpell.)
+    if (learnSpell(effect, err, false)) {
+      eatCharge(err);
+      return true;
+    }
+    return false;
   }
 
   bool bOK = false;

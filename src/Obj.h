@@ -138,7 +138,7 @@ public:
   void setTypeDefaults();
 
 
-  virtual bool use(class Mob& who, std::ostream& err);
+  virtual bool useObj(class Mob& who, std::ostream& err);
 
   bool eatCharge(std::ostream& err) {
     if (charges == 0) { err << "It doesn't have any charges left.";  return false; }

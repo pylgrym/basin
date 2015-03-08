@@ -672,3 +672,27 @@ bool SpellInvCmd::Do(std::ostream& err) {
   Cuss::clear(true);
   return true; 
 }
+
+
+
+bool UseCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "doing use item-command.\n";
+  Obj* obj = Bag::bag.pickBag("  Use what?", false);
+  if (obj == NULL) { return false;  }
+
+  if (obj->wearable()) {
+    return mob.wear(obj, err);
+  }
+
+  if (!obj->useObj(mob, err)) {
+    return false;
+  }
+  if (obj->charges == 0 && obj->consumed) {
+    err << "You've used up the item.";
+    Bag::bag.remove(obj, err);
+    delete obj;
+  }
+  return true; 
+}
