@@ -380,7 +380,10 @@ void Spell::trySpellIdent(SpellEnum effect) {
 }
 
 
-
+/* player should start with MagicMissile,
+using a book should learn a spell.
+  Maybe you can temporarily lose/forget a spell, and have to relearn it?
+*/
 
 void Spell::showSpellInv() { 
   /* FIXME; how about more than one page?

@@ -11,8 +11,8 @@
 #include <assert.h>
 
 #include "Cmds.h"
+#include "PlayerMob.h"
 
-// #include "Qual.h"
 
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiouy";
@@ -508,6 +508,31 @@ void Obj::setTypeDefaults() {
 
 
 
+bool learnSpell(SpellEnum effect, std::ostream& err, bool force) {
+  SpellDesc& desc = Spell::spellNC(effect);
+
+  if (desc.ability) { 
+    err << "But you already know this spell!"; return false;
+  }
+
+  if (!desc.ident && !force) {
+    err << "The purpose of this spell is a mystery."; return false;
+  }
+
+  if (desc.level > PlayerMob::ply->stats.level()) {
+    err << "You cannot grasp this complicated spell."; return false;
+  }
+
+  err << "You suddenly realize how this spell works!"; 
+  desc.ability = true;
+  if (force) {
+    desc.ident = true; // "Force" means, that you both learn how to do the spell, and how to ID it.
+  }
+  return true;
+
+}
+
+
 bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succeeded.
   /* Multi-messages must 'prompt with <more>',
   ie whenever too much info to print, guide the user through it. */
@@ -528,6 +553,10 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
 
   if (otype() == OB_LampOil) {
     return FillLampCmd(this).Do(err);
+  }
+
+  if (otype() == OB_SpellBook && who.isPlayer()) { // Is this the right place? where is eating-food handled?
+    learnSpell(effect,err,false);
   }
 
   bool bOK = false;

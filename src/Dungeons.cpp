@@ -116,6 +116,9 @@ void Dungeons::initDungeons(bool loadGame) {
     initNewGame();
   }
 
+  // Hack - make sure we know MM:
+  Spell::spellNC(SP_MagicMissile).ability = true; // Player starts out known magic-missile.
+
   PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.
 
   // This is a little bit bad(?), because it even
