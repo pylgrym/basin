@@ -58,10 +58,15 @@ std::string Obj::indef_item() const { // based on some_item.
 
 CString Obj::some_item() const {
   // shorter - no article:
-  std::string sA = objdef->desc; // indef_item(); // would be recursive..
+  std::string sFull = objdef->desc; // indef_item(); // would be recursive..
+  std::string sRight = sFull.substr(2);
+  std::string sArticle = sFull.substr(0, 2);
 
-  CA2T udesc(sA.c_str());
+  CA2T udesc(sRight.c_str());
   CString desc = udesc;
+
+  CA2T uarticle(sArticle.c_str());
+  CString article = uarticle;
 
   const char* spellDesc = soloident ? Spell::type2desc_Id(effect) : Spell::type2desc_Mys(effect);
   CA2T uspell(spellDesc, CP_ACP); 
@@ -78,7 +83,7 @@ CString Obj::some_item() const {
   CString sBonus;   if (Equ::isWeapon(eqslot())) { sBonus.Format(L"(%d,%d)", toHit, toDmg); }
   CString sCharges; if (usesCharges(otype()))    { sCharges.Format(L"<%d>", charges); }
 
-  fmt.Format(L"%s %s %s%s%s%s", (const TCHAR*)uspell, (const TCHAR*)desc, sAC, sDice, sBonus, sCharges);
+  fmt.Format(L"%s%s %s %s%s%s%s", (const TCHAR*)article, (const TCHAR*)uspell, (const TCHAR*)desc, sAC, sDice, sBonus, sCharges);
 
   return fmt;
 }
