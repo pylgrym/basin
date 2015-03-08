@@ -204,16 +204,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
         if (LookCmd(*this).Do(ss)) { actionDuration = 0; bActionDone = true; } break;
       }
 
-    case 'Z':
-      {
-        // SpellBook, PickSpell. Persist ID'ed spells. Mark items as identified when sold to shop.
-        // menu
-        ZapCmd zapCmd(NULL, *this, SP_FireBolt, SC_Holy);
-        zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
-        if (zapCmd.Do(ss))  { actionDuration = 1; bActionDone = true; } break;
-      }
-
-    case 'X': if (SpellInvCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // X is spell-inv.list.
+    case 'Z': if (CastCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+    case 'X': if (SpellInvCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break; // X is spell-inv.list.
 
     case 'Q': 
       if (bCtrl) {

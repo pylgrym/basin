@@ -135,7 +135,7 @@ Obj* Bag::pickBag(const char* prompt, bool bShowPrice) {
 
 
 
-Obj* Bag::pickAction() { // const char* prompt) {
+Obj* Bag::pickAction() { 
     const char firstKey = 'A';
   char lastKey = firstKey + objs.size()-1; // Bag::bag.
   char lower = lastKey - ('A' - 'a');

@@ -193,6 +193,12 @@ int Spell::manaCost(SpellEnum effect) {
 }
 
 
+bool Spell::legalSpellIx(int ix) {
+  if (ix < 0) { return false;  }
+  if (ix >= SP_MaxSpells) { return false;  }
+  return true;
+}
+
 
 const SpellDesc& Spell::spell(SpellEnum type) {
   assert(type >= 0);
@@ -385,6 +391,14 @@ using a book should learn a spell.
   Maybe you can temporarily lose/forget a spell, and have to relearn it?
 */
 
+SpellEnum Spell::pickASpell(const char* prompt) {
+  Cuss::clear(false);
+  Cuss::prtL(prompt);
+
+  showSpellInv(); 
+  return pickSpellAction();
+}
+
 void Spell::showSpellInv() { 
   /* FIXME; how about more than one page?
   */
@@ -426,6 +440,48 @@ void Spell::showSpellInv() {
   }
 
   Cuss::invalidate();
+}
+
+
+
+SpellEnum Spell::pickSpellAction() { 
+  const char firstKey = 'A';
+  char lastKey = 'Z'; // firstKey + objs.size() - 1; // Bag::bag.
+  char lower = lastKey - ('A' - 'a');
+  CString s; 
+  s.Format(L"(letter [a-%c] or ESC)", lower);
+  CT2A keyPrompt(s, CP_ACP);  
+
+  int key = 0;
+  for (;;) {
+    key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-item"); 
+    if (key == VK_ESCAPE) {
+      Cuss::clear(true);
+      return SP_NoSpell; // Cancelled pick operation.
+    }
+    if (key >= firstKey && key <= lastKey) {
+      break;
+    }
+    TheUI::BeepWarn();
+  }
+
+  int objIx = key - firstKey;
+
+  int spellIx = SP_NoSpell + 1 + objIx;
+  SpellEnum spellChoice = (SpellEnum)spellIx;
+  if (!Spell::legalSpellIx(spellChoice)) {
+    logstr log; log << "Illegal spell choice:" << spellIx; return SP_NoSpell;
+  }
+
+  const SpellDesc& desc = Spell::spell(spellChoice);
+  if (!desc.ability) {
+    logstr log; log << "But you don't know that spell!"; return SP_NoSpell;
+  }
+
+  debstr() << "You have picked:" << spellIx << "\n";
+
+  Cuss::clear(true);
+  return spellChoice;
 }
 
 

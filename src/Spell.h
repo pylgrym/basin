@@ -110,9 +110,16 @@ public:
   static SpellEnum str2type(const char* str);
   static const SpellDesc& spell(SpellEnum);
   static SpellDesc& spellNC(SpellEnum);
+
+  static bool legalSpellIx(int ix);
+
   static SpellEnum rndSpell();
 
   static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
+
+  static SpellEnum pickASpell(const char* prompt);
+  static SpellEnum pickSpellAction(); // accept user input
+  
 
   static void initQual();
 

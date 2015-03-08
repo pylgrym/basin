@@ -422,3 +422,12 @@ public:
   FillLampCmd(Obj* oil_) :oil(oil_){}
   virtual bool Do(std::ostream& err);
 };
+
+
+
+class CastCmd : public Cmd {
+public:
+  Mob& mob;
+  CastCmd(Mob& mob_):mob(mob_) {}
+  virtual bool Do(std::ostream& err);
+};

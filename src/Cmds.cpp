@@ -696,3 +696,25 @@ bool UseCmd::Do(std::ostream& err) {
   }
   return true; 
 }
+
+
+
+
+bool CastCmd::Do(std::ostream& err) {
+  if (!Cmd::Do(err)) { return false; }
+  debstr() << "doing cast command.\n";
+
+  // DONE: SpellBook, 
+  // DONE:PickSpell. 
+  // DONE: Persist ID'ed spells. 
+  // DONE: Mark items as identified when sold to shop.
+  // menu:
+  SpellEnum choice = Spell::pickASpell("cast which spell?");
+  if (choice == SP_NoSpell) { return false;  }
+
+  // SpellInvCmd().Do(err);
+
+  ZapCmd zapCmd(NULL, mob, choice, SC_Holy); // SP_FireBolt
+  zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
+  return zapCmd.Do(err);
+}
