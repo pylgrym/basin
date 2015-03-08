@@ -388,7 +388,7 @@ void Spell::showSpellInv() {
 
   // Put column headers in front
   std::stringstream ss1;
-  ss1 << "K   L  I  A  M Desc (level,ident.,learned,cost)";
+  ss1 << "K  L I A M Desc (key,level,ident.,learned,cost)";
     Cuss::prtL(ss1.str().c_str());  
 
   int count = 0;
@@ -399,10 +399,10 @@ void Spell::showSpellInv() {
 
     std::stringstream ss;
     ss << ix;
-    ss << " " << std::fixed << std::setw(2) << d.level << "L";
-    ss << " " << (d.ident ? "!" : "?") << "I";
-    ss << " " << (d.ability ? "+" : "-") << "A";
-    ss << " " << d.manaCost << "M";
+    ss << " " << std::fixed << std::setw(2) << d.level; // << "L";
+    ss << " " << (d.ident ? "!" : "?"); // << "I";
+    ss << " " << (d.ability ? "+" : "-"); // << "A";
+    ss << " " << d.manaCost; // << "M";
     ss << " " << d.desc << "";
     
     Cuss::prtL(ss.str().c_str());  
