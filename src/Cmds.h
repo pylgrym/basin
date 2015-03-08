@@ -14,6 +14,8 @@
 #include "Creature.h"
 #include "LogEvents.h"
 
+#include <assert.h>
+
 class WalkCmd : public Cmd {
 public:
   WalkCmd(class Mob& mob_, int dx, int dy, bool force):old(mob_.pos), mob(mob_) {
@@ -224,6 +226,12 @@ public:
   }
 };
 
+
+
+class SpellInvCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};
 
 
 class UnequipCmd : public Cmd {

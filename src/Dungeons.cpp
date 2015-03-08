@@ -6,6 +6,7 @@
 #include "ShopInv.h"
 
 #include "PlayerMob.h"
+#include <assert.h>
 
 Dungeons Dungeons::the_dungeons;
 
@@ -36,6 +37,9 @@ bool Dungeons::persist(class Persist& p) {
 
   Bag::bag.persist(p);
   Equ::worn.persist(p);
+
+  Spell::persist(p); // remember which spells we recognise, and which we have as abilities.
+
   ShopInv::shop.persist(p);
 
   int dungeonDepth = dungeons.size();
@@ -70,6 +74,7 @@ bool Dungeons::persist(class Persist& p) {
 
 
   if (!p.bOut) { 
+    assert(PlayerMob::ply != NULL);
     PlayerMob::ply->dungLevel = dungLevel;
     setCurLevel(dungLevel);
   }

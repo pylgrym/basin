@@ -90,7 +90,8 @@ struct SpellDesc {
   // const char* bullet;
   std::string qual;
   COLORREF color;
-  bool ident; // known or not.
+  bool ident; // known purpose or not.
+  bool ability; // a learned ability.
 };
 
 
@@ -117,6 +118,8 @@ public:
 
   static void trySpellIdent(SpellEnum effect);
   static int manaCost(SpellEnum effect);
+
+  static bool persist(class Persist& p);
 
 private:
   static SpellDesc spells[SP_MaxSpells];

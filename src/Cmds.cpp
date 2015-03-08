@@ -650,3 +650,21 @@ bool TakeCmd::Do(std::ostream& err) {
   item.setObj(NULL);
   return true; 
 }
+
+
+
+bool SpellInvCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "doing spell Inventory command.\n";
+
+  Cuss::clear(false);
+  Cuss::prtL("  You know these spells:"); 
+
+  Bag::bag.showBagInv(false);
+
+  TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
+
+  Cuss::clear(true);
+  return true; 
+}

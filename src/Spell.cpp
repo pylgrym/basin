@@ -372,3 +372,23 @@ void Spell::trySpellIdent(SpellEnum effect) {
     desc.ident = true; 
   }
 }
+
+
+
+bool Spell::persist(class Persist& p) {
+
+  int spellCount = SP_MaxSpells - SP_NoSpell; // As NoSpell == 0, spellcount becomes equal to MaxSpell, and is correct loop limit.
+  p.transfer(spellCount, "spellCount");
+
+  for (int i = SP_NoSpell+1; i < spellCount; ++i) {
+
+    int spellType =  i; // When outbound, this is in control.
+    p.transfer(spellType, "spellType_ix");
+    SpellDesc& desc = spellNC( (SpellEnum) spellType); // Inbound, spellType comes from spellType_ix.
+
+    p.transfer(desc.ident, "ident");
+    p.transfer(desc.ability, "ability");
+  }
+
+  return true;
+}
