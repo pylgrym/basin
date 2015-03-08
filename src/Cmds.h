@@ -336,14 +336,16 @@ public:
       log << "You wait.";
     }
 
-    if (mob.stats.hp < mob.stats.maxHP) { // resting
-      bool chance = oneIn(6);
-      if (chance) { 
-        mob.recoverHP();  
-        mob.recoverMana();          
+    bool chance = oneIn(4);
+    if (chance) { 
+      if (mob.stats.hp < mob.stats.maxHP) { // resting
         mob.invalidateGfx();
+        mob.recoverHP();
         logstr log;
         log << "You regain some health!";
+      }
+      if (mob.stats.mana < mob.stats.maxMana) { // resting
+        mob.recoverMana();
       }
     }
     return true; 

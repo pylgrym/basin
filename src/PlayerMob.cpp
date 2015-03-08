@@ -120,6 +120,8 @@ void PlayerMob::dashboard() {
   addInf1("food", stats.hunger, width, dash);
   addInf1("conf.?", (int) stats.isConfused(), width, dash);
   addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
+
+  addInf1("au", stats.gold, width, dash);
 }
 
 
