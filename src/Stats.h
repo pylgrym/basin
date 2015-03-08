@@ -113,6 +113,7 @@ public:
   bool isConfused() const { return (confused > 0);  }
 
   int calcMaxHP();
+  int calcMaxMana();
 
   int calcTotalAC();
   int calcBaseAC();
@@ -141,6 +142,14 @@ public:
     int newHP = hp + inst;
     if (newHP > maxHP) { newHP = maxHP;  }
     hp = newHP;
+  }
+
+  void recoverMana() { // Randomized mana recov.
+    int frac = (maxMana / 10)+1;
+    int inst = rnd(frac / 2, frac+ frac/2);
+    int newMana = mana + inst;
+    if (newMana > maxMana) { newMana = maxMana;  }
+    mana = newMana;
   }
 
   void passTime();

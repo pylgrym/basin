@@ -376,10 +376,11 @@ public:
       log << "You wait.";
     }
 
-    if (mob.stats.hp < mob.stats.maxHP) {
+    if (mob.stats.hp < mob.stats.maxHP) { // resting
       bool chance = oneIn(6);
       if (chance) { 
-        mob.recoverHP(); // ++mob.stats.hp;
+        mob.recoverHP();  
+        mob.recoverMana();          
         mob.invalidateGfx();
         logstr log;
         log << "You regain some health!";
