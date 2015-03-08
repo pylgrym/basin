@@ -245,26 +245,32 @@ int crossDistance(CPoint a, CPoint b) { // Returns the longer of the 2 axis-dist
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
-  bool bFound = false;
-  int dirKey = 0;
+  CPoint dir = mobZapDir;
 
-  // FIXME - respectMultiNotif and promptForKey should be integrated!
-  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
-  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
-  const char* keyPrompt = "Zap which direction?";
-  for (;!bFound;) {
-    dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
+  if (mob.isPlayer()) { // Player chooses dir interactively:
+    bool bFound = false;
+    int dirKey = 0;
 
-    if (dirKey == VK_ESCAPE) {
-      Cuss::clear(true);
-      return false; // Cancelled zap operation.
-    }
+    // FIXME - respectMultiNotif and promptForKey should be integrated!
+    LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+    Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+    const char* keyPrompt = "Zap which direction?";
+    for (;!bFound;) {
+      dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
+
+      if (dirKey == VK_ESCAPE) {
+        Cuss::clear(true);
+        return false; // Cancelled zap operation.
+      }
     
-    switch (dirKey) {
-    case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
-    default: TheUI::BeepWarn(); break; // Not a DIR key.
-    }      
-  } // Loop until dir key.
+      switch (dirKey) {
+      case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
+      default: TheUI::BeepWarn(); break; // Not a DIR key.
+      }      
+    } // Loop until dir key.
+    dir = Map::key2dir(dirKey); 
+  }
+
 
   CPoint tileMagic(18, 24);
   CPoint tileFire(22, 24);
@@ -303,7 +309,6 @@ bool ZapCmd::Do(std::ostream& err) {
   }
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
-  CPoint dir = Map::key2dir(dirKey); 
   CPoint bullet = tgt;
   const int maxBulletRange = 50;
   for (int shoot = 0; shoot < maxBulletRange; ++shoot) {
