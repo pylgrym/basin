@@ -42,35 +42,43 @@ std::string Obj::the_item() const { // based on some_item.
 
 
 std::string Obj::make_indef_item(const std::string& s) {
-  //CA2T tmpU(s, CP_ACP);
   CString sU = CA2T(s.c_str(), CP_ACP); // tmpU;
   sU.Replace(L". ", L"");
+  sU.Replace(L"- ", L""); // grammatically, it makes sense not to do this.
   return std::string(CT2A(sU));
 }
 
 std::string Obj::indef_item() const { // based on some_item.
   CString s = some_item();
   s.Replace(L". ", L"");  
+  s.Replace(L"- ", L"");  
   return std::string(CT2A(s));
 }
 
 
 CString Obj::some_item() const {
-  //const char* sA = typeAsDescA(otype());
-  const char* sA = objdef->desc; 
+  // shorter - no article:
+  std::string sA = objdef->desc; // indef_item(); // would be recursive..
 
-  CA2T udesc(sA);
-  CString s = udesc;
+  CA2T udesc(sA.c_str());
+  CString desc = udesc;
 
   const char* spellDesc = soloident ? Spell::type2desc_Id(effect) : Spell::type2desc_Mys(effect);
-  CA2T uspell(spellDesc, CP_ACP); // CP_UTF8);
+  CA2T uspell(spellDesc, CP_ACP); 
 
   const char* aslot = Equ::slotDesc(eqslot());
   if (eqslot() == EQ_None) { aslot = "";  } // Don't display 'unwearable', it's superfluous.
-  CA2T uslot(aslot, CP_ACP); // CP_UTF8);
+  CA2T uslot(aslot, CP_ACP); 
 
   CString fmt;
-  fmt.Format(L"%d %s of %s %dd%d(%d,%d) %s[%d]", this->charges, (const TCHAR*)s, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, (const TCHAR*) uslot, ac);
+  // fmt.Format(L" %s %s %dd%d(%d,%d) [%d] <%d>", (const TCHAR*)desc, (const TCHAR*)uspell, dmgDice.n, dmgDice.x, toHit, toDmg, ac, charges);
+
+  CString sAC;      if (eqslot() != EQ_None)     { sAC.Format(L"[%d]", ac); }
+  CString sDice;    if (Equ::isWeapon(eqslot())) { sDice.Format(L"%dd%d", dmgDice.n, dmgDice.x); }
+  CString sBonus;   if (Equ::isWeapon(eqslot())) { sBonus.Format(L"(%d,%d)", toHit, toDmg); }
+  CString sCharges; if (usesCharges(otype()))    { sCharges.Format(L"<%d>", charges); }
+
+  fmt.Format(L"%s %s %s%s%s%s", (const TCHAR*)uspell, (const TCHAR*)desc, sAC, sDice, sBonus, sCharges);
 
   return fmt;
 }
@@ -587,6 +595,13 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
 bool Obj::isCurrency(ObjEnum otype) {
   switch (otype) {
   case OB_Gold: case OB_Gems: case OB_Emeralds: case OB_Amethysts: return true;
+  }
+  return false;
+}
+
+bool Obj::usesCharges(ObjEnum otype) {
+  switch (otype) {
+  case OB_Wand: case OB_Staff: return true;
   }
   return false;
 }

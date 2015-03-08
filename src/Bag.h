@@ -13,7 +13,7 @@ typedef std::vector<Obj*> BagCont;
 class Bag
 {
 public:
-  enum BagEnum { MaxBagSize = 15 }; //  10}; - 10 is too few..
+  enum BagEnum { MaxBagSize = 20 }; // 15 }; //  10}; - 10 is too few..
 
   BagCont objs; // is vector.
   int size() const { return objs.size();  }

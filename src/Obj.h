@@ -163,8 +163,9 @@ public:
 
   static const char* flavorUse(ObjEnum type);
 
-  static std::string make_indef_item(const std::string& s);
+  static std::string make_indef_item(const std::string& s); // used to make short-names.
   static bool isCurrency(ObjEnum otype);
+  static bool usesCharges(ObjEnum otype);
 
   static void initPrices();
   static void initWeights();

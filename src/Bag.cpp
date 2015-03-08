@@ -89,7 +89,7 @@ void Bag::showBagInv(bool bShowPrice) {
   for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
     Obj& o = **i;
     std::stringstream ss;
-    std::string descA = o.an_item();
+    std::string descA = o.indef_item(); // an_item();
     ss << ix;
     if (bShowPrice) {
       ss << " " << o.price() << "g";
