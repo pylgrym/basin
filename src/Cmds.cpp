@@ -334,7 +334,7 @@ bool ZapCmd::Do(std::ostream& err) {
       (ie if you have a minimum range, the bulllet must still travel before that.
       */
       if (crossDistance(newBullet, tgt) < spellDesc.minRange) {
-        logstr log; log << "The spell sizzles out, caused by the short range!";
+        logstr log; log << "The spell sizzles out, in too short range!";
         // clean-up gfx layer!
         CL->map[newBullet].overlay = tileNone; 
         break; 
