@@ -97,6 +97,7 @@ public:
 
   int mana;
   int maxMana;
+  std::vector<int> manaRolls; // These are fixed from start - they must be persisted!
 
   int ac;
   int toHit;

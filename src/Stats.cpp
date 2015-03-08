@@ -255,7 +255,10 @@ int fixedRoll(int dSide, int promille) {
 }
 
 
-int Stats::calcMaxMana() {
+int Stats::calcMaxMana() { 
+  if (isPlayer) {
+    int q = 42; // breakpoint.
+  }
   /* maximum mana,
   is based on something like
    - you get an offset equal to your int
@@ -271,8 +274,8 @@ int Stats::calcMaxMana() {
   int L1mana = base / 3; // will give 18 a 3,'almost 4'.
   // We want a high-level to get 90 mana, and 'high' is 40, so we need 2 mana every level. You get '1dx'(your modifier.)
 
-  static std::vector<int> manaRolls; // These are fixed from start - they must be persisted!
-  if (manaRolls.empty()) {
+  // These are fixed from start - they must be persisted!
+  if (manaRolls.empty() || manaRolls[1] == 0) {
     for (int i = 0; i < 40; ++i) {
       manaRolls.push_back(rnd(1000));
     }
@@ -527,14 +530,31 @@ bool Stats::persist(Persist& p) {
   p.transfer(theLevel,  "level"); 
   p.transfer(maxHP,     "maxHP"); 
   p.transfer(hp,        "hp"); 
-  p.transfer(xp, "xp"); 
-  // p.transfer(xpTotal, "xpTotal");  // will break savefile.
+
+  p.transfer(maxMana,   "maxMana");
+  p.transfer(mana,      "mana");
+
+  p.transfer(xp,        "xp"); 
+  p.transfer(xpTotal,   "xpTotal"); 
   p.transfer(xpToLevel, "xpToLevel"); 
+
   p.transfer(ac,        "ac"); 
   p.transfer(toHit,     "toHit");
   p.transfer(hunger,    "hunger"); 
   p.transfer(confused,  "confused"); 
   p.transfer(gold,      "gold"); 
+
+
+  // FIXME: - these should probably be persisted with a count, instead of hardcoding 40.
+  if (manaRolls.empty()) {
+    manaRolls.resize(40);
+  }
+  for (int i = 0; i < 40; ++i) { // Hmm, are we persisting mob stats too?
+    p.transfer(manaRolls[i], "manaRoll"); 
+  }
+
+  // just temporary: (is not necessary, because we save and load mana/maxMana too)
+  // calcStats(); // Now we have all (?) data, we can recalc maxMana/maxHP.
   return true;
 }
 
