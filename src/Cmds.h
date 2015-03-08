@@ -179,10 +179,10 @@ public:
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
 
 
-    if (o->otype() == OB_Gold || o->otype() == OB_Gems || o->otype() == OB_Emeralds || o->otype() == OB_Amethysts ) { // Gold is special - it's consumed on pickup, and added to gold balance:
+    if (Obj::isCurrency(o->otype())) { // Gold is special - it's consumed on pickup, and added to gold balance:
       mob.stats.gold += o->itemUnits;
       std::string idesc = o->indef_item();
-      err << "You pick up " << o->itemUnits << " " << idesc; // gold pieces.";
+      err << "You pick up " << o->itemUnits << " worth of " << idesc; // gold pieces.";
       item.setObj(NULL);
       delete o; 
       return true; 

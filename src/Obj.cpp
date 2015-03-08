@@ -488,6 +488,17 @@ void Obj::setTypeDefaults() {
     break;
   }
 
+  if (isCurrency(otype())) { // NB, 'gold' items shouldn't give too much gold.
+    int rate = 5;
+    switch (otype()) {
+    case OB_Gems:      rate = 3;  break;
+    case OB_Gold:      rate = 5;  break;
+    case OB_Amethysts: rate = 9;  break; // FIXME/depending on 'growth slope', these should be adjusted.
+    case OB_Emeralds:  rate = 12; break;
+    }
+    itemUnits = Dx( ilevel*rate + 1); // At level 10, expect to find up to 50g.
+  }
+
   if (eqslot() != EQ_None) { // try-out hack:
     ac = rnd(1, 7) + (ilevel/2); // Item level will give us better items.
   }
@@ -539,6 +550,14 @@ bool Obj::use(class Mob& who, std::ostream& err) { // returns true if use succee
   return bOK;
 } 
 
+bool Obj::isCurrency(ObjEnum otype) {
+  switch (otype) {
+  case OB_Gold: case OB_Gems: case OB_Emeralds: case OB_Amethysts: return true;
+  }
+  return false;
+}
+
+
 
 
 bool Obj::persist(Persist& p, CPoint& pos) {
@@ -572,3 +591,5 @@ bool Obj::persist(Persist& p, CPoint& pos) {
   }
   return true;
 }
+
+

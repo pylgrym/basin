@@ -164,6 +164,7 @@ public:
   static const char* flavorUse(ObjEnum type);
 
   static std::string make_indef_item(const std::string& s);
+  static bool isCurrency(ObjEnum otype);
 
   static void initPrices();
   static void initWeights();
