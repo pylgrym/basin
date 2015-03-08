@@ -19,6 +19,7 @@ extern int rndC(int from, int to); // from, AND including 'to'.  ("Closed")
 
 extern bool oneIn(int Nth); // "one out of N", e.g. 1/6 chance.
 extern bool XinY(int x, int y); // X out of Y
+extern bool pctChance(int pct); // test a chance in percent.
 
 extern int Dx(int x); // 1 x-die.
 extern int nDx(int n, int x); // roll n Dice-x and add them. 

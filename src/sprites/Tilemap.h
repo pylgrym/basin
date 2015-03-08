@@ -75,7 +75,7 @@ public:
 
   void drawTile( int x, int y, const TCHAR* key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost);
   void drawTileB(int x, int y, CPoint tilePos,   CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost);
-  void drawTileA(int x, int y, const char*  key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, int& cost);
+  void drawTileA(int x, int y, const char*  key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost);
 
   // requires gdi+:
   void tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORREF matColor);

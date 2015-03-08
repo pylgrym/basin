@@ -366,6 +366,7 @@ public:
   AttackSchool school;
   Obj* zapHitItem;
   bool consumeMana; // HACK - can we control this more elegantly? also, mana cost on spells.
+  CPoint mobZapDir; // Only used when monsters cast spells.
 
   ZapCmd(Obj* hitItem_, Mob& mob_, SpellEnum effect_, AttackSchool school_)
   :mob(mob_), effect(effect_),school(school_), zapHitItem(hitItem_), consumeMana(false) {

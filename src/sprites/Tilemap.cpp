@@ -123,7 +123,7 @@ Tiles::Tiles()
 }
 
 
-void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, int& cost) {
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
   CA2T ukey(key, CP_ACP);
   CPoint tilePos = tile(CString(ukey));
   drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost);

@@ -4,7 +4,7 @@
 #include "Cmds.h"
 #include "PlayerMob.h"
 
-const bool ML = false; // ML is 'monster log/verbose output'.
+const bool MLog = false; // ML is 'monster log/verbose output'.
 
 double MonsterMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   double duration = 1.0; // actionDuration  // seconds.
@@ -77,7 +77,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
     bool angry = oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
   } else {
-    if (ML) { debstr() << "I stay asleep.\n"; } 
+    if (MLog) { debstr() << "I stay asleep.\n"; } 
   }
 
   return 1.0; // duration.
@@ -87,7 +87,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
 
 double MonsterMob::actWander() { // returns time that action requires (0 means keep doing actions/keep initiative.)
 	// stagger to a random location:
-  if (ML) { debstr() << "I wander around randomly.\n"; }
+  if (MLog) { debstr() << "I wander around randomly.\n"; }
   int dx = rndC(-1, 1), dy = rndC(-1, 1);
   std::stringstream ss;
   bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
@@ -95,16 +95,52 @@ double MonsterMob::actWander() { // returns time that action requires (0 means k
 }
 
 
+// abs is in stdlib.h
+//int abs(int a) { return (a > 0 ? a : -a); } // FIXME, move to num-utils.
+
+
+bool Mob::playerOnStar() const { // If player is on a '8-star direction', we can use spell against him.
+
+  CPoint delta = playerDelta();  // ply - pos;
+
+  if (delta.x == 0 || delta.y == 0) { return true; } // .x == ply.x || pos.y = ply.y)
+  if (abs(delta.x) == abs(delta.y))  { return true;  }
+  // CPoint ply = PlayerMob::ply->pos;
+
+  // IDEA: spells can have ranges - require touch, or NOT allow directly next to target, or max 4 steps.
+
+  return false;
+}
+
+
 
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   CPoint dir = playerDir();
+
+  if (playerOnStar()) {
+    // if (nearPlayer()) { will change prob. (longer range, higher chance of spell attack.)
+    int castChance = (nearPlayer() ? 7 : 33);
+    bool willCast = pctChance(castChance);
+    if (willCast) {
+      ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // FIXME, should be spell's school instead? 
+      cmd.mobZapDir = dir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
+
+      // not a_mob
+      { logstr log; log << "Oh no! The " << this->pronoun() << " is aiming a spell at you!"; }
+      logstr log; // Will show a mob attacking!
+      bool bOK = cmd.Do(log);
+      if (bOK) { return 1.0; } // At least he used up his turn now..
+    }
+
+  }
+
   if (nearPlayer()) {
     debstr() << "I am near player and will attack!\n";
     // JG, If player is on neighbour tile, we should ALWAYS attack.
     logstr log;
     HitCmd(NULL, *this, dir.x, dir.y, SC_Phys).Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // Else, chase the player:
-    if (ML) { debstr() << "I am far from player and will chase!\n"; }
+    if (MLog) { debstr() << "I am far from player and will chase!\n"; }
     std::stringstream ss;
     WalkCmd walk(*this, dir.x, dir.y, false);
     if (!walk.legal(ss)) { // If moving straight across is blocked..
@@ -134,6 +170,11 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
 bool Mob::nearPlayer() const {
   int dist = PlayerMob::distPly(pos);
   return (dist <= 1);
+}
+
+CPoint Mob::playerDelta() const {
+  CPoint delta = (PlayerMob::ply->pos - pos);
+  return delta;
 }
 
 CPoint Mob::playerDir() const {
@@ -168,7 +209,7 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   CPoint dir = playerDir();
   dir.x = -dir.x; dir.y = -dir.y; // Flee in the opposite dir.
 
-  if (ML) { debstr() << "I am afraid and will flee from player.\n"; }
+  if (MLog) { debstr() << "I am afraid and will flee from player.\n"; }
 
   std::stringstream ss;
   WalkCmd walk(*this, dir.x, dir.y, false);

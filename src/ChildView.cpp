@@ -325,7 +325,10 @@ void CChildView::OnPaint() {
 
       if (!cell.creature.empty()) { 
         ++cost;
-        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255,cost); // false); MOBS
+        COLORREF mobColor = colorNone;
+        const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
+        mobColor = sd.color;
+        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, cost); // false); MOBS
 
         // Draw stats/HP:
         Mob* mob = cell.creature.m;

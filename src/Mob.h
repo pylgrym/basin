@@ -71,11 +71,15 @@ public:
 
     int intMood = mood;
     p.transfer(intMood, "mood"); 
-    if (!p.bOut) { mood = (MoodEnum)intMood;  }
+    if (!p.bOut) { mood = (MoodEnum) intMood;  }
 
     int intSchool = defSchool;
     p.transfer(intSchool, "defSchool"); 
-    if (!p.bOut) { defSchool = (AttackSchool)intSchool; }
+    if (!p.bOut) { defSchool = (AttackSchool) intSchool; }
+
+    int intMobSpell = mobSpell;
+    p.transfer(intMobSpell, "mobSpell"); 
+    if (!p.bOut) { mobSpell = (SpellEnum) intMobSpell; }
 
     p.transfer(mobDummyWeapon.n, "mobWeapon_n");
     p.transfer(mobDummyWeapon.x, "mobWeapon_x");
@@ -91,6 +95,9 @@ public:
   Dice mobDummyWeapon;
   AttackSchool defSchool;
   virtual AttackSchool school() const { return defSchool;  }
+
+  // IDEA: mob should be coloured with mobspell color.
+  SpellEnum mobSpell; // IDEA: mob should have a high chance of dropping an item of this school.
 
   virtual bool isPlayer() const { return ctype() == CR_Player;  }
 
@@ -121,8 +128,11 @@ public:
   Dice mobWeaponDice() { return mobDummyWeapon;  }
 
   bool nearPlayer() const;
-  CPoint playerDir() const;
+  CPoint playerDir() const; // Norm-1 pointing direction.
+  CPoint playerDelta() const; // Full pointing direction.
   bool lowHealth() const;
+
+  bool playerOnStar() const; // If player is on a '8-star direction', we can use spells against him.
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
@@ -199,7 +209,7 @@ public:
   virtual double actFlee();
 
   virtual std::string a_mob() const;
-  virtual std::string pronoun() const; // { return "you";  } // "You"/"The orc".
+  virtual std::string pronoun() const; //(FIXME, maybe should be called 'the_mob' instead of 'pronoun'. { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".
 };
 

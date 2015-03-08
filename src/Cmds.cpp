@@ -7,6 +7,7 @@
 #include "ShopInv.h"
 #include "PlayerMob.h"
 
+#include "stdlib.h" // abs.
 
 
 #include <MMSystem.h>
@@ -233,6 +234,13 @@ bool ZapCmd::legal(std::ostream& err) {
   return false;
 }
 
+int crossDistance(CPoint a, CPoint b) { // Returns the longer of the 2 axis-distances.
+  // FIXME, move to a util-lib.
+  CPoint d = a - b;
+  d.x = abs(d.x); d.y = abs(d.y);
+  return (d.x > d.y ? d.x : d.y);
+}
+
 
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
@@ -283,6 +291,8 @@ bool ZapCmd::Do(std::ostream& err) {
   default:       tile = tileWeird; break;
   }
 
+  const SpellDesc& spellDesc = Spell::spell(effect); // used by range-check.
+
   if (consumeMana) {
     // At this point, we eat the mana:
     int manaCost = Spell::manaCost(effect);
@@ -306,12 +316,29 @@ bool ZapCmd::Do(std::ostream& err) {
     newBullet += dir;
     if (!CL->map.legalPos(newBullet)) { break; }
 
+    if (crossDistance(newBullet, tgt) > spellDesc.maxRange) {
+      logstr log; log << "The spell sputters and dies away, in the distance.";
+      break;
+    }
+
     // It's legal, move to it:
     bullet = newBullet;
     CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
 
+
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
+      /* fixme, design: spell's minrange and maxrange should be honoured,
+      and have an effect - beware they should be 'safe',
+      and not just allow exploiting, e.g. shooting through walls
+      (ie if you have a minimum range, the bulllet must still travel before that.
+      */
+      if (crossDistance(newBullet, tgt) < spellDesc.minRange) {
+        logstr log; log << "The spell sizzles out, caused by the short range!";
+        // clean-up gfx layer!
+        CL->map[newBullet].overlay = tileNone; 
+        break; 
+      }
       Mob* target = CL->map[newBullet].creature.m;
       { logstr log; log << "The " << Spell::bulletTxt(effect) << " hits " << target->pronoun() << "."; } // monster."; } 
 

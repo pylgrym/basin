@@ -25,38 +25,38 @@ Spell::~Spell()
 }
 
 // Format:
-// Level, manaCost - semi-random suggestions..
+// Level, manaCost,minRange,maxRange- semi-random suggestions..
 SpellDesc Spell::spells[SP_MaxSpells] = {
-{ 1, 1,SC_None,"nospell", "No spell" }, // = 0,
-{ 2, 2,SC_Magic,"speedup", "Haste" }, // = 1,
-{ 4, 2,SC_Magic,"slowdown", "Slow" }, // = 2,
-{ 2, 1,SC_Mind,"confuse", "Confuse" }, // = 3,
-{ 1, 1,SC_Mind,"unconfuse", "Unconfuse" }, // = 4,
-{ 2, 1,SC_Mind,"confusemob", "Confuse monster" }, // = 5,
-{ 5, 2,SC_Magic,"teleport", "Teleport" }, // = 6,
-{ 1, 1,SC_Magic,"magicmissile", "Magic missile"}, // = 7,
-{ 3, 2,SC_Fire,"firebolt", "Fire bolt" }, // = 8,
-{ 5, 4,SC_Frost,"frostbolt", "Frost bolt" }, // = 9,
-{ 7, 6,SC_Fire,"fireball", "Fire ball" }, // = 10,
-{ 8, 2,SC_Earth,"stonetomud", "Stone to mud" }, // = 11,
-{ 9, 4,SC_Earth,"wallbuilding", "Wallbuilding" }, // = 12
-{10, 1,SC_Earth,"earthquake", "Earthquake" }, // = 13,
-{ 5, 2,SC_Gas,"stinkcloud", "Stinking cloud" }, // = 14,
-{ 9, 2,SC_Phys,"eat", "Food" }, // = 15,
-{ 1, 1,SC_Phys,"heal_light", "Heal light" }, // = 16,
-{ 2, 2,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
-{ 3, 4,SC_Phys,"heal_mod", "Heal moderate" }, // = 18,
-{ 4, 8,SC_Phys,"heal_serious", "Heal serious" }, // = 19,
-{ 5,12,SC_Phys,"heal_crit", "Healing critical" }, // = 20,
-{ 1, 1,SC_Phys,"sick", "Sickness" }, // = 21,
-{ 3, 2,SC_Light,"lightarea", "Light area" }, // = 22,
-{ 5, 3,SC_Light,"lightbeam", "Light beam" }, // = 23,
-{ 2, 1,SC_None,"magicmap", "Magic mapping" }, // = 24,
-{ 2, 1,SC_None,"phasedoor", "Phase door" }, // = 25,
-{ 3, 2,SC_None,"detectdoor", "Detect door" },// = 26,
-{ 4, 1,SC_None,"detecttrap", "Detect trap" }, // = 27,
-{ 5, 4,SC_None,"detecttreasure", "Detect treasure" }, // = 28,
-{ 6, 2,SC_None,"detectobject", "Detect object" }, // = 29x,
+{ 1, 1,0,40,SC_None,"nospell", "No spell" }, // = 0,
+{ 2, 2,0,40,SC_Magic,"speedup", "Haste" }, // = 1,
+{ 4, 2,0,40,SC_Magic,"slowdown", "Slow" }, // = 2,
+{ 2, 1,0,40,SC_Mind,"confuse", "Confuse" }, // = 3,
+{ 1, 1,0,40,SC_Mind,"unconfuse", "Unconfuse" }, // = 4,
+{ 2, 1,0,40,SC_Mind,"confusemob", "Confuse monster" }, // = 5,
+{ 5, 2,0,40,SC_Magic,"teleport", "Teleport" }, // = 6,
+{ 1, 1,0,40,SC_Magic,"magicmissile", "Magic missile"}, // = 7,
+{ 3, 2,0,40,SC_Fire,"firebolt", "Fire bolt" }, // = 8,
+{ 5, 4,0,40,SC_Frost,"frostbolt", "Frost bolt" }, // = 9,
+{ 7, 6,0,40,SC_Fire,"fireball", "Fire ball" }, // = 10,
+{ 8, 2,0,40,SC_Earth,"stonetomud", "Stone to mud" }, // = 11,
+{ 9, 4,0,40,SC_Earth,"wallbuilding", "Wallbuilding" }, // = 12
+{10, 1,0,40,SC_Earth,"earthquake", "Earthquake" }, // = 13,
+{ 5, 2,0,40,SC_Gas,"stinkcloud", "Stinking cloud" }, // = 14,
+{ 9, 2,0,40,SC_Phys,"eat", "Food" }, // = 15,
+{ 1, 1,0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
+{ 2, 2,0,40,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
+{ 3, 4,0,40,SC_Phys,"heal_mod", "Heal moderate" }, // = 18,
+{ 4, 8,0,40,SC_Phys,"heal_serious", "Heal serious" }, // = 19,
+{ 5,12,0,40,SC_Phys,"heal_crit", "Healing critical" }, // = 20,
+{ 1, 1,0,40,SC_Phys,"sick", "Sickness" }, // = 21,
+{ 3, 2,0,40,SC_Light,"lightarea", "Light area" }, // = 22,
+{ 5, 3,0,40,SC_Light,"lightbeam", "Light beam" }, // = 23,
+{ 2, 1,0,40,SC_None,"magicmap", "Magic mapping" }, // = 24,
+{ 2, 1,0,40,SC_None,"phasedoor", "Phase door" }, // = 25,
+{ 3, 2,0,40,SC_None,"detectdoor", "Detect door" },// = 26,
+{ 4, 1,0,40,SC_None,"detecttrap", "Detect trap" }, // = 27,
+{ 5, 4,0,40,SC_None,"detecttreasure", "Detect treasure" }, // = 28,
+{ 6, 2,0,40,SC_None,"detectobject", "Detect object" }, // = 29x,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -312,8 +312,8 @@ bool healSpellDice(Mob& actor, Dice dice) {
 }
 
 
-
-bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) {
+// Consider 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
+bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
   ZapCmd cmd(spellItem, actor, effect, school);
   logstr log;
   return cmd.Do(log);
@@ -347,7 +347,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   case SP_FireBall:     return bulletSpell(actor, item, effect, SC_Fire); break;
   case SP_StinkCloud:   return bulletSpell(actor, item, effect, SC_Gas); break;
 
-  case SP_StoneToMud:   return bulletSpell(actor, item, effect, SC_Air); break;  
+  case SP_StoneToMud:   return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
   case SP_WallBuilding: return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_Earthquake:   return bulletSpell(actor, item, effect, SC_Earth); break;
 
@@ -365,7 +365,7 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
 
   // case SP_Poison:       healSpell(actor); break;
   case SP_LightArea:   return lightSpell(actor, actor.pos,4); break;
-  case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead..
+  case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
 
   case SP_MagicMap: log << "(magicmap not impl yet.)"; return false;
 

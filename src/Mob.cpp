@@ -28,6 +28,7 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
   speed = 1.0;
 
   defSchool = (AttackSchool) rnd(0, SC_MaxSchools);
+  mobSpell = Spell::rndSpell();
 
   bool badMood = oneIn(12);
   if (badMood) { 

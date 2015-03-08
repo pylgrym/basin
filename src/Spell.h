@@ -86,6 +86,7 @@ enum SpellEnum {
 struct SpellDesc {
   int level;
   int manaCost;
+  int minRange, maxRange; // NB! -only used by 'zap' projectile spells, for now.
   AttackSchool school;
   const char* abbr;
   const char* desc;

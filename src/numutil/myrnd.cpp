@@ -20,6 +20,8 @@ bool oneIn(int Nth) { return (rand() % Nth) == 0;  } // "one out of N", e.g. 1/6
 
 bool XinY(int x, int y) { return (rnd(y) < x); }
 
+bool pctChance(int pct) { return (rnd(100) < pct); }
+
 int Dx(int x) { // 1 x-die.
   return rndC(1, x);
 }
