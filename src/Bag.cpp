@@ -94,7 +94,7 @@ void Bag::showBagInv(bool bShowPrice) {
     if (bShowPrice) {
       ss << " " << o.price() << "g";
     } else {
-      ss << " " << o.kweight();
+      ss << " " << std::fixed << std::setprecision(1) << o.kweight();
     }
     ss << " " << descA;
     
