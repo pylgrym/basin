@@ -135,13 +135,7 @@ public:
   void healPct(int percent);
   void healAbs(int val);
 
-  void useMana(int manaCost) { 
-    int newMana = mana - manaCost;
-    if (newMana < 0) {
-      newMana = 0;
-    }
-    mana = newMana;
-  }
+  bool useMana(int manaCost);
 
   void recoverHP() { // Randomized healing.
     int frac = (maxHP / 10)+1;

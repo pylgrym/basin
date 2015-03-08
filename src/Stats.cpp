@@ -582,3 +582,50 @@ int Stats::lvlAdj(int in) const {
   return adj;
 }
 
+
+
+
+
+bool Stats::useMana(int manaCost) { 
+  int newMana = mana - manaCost;
+  if (newMana < 0) {
+
+    /*
+    if (mob.stats.mana < Spell::manaCost(effect)) {
+
+      // FIXME, make a general prompter helper func, that integrates all this:
+      LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+      Cuss::clear(false);
+      const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
+      int YN_Key = 0;
+      bool bFound = false;
+      for (;!bFound;) {
+        YN_Key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "risk cast,Y/N"); 
+
+        if (YN_Key == VK_ESCAPE || YN_Key == 'N') {
+          Cuss::clear(true);
+          return false; // Cancelled zap operation.
+        }
+        if (YN_Key == 'Y') {bFound = true;  break;}
+      } // Loop until Y/N/Esc key.
+
+      bool bFail = oneIn(3); 
+      if (!bFail) {
+        logstr log; log << "You pull it off! ..";
+        return true;
+      }
+
+      err << "You fumble and damage your health.";
+      int severity = rnd(25, 50);
+      debstr() << "hurt-severity-pct:" << severity << "\n";
+      mob.stats.healPct(-severity);
+      return false;
+    }
+    */
+
+    newMana = 0;
+  }
+
+  mana = newMana;
+  return true;
+}

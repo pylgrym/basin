@@ -283,9 +283,14 @@ bool ZapCmd::Do(std::ostream& err) {
   default:       tile = tileWeird; break;
   }
 
-  // At this point, we eat the mana:
-  int manaCost = Spell::manaCost(effect);
-  mob.stats.mana =- manaCost;
+  if (consumeMana) {
+    // At this point, we eat the mana:
+    int manaCost = Spell::manaCost(effect);
+    if (!mob.stats.useMana(manaCost)) {
+      logstr log; log << "useMana failure!";
+      return false;
+    }
+  }
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
   CPoint dir = Map::key2dir(dirKey); 
