@@ -52,7 +52,7 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 3, 2,"detectdoor", "Detect door" },// = 26,
 { 4, 1,"detecttrap", "Detect trap" }, // = 27,
 { 5, 4,"detecttreasure", "Detect treasure" }, // = 28,
-{ 6, 2,"detectobject", "Detect object" }, // = 29,
+{ 6, 2,"detectobject", "Detect object" }, // = 29x,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
