@@ -8,6 +8,9 @@
 #include "Cmds.h"
 #include "Qual.h"
 
+#include "term.h"
+
+#include <iomanip>
 
 extern void playSound(CString soundFile);
 
@@ -385,17 +388,18 @@ void Spell::showSpellInv() {
 
   // Put column headers in front
   std::stringstream ss1;
-  ss1 << "L I A M Desc (level,ident.,learned,cost)";
+  ss1 << "K   L  I  A  M Desc (level,ident.,learned,cost)";
     Cuss::prtL(ss1.str().c_str());  
 
   int count = 0;
-  for (int i = SP_NoSpell+1; i < SP_MaxSpells; ++i) {
+  for (int i = SP_NoSpell+1; i < SP_MaxSpells; ++i, ++ix) {
+    if (Cuss::csr.y >= Term::Height-2) { break;  } // i > Term::Height - 2) { break;  } // FIXME, stay on screen.
     SpellDesc& d = spellNC( (SpellEnum) i); 
     SpellEnum checkType = (SpellEnum)i;
 
     std::stringstream ss;
     ss << ix;
-    ss << " " << d.level << "L";
+    ss << " " << std::fixed << std::setw(2) << d.level << "L";
     ss << " " << (d.ident ? "!" : "?") << "I";
     ss << " " << (d.ability ? "+" : "-") << "A";
     ss << " " << d.manaCost << "M";
