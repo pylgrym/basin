@@ -725,6 +725,46 @@ bool CastCmd::Do(std::ostream& err) {
 bool DoorToggleCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
   debstr() << "doing open/close door - command.\n";
+
   // TOdo - ask for direction key.
+  bool bFound = false;
+  int dirKey = 0;
+
+  // FIXME - respectMultiNotif and promptForKey should be integrated!
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+  const char* keyPrompt = "Which door? (dir.)";
+  for (;!bFound;) {
+    dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
+
+    if (dirKey == VK_ESCAPE) {
+      Cuss::clear(true);
+      return false; // Cancelled zap operation.
+    }
+    
+    switch (dirKey) {
+    case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
+    default: TheUI::BeepWarn(); break; // Not a DIR key.
+    }      
+  } // Loop until dir key.
+
+  CPoint dir = Map::key2dir(dirKey); 
+  CPoint doorPos = mob.pos + dir;
+  if (!CL->map.legalPos(doorPos)) { err << "Not a legal position."; return false; }
+
+  Cell& doorCell = CL->map[doorPos];
+  if (!doorCell.envir.isDoor()) { err << "That is not a door."; return false; }
+
+  if (doorCell.envir.type == EN_DoorOpen) { doorCell.envir.type = EN_DoorClosed;  }
+  else if (doorCell.envir.type == EN_DoorClosed) { doorCell.envir.type = EN_DoorOpen;  }
+  switch (doorCell.envir.type) {
+  case EN_DoorLocked: { err << "But the door is securely locked.";  return false; }
+  case EN_DoorStuck:  { err << "But the door is stuck.";            return false; }
+  case EN_DoorBroken: { err << "But the door is broken to pieces."; return false; }
+  }
+  // FIXME - no drawn tiles for types, and no code that inserts doors!
+  // FIXME - handle EN_DoorLocked EN_DoorStuck EN_DoorBroken
+  mob.invalidateGfx(doorPos, doorPos, true);
+
   return false;
 }

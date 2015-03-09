@@ -63,6 +63,9 @@ const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
     envirKeys[EN_DoorStuck]  = L"door_stuck";
     envirKeys[EN_DoorBroken] = L"door_broken";
 
+    envirKeys[EN_DoorOneWay] = L"door_oneway";
+    envirKeys[EN_DoorCullis] = L"door_cullis";
+
     // envirKeys[EN_] = L""; 
     // envirKeys[EN_] = L""; 
 

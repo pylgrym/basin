@@ -18,11 +18,13 @@ enum EnvirEnum {
   EN_Green = 'G',
   EN_Water = 'W',
 
-  EN_DoorOpen = '1',
+  EN_DoorOpen   = '1',
   EN_DoorClosed = '2',
   EN_DoorLocked = '3',
-  EN_DoorStuck = '4',
+  EN_DoorStuck  = '4',
   EN_DoorBroken = '5',
+  EN_DoorOneWay = '6', // (IDEA) Only allows passage in one direction (how to control?)
+  EN_DoorCullis = '7', // (IDEA) Shuts after first passage through. // It's 'portcullis', but I hate long words..
 
   EN_MaxLimit = 127 // highest nr to size arrays.
 };
@@ -67,6 +69,18 @@ public:
 
   bool interacts() const {  // FIXME, make a differentiate-mechanism
     return (type == EN_Shop);
+  }
+
+  bool isDoor() const {
+    switch (type) {
+    case EN_DoorOpen:
+    case EN_DoorClosed:
+    case EN_DoorLocked:
+    case EN_DoorStuck:
+    case EN_DoorBroken:
+      return true;
+    }
+    return false; // Everything else is not a door..
   }
 
   void setType(EnvirEnum type_) { type = type_;  }
