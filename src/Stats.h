@@ -37,6 +37,7 @@ public:
   std::string name;
   void roll();
   int mdf() const; // Beware, I have two different mechanisms active for this..
+  bool rollCheck(bool guifeedback) const; // if true, may trigger "Wow!/Argh!" messages.
 
   void makeAvg() { base = 11; }
 

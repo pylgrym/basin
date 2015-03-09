@@ -769,3 +769,59 @@ bool DoorToggleCmd::Do(std::ostream& err) {
 
   return false;
 }
+
+
+
+bool DoorBashCmd::Do(std::ostream& err) {
+  if (!Cmd::Do(err)) { return false; }
+  debstr() << "doing bash open/close door - command.\n";
+
+  // TOdo - ask for direction key.
+  bool bFound = false;
+  int dirKey = 0;
+
+  // FIXME - respectMultiNotif and promptForKey should be integrated!
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+  const char* keyPrompt = "Which door? (dir.)";
+  for (;!bFound;) {
+    dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
+
+    if (dirKey == VK_ESCAPE) {
+      Cuss::clear(true);
+      return false; // Cancelled zap operation.
+    }
+    
+    switch (dirKey) {
+    case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
+    default: TheUI::BeepWarn(); break; // Not a DIR key.
+    }      
+  } // Loop until dir key.
+
+  CPoint dir = Map::key2dir(dirKey); 
+  CPoint doorPos = mob.pos + dir;
+  if (!CL->map.legalPos(doorPos)) { err << "Not a legal position."; return false; }
+
+  Cell& doorCell = CL->map[doorPos];
+  if (!doorCell.envir.isDoor()) { err << "That is not a door."; return false; }
+
+  if (doorCell.envir.type == EN_DoorOpen || doorCell.envir.type == EN_DoorBroken) { err << "But that door is already open!"; return false; }
+  if (doorCell.envir.type != EN_DoorLocked && doorCell.envir.type != EN_DoorClosed) { err << "That is no door to bash."; return false; }
+
+  // Make a strength break check (use shield?)  
+  bool breakDoorSucceed = (mob.stats.Str.rollCheck(true) && mob.stats.Str.rollCheck(true)); // Two checks in a row.
+  if (!breakDoorSucceed) {
+    err << "the door doesn't budge.";  return true; // we still return true, because we spent the turn!
+  }
+
+  { 
+    logstr log; log << "The door crashes open!";
+  }
+
+  doorCell.envir.type = EN_DoorBroken; // If you bash a door open, it breaks.
+
+  Cuss::clear(true);
+  mob.invalidateGfx(doorPos, doorPos, true);
+
+  return false;
+}

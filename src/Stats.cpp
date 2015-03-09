@@ -649,3 +649,20 @@ bool Stats::useMana(int manaCost) {
   mana = newMana;
   return true;
 }
+
+
+
+bool Stat::rollCheck(bool guifeedback) const {
+  int roll = Dx(20);
+  bool success = ( roll <= v() ); // A high stat is easy to roll under.
+  // 1's and 20's ought to show up in gui!
+  if (roll == 1) { // 1 is always low enough:
+    logstr log; log << "Yes! You get it just right!"; // FIXME.. If it's 'inner workings' of something, multiple of these would be silly?
+    success = true;  
+  } 
+  if (roll == 20) { // 20 is always a fail:
+    logstr log; log << "Arrgh! You fumble..";
+    success = false;  
+  } 
+  return success;
+}

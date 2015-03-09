@@ -218,7 +218,9 @@ std::string MonsterMob::pronoun() const { // { return "you";  } // "You"/"The or
   return sAsc;
 }
 
-std::string MonsterMob::a_mob() const { // { return "you";  } // "You"/"An orc".
+
+
+std::string  MonsterMob::a_mob() const { // { return "you";  } // "You"/"An orc".
   CreatureEnum theCtype = ctype();
   std::string s = Creature::ctypeAsDesc(theCtype); 
   CA2T us(s.c_str(), CP_ACP);

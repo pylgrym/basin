@@ -443,3 +443,10 @@ public:
   DoorToggleCmd(Mob& mob_):mob(mob_) {}
   virtual bool Do(std::ostream& err);
 };
+
+class DoorBashCmd : public Cmd {
+public:
+  Mob& mob;
+  DoorBashCmd(Mob& mob_):mob(mob_) {}
+  virtual bool Do(std::ostream& err);
+};
