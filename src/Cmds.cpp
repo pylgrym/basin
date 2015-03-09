@@ -798,6 +798,8 @@ bool DoorBashCmd::Do(std::ostream& err) {
     }      
   } // Loop until dir key.
 
+  Cuss::clear(true);
+
   CPoint dir = Map::key2dir(dirKey); 
   CPoint doorPos = mob.pos + dir;
   if (!CL->map.legalPos(doorPos)) { err << "Not a legal position."; return false; }
@@ -811,7 +813,7 @@ bool DoorBashCmd::Do(std::ostream& err) {
   // Make a strength break check (use shield?)  
   bool breakDoorSucceed = (mob.stats.Str.rollCheck(true) && mob.stats.Str.rollCheck(true)); // Two checks in a row.
   if (!breakDoorSucceed) {
-    err << "the door doesn't budge.";  return true; // we still return true, because we spent the turn!
+    err << "The door doesn't budge.";  return true; // we still return true, because we spent the turn!
   }
 
   { 
@@ -820,7 +822,6 @@ bool DoorBashCmd::Do(std::ostream& err) {
 
   doorCell.envir.type = EN_DoorBroken; // If you bash a door open, it breaks.
 
-  Cuss::clear(true);
   mob.invalidateGfx(doorPos, doorPos, true);
 
   return false;

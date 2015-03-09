@@ -88,6 +88,7 @@ public:
 
   void setType(EnvirEnum type_) { type = type_;  }
   const TCHAR* typeS() { return etypeAsStr(type);  }
+  const std::string typestr();
   static const TCHAR* etypeAsStr(EnvirEnum type);
   static bool isBlockingEnv(EnvirEnum type); // May be put in different class.
 };

@@ -33,7 +33,8 @@ public:
     if (newpos == old) { err << "Not a move-direction.";  return false; }
 
     if (CL->map[newpos].blocked()) {
-      err << "That way is blocked."; // The way ahead is blocked.
+      Envir& env = CL->map[newpos].envir;
+      err << "That way is blocked by " << env.typestr() <<  "."; // The way ahead is blocked.
       return false;
     }
     return true;

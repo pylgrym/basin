@@ -41,6 +41,14 @@ bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
 }
 
 
+const std::string Envir::typestr() {
+  CString us = typeS();
+  CT2A as(us);
+  std::string s = as;
+  return s;
+}
+
+
 const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
   static std::vector<CString> envirKeys;
   if (envirKeys.size() == 0) {
