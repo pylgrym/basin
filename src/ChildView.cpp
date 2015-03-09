@@ -45,6 +45,7 @@ CChildView::CChildView() {
 
   int shiftKey = GetAsyncKeyState(VK_SHIFT);
   bool isShiftDown = (shiftKey < 0);
+  debstr() << "isShiftDown?" << isShiftDown << "\n";
 
   // Load normally, re-init if shift is down.
   int answerLoad = (isShiftDown ? IDNO : IDYES); // MessageBox(L"Load?", L"Basin", MB_ICONQUESTION | MB_YESNO);

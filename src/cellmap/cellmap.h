@@ -105,6 +105,9 @@ public:
 
   bool persist(class Persist& p);
   bool transferObj(Persist& p); // Only works for obj IN, to map:
+
+  static  CPoint dirs[4];
+  static  CPoint diag[4];
 };
 
 

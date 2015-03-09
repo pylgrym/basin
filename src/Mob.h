@@ -198,7 +198,7 @@ public:
   virtual double actAngry();
   virtual double actFlee();
 
-  virtual std::string Mob::a_mob() const;
+  virtual std::string a_mob() const;
   virtual std::string pronoun() const; // { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".
 };

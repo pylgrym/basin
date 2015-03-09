@@ -762,8 +762,9 @@ bool DoorToggleCmd::Do(std::ostream& err) {
   case EN_DoorStuck:  { err << "But the door is stuck.";            return false; }
   case EN_DoorBroken: { err << "But the door is broken to pieces."; return false; }
   }
-  // FIXME - no drawn tiles for types, and no code that inserts doors!
-  // FIXME - handle EN_DoorLocked EN_DoorStuck EN_DoorBroken
+  // DONE: - no drawn tiles for types, and no code that inserts doors!
+  // DONE: - handle EN_DoorLocked EN_DoorStuck EN_DoorBroken
+  Cuss::clear(true);
   mob.invalidateGfx(doorPos, doorPos, true);
 
   return false;

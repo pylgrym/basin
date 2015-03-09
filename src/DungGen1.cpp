@@ -92,7 +92,6 @@ void Laby::combine() {
   bool proper = false; // true;
   if (proper) {
     mainThin = 20; veinThin = 120;
-
   }
   thinnedMaze(mainThin); // 5); // 20); // 20 here, 120 there, is good.. ( but slow.)
 

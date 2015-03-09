@@ -71,6 +71,8 @@ public:
     return (type == EN_Shop);
   }
 
+  static EnvirEnum ranDoor();
+
   bool isDoor() const {
     switch (type) {
     case EN_DoorOpen:
@@ -78,6 +80,7 @@ public:
     case EN_DoorLocked:
     case EN_DoorStuck:
     case EN_DoorBroken:
+    case EN_DoorOneWay: case EN_DoorCullis: // these two are experimental.
       return true;
     }
     return false; // Everything else is not a door..

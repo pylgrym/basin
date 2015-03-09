@@ -84,3 +84,19 @@ const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
   if (type < 0 || type >= (int) envirKeys.size()) { return L"out of bounds, envir enum.";  }
   return envirKeys[type];
 }
+
+
+EnvirEnum Envir::ranDoor() {
+  const int DoorTypeCount = 7;
+  int choice = rnd(DoorTypeCount);
+  switch (choice) {
+  case 0: return EN_DoorOpen;
+  case 1: return EN_DoorClosed;
+  case 2: return EN_DoorLocked;
+  case 3: return EN_DoorStuck;
+  case 4: return EN_DoorBroken;
+  case 5: return EN_DoorOneWay;
+  case 6: return EN_DoorCullis; // these two are experimental.
+  }
+  return EN_DoorOpen;
+}

@@ -109,6 +109,48 @@ void Map::initOuterBorders() {
 }
 
 
+
+
+CPoint Map::dirs[4] = { // index of the 4 cardinal directions:
+  CPoint(-1, 0),
+  CPoint(0, -1),
+  CPoint(1, 0),
+  CPoint(0, 1)
+};
+
+CPoint Map::diag[4] = { // index of the 4 cardinal directions:
+  CPoint(-1, -1),
+  CPoint( 1, -1),
+  CPoint( 1,  1),
+  CPoint(-1,  1)
+};
+
+
+
+int countNeighbours(CPoint p, Laby& laby, MarkEnum mark) {
+  // FIXME - don't remove row 1 anymore from map/term.
+  int count = 0;
+  for (int i = 0; i < 4; ++i) {
+  if (laby.grid[ p + Map::dirs[i] ].c == mark) { ++count;  }
+  }
+  return count;
+}
+
+int countOpens(CPoint p, Laby& laby) { return countNeighbours(p, laby, M_Open); }
+int countWalls(CPoint p, Laby& laby) { return countNeighbours(p, laby, M_Wall); }
+
+int countDiag(CPoint p, Laby& laby, MarkEnum mark) {
+  // FIXME - don't remove row 1 anymore from map/term.
+  int count = 0;
+  for (int i = 0; i < 4; ++i) {
+  if (laby.grid[ p + Map::diag[i] ].c == mark) { ++count;  }
+  }
+  return count;
+}
+
+int countDiagOpens(CPoint p, Laby& laby) { return countDiag(p, laby, M_Open); }
+int countDiagWalls(CPoint p, Laby& laby) { return countDiag(p, laby, M_Wall); }
+
 void Map::initTunnels(int level) {
 
   Laby laby(Map::Width); // 101); // 51); // 101);
@@ -131,6 +173,17 @@ void Map::initTunnels(int level) {
         case M_Wall: etype = EN_Wall;  break; // M_Unvisited
         case M_Open: etype = EN_Floor; break;
         case M_Vein: etype = EN_Vein;  break; 
+        }
+
+        int openCount = countOpens(p, laby);
+        int wallCount = countWalls(p, laby);
+        int diagOpen = countDiagOpens(p, laby);
+        if (openCount == 2 && wallCount == 2 && laby.grid[p].c == M_Open) {
+          if (diagOpen == 2) {
+            // etype = EN_DoorOpen;
+          } else if (diagOpen == 1) {
+            etype = Envir::ranDoor(); // EN_DoorClosed;
+          }
         }
 
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
