@@ -227,7 +227,7 @@ Obj* Bag::pickBag(const char* prompt, bool bShowPrice) {
   } else {
     BagStack stack(*this);
     showBagInvStackedImpl(stack, bShowPrice); // in pickbag.
-    choice = pickAction();
+    choice = pickActionStacked(stack);
   }
 
   return choice;
