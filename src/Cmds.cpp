@@ -130,7 +130,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, isPlayer ? err : dummy); 
+  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy); 
   if (!bHit) { 
     if (mob.isPlayer()) {  
       playSound(L"sounds\\sfxr\\failure2.wav"); // HIT MOB
@@ -366,7 +366,7 @@ bool ZapCmd::Do(std::ostream& err) {
           // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
           // this way it can both use item and weapon..
           playSound(L"sounds\\sfxr\\firebolt@.wav"); // zap-spell-projectile
-          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
+          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school, effect); // Doing a zap.
           bool bOK = cmd.Do(err);
 
         }

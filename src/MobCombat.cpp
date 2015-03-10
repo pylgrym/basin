@@ -52,7 +52,7 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) {
 
 
 
-bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, std::ostream& os) { 
+bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, SpellEnum spell, std::ostream& os) { 
   // Collect 'attack info' in an AttackInfo struct.
 
   //ai.school = school; // FIXME, record that..
@@ -65,13 +65,17 @@ bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchoo
   ai.bHit = hitTest(adv, ai);  
   if (!ai.bHit) { return false;  }
 
-  ai.attackDice = mobWeaponDice();
-  if (isPlayer()) { 
-    if (attackItem != NULL) {   
-      ai.attackDice = attackItem->dmgDice;   
-      ai.dmgBonus = attackItem->toDmg;  
+  if (spell == SP_NoSpell) { // A physical/melee attack.. (or an arrow/throw-item?)
+    ai.attackDice = mobWeaponDice();
+    if (isPlayer()) { 
+      if (attackItem != NULL) {   
+        ai.attackDice = attackItem->dmgDice;   
+        ai.dmgBonus = attackItem->toDmg;  
+      }
     }
-   
+  } else { // A spell-based attack.
+    const SpellDesc& desc = Spell::spell(spell); 
+    ai.attackDice = Dice(desc.dice.num, desc.dice.side);
   }
 
   {

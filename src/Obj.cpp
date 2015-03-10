@@ -490,10 +490,10 @@ void Obj::setTypeDefaults() {
 
 
   case OB_Staff: case OB_Wand:
-    this->consumed = false; // 'chargey' items are not consumed on use-up, so far.
-    this->charges = rnd(0,16);
+    consumed = false; // 'chargey' items are not consumed on use-up, so far.
+    charges = rnd(0,16);
     switch (this->effect) {
-    case SP_MagicMissile: dmgDice = Dice(2, 4); break;
+    case SP_MagicMissile: dmgDice = Dice(2, 4); break; // FIXME, this only makes OBJECTS hit hard, how about the general spell..
     case SP_StinkCloud:   dmgDice = Dice(3, 4); break;
     case SP_FrostBolt:    dmgDice = Dice(4, 5); break; 
     case SP_FireBolt:     dmgDice = Dice(5, 6); break;

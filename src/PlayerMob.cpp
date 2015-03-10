@@ -229,7 +229,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
           }
         } else { // target-field HAS a creature - then it's an attack (we aren't very social, are we..)
           Obj* player_weapon = Equ::worn.weapon(); 
-          if (HitCmd(player_weapon, *this, dx, dy, SC_Phys).Do(ss)) { actionDuration = 1; bActionDone = true; }
+          if (HitCmd(player_weapon, *this, dx, dy, SC_Phys, SP_NoSpell).Do(ss)) { actionDuration = 1; bActionDone = true; } // player old-school HITTING something.
         }
       } //end movement-scope-block.
       break; // end of keyboard switch.

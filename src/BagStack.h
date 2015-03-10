@@ -13,6 +13,8 @@ public:
     return spell < rhs.spell;
   }
 
+  // FIXME: I should ask objects whether they are stackable or not. (potions are, armour isn't.)
+  // How can I make them stack/not stack - I must change operator<.
   Stacker(Obj* o) {
     spell = o->effect;
     objIx = Obj::def2ix(o->objdef);

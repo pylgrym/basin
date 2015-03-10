@@ -138,16 +138,17 @@ void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
     std::string descA = o.indef_item(); 
     ss << ix;
     ss << " " << count;
+
+    double kilos = stack.weights(i);
     if (bShowPrice) {
       ss << " " << o.price() << "g";
     } else {
-      ss << " " << std::fixed << std::setprecision(1) << o.kweight();
+      ss << " " << std::fixed << std::setprecision(1) << kilos; // o.kweight();
     }
     ss << " " << descA;
     
     Cuss::prtL(ss.str().c_str());  
 
-    double kilos = stack.weights(i);
     totalWeight += kilos;
   }
 

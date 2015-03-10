@@ -83,9 +83,15 @@ enum SpellEnum {
   SP_MaxSpells
 };
 
+struct DiceStruct {
+  int num;
+  int side;
+};
+
 struct SpellDesc {
   int level;
   int manaCost;
+  DiceStruct dice;
   int minRange, maxRange; // NB! -only used by 'zap' projectile spells, for now.
   AttackSchool school;
   const char* abbr;
