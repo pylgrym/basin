@@ -233,7 +233,7 @@ SpellEnum Spell::str2type(const char* str) {
 }
 
 
-SpellEnum Spell::rndSpell() {
+SpellEnum Spell::rndSpell_dangerous() {
   int ix = rnd(SP_MaxSpells);
   return (SpellEnum)ix;
 }

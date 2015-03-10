@@ -123,7 +123,7 @@ public:
 
   static bool legalSpellIx(int ix);
 
-  static SpellEnum rndSpell();
+  static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
   static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
