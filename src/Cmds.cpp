@@ -840,7 +840,7 @@ bool DoorBashCmd::Do(std::ostream& err) {
   if (!doorCell.envir.isDoor()) { err << "That is not a door."; return false; }
 
   if (doorCell.envir.type == EN_DoorOpen || doorCell.envir.type == EN_DoorBroken) { err << "But that door is already open!"; return false; }
-  if (doorCell.envir.type != EN_DoorLocked && doorCell.envir.type != EN_DoorClosed) { err << "That is no door to bash."; return false; }
+  if (doorCell.envir.type != EN_DoorLocked && doorCell.envir.type != EN_DoorClosed && doorCell.envir.type != EN_DoorStuck) { err << "That is no door to bash."; return false; }
 
   // Make a strength break check (use shield?)  
   bool breakDoorSucceed = (mob.stats.Str.rollCheck(true) && mob.stats.Str.rollCheck(true)); // Two checks in a row.

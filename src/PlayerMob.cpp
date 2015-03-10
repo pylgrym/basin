@@ -104,7 +104,8 @@ void PlayerMob::dashboard() {
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   addInf1("depth", depth, width, dash);
-  addInf1("ac", stats.ac, width, dash);
+
+  addInf1("ac", stats.ac, width, dash); // JG: A bit comes from dex bonus, so still show both..
   addInf2("worn", stats.wornAC_input, stats.wornAC_output, width, dash);
 
   int acEffect = Stats::calcAvgACeffect();
