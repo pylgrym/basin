@@ -54,6 +54,7 @@ enum CreatureEnum {
 
 
 struct MobDef {
+  int mlevel;
   CreatureEnum type;
   const char* tilekey;
   const char* desc;

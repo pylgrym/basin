@@ -122,6 +122,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="MobCombat.h" />
+    <ClInclude Include="MobDist.h" />
     <ClInclude Include="MobQueue.h" />
     <ClInclude Include="MonsterMob.h" />
     <ClInclude Include="numutil\myrnd.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="MobCombat.cpp" />
+    <ClCompile Include="MobDist.cpp" />
     <ClCompile Include="MobQueue.cpp" />
     <ClCompile Include="MonsterMob.cpp" />
     <ClCompile Include="numutil\myrnd.cpp" />
