@@ -210,21 +210,7 @@ public:
 
 class InvCmd : public Cmd {
 public:
-  virtual bool Do(std::ostream& err) {  
-    if (!Cmd::Do(err)) { return false; }
-
-    debstr() << "doing bag Inventory command.\n";
-
-    Cuss::clear(false);
-    Cuss::prtL("  Your bag contains:"); 
-
-    Bag::bag.showBagInv(false);
-
-    TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
-
-    Cuss::clear(true);
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 

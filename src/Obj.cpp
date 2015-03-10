@@ -15,7 +15,7 @@
 
 
 bool IsVowel(TCHAR c) {
-  CString vowels = L"aeiouy";
+  CString vowels = L"aeiou"; // y is consonant, speaking-wise.
   int pos = vowels.Find(c);
   return (pos >= 0);
 }

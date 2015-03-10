@@ -858,3 +858,23 @@ bool DoorBashCmd::Do(std::ostream& err) {
 
   return false;
 }
+
+
+
+
+bool InvCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "doing bag Inventory command.\n";
+
+  Cuss::clear(false);
+  Cuss::prtL("  Your bag contains:"); 
+
+  // Bag::bag.showBagInv(false); // in Inv-command.
+  Bag::bag.showBagInvStacked(false);
+
+  TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
+
+  Cuss::clear(true);
+  return true; 
+}
