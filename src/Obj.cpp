@@ -492,15 +492,15 @@ void Obj::setTypeDefaults() {
   case OB_Staff: case OB_Wand:
     consumed = false; // 'chargey' items are not consumed on use-up, so far.
     charges = rnd(0,16);
-    switch (this->effect) {
-    case SP_MagicMissile: dmgDice = Dice(2, 4); break; // FIXME, this only makes OBJECTS hit hard, how about the general spell..
-    case SP_StinkCloud:   dmgDice = Dice(3, 4); break;
-    case SP_FrostBolt:    dmgDice = Dice(4, 5); break; 
-    case SP_FireBolt:     dmgDice = Dice(5, 6); break;
-    case SP_FireBall:     dmgDice = Dice(6, 7); break;
-    case SP_StoneToMud:   dmgDice = Dice(7, 8); break;
-    case SP_WallBuilding: dmgDice = Dice(8, 9); break;
-    case SP_Earthquake:   dmgDice = Dice(9, 10); break;
+    switch (effect) {
+    case SP_MagicMissile: dmgDice = Dice(2, 4); break; // 5 // FIXME, this only makes OBJECTS hit hard, how about the general spell..
+    case SP_StinkCloud:   dmgDice = Dice(3, 4); break; // 7.5 // FIXME, what levels..?
+    case SP_FrostBolt:    dmgDice = Dice(4, 5); break; // 12  // I hope we are colouring monsters based on their spells, bcs. some hit hard..
+    case SP_FireBolt:     dmgDice = Dice(5, 6); break; // 17.5
+    case SP_FireBall:     dmgDice = Dice(6, 7); break; // 30
+    case SP_StoneToMud:   dmgDice = Dice(7, 8); break; // 31.5 
+    case SP_WallBuilding: dmgDice = Dice(8, 9); break; // 40
+    case SP_Earthquake:   dmgDice = Dice(9,10); break; // 49.5
     }
     break;
   }
