@@ -11,6 +11,7 @@
 #include "util/debstr.h"
 #include "obj.h"
 #include "Spell.h"
+#include "MobDist.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -62,6 +63,7 @@ BOOL CBasinApp::InitInstance()
   Obj::initWeights();
 
   Spell::initQual();
+  MobDist::enumerate();
 
 
 	// InitCommonControlsEx() is required on Windows XP if an application

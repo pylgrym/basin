@@ -49,6 +49,7 @@ enum ObjEnum {
   OB_Emeralds=32,
   OB_Amethysts=33,
   OB_Weapon = 34,
+  OB_WinItem = 35,
   /// OB_StairUp = 34,
   /// OB_StairDown = 35,
 

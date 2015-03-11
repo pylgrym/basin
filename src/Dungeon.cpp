@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "Dungeon.h"
-
 #include "Mob.h"
-#include "Levelize.h"
-
 #include "Bag.h"
 #include "PlayerMob.h"
+#include "Levelize.h"
+#include "MobDist.h"
+
 
 
 Dungeon::Dungeon(int level_)
@@ -59,8 +59,12 @@ void Dungeon::initMobs() {
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 
-    int mlevel = Levelize::suggestLevel(this->level);
-    Mob* monster = new MonsterMob(mlevel); // rndC(level, this->level + 2));
+    int mlevel = Levelize::suggestLevel(this->level); // First, pick a level for new mob.
+    CreatureEnum ctype = MobDist::suggRndMob(mlevel); // Then pick an appropriate creature-type for that mob.
+
+    Mob* monster = new MonsterMob(mlevel); 
+    monster->m_mobType = ctype;
+    
     map.moveMob(*monster, monster->pos);
     mobs.queueMob(monster, 1);
   }
