@@ -241,6 +241,11 @@ int crossDistance(CPoint a, CPoint b) { // Returns the longer of the 2 axis-dist
   return (d.x > d.y ? d.x : d.y);
 }
 
+/* design confusion: 
+hitcmd, zapcmd, dospell and bulletspell are too mixed-up in each other
+ - the mechanisms they handle: mob damage, projectile spells etc., 
+should go into a coherent design.
+*/
 
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
@@ -350,17 +355,23 @@ bool ZapCmd::Do(std::ostream& err) {
       CPoint aim = newBullet - tgt;
 
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_ConfuseMob: case SP_Teleport: 
+      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_Teleport: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
-        {
-          logstr log;
+        { logstr log;
           bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem); // hitting a mob.
-          if (bSpellOK && mob.isPlayer()) {
-            Spell::trySpellIdent(effect);
-          }
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
-      default:
+
+      case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
+        { logstr log;
+          bool bSpellOK = Spell::doSpell(SP_Confuse, *target, log, zapHitItem); // hitting a mob.
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
+          break;
+        }
+
+
+      default: // ALL BULLET spells, e.g. SP_MagicMissile. I considered even SP_ConfuseMob, but we don't need hitcmd for that.
         {
           // FIXME - attackschool instead of 'bullet', e.g. 'firebolt/ball'
           // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
@@ -368,7 +379,6 @@ bool ZapCmd::Do(std::ostream& err) {
           playSound(L"sounds\\sfxr\\firebolt@.wav"); // zap-spell-projectile
           HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school, effect); // Doing a zap.
           bool bOK = cmd.Do(err);
-
         }
       } // (End switch (which-spell-type-hit-mob-target).)
       break; // (Skip out of bullet-travel-loop.)
