@@ -89,7 +89,7 @@ void MobDist::dump() {
       double rate = level.mobRating(mr.mobIx);
       int intRate = int(rate * 1000.0 + 0.5);
       double rounded = (intRate / 10.0);
-      if (rounded = 0.0) {
+      if (rounded == 0.0) {
         os << "-;";
       } else {
         os << std::fixed << std::setprecision(1) << rounded << ";";
