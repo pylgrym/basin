@@ -58,6 +58,8 @@ struct MobDef {
   CreatureEnum type;
   const char* tilekey;
   const char* desc;
+  const char* tags;
+  //const char* tag[]; // [];
 };
 
 

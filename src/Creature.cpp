@@ -26,7 +26,8 @@ CreatureEnum Creature::type() const {
 
 
 MobDef mobDefs[] = {
-  {  0,CR_None, ".", "nothing" },
+  // FIXME - get rid of MobDef-ix having to be == CreatureEnum.
+  {  0,CR_None, ".", "nothing", "tag1,tag2,tag3" }, // , {"tag1","tag2","tag3",NULL}
   {  1,CR_Player, "@", "you" },
   {  1,CR_Kobold, "k", ". kobold" },
   {  2,CR_Dragon, "d", ". dragon" },
