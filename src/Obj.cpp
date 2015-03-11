@@ -126,6 +126,7 @@ ObjDef objDefs[] = {
 {OB_Pickaxe,   EQ_2Hands,  ". pickaxe",         8, "1d5", 3.5 },
 {OB_Emeralds,  EQ_None,    ". emerald",        14, "1d2", 0.5 },
 {OB_Amethysts, EQ_None,    ". amethyst",       12, "1d2", 0.5 },
+{OB_WinItem,   EQ_None,    ". emulator of Rodney", 12, "8d9", 5.0 }, // You find it on level 39.
 
 // fixme -weapons need proficiencies or similar (maybe just level they appear on?
 // to allow user to utilize the stronger weapons.

@@ -1,19 +1,15 @@
 #include "stdafx.h"
 #include "./cellmap.h"
-
 #include "numutil/myrnd.h"
-
 #include "../Mob.h"
-
 #include <assert.h>
-
 #include "Bag.h"
-
 #include "../MobQueue.h"
-
 #include "DungGen1.h"
-
 #include "Levelize.h"
+#include "MobDist.h"
+
+
 
 void Map::addRandomMob(int level) {
   CPoint pos(rnd(1, Width), rnd(2, Height));
@@ -22,6 +18,9 @@ void Map::addRandomMob(int level) {
   if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return; }
 
   Mob* monster = new MonsterMob(level);
+  CreatureEnum ctype = MobDist::suggRndMob(level); // Then pick an appropriate creature-type for that mob.
+  monster->m_mobType = ctype;
+
   CL->map.moveMob(*monster, monster->pos);
   CL->mobs.queueMob(monster,1);
 }
@@ -40,10 +39,14 @@ void Map::addObjAtPos(CPoint pos,int level) {
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
 
   const ObjDef& ranDef = Obj::randObjDesc();
-  //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-  Obj* newObj = new Obj(ranDef,level); // otype
+  Obj* newObj = new Obj(ranDef,level); 
+
   if (newObj->otype() == OB_Lamp) {
     newObj->itemUnits += rnd(500, 2500);
+  }
+
+  if (newObj->otype() == OB_WinItem && level < 39) { // You can't find it before level 39..
+    newObj->objdef = &Obj::objDesc(OB_Food);
   }
   cell.item.setObj(newObj);
 }

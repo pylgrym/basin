@@ -3,6 +3,7 @@
 #include <set>
 #include "numutil/myrnd.h"
 #include <assert.h>
+#include <iomanip>
 
 
 MobDist::MobDist()
@@ -52,6 +53,18 @@ public:
     return (CreatureEnum) (CR_MaxLimit - 1);
   }
 
+  double mobRating(CreatureEnum mobIx) {
+    std::set< MobRating >::iterator i;
+    for (i = mobs.begin(); i != mobs.end(); ++i) {
+      const MobRating& mr = *i;
+      if (mr.mobIx == mobIx) {
+        double rate = mr.rating / ratingSum;
+        return rate;
+      }
+    }
+    return 0.0;
+  }
+
 } ratings[MaxLevel + 1];
 
 
@@ -63,6 +76,28 @@ CreatureEnum MobDist::suggRndMob(int levelNum) {
   return ctype;
 }
 
+void MobDist::dump() {
+  std::ofstream os("mobstats.txt");
+
+  for (int i = CR_Kobold; i < CR_MaxLimit; ++i) { // We'll make rows for each mobb.
+    MobRating mr; mr.mobIx = (CreatureEnum)i;
+    const MobDef& def = Creature::mobDef(mr.mobIx);
+    os << def.desc << ";";
+
+    for (int L = 1; L < MaxLevel; ++L) { // Go through all levels.
+      LevelRating& level = ratings[L];
+      double rate = level.mobRating(mr.mobIx);
+      int intRate = int(rate * 1000.0 + 0.5);
+      double rounded = (intRate / 10.0);
+      if (rounded = 0.0) {
+        os << "-;";
+      } else {
+        os << std::fixed << std::setprecision(1) << rounded << ";";
+      }
+    }
+    os << std::endl;
+  }
+}
 
 void MobDist::enumerate() {
   const RatingNum MaxRating = 1000.0;
@@ -79,7 +114,8 @@ void MobDist::enumerate() {
       if (deltaL >= 0) { // Above current level, we slowly fade out.
         mr.rating = MaxRating / (deltaL + 1);
       } else { // ( <0 ) // Below current level, we abruptly fade in (ie squared.)
-        int squareDelta = (deltaL + 1); squareDelta = (squareDelta * squareDelta);
+        int absDelta = -deltaL;
+        int squareDelta = (absDelta + 1); squareDelta = (squareDelta * squareDelta);
         mr.rating = MaxRating / squareDelta;
       }
       // Now add this mob rating to cur Level.
@@ -91,4 +127,5 @@ void MobDist::enumerate() {
     level.makeLevelSum();
   } // for levels.
 
+  dump();
 }

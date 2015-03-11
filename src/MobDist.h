@@ -22,6 +22,7 @@ public:
   ~MobDist();
 
   static void enumerate();
+  static void dump();
 
   static CreatureEnum suggRndMob(int level);
 
