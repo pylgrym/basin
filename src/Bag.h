@@ -26,9 +26,13 @@ public:
   char letterIx(Obj* obj);
 
   void showBagInv(bool bShowPrice);
+  void showBagInvStacked(bool bShowPrice);
+  void showBagInvStackedImpl(class BagStack& stack, bool bShowPrice);
+
   void showShopInv();
   Obj* pickBag(const char* prompt, bool bShowPrice);
   Obj* pickAction(); // helper for pick 
+  Obj* pickActionStacked(class BagStack& stack); // helper for pick 
 
   Obj* findItem(ObjEnum otype);
 

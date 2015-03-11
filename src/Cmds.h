@@ -50,7 +50,9 @@ public:
 
 class HitCmd : public Cmd {
 public:
-  HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_):mob(mob_), hittee(NULL), school(school_), hitItem(hitItem_) {
+  HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_, SpellEnum spell_)
+    :mob(mob_), hittee(NULL), school(school_), spell(spell_), hitItem(hitItem_) 
+  {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
     hittee = CL->map[tgt].creature.m; 
   }
@@ -70,6 +72,7 @@ public:
   Mob& mob;
   Mob* hittee;
   AttackSchool school;
+  SpellEnum spell;
   Obj* hitItem;
 
   virtual bool Do(std::ostream& err);
@@ -210,21 +213,7 @@ public:
 
 class InvCmd : public Cmd {
 public:
-  virtual bool Do(std::ostream& err) {  
-    if (!Cmd::Do(err)) { return false; }
-
-    debstr() << "doing bag Inventory command.\n";
-
-    Cuss::clear(false);
-    Cuss::prtL("  Your bag contains:"); 
-
-    Bag::bag.showBagInv(false);
-
-    TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
-
-    Cuss::clear(true);
-    return true; 
-  }
+  virtual bool Do(std::ostream& err);
 };
 
 

@@ -4,6 +4,7 @@
 #include "theUI.h"
 #include <iomanip>
 #include <assert.h>
+#include "BagStack.h"
 
 Bag::Bag()
 {
@@ -114,6 +115,95 @@ void Bag::showBagInv(bool bShowPrice) {
 
 
 
+void Bag::showBagInvStacked(bool bShowPrice) {
+  BagStack stack(*this);
+  showBagInvStackedImpl(stack, bShowPrice);
+}
+
+
+void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
+  if (objs.size() == 0) {
+    Cuss::prtL("Zero items. Nothing. Nada."); 
+  }
+
+  char ix = 'a';
+  double everything = bagWeight() + Equ::worn.wornWeight();
+  double totalWeight = 0;
+  StackMap::iterator i; // BagCont::iterator i;
+  for (i = stack.stacks.begin(); i != stack.stacks.end(); ++i, ++ix) {
+
+    Obj& o = *stack.rep(i); 
+    int count = stack.count(i);
+    std::stringstream ss;
+    std::string descA = o.indef_item(); 
+    ss << ix;
+    ss << " " << count;
+
+    double kilos = stack.weights(i);
+    if (bShowPrice) {
+      ss << " " << o.price() << "g";
+    } else {
+      ss << " " << std::fixed << std::setprecision(1) << kilos; // o.kweight();
+    }
+    ss << " " << descA;
+    
+    Cuss::prtL(ss.str().c_str());  
+
+    totalWeight += kilos;
+  }
+
+  if (!bShowPrice) { // Then show weights instead:
+    std::stringstream ss;
+    ss << "Total weight: " << totalWeight << " kg";
+    ss << " (" << everything << ")";
+    Cuss::prtL(ss.str().c_str());  
+  }
+
+  Cuss::invalidate();
+}
+
+
+Obj* Bag::pickActionStacked(class BagStack& stack) { 
+  const char firstKey = 'A';
+  char lastKey = firstKey + stack.stacks.size()-1; // Bag::bag.
+  char lower = lastKey - ('A' - 'a');
+  CString s; 
+  s.Format(L"(letter [a-%c] or ESC)", lower);
+  CT2A keyPrompt(s, CP_ACP);  
+
+  int key = 0;
+  for (;;) {
+    key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-itemb"); 
+    if (key == VK_ESCAPE) {
+      Cuss::clear(true);
+      return NULL; // Cancelled pick operation.
+    }
+    if (key >= firstKey && key <= lastKey) {
+      break;
+    }
+    TheUI::BeepWarn();
+  }
+
+  int objIx = key - firstKey;
+  // Approach necessary because sets are not indexable:
+
+  StackMap::iterator si =stack.stacks.begin(); 
+  // BagCont::iterator si = objs.begin(); 
+
+  for (int i = 0; i < objIx && si != stack.stacks.end(); ++i, ++si) { }
+  if (si == stack.stacks.end()) { return false;  } // Error condition.
+
+  // Obj* obj = *si;
+  Obj* obj = stack.rep(si); 
+
+  debstr() << "You picked:" << obj << "\n";
+
+  Cuss::clear(true);
+  return obj;
+}
+
+
+
 Obj* Bag::findItem(ObjEnum otype) {
   BagCont::iterator si; 
   for (si = objs.begin(); si != objs.end(); ++si) {
@@ -129,8 +219,18 @@ Obj* Bag::pickBag(const char* prompt, bool bShowPrice) {
   Cuss::clear(false);
   Cuss::prtL(prompt);
 
-  showBagInv(bShowPrice); // Bag::bag.
-  return pickAction();
+  bool oldstyle = false;
+  Obj* choice = NULL;
+  if (oldstyle) {
+    showBagInv(bShowPrice); // in pickbag.
+    choice = pickAction();
+  } else {
+    BagStack stack(*this);
+    showBagInvStackedImpl(stack, bShowPrice); // in pickbag.
+    choice = pickActionStacked(stack);
+  }
+
+  return choice;
 }
 
 
@@ -168,6 +268,11 @@ Obj* Bag::pickAction() {
   Cuss::clear(true);
   return obj;
 }
+
+
+
+
+
 
 
 

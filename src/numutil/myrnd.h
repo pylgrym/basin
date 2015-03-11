@@ -7,7 +7,7 @@
 
 struct Dice {
   Dice() { n = 1; x = 2;  }
-  Dice(int n_, int x_) :n(n_), x(x_) {}
+  Dice(int num_, int xSided_) :n(num_), x(xSided_) {}
   int n; // number of dice.
   int x; // dice size.
   int roll(std::ostream& os) const;

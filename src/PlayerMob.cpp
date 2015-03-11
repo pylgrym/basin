@@ -104,7 +104,8 @@ void PlayerMob::dashboard() {
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   addInf1("depth", depth, width, dash);
-  addInf1("ac", stats.ac, width, dash);
+
+  addInf1("ac", stats.ac, width, dash); // JG: A bit comes from dex bonus, so still show both..
   addInf2("worn", stats.wornAC_input, stats.wornAC_output, width, dash);
 
   int acEffect = Stats::calcAvgACeffect();
@@ -229,7 +230,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
           }
         } else { // target-field HAS a creature - then it's an attack (we aren't very social, are we..)
           Obj* player_weapon = Equ::worn.weapon(); 
-          if (HitCmd(player_weapon, *this, dx, dy, SC_Phys).Do(ss)) { actionDuration = 1; bActionDone = true; }
+          if (HitCmd(player_weapon, *this, dx, dy, SC_Phys, SP_NoSpell).Do(ss)) { actionDuration = 1; bActionDone = true; } // player old-school HITTING something.
         }
       } //end movement-scope-block.
       break; // end of keyboard switch.

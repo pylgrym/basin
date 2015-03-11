@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "MobDist.h"
 
 #include <set>

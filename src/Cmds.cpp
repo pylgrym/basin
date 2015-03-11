@@ -130,7 +130,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, isPlayer ? err : dummy); 
+  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy); 
   if (!bHit) { 
     if (mob.isPlayer()) {  
       playSound(L"sounds\\sfxr\\failure2.wav"); // HIT MOB
@@ -366,7 +366,7 @@ bool ZapCmd::Do(std::ostream& err) {
           // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
           // this way it can both use item and weapon..
           playSound(L"sounds\\sfxr\\firebolt@.wav"); // zap-spell-projectile
-          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school);
+          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school, effect); // Doing a zap.
           bool bOK = cmd.Do(err);
 
         }
@@ -840,7 +840,7 @@ bool DoorBashCmd::Do(std::ostream& err) {
   if (!doorCell.envir.isDoor()) { err << "That is not a door."; return false; }
 
   if (doorCell.envir.type == EN_DoorOpen || doorCell.envir.type == EN_DoorBroken) { err << "But that door is already open!"; return false; }
-  if (doorCell.envir.type != EN_DoorLocked && doorCell.envir.type != EN_DoorClosed) { err << "That is no door to bash."; return false; }
+  if (doorCell.envir.type != EN_DoorLocked && doorCell.envir.type != EN_DoorClosed && doorCell.envir.type != EN_DoorStuck) { err << "That is no door to bash."; return false; }
 
   // Make a strength break check (use shield?)  
   bool breakDoorSucceed = (mob.stats.Str.rollCheck(true) && mob.stats.Str.rollCheck(true)); // Two checks in a row.
@@ -857,4 +857,24 @@ bool DoorBashCmd::Do(std::ostream& err) {
   mob.invalidateGfx(doorPos, doorPos, true);
 
   return false;
+}
+
+
+
+
+bool InvCmd::Do(std::ostream& err) {  
+  if (!Cmd::Do(err)) { return false; }
+
+  debstr() << "doing bag Inventory command.\n";
+
+  Cuss::clear(false);
+  Cuss::prtL("  Your bag contains:"); 
+
+  // Bag::bag.showBagInv(false); // in Inv-command.
+  Bag::bag.showBagInvStacked(false);
+
+  TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
+
+  Cuss::clear(true);
+  return true; 
 }

@@ -57,13 +57,13 @@ enum SpellEnum {
   SP_ConfuseMob,
   SP_Teleport  ,
   SP_MagicMissile , // SC_Magic
+  SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_FireBolt ,     // SC_Fire
   SP_FrostBolt ,    // SC_Frost
   SP_FireBall ,     // SC_Fire  10
   SP_StoneToMud ,   // SC_Air/Elm? // "DONE"
   SP_WallBuilding , // SC_Earth    // "DONE"
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
-  SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_Eat ,
   SP_Heal_light,
   SP_Heal_minor,
@@ -83,9 +83,15 @@ enum SpellEnum {
   SP_MaxSpells
 };
 
+struct DiceStruct {
+  int num;
+  int side;
+};
+
 struct SpellDesc {
   int level;
   int manaCost;
+  DiceStruct dice;
   int minRange, maxRange; // NB! -only used by 'zap' projectile spells, for now.
   AttackSchool school;
   const char* abbr;
@@ -117,7 +123,8 @@ public:
 
   static bool legalSpellIx(int ix);
 
-  static SpellEnum rndSpell();
+  static SpellEnum rndSpell_dangerous();
+  static SpellEnum rndSpell_level(int ilevel);
 
   static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
 
@@ -131,6 +138,7 @@ public:
   static int manaCost(SpellEnum effect);
 
   static void showSpellInv();
+  static bool isDmgSpell(SpellEnum stype);
 
   static bool persist(class Persist& p);
 

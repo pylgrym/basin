@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bag.h" />
+    <ClInclude Include="BagStack.h" />
     <ClInclude Include="Basin.h" />
     <ClInclude Include="cellmap\cellmap.h" />
     <ClInclude Include="ChildView.h" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bag.cpp" />
+    <ClCompile Include="BagStack.cpp" />
     <ClCompile Include="Basin.cpp" />
     <ClCompile Include="cellmap\cellmap.cpp" />
     <ClCompile Include="ChildView.cpp" />

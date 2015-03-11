@@ -25,38 +25,41 @@ Spell::~Spell()
 }
 
 // Format:
-// Level, manaCost,minRange,maxRange- semi-random suggestions..
+// Level, manaCost,(NumDside) minRange, maxRange- semi-random suggestions..
 SpellDesc Spell::spells[SP_MaxSpells] = {
-{ 1, 1,0,40,SC_None,"nospell", "No spell" }, // = 0,
-{ 2, 2,0,40,SC_Magic,"speedup", "Haste" }, // = 1,
-{ 4, 2,0,40,SC_Magic,"slowdown", "Slow" }, // = 2,
-{ 2, 1,0,40,SC_Mind,"confuse", "Confuse" }, // = 3,
-{ 1, 1,0,40,SC_Mind,"unconfuse", "Unconfuse" }, // = 4,
-{ 2, 1,0,40,SC_Mind,"confusemob", "Confuse monster" }, // = 5,
-{ 5, 2,0,40,SC_Magic,"teleport", "Teleport" }, // = 6,
-{ 1, 1,0,40,SC_Magic,"magicmissile", "Magic missile"}, // = 7,
-{ 3, 2,0,40,SC_Fire,"firebolt", "Fire bolt" }, // = 8,
-{ 5, 4,0,40,SC_Frost,"frostbolt", "Frost bolt" }, // = 9,
-{ 7, 6,0,40,SC_Fire,"fireball", "Fire ball" }, // = 10,
-{ 8, 2,0,40,SC_Earth,"stonetomud", "Stone to mud" }, // = 11,
-{ 9, 4,0,40,SC_Earth,"wallbuilding", "Wallbuilding" }, // = 12
-{10, 1,0,40,SC_Earth,"earthquake", "Earthquake" }, // = 13,
-{ 5, 2,0,40,SC_Gas,"stinkcloud", "Stinking cloud" }, // = 14,
-{ 9, 2,0,40,SC_Phys,"eat", "Food" }, // = 15,
-{ 1, 1,0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
-{ 2, 2,0,40,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
-{ 3, 4,0,40,SC_Phys,"heal_mod", "Heal moderate" }, // = 18,
-{ 4, 8,0,40,SC_Phys,"heal_serious", "Heal serious" }, // = 19,
-{ 5,12,0,40,SC_Phys,"heal_crit", "Healing critical" }, // = 20,
-{ 1, 1,0,40,SC_Phys,"sick", "Sickness" }, // = 21,
-{ 3, 2,0,40,SC_Light,"lightarea", "Light area" }, // = 22,
-{ 5, 3,0,40,SC_Light,"lightbeam", "Light beam" }, // = 23,
-{ 2, 1,0,40,SC_None,"magicmap", "Magic mapping" }, // = 24,
-{ 2, 1,0,40,SC_None,"phasedoor", "Phase door" }, // = 25,
-{ 3, 2,0,40,SC_None,"detectdoor", "Detect door" },// = 26,
-{ 4, 1,0,40,SC_None,"detecttrap", "Detect trap" }, // = 27,
-{ 5, 4,0,40,SC_None,"detecttreasure", "Detect treasure" }, // = 28,
-{ 6, 2,0,40,SC_None,"detectobject", "Detect object" }, // = 29x,
+{ 1, 1, {1,1}, 0,40,SC_None, "nospell", "No spell" }, // = 0,
+{ 2, 2, {1,1}, 0,40,SC_Magic,"speedup", "Haste" }, // = 1,
+{ 4, 2, {1,1}, 0,40,SC_Magic,"slowdown", "Slow" }, // = 2,
+{ 2, 1, {3,4}, 0,40,SC_Mind,"confuse", "Confuse" }, // = 3,
+{ 1, 1, {1,1}, 0,40,SC_Mind,"unconfuse", "Unconfuse" }, // = 4,
+{ 2, 1, {3,4}, 0,40,SC_Mind,"confusemob", "Confuse monster" }, // = 5,
+{ 5, 2, {1,1}, 0,40,SC_Magic,"teleport", "Teleport" }, // = 6,
+
+// JG, fixme: these powerlevels are arbitrary.
+{ 1, 1, {2,4}, 0,40,SC_Magic,"magicmissile", "Magic missile"}, // = 7,
+{ 6, 2, {3,4}, 0,40,SC_Gas,"stinkcloud", "Stinking cloud" }, // = 14,
+{11, 2, {5,6}, 0,40,SC_Fire,"firebolt", "Fire bolt" }, // = 8,
+{16, 4, {4,5}, 0,40,SC_Frost,"frostbolt", "Frost bolt" }, // = 9,
+{21, 6, {6,7}, 0,40,SC_Fire,"fireball", "Fire ball" }, // = 10,
+{26, 2, {7,8}, 0,40,SC_Earth,"stonetomud", "Stone to mud" }, // = 11,
+{31, 4, {8,9}, 0,40,SC_Earth,"wallbuilding", "Wallbuilding" }, // = 12
+{36, 1,{9,10}, 0,40,SC_Earth,"earthquake", "Earthquake" }, // = 13,
+
+{ 9, 2, {1,1}, 0,40,SC_Phys,"eat", "Food" }, // = 15,
+{ 1, 1, {1,1}, 0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
+{ 2, 2, {1,1}, 0,40,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
+{ 3, 4, {1,1}, 0,40,SC_Phys,"heal_mod", "Heal moderate" }, // = 18,
+{ 4, 8, {1,1}, 0,40,SC_Phys,"heal_serious", "Heal serious" }, // = 19,
+{ 5,12, {1,1}, 0,40,SC_Phys,"heal_crit", "Healing critical" }, // = 20,
+{ 1, 1, {1,1}, 0,40,SC_Phys,"sick", "Sickness" }, // = 21,
+{ 3, 2, {1,1}, 0,40,SC_Light,"lightarea", "Light area" }, // = 22,
+{ 5, 3, {1,1}, 0,40,SC_Light,"lightbeam", "Light beam" }, // = 23,
+{ 2, 1, {1,1}, 0,40,SC_None,"magicmap", "Magic mapping" }, // = 24,
+{ 2, 1, {1,1}, 0,40,SC_None,"phasedoor", "Phase door" }, // = 25,
+{ 3, 2, {1,1}, 0,40,SC_None,"detectdoor", "Detect door" },// = 26,
+{ 4, 1, {1,1}, 0,40,SC_None,"detecttrap", "Detect trap" }, // = 27,
+{ 5, 4, {1,1}, 0,40,SC_None,"detecttreasure", "Detect treasure" }, // = 28,
+{ 6, 2, {1,1}, 0,40,SC_None,"detectobject", "Detect object" }, // = 29x,
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -230,9 +233,34 @@ SpellEnum Spell::str2type(const char* str) {
 }
 
 
-SpellEnum Spell::rndSpell() {
+SpellEnum Spell::rndSpell_dangerous() {
   int ix = rnd(SP_MaxSpells);
   return (SpellEnum)ix;
+}
+
+
+SpellEnum Spell::rndSpell_level(int ilevel) {
+  bool demandDmg = false; // Kludge.
+  for (int i = 0; i < 20; ++i) {
+    int ix = rnd(SP_MaxSpells);
+    SpellEnum stype = (SpellEnum)ix;
+    //  make sure we don't get a too powerful blast spell at low level.
+    const SpellDesc& d = spell(stype);
+    if (d.level <= ilevel && (isDmgSpell(stype) || !demandDmg)) { return stype; }
+    if (isDmgSpell(stype)) { demandDmg = true; }
+  }
+  /* the kludge is about ensuring we get something that does damage,
+  if the item level was too high. otherwise, with our default setup,
+  damage-wands/staves would be highly unfavoured, because some of them have higher levels.
+    The general problem is, that we lack a level-categorizing aspect,
+  and general types (ie if we want to keep 'types' balanced,
+  then we could start by picking a general category, and then afterwards
+  determine a level-appropriate item of that category.
+  todo/fixme: same way that I should categorize my monsters, I
+  should categorize my items.
+  */
+  debstr() << "rndSpell_level warning, we gave up..\n";
+  return SP_DetectDoor; // Kludge: if we give up, give him a detect-door spell..
 }
 
 
@@ -507,3 +535,21 @@ bool Spell::persist(class Persist& p) {
 
   return true;
 }
+
+
+
+bool Spell::isDmgSpell(SpellEnum stype) {
+  switch (stype) {
+  case SP_MagicMissile:  // SC_Magic
+  case SP_StinkCloud:   // SC_Poison/SC_Gas
+  case SP_FireBolt:    // SC_Fire
+  case SP_FrostBolt:    // SC_Frost
+  case SP_FireBall:     // SC_Fire  10
+  case SP_StoneToMud:   // SC_Air/Elm? // "DONE"
+  case SP_WallBuilding: // SC_Earth    // "DONE"
+  case SP_Earthquake:  // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
+    return true;
+  }
+  return false;
+}
+

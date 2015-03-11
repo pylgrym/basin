@@ -105,11 +105,11 @@ public:
   Obj(const ObjDef& objdef_, int level_) :objdef(&objdef_)
     ,ilevel(level_), effect(SP_NoSpell), soloident(false), itemUnits(0), ac(1)  
   {
-    effect = Spell::rndSpell();
+    effect = Spell::rndSpell_level(level_);
     const ObjDef& desc = objdef_; 
 
     clear(); 
-    initRandom();
+    initRandom(); // in obj ctor.
   }
 
   std::string an_item() const; 
