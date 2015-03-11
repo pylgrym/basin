@@ -1,8 +1,9 @@
+#include "stdafx.h"
 #include "MobDist.h"
-
 #include <set>
-
 #include "numutil/myrnd.h"
+#include <assert.h>
+
 
 MobDist::MobDist()
 {
@@ -14,21 +15,12 @@ MobDist::~MobDist()
 }
 
 
-const int MaxLevel = 40;
 
-typedef double RatingNum;
+bool MobRating::operator < (const MobRating& rhs) const {
+  if (rating != rhs.rating) { return rating < rhs.rating; }
+  return mobIx < rhs.mobIx;
+}
 
-class MobRating {
-public:
-  MobRating() { rating = 0.0; mobIx = CR_None; }
-  RatingNum rating;
-  CreatureEnum mobIx;
-
-  bool operator < (const MobRating& rhs) const {
-    if (rating != rhs.rating) { return rating < rhs.rating;  }
-    return mobIx < rhs.mobIx;
-  }
-};
 
 
 class LevelRating {
@@ -61,6 +53,15 @@ public:
   }
 
 } ratings[MaxLevel + 1];
+
+
+CreatureEnum MobDist::suggRndMob(int levelNum) {
+  assert(levelNum >= 0);
+  assert(levelNum <= MaxLevel);
+  LevelRating& level = ratings[levelNum];
+  CreatureEnum ctype = level.rndMob();
+  return ctype;
+}
 
 
 void MobDist::enumerate() {

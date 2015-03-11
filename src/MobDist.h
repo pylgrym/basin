@@ -2,6 +2,19 @@
 
 #include "Creature.h"
 
+const int MaxLevel = 40;
+typedef double RatingNum;
+
+class MobRating {
+public:
+  MobRating() { rating = 0.0; mobIx = CR_None; }
+  RatingNum rating;
+  CreatureEnum mobIx;
+
+  bool operator < (const MobRating& rhs) const;
+};
+
+
 class MobDist
 {
 public:
@@ -9,5 +22,8 @@ public:
   ~MobDist();
 
   static void enumerate();
+
+  static CreatureEnum suggRndMob(int level);
+
 };
 
