@@ -112,11 +112,17 @@ void MobDist::enumerate() {
       //                             //, '-2' means 'mob is 2 above cur level' (and in the process of (abruptly) fading in.
       mr.rating = 0;
       if (deltaL >= 0) { // Above current level, we slowly fade out.
-        mr.rating = MaxRating / (deltaL + 1);
+        const int softFadeIn = 2; // Change this from zero to e.g. 2, to not fade in/out so abruptly (zero means 1000, 500,333,250.)
+        mr.rating = MaxRating / (deltaL + 1 + softFadeIn);
       } else { // ( <0 ) // Below current level, we abruptly fade in (ie squared.)
         int absDelta = -deltaL;
         int squareDelta = (absDelta + 1); squareDelta = (squareDelta * squareDelta);
         mr.rating = MaxRating / squareDelta;
+
+        const int hardFloor = 3; // We never allow high-level monsters more than 3 levels under intended level.
+        if (-deltaL < hardFloor) { // (IE "no multihued ancient dragons on L1.")
+          mr.rating = 0; // Force it to zero.
+        }
       }
       // Now add this mob rating to cur Level.
       if (mr.rating > 0) {
