@@ -119,8 +119,8 @@ void MobDist::enumerate() {
         int squareDelta = (absDelta + 1); squareDelta = (squareDelta * squareDelta);
         mr.rating = MaxRating / squareDelta;
 
-        const int hardFloor = 3; // We never allow high-level monsters more than 3 levels under intended level.
-        if (-deltaL < hardFloor) { // (IE "no multihued ancient dragons on L1.")
+        const int hardFloor = -3; // We never allow high-level monsters more than 3 levels under intended level.
+        if (deltaL < hardFloor) { // (IE "no multihued ancient dragons on L1.")
           mr.rating = 0; // Force it to zero.
         }
       }
