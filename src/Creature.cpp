@@ -27,9 +27,9 @@ CreatureEnum Creature::type() const {
 
 MobDef mobDefs[] = {
   // FIXME - get rid of MobDef-ix having to be == CreatureEnum.
-  {  0,CR_None, ".", "nothing", "tag1,tag2,tag3" }, // , {"tag1","tag2","tag3",NULL}
-  {  1,CR_Player, "@", "you" },
-  {  1,CR_Kobold, "k", ". kobold" },
+  {  0,CR_None, ".", "nothing" }, 
+  {  1,CR_Player, "@", "you" },     // ,   , { "tag1", "tag2", "tag3", NULL }
+  {  1, CR_Kobold, "k", ". kobold", { "tag1", "tag2", "tag3"} }, // "tag1,tag2,tag3" },
   {  2,CR_Dragon, "d", ". dragon" },
   {  3,CR_FireAnt, "a", ". fire ant" },
   {  4,CR_Jelly, "J", ". jelly" },
@@ -84,3 +84,9 @@ const MobDef&  Creature::mobDef(CreatureEnum type) {
 const char* Creature::ctypeAsStr(CreatureEnum type) { return mobDef(type).tilekey; }
 const char* Creature::ctypeAsDesc(CreatureEnum type) { return mobDef(type).desc; }
 
+
+void funfun() {
+  std::vector<int> myInts;
+  for (auto i : myInts) {
+  }
+}

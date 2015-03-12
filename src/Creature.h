@@ -3,6 +3,7 @@
 #include <ostream>
 
 #include "Persist.h"
+#include <vector>
 
 enum CreatureEnum {
   CR_None=0,
@@ -58,8 +59,13 @@ struct MobDef {
   CreatureEnum type;
   const char* tilekey;
   const char* desc;
-  const char* tags;
-  //const char* tag[]; // [];
+
+  std::vector< const char* > tags;
+
+  // const char* tags;
+  // (const char* tags)[];
+  //(const char* tags)[];
+  //const char* tag[32]; // [];
 };
 
 
