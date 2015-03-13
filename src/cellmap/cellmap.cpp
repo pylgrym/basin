@@ -9,6 +9,7 @@
 #include "Levelize.h"
 #include "MobDist.h"
 
+#include "../GrowSeed.h"
 
 
 void Map::addRandomMob(int level) {
@@ -109,6 +110,7 @@ void Map::initWorld(int level) {
     initTown(level);
   } else {
     initTunnels(level);
+    // initTunnels2(level);
   }
 }
 
@@ -171,6 +173,12 @@ int countDiag(CPoint p, Laby& laby, MarkEnum mark) {
 
 int countDiagOpens(CPoint p, Laby& laby) { return countDiag(p, laby, M_Open); }
 int countDiagWalls(CPoint p, Laby& laby) { return countDiag(p, laby, M_Wall); }
+
+void Map::initTunnels2(int level) {
+  GrCanvas laby;
+  runSimu(laby, NULL); // CDC* dc);
+  /* now do something with laby, transfer it to cellmap. */
+}
 
 void Map::initTunnels(int level) {
 

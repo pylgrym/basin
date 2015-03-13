@@ -86,6 +86,7 @@ public:
 
   void addColDemo(int x, int y);
 
+  void initTunnels2(int level);
 
   // static Map map;
 

@@ -135,6 +135,9 @@
     <ClInclude Include="BagStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GrowSeed.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -243,6 +246,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BagStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrowSeed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
