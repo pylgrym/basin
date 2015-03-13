@@ -306,6 +306,11 @@ bool attack_ranged() { return false; }
 
 bool stay() { return false; }
 
+
+double MonsterMob::actGeneric() {
+  return 1.0;
+}
+
 void f_ai() {
   /* todo - compare with article http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
   to understand if I'm missing out on features he manages to fit in.
@@ -325,31 +330,48 @@ void f_ai() {
 
 /* ai info:
 http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
+
+Priorities here:
+(1) (morale%) if hurt, flee-else-attack
+(2) (charge%,retreat%,min/max-range) if undesired-range and 'have-options': randomly attack or adjust-range.
+(3) if can-attack: attack
+(4) if undesired-range and can-adjust: adjust.
+(5) remain.
+
         TYPICAL AI
-            If damage > morale
-               if can-run-away-from-player
-                  run-away-from-player
-               else if can-attack-player
-                  attack-player
-            else if too-far-from-player
-               AND can-attack-player
-               AND can-move-toward-player
-                   if  random < charge-probability
-                       move-toward-player     
-                   else attack-player
-            else if too-close-to-character
-               AND can-attack-player
-               AND can-move-away-from-player
-                   if random < retreat-probability
-                      move-away-from-player
-                   else attack-player
-            else if can-attack-player
-               attack-player
-            else if too-far-from-player 
-               AND can-move-toward-player
-     move-toward-player
-            else if too-close-to-player
-               AND can-move-away-from-player
-                   move-away-from-player
-            else stand-still
+
+If damage > morale {
+  if can-run-away-from-player {
+    run-away-from-player 
+  } else if can-attack-player {
+    attack-player
+  }
+
+} else if too-far-from-player AND can-attack-player AND can-move-toward-player {
+  if random < charge-probability {
+    move-toward-player     
+  } else  {
+    attack-player
+  }
+
+} else if too-close-to-character AND can-attack-player AND can-move-away-from-player {
+  if random < retreat-probability {
+    move-away-from-player
+  } else {
+    attack-player
+  }
+
+else if can-attack-player {
+  attack-player
+
+} else if too-far-from-player AND can-move-toward-player {
+  move-toward-player
+
+} else if too-close-to-player AND can-move-away-from-player {
+  move-away-from-player
+
+} else {
+  stand-still
+}
+
 */
