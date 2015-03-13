@@ -297,8 +297,13 @@ bool teleportSpell(Mob& actor, int range) {
   { logstr log; log << "Your body shifts in time and space."; }
 
   for (int i = 0; i < 10; ++i) { // We try a number of times, to avoid teleporting into rock.
-    int dx = rndC(-range, range), dy = rndC(-range, range);
-    WalkCmd cmd(actor, dx, dy, true);
+    CPoint delta;
+    for (;;) {
+      delta.x = rndC(-range, range); delta.y = rndC(-range, range);
+      CPoint newPos = actor.pos + delta;
+      if (CL->map.legalPos(newPos)) { break; }
+    }
+    WalkCmd cmd(actor, delta.x, delta.y, true);
     // Possibly check 'legal' (for mapPosLegal), even before calling Do.
     logstr log;
     if (cmd.Do(log)) { return true;  } // Otherwise, keep trying different directions.

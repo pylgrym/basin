@@ -126,7 +126,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
       cmd.mobZapDir = dir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
 
       // not a_mob
-      { logstr log; log << "Oh no! The " << this->pronoun() << " is aiming a spell at you!"; }
+      { logstr log; log << pronoun() << " aims a spell at you!"; }
       logstr log; // Will show a mob attacking!
       bool bOK = cmd.Do(log);
       if (bOK) { return 1.0; } // At least he used up his turn now..
