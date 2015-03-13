@@ -306,6 +306,11 @@ bool attack_ranged() { return false; }
 
 bool stay() { return false; }
 
+
+double MonsterMob::actGeneric() {
+  return 1.0;
+}
+
 void f_ai() {
   /* todo - compare with article http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
   to understand if I'm missing out on features he manages to fit in.
@@ -325,31 +330,171 @@ void f_ai() {
 
 /* ai info:
 http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
+
+Priorities here:
+(1) (morale%) if hurt, flee-else-attack
+(2) (charge%,retreat%,min/max-range) if undesired-range and 'have-options': randomly attack or adjust-range.
+(3) if can-attack: attack
+(4) if undesired-range and can-adjust: adjust.
+(5) remain.
+
         TYPICAL AI
-            If damage > morale
-               if can-run-away-from-player
-                  run-away-from-player
-               else if can-attack-player
-                  attack-player
-            else if too-far-from-player
-               AND can-attack-player
-               AND can-move-toward-player
-                   if  random < charge-probability
-                       move-toward-player     
-                   else attack-player
-            else if too-close-to-character
-               AND can-attack-player
-               AND can-move-away-from-player
-                   if random < retreat-probability
-                      move-away-from-player
-                   else attack-player
-            else if can-attack-player
-               attack-player
-            else if too-far-from-player 
-               AND can-move-toward-player
-     move-toward-player
-            else if too-close-to-player
-               AND can-move-away-from-player
-                   move-away-from-player
-            else stand-still
+
+If damage > morale {
+  if can-run-away-from-player {
+    run-away-from-player 
+  } else if can-attack-player {
+    attack-player
+  }
+
+} else if too-far-from-player AND can-attack-player AND can-move-toward-player {
+  if random < charge-probability {
+    move-toward-player     
+  } else {
+    attack-player
+  }
+
+} else if too-close-to-character AND can-attack-player AND can-move-away-from-player {
+  if random < retreat-probability {
+    move-away-from-player
+  } else {
+    attack-player
+  }
+
+else if can-attack-player {
+  attack-player
+
+} else if too-far-from-player AND can-move-toward-player {
+  move-toward-player
+
+} else if too-close-to-player AND can-move-away-from-player {
+  move-away-from-player
+
+} else {
+  stand-still
+}
+
 */
+
+
+
+// void putpixel(int x, int y, int color){}
+
+void bres_line(int x,int y,int x2, int y2, std::vector<CPoint>& pixels) { // int color) {
+  // Bresenham.
+  // Alternatively, this should be a visitor-iterator, where 'putpixel' becomes the callback.
+  // Source: http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
+  int w = x2 - x; 
+  int h = y2 - y; 
+  int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0; 
+  if (w<0) { dx1 = -1; } else if (w>0) { dx1 = 1; }
+  if (h<0) { dy1 = -1; } else if (h>0) { dy1 = 1; }
+  if (w<0) { dx2 = -1; } else if (w>0) { dx2 = 1; }
+  int longest = abs(w); 
+  int shortest = abs(h); 
+  if (!(longest>shortest)) {
+    longest = abs(h); 
+    shortest = abs(w); 
+    if (h<0) { dy2 = -1; } else if (h>0) { dy2 = 1; }
+    dx2 = 0;             
+  }
+  int numerator = longest >> 1; 
+  for (int i=0; i<=longest; i++) {
+    pixels.push_back(CPoint(x, y)); // putpixel(x, y, color);
+    numerator += shortest;
+    if (!(numerator<longest)) {
+        numerator -= longest; 
+        x += dx1; y += dy1;
+    } else {
+        x += dx2; y += dy2;
+    }
+  }
+}
+
+
+
+class BresIter {
+public:
+  std::vector<CPoint> pixels; // Output.
+  int i; // loop var.
+
+  int longest, shortest;
+  int dx1, dy1, dx2, dy2;
+  int numerator;
+  int x, y;
+
+  BresIter(int x1, int y1, int x2, int y2) {
+    // Bresenham.
+    // Alternatively, this should be a visitor-iterator, where 'putpixel' becomes the callback.
+    // Source: http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
+    x = x1; y = y1;
+
+    int w = x2 - x;
+    int h = y2 - y;
+
+    dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+    if (w < 0) { dx1 = -1; }
+    else if (w > 0) { dx1 = 1; }
+    if (h < 0) { dy1 = -1; }
+    else if (h > 0) { dy1 = 1; }
+    if (w < 0) { dx2 = -1; }
+    else if (w > 0) { dx2 = 1; }
+    longest = abs(w);
+    shortest = abs(h);
+    if (!(longest > shortest)) {
+      longest = abs(h);
+      shortest = abs(w);
+      if (h < 0) { dy2 = -1; }
+      else if (h > 0) { dy2 = 1; }
+      dx2 = 0;
+    }
+    numerator = longest >> 1;
+
+    i = 0;
+  }
+
+  void iterAll() {
+    for (int i=0; i<=longest; i++) {
+      next();
+    }
+  }
+
+  void iterAll2() {
+    for ( ; !done(); ) {
+      CPoint p = next();
+      // Use p
+    } 
+
+    do { CPoint p = next(); } while (!done());
+  }
+
+  bool done() const { return !(i <= longest);  }
+
+  CPoint next() {
+    CPoint curPoint(x, y);
+    pixels.push_back(curPoint); // putpixel(x, y, color);
+
+    numerator += shortest;
+    if (!(numerator<longest)) {
+      numerator -= longest; 
+      x += dx1; y += dy1;
+    } else {
+      x += dx2; y += dy2;
+    }
+
+    ++i;
+    return curPoint;
+  }
+
+}; // end class BresIter 
+
+
+
+void bresenExample() {
+  BresIter i(4, 9, 74, 35);
+  for ( ; !i.done(); ) {
+    CPoint p = i.next();
+    CL->map[p].envir.type = EN_Green;
+    // Use p
+  } 
+}

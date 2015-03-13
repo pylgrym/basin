@@ -14,8 +14,14 @@
 void Map::addRandomMob(int level) {
   CPoint pos(rnd(1, Width), rnd(2, Height));
   assert(legalPos(pos));
+
+  addRandomMobAtPos(pos,level);
+}
+
+
+bool Map::addRandomMobAtPos(CPoint pos, int level) {
   Cell& cell = (*this)[pos];
-  if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return; }
+  if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return false; }
 
   Mob* monster = new MonsterMob(level);
   CreatureEnum ctype = MobDist::suggRndMob(level); // Then pick an appropriate creature-type for that mob.
@@ -23,8 +29,18 @@ void Map::addRandomMob(int level) {
 
   CL->map.moveMob(*monster, monster->pos);
   CL->mobs.queueMob(monster,1);
+  return true;
 }
 
+
+void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
+  for (int i = 0; i < n; ++i) {
+    CPoint posA = pos;
+    posA.x += rndC(-radius, radius);
+    posA.y += rndC(-radius, radius);
+    addRandomMobAtPos(posA, level);
+  }
+}
 
 
 void Map::addRandomObj(int level) {
@@ -32,6 +48,7 @@ void Map::addRandomObj(int level) {
   assert(legalPos(pos));
   addObjAtPos(pos,level);
 }
+
 
 void Map::addObjAtPos(CPoint pos,int level) {
   assert(legalPos(pos));
@@ -51,11 +68,12 @@ void Map::addObjAtPos(CPoint pos,int level) {
   cell.item.setObj(newObj);
 }
 
-void Map::scatterObjsAtPos(CPoint pos, int n, int level) {
+
+void Map::scatterObjsAtPos(CPoint pos, int n, int level, int radius) {
   for (int i = 0; i < n; ++i) {
     CPoint posA = pos;
-    posA.x += rndC(-1, 1);
-    posA.y += rndC(-1, 1);
+    posA.x += rndC(-radius, radius);
+    posA.y += rndC(-radius, radius);
     addObjAtPos(posA, level);
   }
 }
