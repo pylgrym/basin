@@ -581,7 +581,7 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
   bool bOK = false;
   { // Act on obj.effect:
     logstr log;
-    bOK = Spell::doSpell(effect, who, log, this);
+    bOK = Spell::doSpell(effect, who, NULL, log, this);
     if (bOK) {
       if (bOK && who.isPlayer()) {
         Spell::trySpellIdent(effect);

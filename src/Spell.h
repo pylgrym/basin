@@ -52,11 +52,16 @@ enum SpellEnum {
   SP_NoSpell = 0,
   SP_Speedup ,
   SP_Slowdown ,
-  SP_Confuse ,
+  SP_ConfuseSelf ,
   SP_Unconfuse, 
   SP_ConfuseMob,
-  SP_Teleport  ,
-  SP_MagicMissile , // SC_Magic
+  SP_TeleportSelfAway,
+  SP_TeleportOtherAway,
+  SP_SummonHere, // mob x goes next to me.
+  SP_SummonMonster, // create random monster.
+  SP_SummonObj, // create random item.
+  SP_TeleportTo, // I go next to mob x.
+  SP_MagicMissile, // SC_Magic
   SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_FireBolt ,     // SC_Fire
   SP_FrostBolt ,    // SC_Frost
@@ -126,7 +131,7 @@ public:
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
-  static bool doSpell(SpellEnum, class Mob& actor, std::ostream& log, class Obj* item); // Mob& target, 
+  static bool doSpell(SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item); // Mob& target, 
 
   static SpellEnum pickASpell(const char* prompt);
   static SpellEnum pickSpellAction(); // accept user input

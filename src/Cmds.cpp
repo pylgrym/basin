@@ -179,7 +179,7 @@ bool HitCmd::Do(std::ostream& err) {
     if (bLoot) {
       CL->map.addObjAtPos(hittee->pos,CL->level);
       if (oneIn(8)) {
-        CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6),CL->level);
+        CL->map.scatterObjsAtPos(hittee->pos, rnd(1,6), CL->level, 1);
       }
     }
     CL->mobs.deleteMob(hittee); // in HitCmd::Do.
@@ -336,6 +336,7 @@ bool ZapCmd::Do(std::ostream& err) {
     CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
     mob.invalidateGfx(bullet, oldBullet, true);
 
+    extern bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim);
 
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       /* fixme, design: spell's minrange and maxrange should be honoured,
@@ -355,17 +356,32 @@ bool ZapCmd::Do(std::ostream& err) {
       CPoint aim = newBullet - tgt;
 
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_Confuse: case SP_Unconfuse: case SP_Teleport: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
+      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleportOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
-          bool bSpellOK = Spell::doSpell(effect, *target, log, zapHitItem); // hitting a mob.
+          bool bSpellOK = Spell::doSpell(effect, *target, NULL, log, zapHitItem); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
 
+      case SP_TeleportTo: // mob -> target, dir
+        { logstr log;                     
+          CPoint targetpos = target->pos - dir; // The space in front of target.
+          bool bSpellOK = teleportTo(mob, targetpos, target);
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
+          break;
+        }
+      case SP_SummonHere: // mob <- target, dir
+        { logstr log;                
+          CPoint targetpos = mob.pos + dir; // The space just in front of me.
+          bool bSpellOK = teleportTo(*target, targetpos, &mob);
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
+          break;
+        }
+
       case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
-        { logstr log;
-          bool bSpellOK = Spell::doSpell(SP_Confuse, *target, log, zapHitItem); // hitting a mob.
+        { logstr log; // (Actually, confusemob actually should just 'bulletspell->confuseSelf')
+          bool bSpellOK = Spell::doSpell(SP_ConfuseSelf, *target, NULL, log, zapHitItem); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
           break;
         }
@@ -449,7 +465,7 @@ bool DigCmd::Do(std::ostream& err) {
     logstr log; log << "You found something embedded in the rock!";
     CL->map.addObjAtPos(tgt,CL->level);
     if (oneIn(8)) {
-      CL->map.scatterObjsAtPos(tgt, rnd(1,6),CL->level);
+      CL->map.scatterObjsAtPos(tgt, rnd(1,6),CL->level,1);
     }
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   }

@@ -93,9 +93,12 @@ public:
 
 
   void addRandomMob(int level);
+  bool addRandomMobAtPos(CPoint pos, int level);
+  void scatterMobsAtPos(CPoint pos, int n, int level, int radius);
+
   void addRandomObj(int level);
   void addObjAtPos(CPoint pos, int level);
-  void scatterObjsAtPos(CPoint pos, int n, int level);
+  void scatterObjsAtPos(CPoint pos, int n, int level, int radius);
 
 
   void addStairs();

@@ -1,17 +1,13 @@
 #include "stdafx.h"
 #include "Spell.h"
-
 #include "numutil/myrnd.h"
-
 #include "Mob.h"
 #include "PlayerMob.h"
-
 #include "Cmds.h"
 #include "Qual.h"
-
 #include "term.h"
-
 #include <iomanip>
+#include "Levelize.h"
 
 extern void playSound(CString soundFile);
 
@@ -357,8 +353,37 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 }
 
 
+bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
+  CPoint pos = actor.pos;
+  int mlevel = rndC(1,2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
+  CL->map.scatterMobsAtPos(pos, 1, mlevel, 1);
+  // actor.lightArea(pos, radius);
+  logstr log;
+  log << "A monster shimmers before you!";
+  return true;
+}
 
-bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) {  
+bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
+  CPoint pos = actor.pos;
+  int ilevel = Levelize::suggestLevel(actor.stats.level());
+  CL->map.scatterObjsAtPos(pos, rndC(1,2), ilevel, 1);
+  // actor.lightArea(pos, radius);
+  logstr log;
+  log << "Items shimmer before you!";
+  return true;
+}
+
+
+bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
+  CL->map.moveMob(actor, targetpos);
+  logstr log;
+  log << "The air shimmers!";
+  return true;
+}
+
+
+///////////////////////////////////////////////////////NB, 'target' here not thought through!
+bool Spell::doSpell(SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item) {  
 
   /* FIXME: I need to clarify, the 'sender/receiver' - actor/victim - aspect of all this:
    - you can cast these on others, or on yourself.
@@ -368,13 +393,20 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) 
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
-  case SP_Teleport:     return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  case SP_TeleportSelfAway: return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
   case SP_PhaseDoor:    return teleportSpell(actor, 9); break;
-  case SP_Confuse:      return updateConfused(actor, rnd(5, 25)); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_ConfuseSelf:  return updateConfused(actor, rnd(5, 25)); break; // Careful, 'confuse' is the 'recipient part'
   case SP_Unconfuse:    return updateConfused(actor, 0); break;          // Careful, 'confuse' is the 'recipient part'
 
   // it's a bullet spell, so it goes here:
-  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part'
+  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
+  case SP_TeleportOtherAway:return bulletSpell(actor, item, SP_TeleportSelfAway, SC_Mind); break;
+
+  case SP_TeleportTo:   return bulletSpell(actor, item, effect, SC_Magic); break;
+  case SP_SummonHere:   return bulletSpell(actor, item, effect, SC_Magic); break;
+
+  case SP_SummonMonster:return summonSpell(actor); break;
+  case SP_SummonObj:    return summonObj(actor); break;
 
   case SP_MagicMissile: return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_FireBolt:     return bulletSpell(actor, item, effect, SC_Fire); break;
