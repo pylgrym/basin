@@ -350,7 +350,7 @@ If damage > morale {
 } else if too-far-from-player AND can-attack-player AND can-move-toward-player {
   if random < charge-probability {
     move-toward-player     
-  } else  {
+  } else {
     attack-player
   }
 
@@ -378,7 +378,7 @@ else if can-attack-player {
 
 
 
-void putpixel(int x, int y, int color){}
+// void putpixel(int x, int y, int color){}
 
 void bres_line(int x,int y,int x2, int y2, std::vector<CPoint>& pixels) { // int color) {
   // Bresenham.
