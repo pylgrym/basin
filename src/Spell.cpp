@@ -358,6 +358,7 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 
 bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
+  // CONSIDER: Summon-Mob-Type, e.g. undead, demon, dragon, elemental, etc.
   CPoint pos = actor.pos;
   int mlevel = rndC(1,2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
   CL->map.scatterMobsAtPos(pos, 1, mlevel, 1);

@@ -60,6 +60,7 @@ struct MobDef {
   const char* tilekey;
   const char* desc;
 
+
   // minrange - preferred distance to player.
   // maxrange - preferred distance to player.
   // morale - percent health loss threshold for fleeing (high morale = tolerate e.g. 95% health loss.)
@@ -70,6 +71,8 @@ struct MobDef {
   // const char* tags;
   //const char* tag[]; // [];
   std::vector< const char* > tags;
+
+  int minrange, maxrange, moralePct, chargePct, retreatPct;
 };
 
 
@@ -92,9 +95,16 @@ public:
   void clearMob() { m = NULL; }  
   void setMob(Mob* m_) { m = m_; }
 
+
+  static void initBehaviour(MobDef& def);
+
   static const MobDef&  mobDef(CreatureEnum type);
+  static MobDef& mobDefNC(CreatureEnum type);
+
   static const char* ctypeAsStr(CreatureEnum type);
   static const char* ctypeAsDesc(CreatureEnum type);
 
   static bool isBlockingCreature(CreatureEnum type);
+
+  static void initMobDefs();
 };

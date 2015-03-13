@@ -54,7 +54,8 @@ possibly of different sizes, suggesting you try to 'counter'/reduce them somehow
   - breath-attack:  use Bresenham to draw a narrow cone of 'breath'- fire, frost etc.
 Possibly the smoke will last a few turns?
 
- - summon-monster, summon-undead, summon-demon.
+ - DONE: summon-monster, 
+ - summon-undead, summon-demon.
 
 alter between different states - 'the golem starts glowing/growing, shrinks'?
 (when it's in the bad mode, stay away from it..)
@@ -134,9 +135,30 @@ const MobDef&  Creature::mobDef(CreatureEnum type) {
   return mobDefs[type]; 
 }
 
+MobDef&  Creature::mobDefNC(CreatureEnum type) {
+  static MobDef badMob = { 0, CR_None, "§", "bad mtype" };
+  if (type < 0 || type >= maxMob) { return badMob; } //  L"out of bounds, creature enum.";
+  return mobDefs[type];
+}
+
 const char* Creature::ctypeAsStr(CreatureEnum type) { return mobDef(type).tilekey; }
 const char* Creature::ctypeAsDesc(CreatureEnum type) { return mobDef(type).desc; }
 
+
+void Creature::initMobDefs() {
+  for (int i = 0; i < maxMob; ++i) {
+    MobDef& def = mobDefNC((CreatureEnum) i);
+    initBehaviour(def);
+  }
+}
+
+void Creature::initBehaviour(MobDef& def) {
+  def.minrange   = rndC(0, 4);
+  def.maxrange   = rnd(def.minrange, 40);
+  def.moralePct  = rndC(0, 100);
+  def.chargePct  = rndC(0, 100);
+  def.retreatPct = rndC(0, 100);;
+}
 
 void funfun() {
   std::vector<int> myInts;
