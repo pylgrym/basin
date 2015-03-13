@@ -57,6 +57,7 @@ enum SpellEnum {
   SP_ConfuseMob,
   SP_TeleportSelfAway,
   SP_TeleportOtherAway,
+
   SP_SummonHere, // mob x goes next to me.
   SP_SummonMonster, // create random monster.
   SP_SummonObj, // create random item.
@@ -69,6 +70,7 @@ enum SpellEnum {
   SP_StoneToMud ,   // SC_Air/Elm? // "DONE"
   SP_WallBuilding , // SC_Earth    // "DONE"
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
+
   SP_Eat ,
   SP_Heal_light,
   SP_Heal_minor,
