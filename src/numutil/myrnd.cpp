@@ -5,6 +5,9 @@
 #include <assert.h>
 
 int rnd(int range) { 
+  if (range < 1) {
+    DebugBreak();
+  }
   assert(range != 0);
   // if (range == 0) { return 0; }
   return rand() % range;  
