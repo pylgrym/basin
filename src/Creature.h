@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ostream>
-
+#include <vector>
 #include "Persist.h"
 #include <vector>
 
@@ -60,12 +60,16 @@ struct MobDef {
   const char* tilekey;
   const char* desc;
 
-  std::vector< const char* > tags;
-
+  // minrange - preferred distance to player.
+  // maxrange - preferred distance to player.
+  // morale - percent health loss threshold for fleeing (high morale = tolerate e.g. 95% health loss.)
+  // flee-prob: chance to flee when hurt (e.g. 100%), alternative is attacking.
+  // attack-probability (when not hurt) 
+  // there was also a 'move' probability (not flee)
+  // choice between melee/ranged attack..spell?
   // const char* tags;
-  // (const char* tags)[];
-  //(const char* tags)[];
-  //const char* tag[32]; // [];
+  //const char* tag[]; // [];
+  std::vector< const char* > tags;
 };
 
 

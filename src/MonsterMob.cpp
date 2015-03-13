@@ -274,3 +274,82 @@ std::string  MonsterMob::a_mob() const { // { return "you";  } // "You"/"An orc"
   std::string sAsc = asc;
   return sAsc;
 }
+
+
+
+bool hurt() { return false; }
+bool can_flee() { return false; }
+bool flee_prob() { return false; }
+bool flee() { return false; }
+
+bool can_attack() { return false; }
+bool hurt_attack_prob() { return false; }
+bool attack() { return false; }
+
+bool too_close() { return false; }
+bool can_incr() { return false; }
+bool incr_prob() { return false; }
+bool incr_dist() { return false; }
+
+bool too_far() { return false; }
+bool can_decr() { return false; }
+bool decr_prob() { return false; }
+bool decr_dist() { return false; }
+
+bool melee_range() { return false; }
+bool melee_prob() { return false; }
+bool attack_melee() { return false; }
+
+bool can_ranged() { return false; }
+bool ranged_prob() { return false; }
+bool attack_ranged() { return false; }
+
+bool stay() { return false; }
+
+void f_ai() {
+  /* todo - compare with article http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
+  to understand if I'm missing out on features he manages to fit in.
+  */
+  if (hurt()) { // (morale-check)
+    if (can_flee() && flee_prob()) { flee(); return; }
+    if (can_attack() && hurt_attack_prob()) { attack(); return; }
+    stay(); // Stay may involve spellcast/healing/alerting.
+  } else { // Not hurt.
+    if (too_close() && can_incr() && incr_prob() ) { incr_dist(); return; }
+    if (too_far() && can_decr() && decr_prob() ) { decr_dist(); return; }
+    if (melee_range() & melee_prob()) { attack_melee(); return; }
+    if (can_ranged() & ranged_prob()) { attack_ranged(); return; }
+    stay();
+  }
+}
+
+/* ai info:
+http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
+        TYPICAL AI
+            If damage > morale
+               if can-run-away-from-player
+                  run-away-from-player
+               else if can-attack-player
+                  attack-player
+            else if too-far-from-player
+               AND can-attack-player
+               AND can-move-toward-player
+                   if  random < charge-probability
+                       move-toward-player     
+                   else attack-player
+            else if too-close-to-character
+               AND can-attack-player
+               AND can-move-away-from-player
+                   if random < retreat-probability
+                      move-away-from-player
+                   else attack-player
+            else if can-attack-player
+               attack-player
+            else if too-far-from-player 
+               AND can-move-toward-player
+     move-toward-player
+            else if too-close-to-player
+               AND can-move-away-from-player
+                   move-away-from-player
+            else stand-still
+*/

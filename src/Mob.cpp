@@ -3,7 +3,6 @@
 #include "cellmap/cellmap.h"
 #include "numutil/myrnd.h"
 #include <assert.h>
-// #include "Cmds.h"
 #include "LogEvents.h"
 #include "Equ.h"
 #include <iomanip>

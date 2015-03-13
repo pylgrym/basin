@@ -360,14 +360,21 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 bool Spell::doSpell(SpellEnum effect, Mob& actor, std::ostream& log, Obj* item) {  
 
+  /* FIXME: I need to clarify, the 'sender/receiver' - actor/victim - aspect of all this:
+   - you can cast these on others, or on yourself.
+   (the difference between you casting confusion on someone else, or on yourself
+    -and them casting it on you.)
+  */
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
-  case SP_Confuse:      return updateConfused(actor, rnd(5, 25)); break;
-  case SP_Unconfuse:    return updateConfused(actor, 0); break;
-  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..?
-  case SP_Teleport:     return teleportSpell(actor, 44); break;
-  case SP_PhaseDoor:     return teleportSpell(actor, 9); break;
+  case SP_Teleport:     return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  case SP_PhaseDoor:    return teleportSpell(actor, 9); break;
+  case SP_Confuse:      return updateConfused(actor, rnd(5, 25)); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_Unconfuse:    return updateConfused(actor, 0); break;          // Careful, 'confuse' is the 'recipient part'
+
+  // it's a bullet spell, so it goes here:
+  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part'
 
   case SP_MagicMissile: return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_FireBolt:     return bulletSpell(actor, item, effect, SC_Fire); break;
