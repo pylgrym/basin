@@ -61,9 +61,7 @@ BOOL CBasinApp::InitInstance()
 
   Obj::initPrices();
   Obj::initWeights();
-
-  // FIXME, MobInit. here.
-
+  Creature::initMobDefs();
   Spell::initQual();
   MobDist::enumerate();
 
