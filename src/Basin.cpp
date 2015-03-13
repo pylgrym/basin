@@ -62,6 +62,7 @@ BOOL CBasinApp::InitInstance()
   Obj::initPrices();
   Obj::initWeights();
 
+
   Spell::initQual();
   MobDist::enumerate();
 

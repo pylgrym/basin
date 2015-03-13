@@ -58,13 +58,31 @@ Possibly the smoke will last a few turns?
 
 alter between different states - 'the golem starts glowing/growing, shrinks'?
 (when it's in the bad mode, stay away from it..)
+
+ - charge: 'jumps' directly to player; requires LoS, possibly hurts.
+ - grab/hold/grip: player can still hit/use spells, but he can't move away from mob (because it's gripping him.)
+ - shove/bump: hits player so hard, he's knocked one or more squares back.
+ - crush(word?) hurting player hard by squeezing him between wall and mob - depends on wall behind you
+ - (pinning?)
+ (so if you avoid standing next to walls, not possible/keep circling. maybe only works on NSEW?)
+ - 'embed' knock you INTO the rock/wall, making a hole for you.
+ - throw a monster at you?
+ - hook/grasp: holds on to you, so that you drag the monster along with you, when you move?
+ - similarly a dragging move where the monster drags you with it.
+ - engulf
+ - spit.
+ - lava ball or something - something that sets your environment on fire.
+ - things that glow/burn/seep/acid for a bit in your environment.
+ - teleport, both ways - itself to you, and you to it, and a 3rd mob to you. or you to 3rd mob.
+ - we need both teleport-other and teleport-self; 
+ start with teleport-self, make it teleport-other.
 */
 
 MobDef mobDefs[] = {
   // FIXME - get rid of MobDef-ix having to be == CreatureEnum.
   {  0, CR_None, ".", "nothing", { "tag1", "tag2", "tag3" } }, // , {"tag1","tag2","tag3",NULL} "tag1,tag2,tag3"
   {  1, CR_Player, "@", "you" },
-  {  1, CR_Kobold, "k", ". kobold", {"hum","infra","firevuln", "-firevuln", "fireresist"} },
+  {  1, CR_Kobold, "k", ". kobold", {"hum","infra","firevuln", "-firevuln", "charge", "bump", "embed", "knockback", "fireresist", "harken","bid","hold","lock"} },
   {  2, CR_Dragon, "d", ". dragon", {"breath","dragon","swipe","tail","lash","lunge", "summon"} },
   {  3, CR_FireAnt, "a", ". fire ant", { "fire","bite" } },
   {  4, CR_Jelly, "J", ". jelly", {"slime","corrode","split"} },
