@@ -41,6 +41,7 @@ public:
   }
 
   CreatureEnum rndMob() {
+    assert(ratingSum != 0.0); // Means level has not been initialized.
     double rndChoice = rnd( (int) ratingSum);
     double accum = 0.0;
     std::set< MobRating >::iterator i;
@@ -99,8 +100,23 @@ void MobDist::dump() {
   }
 }
 
+void MobDist::enumTownLevel() {
+  LevelRating& level = ratings[0];
+  MobRating mr; 
+
+  // Add fixed town level mobs:
+  mr.mobIx = CR_Kobold;   mr.rating = 10; level.addRating(mr);
+  mr.mobIx = CR_Rat;      mr.rating = 10; level.addRating(mr);
+  mr.mobIx = CR_Squirrel; mr.rating = 10; level.addRating(mr);
+  mr.mobIx = CR_Goblin;   mr.rating = 10; level.addRating(mr);
+
+  level.makeLevelSum();
+}
+
 void MobDist::enumerate() {
   const RatingNum MaxRating = 1000.0;
+
+  enumTownLevel();
 
   for (int L = 1; L < MaxLevel; ++L) { // Go through all levels.
     LevelRating& level = ratings[L];

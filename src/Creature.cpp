@@ -41,22 +41,40 @@ ice-fire-earth-air
 ice-fire-rock-air
 */
 
+/* attack-behaviours:  
+ - slime will leave/fill a slime-square, that is hurtful to step on.
+Stepping on it would dot-damage you, and/or put a temp-state-bad on you, e.g. 'slimed' with some effect.
+
+
+(dmg-time)'DOT' spells, would hurt you in chunks,
+possibly of different sizes, suggesting you try to 'counter'/reduce them somehow
+(e.g. have an item with a turn-using use-effect, that will counter
+ - better than just having a 'cancel-out' reverse-item (where you never interact with the effect.)
+
+  - breath-attack:  use Bresenham to draw a narrow cone of 'breath'- fire, frost etc.
+Possibly the smoke will last a few turns?
+
+ - summon-monster, summon-undead, summon-demon.
+
+alter between different states - 'the golem starts glowing/growing, shrinks'?
+(when it's in the bad mode, stay away from it..)
+*/
 
 MobDef mobDefs[] = {
   // FIXME - get rid of MobDef-ix having to be == CreatureEnum.
   {  0, CR_None, ".", "nothing", { "tag1", "tag2", "tag3" } }, // , {"tag1","tag2","tag3",NULL} "tag1,tag2,tag3"
   {  1, CR_Player, "@", "you" },
   {  1, CR_Kobold, "k", ". kobold", {"hum","infra","firevuln", "-firevuln", "fireresist"} },
-  {  2, CR_Dragon, "d", ". dragon", {"breath","dragon"} },
+  {  2, CR_Dragon, "d", ". dragon", {"breath","dragon","swipe","tail","lash","lunge", "summon"} },
   {  3, CR_FireAnt, "a", ". fire ant", { "fire","bite" } },
   {  4, CR_Jelly, "J", ". jelly", {"slime","corrode","split"} },
   {  5,CR_Eye, "e", ". floating eye", {"construct","magic"} },
   {  6,CR_Beholder, "beholder", ". beholder", {"construct","magic"} },
   {  7,CR_Gargoyle, "gargoyle", ". gargoyle", {"demon"} },
-  {  8,CR_Lich, "lich", ". lich", {"undead"} },
+  {  8,CR_Lich, "lich", ". lich", {"undead", "grab", "hold", "paralyze", "confuse", "charm","sleep","blind","strangle"} },
   {  9,CR_Wraith, "wraith", ". wraith", {"undead"} },
   { 10,CR_Imp, "imp", ". imp", {"demon"} },
-  { 11,CR_IronGolem, "irongolem", ". iron golem", {"construct","iron","hard"} },
+  { 11,CR_IronGolem, "irongolem", ". iron golem", {"construct","iron","hard", "bash", "stomp","squeeze","flame","melt","burn"} },
   { 12,CR_YellowSlime, "yellowslime", ". yellow slime", {"slime"} },
   { 13,CR_BlueSlime, "blueslime", ". blue slime", {"slime"} },
   { 14,CR_EarthGolem, "earthgolem", ". earth golem", {"earth","elm","golem"} },
