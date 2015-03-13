@@ -103,6 +103,10 @@ bool Dungeons::initLoadGame() {
   std::ifstream is(file);
   Persist p(is);
   bool bLoadOK = persist(p); // Dungeons::the_dungeons.
+
+  extern void bresenExample();
+  bresenExample(); // Just show how it looks.. :-)
+
   return bLoadOK;
 }
 

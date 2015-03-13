@@ -491,9 +491,10 @@ public:
 
 
 void bresenExample() {
-  BresIter i(4, 9, 34, 35);
+  BresIter i(4, 9, 74, 35);
   for ( ; !i.done(); ) {
     CPoint p = i.next();
+    CL->map[p].envir.type = EN_Green;
     // Use p
   } 
 }
