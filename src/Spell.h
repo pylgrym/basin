@@ -115,6 +115,7 @@ struct SpellDesc {
 
 class Spell {
 public:
+  enum Nums { SpellPageSize = 5 };
   Spell();
   ~Spell();
   static const char* type2str(SpellEnum);
@@ -136,7 +137,8 @@ public:
   static bool doSpell(SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item); // Mob& target, 
 
   static SpellEnum pickASpell(const char* prompt);
-  static SpellEnum pickSpellAction(); // accept user input
+  static SpellEnum pickSpellAction(int& offset, bool& cancel); // accept user input
+  static void showSpellInv(int offset, int numItems);
   
 
   static void initQual();
@@ -144,7 +146,6 @@ public:
   static void trySpellIdent(SpellEnum effect);
   static int manaCost(SpellEnum effect);
 
-  static void showSpellInv(int offset, int numItems);
   static bool isDmgSpell(SpellEnum stype);
 
   static bool persist(class Persist& p);

@@ -473,12 +473,22 @@ using a book should learn a spell.
 */
 
 SpellEnum Spell::pickASpell(const char* prompt) {
-  Cuss::clear(false);
-  Cuss::prtL(prompt);
 
-  showSpellInv(0,24); 
-  return pickSpellAction();
+  int offset = 0;
+  while (true) {
+    Cuss::clear(false);
+    Cuss::prtL(prompt);
+    showSpellInv(offset,SpellPageSize); 
+
+    bool cancel = false;
+    SpellEnum choice = pickSpellAction(offset, cancel);
+    if (cancel) { return SP_NoSpell; }
+    if (choice != SP_NoSpell) { return choice; }
+    // Otherwise, it's just offset-browse-list
+  }
 }
+
+
 
 void Spell::showSpellInv(int offset, int numItems) { 
   /* FIXME; how about more than one page?
@@ -527,9 +537,10 @@ void Spell::showSpellInv(int offset, int numItems) {
 
 
 
-SpellEnum Spell::pickSpellAction() { 
+
+SpellEnum Spell::pickSpellAction(int& offset, bool& cancel) { 
   const char firstKey = 'A';
-  char lastKey = 'Z'; // firstKey + objs.size() - 1; // Bag::bag.
+  char lastKey = firstKey + SpellPageSize; // 'Z'; // firstKey + objs.size() - 1; // Bag::bag.
   char lower = lastKey - ('A' - 'a');
   CString s; 
   s.Format(L"(letter [a-%c] or ESC)", lower);
@@ -539,9 +550,20 @@ SpellEnum Spell::pickSpellAction() {
   for (;;) {
     key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-item"); 
     if (key == VK_ESCAPE) {
+      cancel = true;
       Cuss::clear(true);
       return SP_NoSpell; // Cancelled pick operation.
     }
+
+    // spell pagination: // FIXME, isolate pagination mechanism, and share between display and choice-picker.
+    int oldOffset = offset;
+    if (key == VK_SPACE || key == VK_NEXT) { offset += SpellPageSize;  }
+    if (key == VK_PRIOR) { offset += SpellPageSize;  }
+    if (offset < 0) { offset = 0; }
+    if (offset >= SP_MaxSpells) { offset = 0; }
+    if (offset != oldOffset) { return SP_NoSpell;  }
+    // end spell-pagination.
+
     if (key >= firstKey && key <= lastKey) {
       break;
     }
@@ -550,7 +572,7 @@ SpellEnum Spell::pickSpellAction() {
 
   int objIx = key - firstKey;
 
-  int spellIx = SP_NoSpell + 1 + objIx;
+  int spellIx = SP_NoSpell + 1 + offset + objIx;
   SpellEnum spellChoice = (SpellEnum)spellIx;
   if (!Spell::legalSpellIx(spellChoice)) {
     logstr log; log << "Illegal spell choice:" << spellIx; return SP_NoSpell;
@@ -566,6 +588,7 @@ SpellEnum Spell::pickSpellAction() {
   Cuss::clear(true);
   return spellChoice;
 }
+
 
 
 
