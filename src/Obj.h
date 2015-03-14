@@ -150,8 +150,8 @@ public:
   bool anyChargesLeft() const { return (charges > 0);  }
   // END BEHAVIOUR
 
-  static const ObjDef& randObjDesc();
-  static const ObjDef& randObjDesc2();
+  static const ObjDef& randObjDescBad(); // bad, gives too many weapons.
+  static const ObjDef& randObjDesc(); // better, works off types instead.
 
   static const ObjDef& objDesc(ObjEnum type);
 

@@ -228,13 +228,13 @@ void Obj::initWeights() {
   }
 }
 
-const ObjDef& Obj::randObjDesc() {
+const ObjDef& Obj::randObjDescBad() { // will give too many weapons.
   int ix = rnd(numObjDefs);
   ObjDef* od = &objDefs[ix];
   return *od;
 }
 
-const ObjDef& Obj::randObjDesc2() {
+const ObjDef& Obj::randObjDesc() { // works better, on types instead.
   static std::map<ObjEnum, std::vector<ObjDef*> > descs;
   if (descs.size() == 0) { // Do first-time init.
     for (int i = 0; i < numObjDefs; ++i) {

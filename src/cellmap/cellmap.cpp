@@ -12,24 +12,25 @@
 #include "../GrowSeed.h"
 
 
-void Map::addRandomMob(int level) {
+void Map::addRandomMob(int levelbase) {  
   const int maxRetries = 75;
   for (int i = 0; i < maxRetries; ++i) {
     CPoint pos(rnd(1, Width), rnd(1, Height));
     assert(legalPos(pos));
     if (!(*this)[pos].creature.empty()) { continue; }
-    addRandomMobAtPos(pos,level);
+    addRandomMobAtPos(pos,levelbase);
     return; 
   }
 }
 
 
-bool Map::addRandomMobAtPos(CPoint pos, int level) {
+bool Map::addRandomMobAtPos(CPoint pos, int levelbase) {
   Cell& cell = (*this)[pos];
   if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return false; }
 
-  Mob* monster = new MonsterMob(level);
-  CreatureEnum ctype = MobDist::suggRndMob(level); // Then pick an appropriate creature-type for that mob.
+  int mlevel = Levelize::suggestLevel(levelbase);  
+  Mob* monster = new MonsterMob(mlevel);
+  CreatureEnum ctype = MobDist::suggRndMob(mlevel); // Then pick an appropriate creature-type for that mob.
   monster->m_mobType = ctype;
 
   CL->map.moveMob(*monster, monster->pos);
@@ -63,19 +64,20 @@ void Map::addRandomObj(int level) {
 }
 
 
-void Map::addObjAtPos(CPoint pos,int level) {
+void Map::addObjAtPos(CPoint pos,int levelbase) {
   assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
 
   const ObjDef& ranDef = Obj::randObjDesc();
-  Obj* newObj = new Obj(ranDef,level); 
+  int ilevel = Levelize::suggestLevel(levelbase);  
+  Obj* newObj = new Obj(ranDef,ilevel); 
 
   if (newObj->otype() == OB_Lamp) {
     newObj->itemUnits += rnd(500, 2500);
   }
 
-  if (newObj->otype() == OB_WinItem && level < 39) { // You can't find it before level 39..
+  if (newObj->otype() ==  OB_WinItem && levelbase < 39) { // You can't find it before level 39..
     newObj->objdef = &Obj::objDesc(OB_Food);
   }
   cell.item.setObj(newObj);
@@ -121,13 +123,13 @@ void Map::initWorld(int level) {
   if (level == 0) {
     initTown(level);
   } else {
-    //initTunnels(level);
-    initTunnels2(level);
+    // alternate between the two:
+    level % 2 ? initTunnels2(level) : initTunnels(level);
   }
 }
 
-/* place monsters on empty squares.
-place myself on empty.
+/* done: place monsters on empty squares.
+done: place myself on empty.
 */
 
 void Map::initOuterBorders() {
@@ -196,13 +198,12 @@ void Map::initTunnels2(int level) {
   /* now do something with laby, transfer it to cellmap. */
   // Create floor/environ.
   for (int x = 0; x < Width; ++x) {
-    for (int y = 1; y < Height; ++y) {
+    for (int y = 0; y < Height; ++y) {
       CPoint cur(x, y);
       Cell& cell = (*this)[cur]; 
       if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) { // The outer border.
         cell.envir.type = EN_Border;
-      }
-      else { // Inside-area:
+      } else { // Inside-area:
         CPoint p(x, y);
 
         EnvirEnum etype = EN_Floor;
@@ -210,13 +211,20 @@ void Map::initTunnels2(int level) {
         switch (isWall) { // laby[p].c%3) {
         case true: etype = EN_Wall;  break; // M_Unvisited
         case false: etype = EN_Floor; break;
-        // case M_Vein: etype = EN_Vein;  break;
         }
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
+
+        if (!isWall && oneIn(9)) {
+          addObjAtPos(cur, level);
+        }
+
       }
     }
   }
+  addStairs();
 }
+
+
 
 void Map::initTunnels(int level) {
 
@@ -268,12 +276,7 @@ void Map::initTunnels(int level) {
         if (!isWall) {
           bool hasThing = oneIn(9); // 90); // was: 9);
           if (hasThing) {
-            // TODO: ObjEnum must become ObjType/ObjCat, and ObjDef must become prominent. 
-            //ObjEnum otype = (ObjEnum) rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
-
-            const ObjDef& objType = Obj::randObjDesc2(); 
-            int ilevel = Levelize::suggestLevel(level);
-            cell.item.setObj(new Obj(objType, ilevel));
+            addObjAtPos(p, level);
           }
         }
       }
