@@ -112,6 +112,7 @@ struct SpellDesc {
 };
 
 
+enum ManaEnum { NoMana = 0, UseMana = 1 };
 
 class Spell {
 public:
@@ -135,7 +136,7 @@ public:
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
-  static bool doSpell(SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item); // Mob& target, 
+  static bool doSpell(SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item, const ManaEnum useMana); // Mob& target, 
 
   static SpellEnum pickASpell(const char* prompt);
   static SpellEnum pickSpellAction(int& offset, bool& cancel); // accept user input
@@ -148,6 +149,8 @@ public:
   static int manaCost(SpellEnum effect);
 
   static bool isDmgSpell(SpellEnum stype);
+
+  static bool manaCostCheck(SpellEnum stype, Mob& mob, std::ostream& err);
 
   static bool persist(class Persist& p);
 

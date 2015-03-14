@@ -195,44 +195,16 @@ bool HitCmd::Do(std::ostream& err) {
 
 
 
+
 bool ZapCmd::legal(std::ostream& err) {
   if (!Cmd::legal(err)) { return false;  }
   // Consider - prompt the user, if he wants to risk it.
   if (!consumeMana) { return true; }
 
-  if (mob.stats.mana >= Spell::manaCost(effect)) {
-    return true; 
-  }
-
-  // ""
-  // FIXME, make a general prompter helper func, that integrates all this:
-  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
-  Cuss::clear(false);
-  const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
-  int YN_Key = 0;
-  bool bFound = false;
-  for (;!bFound;) {
-    YN_Key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "risk cast,Y/N"); 
-
-    if (YN_Key == VK_ESCAPE || YN_Key == 'N') {
-      Cuss::clear(true);
-      return false; // Cancelled zap operation.
-    }
-    if (YN_Key == 'Y') {bFound = true;  break;}
-  } // Loop until Y/N/Esc key.
-
-  bool bFail = oneIn(3); 
-  if (!bFail) {
-    logstr log; log << "You pull it off! ..";
-    return true;
-  }
-
-  err << "You fumble and damage your health.";
-  int severity = rnd(25, 50);
-  debstr() << "hurt-severity-pct:" << severity << "\n";
-  mob.stats.healPct(-severity);
-  return false;
+  bool manaCheckOK = Spell::manaCostCheck(effect, mob, err);
+  return manaCheckOK;
 }
+
 
 int crossDistance(CPoint a, CPoint b) { // Returns the longer of the 2 axis-distances.
   // FIXME, move to a util-lib.
@@ -304,14 +276,7 @@ bool ZapCmd::Do(std::ostream& err) {
 
   const SpellDesc& spellDesc = Spell::spell(effect); // used by range-check.
 
-  if (consumeMana) {
-    // At this point, we eat the mana:
-    int manaCost = Spell::manaCost(effect);
-    if (!mob.stats.useMana(manaCost)) {
-      logstr log; log << "useMana failure!";
-      return false;
-    }
-  }
+  // PayMana - fixme -we used to do it here.
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
   CPoint bullet = tgt;
@@ -359,7 +324,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleportOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
-          bool bSpellOK = Spell::doSpell(effect, *target, NULL, log, zapHitItem); // hitting a mob.
+          bool bSpellOK = Spell::doSpell(effect, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -381,7 +346,7 @@ bool ZapCmd::Do(std::ostream& err) {
 
       case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
         { logstr log; // (Actually, confusemob actually should just 'bulletspell->confuseSelf')
-          bool bSpellOK = Spell::doSpell(SP_ConfuseSelf, *target, NULL, log, zapHitItem); // hitting a mob.
+          bool bSpellOK = Spell::doSpell(SP_ConfuseSelf, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
           break;
         }
@@ -762,20 +727,30 @@ bool CastCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
   debstr() << "doing cast command.\n";
 
+
   // DONE: SpellBook, 
   // DONE:PickSpell. 
   // DONE: Persist ID'ed spells. 
   // DONE: Mark items as identified when sold to shop.
   // menu:
-  SpellEnum choice = Spell::pickASpell("cast which spell?");
-  if (choice == SP_NoSpell) { return false;  }
+  SpellEnum choice = Spell::pickASpell("Cast which spell?");
+  if (choice == SP_NoSpell) { return false; }
 
+  // FIXME - I'd prefer to postpone this check to AFTER user has specified any direction
+  // (So we don't do the check multiple times, if he reconsiders.)
+  bool manaCheckOK = Spell::manaCostCheck(choice, mob, err);
+  if (!manaCheckOK) { return false; }
+  
+  // User-self-cast spells must cost his mana.
+  bool castOK = Spell::doSpell(choice, mob, NULL, err, NULL, UseMana);
+  return castOK;
+
+  /* used to work  / the reason it's worked until now.. :
   const SpellDesc& desc = Spell::spell(choice);
-  // SpellInvCmd().Do(err);
-
   ZapCmd zapCmd(NULL, mob, choice, desc.school); // SC_Holy); // SP_FireBolt
   zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
   return zapCmd.Do(err);
+  */
 }
 
 

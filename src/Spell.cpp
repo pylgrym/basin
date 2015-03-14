@@ -345,7 +345,7 @@ bool healSpellDice(Mob& actor, Dice dice) {
 }
 
 
-// Consider 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
+// Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
 bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
   ZapCmd cmd(spellItem, actor, effect, school);
   logstr log;
@@ -392,14 +392,63 @@ bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
 }
 
 
+
+
+
+bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
+  if (mob.stats.mana >= Spell::manaCost(effect)) {
+    return true; 
+  }
+
+  // ""
+  // FIXME, make a general prompter helper func, that integrates all this:
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false);
+  const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
+  int YN_Key = 0;
+  bool bFound = false;
+  for (;!bFound;) {
+    YN_Key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "risk cast,Y/N"); 
+
+    if (YN_Key == VK_ESCAPE || YN_Key == 'N') {
+      Cuss::clear(true);
+      return false; // Cancelled zap operation.
+    }
+    if (YN_Key == 'Y') {bFound = true;  break;}
+  } // Loop until Y/N/Esc key.
+
+  bool bFail = oneIn(3); 
+  if (!bFail) {
+    logstr log; log << "You pull it off! ..";
+    return true;
+  }
+
+  err << "You fumble and damage your health.";
+  int severity = rnd(25, 50);
+  debstr() << "hurt-severity-pct:" << severity << "\n";
+  mob.stats.healPct(-severity);
+  return false;
+}
+
+
 ///////////////////////////////////////////////////////NB, 'target' here not thought through!
-bool Spell::doSpell(SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item) {  
+bool Spell::doSpell(SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item, const ManaEnum useMana) {  
 
   /* FIXME: I need to clarify, the 'sender/receiver' - actor/victim - aspect of all this:
    - you can cast these on others, or on yourself.
    (the difference between you casting confusion on someone else, or on yourself
     -and them casting it on you.)
   */
+
+  if (useMana == UseMana) { // This is broken - zap/dir commands should only consume mana when dir is specified.
+    // At this point, we eat the mana:
+    int manaCost = Spell::manaCost(effect);
+    if (!actor.stats.useMana(manaCost)) {
+      logstr log; log << "useMana failure!";
+      return false;
+    }
+  }
+
   switch (effect) {
   case SP_Speedup:      return updateSpeed(actor, 2); break;
   case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
