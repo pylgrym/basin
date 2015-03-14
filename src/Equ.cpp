@@ -206,7 +206,7 @@ double Equ::wornWeight() {
 
 void Equ::showWorn() {
   if (equ.size() == 0) {
-    Cuss::prtL("Zero items. Nothing. Nada."); 
+    Cuss::prtL("Zero items worn."); // Nothing.Nada."); 
   }
 
   char ix = 'a';

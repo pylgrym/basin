@@ -77,7 +77,7 @@ double Bag::bagWeight() {
 
 void Bag::showBagInv(bool bShowPrice) {
   if (objs.size() == 0) {
-    Cuss::prtL("Zero items. Nothing. Nada."); 
+    Cuss::prtL("Zero items in bag."); // Nothing.Nada."); 
   }
 
   char ix = 'a';
@@ -123,7 +123,7 @@ void Bag::showBagInvStacked(bool bShowPrice) {
 
 void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
   if (objs.size() == 0) {
-    Cuss::prtL("Zero items. Nothing. Nada."); 
+    Cuss::prtL("Zero items in bag (stacked)."); // Nothing.Nada."); 
   }
 
   char ix = 'a';
@@ -297,7 +297,7 @@ bool Bag::persist(class Persist& p) {
 
 void Bag::showShopInv() {
   if (objs.size() == 0) {
-    Cuss::prtL("Zero items. Nothing. Nada.");
+    Cuss::prtL("Zero items in shop."); // Nothing.Nada.");
   }
 
   char ix = 'a';

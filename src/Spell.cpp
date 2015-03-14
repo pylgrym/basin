@@ -478,7 +478,7 @@ SpellEnum Spell::pickASpell(const char* prompt) {
   while (true) {
     Cuss::clear(false);
     Cuss::prtL(prompt);
-    showSpellInv(offset,SpellPageSize); 
+    showSpellInv(offset, SpellPageSize); 
 
     bool cancel = false;
     SpellEnum choice = pickSpellAction(offset, cancel);
@@ -529,8 +529,13 @@ void Spell::showSpellInv(int offset, int numItems) {
   Cuss::setTxtColor(); // Reset to default
 
   if (knowncount == 0) {
-    Cuss::prtL("You don't know any spells! Nothing. Nada."); 
+    Cuss::prtL(" (You don't know any of these spells.)"); // Nothing.Nada."); 
   }
+  /* Idea:terminal could use half-width chars,
+  so that every 32x32 tile, would contain 2 vertical letters.
+  This would allow me to get '80 chars', and enable 'much better text'.
+    I lack page-up.
+  */
 
   Cuss::invalidate();
 }
@@ -539,11 +544,21 @@ void Spell::showSpellInv(int offset, int numItems) {
 
 
 SpellEnum Spell::pickSpellAction(int& offset, bool& cancel) { 
+  int lastSpellIx = offset + SpellPageSize;
+  if (lastSpellIx >= SP_MaxSpells) { lastSpellIx = SP_MaxSpells - 1; }
+  int firstSpellIx = offset + (SP_NoSpell + 1);
+  int curCount = (lastSpellIx - firstSpellIx) +1;
+
   const char firstKey = 'A';
-  char lastKey = firstKey + SpellPageSize; // 'Z'; // firstKey + objs.size() - 1; // Bag::bag.
+  char lastKey = firstKey + (curCount-1); //  SpellPageSize; // 'Z'; // firstKey + objs.size() - 1; // Bag::bag.
   char lower = lastKey - ('A' - 'a');
+
+  int curPage = (offset / SpellPageSize) + 1;
+  // (35 should divide to 7 (with 5), but 36 up to 40 should give 8 (and 41 again 9.)
+  int totPage = ((SpellPageSize-1)+(1+(SP_MaxSpells-1)-(SP_NoSpell+1))) / SpellPageSize;
+
   CString s; 
-  s.Format(L"(letter [a-%c] or ESC)", lower);
+  s.Format(L"(%d/%d)(letter [a-%c] or ESC)", curPage,totPage,lower);
   CT2A keyPrompt(s, CP_ACP);  
 
   int key = 0;
@@ -554,14 +569,16 @@ SpellEnum Spell::pickSpellAction(int& offset, bool& cancel) {
       Cuss::clear(true);
       return SP_NoSpell; // Cancelled pick operation.
     }
+    // self-cast/zap. - not always a dir?
+    // Make new spell command.
 
     // spell pagination: // FIXME, isolate pagination mechanism, and share between display and choice-picker.
     int oldOffset = offset;
     if (key == VK_SPACE || key == VK_NEXT) { offset += SpellPageSize;  }
-    if (key == VK_PRIOR) { offset += SpellPageSize;  }
+    if (key == VK_PRIOR) { offset -= SpellPageSize;  }
     if (offset < 0) { offset = 0; }
     if (offset >= SP_MaxSpells) { offset = 0; }
-    if (offset != oldOffset) { return SP_NoSpell;  }
+    if (offset != oldOffset) { return SP_NoSpell;  } // redisplay paginated list.
     // end spell-pagination.
 
     if (key >= firstKey && key <= lastKey) {

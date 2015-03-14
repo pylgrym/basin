@@ -115,7 +115,8 @@ struct SpellDesc {
 
 class Spell {
 public:
-  enum Nums { SpellPageSize = 5 };
+  enum Nums { SpellPageSize = 19 }; // 20 }; // 5 is good for testing..
+
   Spell();
   ~Spell();
   static const char* type2str(SpellEnum);
