@@ -31,7 +31,7 @@ public:
 
   virtual bool legal(std::ostream& err) { 
     if (newpos == old) { err << "Not a move-direction.";  return false; }
-
+    if (!CL->map.legalPos(newpos)) { debstr() << "illegal coords outside map.";  return false; }
     if (CL->map[newpos].blocked()) {
       Envir& env = CL->map[newpos].envir;
       err << "That way is blocked by " << env.typestr() <<  "."; // The way ahead is blocked.

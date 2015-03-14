@@ -19,7 +19,7 @@ class GrCanvas {
 public:
   enum { 
     MaxPool = 150, 
-    Side = 100 
+    Side = 101 
   };
 
   ACell cells[Side][Side];

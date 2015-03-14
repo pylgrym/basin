@@ -104,8 +104,13 @@ public:
 
   void addStairs();
   void addStair(EnvirEnum type);
+
   CPoint findFreeEnvir(EnvirEnum type);
   CPoint findNextEnvir(CPoint start, EnvirEnum type);
+
+  CPoint findNextMob(CPoint start, CreatureEnum ctype);
+  // CPoint findMobFree(CreatureEnum type);
+
 
   bool persist(class Persist& p);
   bool transferObj(Persist& p); // Only works for obj IN, to map:

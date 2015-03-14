@@ -37,7 +37,7 @@ void Dungeon::initPlayerForMap() {
   /* Figure out dependency order of map, creatures, queues, etc.*/
 
   // Mob* player = PlayerMob::createPlayer();
-
+  
   //
   /* beware: now with multiple levels, player must hook up to
   each dungeon correctly,
@@ -45,6 +45,9 @@ void Dungeon::initPlayerForMap() {
   we only need to init once for each level.
   */
   PlayerMob* player = PlayerMob::ply;
+
+  CPoint freePos = map.findNextEnvir(player->pos, EN_Floor);
+  player->pos = freePos;
 
   map.moveMob(*player, player->pos);
   mobs.queueMob(player, 0);

@@ -13,10 +13,14 @@
 
 
 void Map::addRandomMob(int level) {
-  CPoint pos(rnd(1, Width), rnd(2, Height));
-  assert(legalPos(pos));
-
-  addRandomMobAtPos(pos,level);
+  const int maxRetries = 75;
+  for (int i = 0; i < maxRetries; ++i) {
+    CPoint pos(rnd(1, Width), rnd(1, Height));
+    assert(legalPos(pos));
+    if (!(*this)[pos].creature.empty()) { continue; }
+    addRandomMobAtPos(pos,level);
+    return; 
+  }
 }
 
 
@@ -37,15 +41,23 @@ bool Map::addRandomMobAtPos(CPoint pos, int level) {
 void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
   for (int i = 0; i < n; ++i) {
     CPoint posA = pos;
-    posA.x += rndC(-radius, radius);
-    posA.y += rndC(-radius, radius);
-    addRandomMobAtPos(posA, level);
+
+    const int maxRetries = 10;
+    for (int j = 0; j < maxRetries; ++j) {
+      posA.x += rndC(-radius, radius);
+      posA.y += rndC(-radius, radius);
+      if (!legalPos(posA)) { continue;  }
+      if ((*this)[posA].blocked()) { continue;  }
+      if (!(*this)[posA].creature.empty()) { continue;  }
+      addRandomMobAtPos(posA, level);
+      break;
+    }
   }
 }
 
 
 void Map::addRandomObj(int level) {
-  CPoint pos(rnd(1, Width), rnd(2, Height));
+  CPoint pos(rnd(1, Width), rnd(1, Height));
   assert(legalPos(pos));
   addObjAtPos(pos,level);
 }
@@ -109,21 +121,25 @@ void Map::initWorld(int level) {
   if (level == 0) {
     initTown(level);
   } else {
-    initTunnels(level);
-    // initTunnels2(level);
+    //initTunnels(level);
+    initTunnels2(level);
   }
 }
+
+/* place monsters on empty squares.
+place myself on empty.
+*/
 
 void Map::initOuterBorders() {
   // husk 1-offset.
   for (int x = 0; x < Width; ++x) {
-    CPoint posTop(x, 1);
+    CPoint posTop(x, 0); // was: 1
     CPoint posBottom(x, Height - 1);
     Cell& cell1 = (*this)[posTop];    cell1.envir.type = EN_Border;
     Cell& cell2 = (*this)[posBottom]; cell2.envir.type = EN_Border;
   }
 
-  for (int y = 1; y < Height; ++y) {
+  for (int y = 0; y < Height; ++y) { // was : 1 (old hack)
     CPoint posLeft(0, y);
     CPoint posRight(Width-1, y);
     Cell& cell1 = (*this)[posLeft];  cell1.envir.type = EN_Border;
@@ -178,6 +194,28 @@ void Map::initTunnels2(int level) {
   GrCanvas laby;
   runSimu(laby, NULL); // CDC* dc);
   /* now do something with laby, transfer it to cellmap. */
+  // Create floor/environ.
+  for (int x = 0; x < Width; ++x) {
+    for (int y = 1; y < Height; ++y) {
+      CPoint cur(x, y);
+      Cell& cell = (*this)[cur]; 
+      if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) { // The outer border.
+        cell.envir.type = EN_Border;
+      }
+      else { // Inside-area:
+        CPoint p(x, y);
+
+        EnvirEnum etype = EN_Floor;
+        bool isWall = laby[p].isMarked();
+        switch (isWall) { // laby[p].c%3) {
+        case true: etype = EN_Wall;  break; // M_Unvisited
+        case false: etype = EN_Floor; break;
+        // case M_Vein: etype = EN_Vein;  break;
+        }
+        cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
+      }
+    }
+  }
 }
 
 void Map::initTunnels(int level) {
@@ -385,6 +423,29 @@ CPoint Map::findNextEnvir(CPoint start, EnvirEnum type) {
 }
 
 
+
+CPoint Map::findNextMob(CPoint start, CreatureEnum ctype) {
+  for (CPoint pos = start;;) { // (endless loop)
+    ++pos.x;
+    if (pos.x >= Map::Width) {
+      pos.x = 0;
+      ++pos.y;
+      if (pos.y >= Map::Height) {
+        pos.y = 0;
+      }
+    }
+    Cell& c = (*this)[pos];
+    if (c.creature.type() == ctype) { return pos; }
+    if (pos == start) { 
+      CPoint notFound(-1, -1);
+      return notFound;
+    }
+  }
+
+  return CPoint(-1, -1);
+}
+
+
 CPoint Map::key2dir(char nChar) {
   int dx = 0, dy = 0;
   // determine movement:
@@ -397,7 +458,6 @@ CPoint Map::key2dir(char nChar) {
 }
 
 
-//Map Map::map; // CL->map;
 
 
 void Map::moveMob(class Mob& m, CPoint newpos) {
