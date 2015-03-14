@@ -80,7 +80,7 @@ void Map::addObjAtPos(CPoint pos,int levelbase) {
   if (newObj->otype() ==  OB_WinItem && levelbase < 39) { // You can't find it before level 39..
     newObj->objdef = &Obj::objDesc(OB_Food);
   }
-  cell.item.setObj(newObj);
+  cell.item.setObj(newObj); // in addObjAtPos.
 }
 
 
@@ -269,7 +269,7 @@ void Map::initTunnels(int level) {
             ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
             const ObjDef& goldType = Obj::objDesc(OB_Gold);
             int ilevel = Levelize::suggestLevel(level);
-            cell.item.setObj(new Obj(goldType,ilevel));
+            cell.item.setObj(new Obj(goldType,ilevel)); // In old vein-creation-code.
           }
         }
 
@@ -373,7 +373,7 @@ void Map::addColDemo(int x, int y) {
   SpellEnum spell = (SpellEnum) (x % SP_MaxSpells);
   Obj* newObj = new Obj(def, 1); 
   newObj->effect = spell;
-  cell.item.setObj(newObj);
+  cell.item.setObj(newObj); // in addColDemo (colour magic identify stuff.)
 }
 
 
@@ -629,6 +629,6 @@ bool Map::transferObj(Persist& p) { // Only works for obj IN, to map:
   CPoint pos;
   o->persist(p, pos);
   Cell& cell = (*this)[pos];
-  cell.item.setObj(o);
+  cell.item.setObj(o); // In transferObj (persistence helper.)
   return true;
 }
