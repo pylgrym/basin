@@ -723,7 +723,7 @@ bool SpellInvCmd::Do(std::ostream& err) {
   Cuss::clear(false);
   Cuss::prtL("  You know these spells:"); 
 
-  Spell::showSpellInv();
+  Spell::showSpellInv(0,24);
 
   TheUI::promptForAnyKey(__FILE__, __LINE__, "inv-pause");
 

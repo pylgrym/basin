@@ -86,6 +86,7 @@ public:
     return nears.size();
   }
 
+  // spell-book, wrong colors compared to potions?
   bool addSeed(SeedID seed) { 
     if (!cells.legalPos(seed.pos)) { debstr() << "illegal pos.";  return false; }
     if (cell(seed).isMarked()) { debstr() << "seed pos was taken." << seed.ID << "\n"; return false; }

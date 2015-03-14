@@ -581,7 +581,8 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
 bool Map::persist(Persist& p) {
   int objCount = 0; // (count obj's, to aid later output of obj-list.)
   // First, output floor-cells:
-  for (int y = 1; y < Height; ++y) {
+
+  for (int y = 0; y < Height; ++y) {
     for (int x = 0; x < Width; ++x) {
       CPoint pos(x, y);
       Cell& cell = (*this)[pos];

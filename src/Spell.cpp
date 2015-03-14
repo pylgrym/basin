@@ -476,11 +476,11 @@ SpellEnum Spell::pickASpell(const char* prompt) {
   Cuss::clear(false);
   Cuss::prtL(prompt);
 
-  showSpellInv(); 
+  showSpellInv(0,24); 
   return pickSpellAction();
 }
 
-void Spell::showSpellInv() { 
+void Spell::showSpellInv(int offset, int numItems) { 
   /* FIXME; how about more than one page?
   */
 
@@ -489,11 +489,13 @@ void Spell::showSpellInv() {
   // Put column headers in front:
   std::stringstream ss1;
   ss1 << "K  L I A M Desc (key,level,ident.,learned,cost)";
-    Cuss::prtL(ss1.str().c_str());  
+  Cuss::prtL(ss1.str().c_str());  
 
+  int knowncount = 0;
   int count = 0;
-  for (int i = SP_NoSpell+1; i < SP_MaxSpells; ++i, ++ix) {
+  for (int i = SP_NoSpell+1 + offset; i < SP_MaxSpells && count < numItems; ++i, ++ix, ++count) {
     if (Cuss::csr.y >= Term::Height-2) { break;  } // i > Term::Height - 2) { break;  } // FIXME, stay on screen.
+
     SpellDesc& d = spellNC( (SpellEnum) i); 
     SpellEnum checkType = (SpellEnum)i;
 
@@ -512,11 +514,11 @@ void Spell::showSpellInv() {
     
     Cuss::prtL(ss.str().c_str());  
 
-    count += (d.ability);
+    knowncount += (d.ability);
   }
   Cuss::setTxtColor(); // Reset to default
 
-  if (count == 0) {
+  if (knowncount == 0) {
     Cuss::prtL("You don't know any spells! Nothing. Nada."); 
   }
 

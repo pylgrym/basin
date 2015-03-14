@@ -144,7 +144,7 @@ public:
   static void trySpellIdent(SpellEnum effect);
   static int manaCost(SpellEnum effect);
 
-  static void showSpellInv();
+  static void showSpellInv(int offset, int numItems);
   static bool isDmgSpell(SpellEnum stype);
 
   static bool persist(class Persist& p);
