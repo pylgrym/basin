@@ -32,6 +32,10 @@ public:
     return cells[p.x][p.y];
   }
 
+  bool legalPos(CPoint p) const {
+    return (p.x >= 0 && p.y >= 0 && p.x < Side && p.y < Side);
+  }
+
 };
 
 

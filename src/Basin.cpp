@@ -56,7 +56,7 @@ CBasinApp theApp;
 BOOL CBasinApp::InitInstance()
 {
   debstr() << "Set RANDOM seed!\n";
-  unsigned int myRandSeed = 318;
+  unsigned int myRandSeed = 320; //  319; // 318;
   srand(myRandSeed); // I want my player character, on start-up, to have some different stats..
 
   Obj::initPrices();

@@ -87,6 +87,7 @@ public:
   }
 
   bool addSeed(SeedID seed) { 
+    if (!cells.legalPos(seed.pos)) { debstr() << "illegal pos.";  return false; }
     if (cell(seed).isMarked()) { debstr() << "seed pos was taken." << seed.ID << "\n"; return false; }
     pool.push_back(seed);
     setMark(seed);
