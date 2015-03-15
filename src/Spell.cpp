@@ -579,31 +579,61 @@ class Spell_Embed: public SpellImpl { public:
 
 
 
-bool spellShove(Mob& actor, CPoint dir) {
+bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; log << "You would shove the mob along the ground.."; 
+  { logstr log; log << "You would shove the mob along the ground.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  return false; 
+  // FIXME - this does not push mob into wall, and move you..
+  ZapCmd cmd(NULL, actor, SP_Shove, SC_Phys); // school);
+  cmd.mobZapDir = dir;
+  logstr log;
+  return cmd.Do(log);
 }
 
 class Spell_Shove: public SpellImpl { public:
-  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
-  bool execSpell(SpellParam& param) { return spellShove(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  bool getParams(SpellParam& param) { return getParamsSHOVE(param); }
+
+  static bool getParamsSHOVE(SpellParam& p) { 
+    bool paramOK = Spell_Bullet::getParamsDIR(p); 
+    if (!paramOK) { return false;  }
+    p.pos = p.actor->pos + p.dir;
+    p.target = CL->map[p.pos].creature.m;
+    if (p.target == NULL) { if (p.actor->isPlayer()) { logstr log; log << "But there is noone there to shove?"; } return false; }
+    // if (!CL->map[p.pos+p.dir].envir.blocked()) { if (p.actor->isPlayer()) { logstr log; log << "But there is no wall to crush against?"; } return false; }
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return spellShove(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_shove; }
 } spell_shove;
 
 
 
-bool spellTackle(Mob& actor, CPoint dir) {
+bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; log << "You would tackle the mob.."; 
+  { logstr log; log << "You would tackle the mob.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  return false; 
+  ZapCmd cmd(NULL, actor, SP_Tackle, SC_Phys); // school);
+  cmd.mobZapDir = dir;
+  logstr log;
+  return cmd.Do(log);
 }
 
 class Spell_Tackle: public SpellImpl { public:
-  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
-  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  bool getParams(SpellParam& param) { return getParamsTACKLE(param); }
+
+  static bool getParamsTACKLE(SpellParam& p) { 
+    bool paramOK = Spell_Bullet::getParamsDIR(p); 
+    if (!paramOK) { return false;  }
+    p.pos = p.actor->pos + p.dir;
+    p.target = CL->map[p.pos].creature.m;
+    // FIXME - tackle doesn't work this way! it's more akin to rush!
+    if (p.target == NULL) { if (p.actor->isPlayer()) { logstr log; log << "But there is noone there to tackle?"; } return false; }
+    // if (!CL->map[p.pos+p.dir].envir.blocked()) { if (p.actor->isPlayer()) { logstr log; log << "But there is no wall to crush against?"; } return false; }
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_tackle; }
 } spell_tackle;
 
