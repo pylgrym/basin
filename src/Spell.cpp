@@ -36,6 +36,7 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 {10, 2, { 1, 1 }, 0, 40, SC_Magic, "summonmob", "Summon Monster" }, // = 6,
 {15, 9, { 1, 1 }, 0, 40, SC_Magic, "summonobj", "Summon Item" }, // = 6,
 { 7, 2, { 1, 1 }, 0, 40, SC_Magic, "tele_to", "Phase Near" }, // = 6,
+{ 14,4, { 1, 1 }, 0, 10, SC_Magic, "tele_swap", "Swap Places" }, // = 6 // SP_TeleSwap
 { 1, 1, { 2, 4 }, 0, 40, SC_Magic, "magicmissile", "Magic missile" }, // = 7,
 { 6, 2, {3,4}, 0,40,SC_Gas,"stinkcloud", "Stinking cloud" }, // = 14,
 {11, 2, {5,6}, 0,40,SC_Fire,"firebolt", "Fire bolt" }, // = 8,
@@ -273,6 +274,17 @@ void Spell::initQual() {
   }
 }
 
+
+
+
+class SpellImpl {
+public:
+  virtual bool getParams(SpellParam& param) { return true;  }
+  virtual bool execSpell(SpellParam& param) = 0;
+};
+
+
+
 bool updateSpeed(Mob& actor, double factor) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }
@@ -280,15 +292,17 @@ bool updateSpeed(Mob& actor, double factor) {
   return true;
 }
 
-bool updateConfused(Mob& actor, int confuseCount) {
-  if (confuseCount > 0) { // If counter is set positive, a confusion-spell has been cast on someone.
-    playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
-  }
+class Spell_Speed : public SpellImpl { 
+public:
+  //bool getParams(SpellParam& param) { param.factor = 1.0;  return true; }
+  bool execSpell(SpellParam& param) { return updateSpeed(*param.actor, param.factor);  }
+  static void init(Mob& actor, double factor, SpellParam& p) { p.actor = &actor;  p.factor = factor; p.impl = &spell_speed; }
+} spell_speed;
 
-  logstr log; if (confuseCount > 0) { log << "You feel confused."; } else { log << "You feel less confused."; }
-  actor.stats.confused = confuseCount; 
-  return true;
-}
+
+
+
+
 
 
 bool teleportSpell(Mob& actor, int range) {
@@ -311,6 +325,31 @@ bool teleportSpell(Mob& actor, int range) {
   return false; // It never worked. Not normal.
 }
 
+class Spell_Tele : public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return teleportSpell(*param.actor, param.range);  }
+  static void init(Mob& actor, int range, SpellParam& p) { p.actor = &actor;  p.range = range; p.impl = &spell_tele; }
+} spell_tele;
+
+
+bool updateConfused(Mob& actor, int confuseCount) {
+  if (confuseCount > 0) { // If counter is set positive, a confusion-spell has been cast on someone.
+    playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
+  }
+
+  logstr log; if (confuseCount > 0) { log << "You feel confused."; } else { log << "You feel less confused."; }
+  actor.stats.confused = confuseCount; 
+  return true;
+}
+
+class Spell_Confuse : public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.confuse);  }
+  static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.confuse = confuse; p.impl = &spell_confuse; }
+} spell_confuse;
+
 
 bool eatSpell(Mob& actor, int deltaFood) {
   {
@@ -320,6 +359,13 @@ bool eatSpell(Mob& actor, int deltaFood) {
   actor.stats.healPct(25);
   return true; 
 }
+
+class Spell_Eat: public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return eatSpell(*param.actor, param.deltaFood);  }
+  static void init(Mob& actor, int deltaFood, SpellParam& p) { p.actor = &actor;  p.deltaFood = deltaFood; p.impl = &spell_eat; }
+} spell_eat;
 
 
 bool healSpellPct(Mob& actor, int percent) {
@@ -331,6 +377,14 @@ bool healSpellPct(Mob& actor, int percent) {
   actor.stats.healPct(percent);
   return true;
 }
+
+class Spell_HealPct: public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return healSpellPct(*param.actor, param.healPct);  }
+  static void init(Mob& actor, int healPct, SpellParam& p) { p.actor = &actor;  p.healPct = healPct; p.impl = &spell_healPct; }
+} spell_healPct;
+
 
 bool healSpellDice(Mob& actor, Dice dice) {
   std::stringstream dummy;
@@ -344,6 +398,13 @@ bool healSpellDice(Mob& actor, Dice dice) {
   return true;
 }
 
+class Spell_HealDice: public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return healSpellDice(*param.actor, param.healDice);  }
+  static void init(Mob& actor, Dice healDice, SpellParam& p) { p.actor = &actor;  p.healDice = healDice; p.impl = &spell_healDice; }
+} spell_healDice;
+
 
 // Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
 bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
@@ -351,6 +412,14 @@ bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool scho
   logstr log;
   return cmd.Do(log);
 }
+
+class Spell_Bullet: public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return bulletSpell(*param.actor, param.item, param.effect, param.school);  }
+  static void init(Mob& actor, Obj* item, SpellEnum effect, AttackSchool school, SpellParam& p) { p.actor = &actor;  p.item = item; p.effect = effect; p.school = school; p.impl = &spell_bullet; }
+} spell_bullet;
+
 
 
 bool lightSpell(Mob& actor, CPoint pos, int radius) { 
@@ -360,6 +429,13 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
   log << "Light floods around you.";
   return true;
 }
+
+class Spell_Light: public SpellImpl { 
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return lightSpell(*param.actor, param.pos, param.radius);  }
+  static void init(Mob& actor, CPoint pos, int radius, SpellParam& p) { p.actor = &actor;  p.pos = pos; p.radius = radius;  p.impl = &spell_light; }
+} spell_light;
 
 
 bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
@@ -373,6 +449,13 @@ bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
   return true;
 }
 
+class Spell_SummonMob : public SpellImpl {
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return summonSpell(*param.actor); }
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonMob; }
+} spell_summonMob;
+
 bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
   CPoint pos = actor.pos;
   int ilevel = Levelize::suggestLevel(actor.stats.level());
@@ -383,6 +466,13 @@ bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
   return true;
 }
 
+class Spell_SummonObj : public SpellImpl {
+public:
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return summonObj(*param.actor); }
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonObj; }
+} spell_summonObj;
+
 
 bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
   CL->map.moveMob(actor, targetpos);
@@ -390,6 +480,12 @@ bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
   log << "The air shimmers!";
   return true;
 }
+
+class Spell_TeleTo : public SpellImpl {
+  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
+  bool execSpell(SpellParam& param) { return teleportTo(*param.actor, param.pos, param.target); }
+  static void init(Mob& actor, CPoint targetpos, Mob* aim, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.target = aim;  p.impl = &spell_teleTo; }
+} spell_teleTo;
 
 
 
@@ -400,8 +496,7 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
     return true; 
   }
 
-  // ""
-  // FIXME, make a general prompter helper func, that integrates all this:
+  // DONE: make a general prompter helper func, that integrates all this:
   LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
   Cuss::clear(false);
   const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
@@ -432,12 +527,21 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
 
 
 ///////////////////////////////////////////////////////NB, 'target' here not thought through!
-bool Spell::doSpell(SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item, const ManaEnum useMana) {  
+bool Spell::doSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item, const ManaEnum useMana) {  
 
   /* FIXME: I need to clarify, the 'sender/receiver' - actor/victim - aspect of all this:
    - you can cast these on others, or on yourself.
    (the difference between you casting confusion on someone else, or on yourself
     -and them casting it on you.)
+  */
+
+  /* consider Introduce 'spellparams'. - but it would add multi-switch.
+  order is 
+  1 - choose spell.
+  2 - collect complete params.(dir)
+  3 - check mana is available or risked.
+  4 - consume mana
+  5 - execute spell.  
   */
 
   if (useMana == UseMana) { // This is broken - zap/dir commands should only consume mana when dir is specified.
@@ -449,49 +553,50 @@ bool Spell::doSpell(SpellEnum effect, Mob& actor, Mob* target, std::ostream& log
     }
   }
 
+
   switch (effect) {
-  case SP_Speedup:      return updateSpeed(actor, 2); break;
-  case SP_Slowdown:     return updateSpeed(actor, 0.5); break; 
-  case SP_TeleportSelfAway: return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
-  case SP_PhaseDoor:    return teleportSpell(actor, 9); break;
-  case SP_ConfuseSelf:  return updateConfused(actor, rnd(5, 25)); break; // Careful, 'confuse' is the 'recipient part'
-  case SP_Unconfuse:    return updateConfused(actor, 0); break;          // Careful, 'confuse' is the 'recipient part'
+  case SP_Speedup:          Spell_Speed::init(actor, 2, p); return updateSpeed(actor, 2); break;
+  case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p); return updateSpeed(actor, 0.5); break; 
+  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p); return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p); return teleportSpell(actor, 9); break;
+  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd(5,25),p); return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);          return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
 
   // it's a bullet spell, so it goes here:
-  case SP_ConfuseMob:   return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
-  case SP_TeleportOtherAway:return bulletSpell(actor, item, SP_TeleportSelfAway, SC_Mind); break;
+  case SP_ConfuseMob:   Spell_Bullet::init(actor, item, effect, SC_Mind, p);  return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
+  case SP_TeleOtherAway:Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p);  return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
 
-  case SP_TeleportTo:   return bulletSpell(actor, item, effect, SC_Magic); break;
-  case SP_SummonHere:   return bulletSpell(actor, item, effect, SC_Magic); break;
+  case SP_TeleportTo:   Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;
+  case SP_SummonHere:   Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;
 
-  case SP_SummonMonster:return summonSpell(actor); break;
-  case SP_SummonObj:    return summonObj(actor); break;
+  case SP_SummonMonster: Spell_SummonMob::init(actor, p); return summonSpell(actor); break;
+  case SP_SummonObj:     Spell_SummonObj::init(actor, p); return summonObj(actor); break;
 
-  case SP_MagicMissile: return bulletSpell(actor, item, effect, SC_Magic); break;  
-  case SP_FireBolt:     return bulletSpell(actor, item, effect, SC_Fire); break;
-  case SP_FrostBolt:    return bulletSpell(actor, item, effect, SC_Frost); break;
-  case SP_FireBall:     return bulletSpell(actor, item, effect, SC_Fire); break;
-  case SP_StinkCloud:   return bulletSpell(actor, item, effect, SC_Gas); break;
+  case SP_MagicMissile: Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;  
+  case SP_FireBolt:     Spell_Bullet::init(actor, item, effect, SC_Fire, p);  return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_FrostBolt:    Spell_Bullet::init(actor, item, effect, SC_Frost, p);  return bulletSpell(actor, item, effect, SC_Frost); break;
+  case SP_FireBall:     Spell_Bullet::init(actor, item, effect, SC_Fire, p);  return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_StinkCloud:   Spell_Bullet::init(actor, item, effect, SC_Gas, p);  return bulletSpell(actor, item, effect, SC_Gas); break;
 
-  case SP_StoneToMud:   return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
-  case SP_WallBuilding: return bulletSpell(actor, item, effect, SC_Earth); break;
-  case SP_Earthquake:   return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_StoneToMud:   Spell_Bullet::init(actor, item, effect, SC_Air, p);  return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
+  case SP_WallBuilding: Spell_Bullet::init(actor, item, effect, SC_Earth, p);  return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_Earthquake:   Spell_Bullet::init(actor, item, effect, SC_Earth, p);  return bulletSpell(actor, item, effect, SC_Earth); break;
 
-  case SP_Eat:          return eatSpell(actor,item->itemUnits); break;
+  case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p); return eatSpell(actor,p.deltaFood); break;
 
   // case SP_Heal:         return healSpellPct(actor,35); break;
-  case SP_Sick:         return healSpellPct(actor,-35); break;
+  case SP_Sick:        Spell_HealPct::init(actor, -35, p); return healSpellPct(actor,p.healPct); break;
 
   // Heal dice design: lots of small dice, so you always get some healing.
-  case SP_Heal_light:   return healSpellDice(actor, Dice(4,  3)); break;
-  case SP_Heal_minor:   return healSpellDice(actor, Dice(6,  3)); break;
-  case SP_Heal_mod:     return healSpellDice(actor, Dice(8,  3)); break;
-  case SP_Heal_serious: return healSpellDice(actor, Dice(10, 3)); break;
-  case SP_Heal_crit:    return healSpellDice(actor, Dice(12, 3)); break;
+  case SP_Heal_light:   Spell_HealDice::init(actor, Dice(4,3), p);  return healSpellDice(actor, p.healDice); break;
+  case SP_Heal_minor:   Spell_HealDice::init(actor, Dice(6,3), p);   return healSpellDice(actor, Dice(6,  3)); break;
+  case SP_Heal_mod:     Spell_HealDice::init(actor, Dice(8,3), p);   return healSpellDice(actor, Dice(8,  3)); break;
+  case SP_Heal_serious: Spell_HealDice::init(actor, Dice(10,3), p);  return healSpellDice(actor, Dice(10, 3)); break;
+  case SP_Heal_crit:    Spell_HealDice::init(actor, Dice(12,3), p);  return healSpellDice(actor, Dice(12, 3)); break;
 
   // case SP_Poison:       healSpell(actor); break;
-  case SP_LightArea:   return lightSpell(actor, actor.pos,4); break;
-  case SP_LightDir:    return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
+  case SP_LightArea:    Spell_Light::init(actor, actor.pos,4, p);   return lightSpell(actor, actor.pos,4); break;
+  case SP_LightDir:    Spell_Bullet::init(actor, item, effect, SC_Light, p);  return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
 
   case SP_MagicMap: log << "(magicmap not impl yet.)"; return false;
 

@@ -2,6 +2,8 @@
 
 #include <ostream>
 
+#include "numutil/myrnd.h"
+
 /* JG: Spell/Spellnum allows me to map enums to text-tags and back.
 This makes it possible for me to have sets of spell effects on items.
 
@@ -55,14 +57,15 @@ enum SpellEnum {
   SP_ConfuseSelf ,
   SP_Unconfuse, 
   SP_ConfuseMob,
-  SP_TeleportSelfAway,
-  SP_TeleportOtherAway,
+  SP_TeleSelfAway,
+  SP_TeleOtherAway,
 
   SP_SummonHere, // mob x goes next to me.
   SP_SummonMonster, // create random monster.
   SP_SummonObj, // create random item.
   SP_TeleportTo, // I go next to mob x.
-  SP_MagicMissile, // SC_Magic
+  SP_TeleSwap, // swap places..
+  SP_MagicMissile, // SC_Magic // FIXME - no AOE.
   SP_StinkCloud ,   // SC_Poison/SC_Gas
   SP_FireBolt ,     // SC_Fire
   SP_FrostBolt ,    // SC_Frost
@@ -112,6 +115,50 @@ struct SpellDesc {
 };
 
 
+
+
+class SpellParam { 
+public:
+  SpellParam() {
+   impl = NULL; // ptr to class below..
+   actor = NULL;
+   target = NULL;
+   dir = CPoint(0,0);  // zap bullet dir.
+   factor = 1.0; // speed factor.
+   confuse = 0; // Nr of confuse-turns, might be 0.
+   range = 0; //  teleport range.
+   deltaFood = 0; 
+   healPct = 0;
+   healDice =Dice(1,1);
+
+   item = NULL;
+   effect = SP_NoSpell;
+   school = SC_None;
+
+   pos = CPoint(0,0); // light area
+   radius = 0; // light area
+  }
+
+  class SpellImpl* impl; // ptr to class below..
+  class Mob* actor;
+  Mob* target;
+  CPoint dir;  // zap bullet dir.
+  double factor; // speed factor.
+  int confuse; // Nr of confuse-turns, might be 0.
+  int range; //  teleport range.
+  int deltaFood; 
+  int healPct;
+  Dice healDice;
+
+  class Obj* item;
+  SpellEnum effect;
+  AttackSchool school;
+
+  CPoint pos; // light area
+  int radius; // light area
+};
+
+
 enum ManaEnum { NoMana = 0, UseMana = 1 };
 
 class Spell {
@@ -136,7 +183,7 @@ public:
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
-  static bool doSpell(SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item, const ManaEnum useMana); // Mob& target, 
+  static bool doSpell(SpellParam& p, SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item, const ManaEnum useMana); // Mob& target, 
 
   static SpellEnum pickASpell(const char* prompt);
   static SpellEnum pickSpellAction(int& offset, bool& cancel); // accept user input

@@ -320,11 +320,13 @@ bool ZapCmd::Do(std::ostream& err) {
 
       CPoint aim = newBullet - tgt;
 
+      SpellParam param;
+
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleportOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
+      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
-          bool bSpellOK = Spell::doSpell(effect, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
+          bool bSpellOK = Spell::doSpell(param, effect, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -346,7 +348,7 @@ bool ZapCmd::Do(std::ostream& err) {
 
       case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
         { logstr log; // (Actually, confusemob actually should just 'bulletspell->confuseSelf')
-          bool bSpellOK = Spell::doSpell(SP_ConfuseSelf, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
+          bool bSpellOK = Spell::doSpell(param, SP_ConfuseSelf, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
           break;
         }
@@ -736,13 +738,24 @@ bool CastCmd::Do(std::ostream& err) {
   SpellEnum choice = Spell::pickASpell("Cast which spell?");
   if (choice == SP_NoSpell) { return false; }
 
+  /* consider Introduce 'spellparams'. - but it would add multi-switch.
+  order is 
+  1 - choose spell.
+  2 - collect complete params.(dir)
+  3 - check mana is available or risked.
+  4 - consume mana
+  5 - execute spell.
+  
+  */
+
   // FIXME - I'd prefer to postpone this check to AFTER user has specified any direction
   // (So we don't do the check multiple times, if he reconsiders.)
   bool manaCheckOK = Spell::manaCostCheck(choice, mob, err);
   if (!manaCheckOK) { return false; }
   
   // User-self-cast spells must cost his mana.
-  bool castOK = Spell::doSpell(choice, mob, NULL, err, NULL, UseMana);
+  SpellParam param;
+  bool castOK = Spell::doSpell(param, choice, mob, NULL, err, NULL, UseMana);
   return castOK;
 
   /* used to work  / the reason it's worked until now.. :
