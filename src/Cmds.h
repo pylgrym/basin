@@ -422,8 +422,8 @@ public:
 
 class CastCmd : public Cmd {
 public:
-  Mob& mob;
-  CastCmd(Mob& mob_):mob(mob_) {}
+  Mob& actor;
+  CastCmd(Mob& actor_):actor(actor_) {}
   virtual bool Do(std::ostream& err);
 };
 

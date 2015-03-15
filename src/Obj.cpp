@@ -581,12 +581,11 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
   bool bOK = false;
   { // Act on obj.effect:
     logstr log;
-    SpellParam param;
-    bOK = Spell::doSpell(effect, who, NULL, log, this, NoMana); // in Obj::useObj.
+    bOK = Spell::castSpell(effect, who, NULL, this, NoMana); // in Obj::useObj.
     if (bOK) {
       if (bOK && who.isPlayer()) {
         Spell::trySpellIdent(effect);
-        // Now eat the charge (fixme - doSpell should indicate how we failed - user cancel or not?)
+        // Now eat the charge (fixme - castSpell should indicate how we failed - user cancel or not?)
         if (!eatCharge(err)) { return false; }
       }
     }

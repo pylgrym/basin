@@ -156,6 +156,8 @@ public:
 
   CPoint pos; // light area
   int radius; // light area
+
+  bool exec();
 };
 
 
@@ -183,7 +185,8 @@ public:
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
-  static bool doSpell(SpellParam& p, SpellEnum, class Mob& actor, Mob* target, std::ostream& log, class Obj* item, const ManaEnum useMana); // Mob& target, 
+  static bool prepareSpell(SpellParam& p, SpellEnum, class Mob& actor, Mob* target, class Obj* item); 
+  static bool castSpell(SpellEnum, class Mob& actor, Mob* target, class Obj* item, const ManaEnum useMana); 
 
   static SpellEnum pickASpell(const char* prompt);
   static SpellEnum pickSpellAction(int& offset, bool& cancel); // accept user input

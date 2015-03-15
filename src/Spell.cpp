@@ -526,8 +526,10 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
 }
 
 
-///////////////////////////////////////////////////////NB, 'target' here not thought through!
-bool Spell::doSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item, const ManaEnum useMana) {  
+
+// bool Spell::execSpell(SpellParam& p) { //, SpellEnum effect, Mob& actor, Mob* target, std::ostream& log, Obj* item, const ManaEnum useMana) {  
+//  p.impl->execSpell(p);
+//}
 
   /* FIXME: I need to clarify, the 'sender/receiver' - actor/victim - aspect of all this:
    - you can cast these on others, or on yourself.
@@ -535,77 +537,98 @@ bool Spell::doSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, st
     -and them casting it on you.)
   */
 
-  /* consider Introduce 'spellparams'. - but it would add multi-switch.
+
+///////////////////////////////////////////////////////NB, 'target' here not thought through!
+bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, Obj* item) {  
+  // prepareSpell fills out a SpellParam! - makes sure e.g. bullet-aim-dir is known
+  switch (effect) {
+  case SP_Speedup:          Spell_Speed::init(actor, 2, p);       break; // return updateSpeed(actor, 2); break;
+  case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p);     break; //return updateSpeed(actor, 0.5); break; 
+  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
+  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
+  case SP_SummonMonster:Spell_SummonMob::init(actor, p); break; //return summonSpell(actor); break;
+  case SP_SummonObj:    Spell_SummonObj::init(actor, p); break; //return summonObj(actor); break;
+  // it's a bullet spell, so it goes here:
+  case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
+  case SP_TeleOtherAway:  Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p); break; // return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
+  case SP_TeleportTo:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;
+  case SP_SummonHere:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;
+
+  case SP_MagicMissile:   Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  
+  case SP_FireBolt:       Spell_Bullet::init(actor, item, effect, SC_Fire, p); break; // return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_FrostBolt:      Spell_Bullet::init(actor, item, effect, SC_Frost,p); break; // return bulletSpell(actor, item, effect, SC_Frost); break;
+  case SP_FireBall:       Spell_Bullet::init(actor, item, effect, SC_Fire, p); break; // return bulletSpell(actor, item, effect, SC_Fire); break;
+  case SP_StinkCloud:     Spell_Bullet::init(actor, item, effect, SC_Gas, p);  break; // return bulletSpell(actor, item, effect, SC_Gas); break;
+  case SP_StoneToMud:     Spell_Bullet::init(actor, item, effect, SC_Air, p);  break; // return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
+  case SP_WallBuilding:   Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_Earthquake:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // return eatSpell(actor,p.deltaFood); break;
+  case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // return healSpellPct(actor,p.healPct); break;
+  // Heal dice design: lots of small dice, so you always get some healing.
+  case SP_Heal_light:   Spell_HealDice::init(actor, Dice(4,3), p);             break; //return healSpellDice(actor, p.healDice); break;
+  case SP_Heal_minor:   Spell_HealDice::init(actor, Dice(6,3), p);             break; //return healSpellDice(actor, Dice(6,  3)); break;
+  case SP_Heal_mod:     Spell_HealDice::init(actor, Dice(8,3), p);             break; //return healSpellDice(actor, Dice(8,  3)); break;
+  case SP_Heal_serious: Spell_HealDice::init(actor, Dice(10,3), p);            break; //return healSpellDice(actor, Dice(10, 3)); break;
+  case SP_Heal_crit:    Spell_HealDice::init(actor, Dice(12,3), p);            break; //return healSpellDice(actor, Dice(12, 3)); break;
+  case SP_LightArea:       Spell_Light::init(actor, actor.pos,4, p);           break; //return lightSpell(actor, actor.pos,4); break;
+  case SP_LightDir:       Spell_Bullet::init(actor, item, effect, SC_Light, p);break; //return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
+  case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
+  // case SP_Poison:       healSpell(actor); break;
+  default: { logstr log; log << "err spell unknown:" << effect; } return false;
+  }
+  return (p.impl != NULL); // we've only prepared a spell, if we've located an 'impl'. 
+}
+
+
+bool SpellParam::exec() {
+  assert(impl != NULL);
+  bool xOK = impl->execSpell(*this);
+  return xOK; 
+}
+
+bool Spell::castSpell(SpellEnum spellType, Mob& actor, Mob* target, Obj* item, const ManaEnum useMana) {  
+  /* castSpell combines preparespell, manacheck, manaeat, and actual execute.
+  */
+
+  /* I've introduced 'spellparams'. -it adds multi-switch.
   order is 
   1 - choose spell.
-  2 - collect complete params.(dir)
+  2 - collect complete params.(dir) (handled here in prepareSpell) 
   3 - check mana is available or risked.
   4 - consume mana
   5 - execute spell.  
   */
 
-  if (useMana == UseMana) { // This is broken - zap/dir commands should only consume mana when dir is specified.
-    // At this point, we eat the mana:
-    int manaCost = Spell::manaCost(effect);
+  SpellParam param; // collect 'full info', ie 'dir' for bullet spell.
+  bool collectOK = Spell::prepareSpell(param, spellType, actor, target, item); // in CastCmd::Do.
+  if (!collectOK) { return false; }
+
+  if (useMana == UseMana) { // 3: User-self-cast spells must cost him mana.
+    // I prefer to postpone this check to AFTER user has specified any direction
+    // (So we don't do the check multiple times, if he reconsiders.)
+    logstr log;
+    bool suffMana = Spell::manaCostCheck(spellType, actor, log); // 3, check enough mana.
+    if (!suffMana) { return false; }
+
+    // 4 - eat mana - At this point, we eat the mana:
+    // NB!- zap/dir commands should only consume mana AFTER dir is specified.
+    int manaCost = Spell::manaCost(spellType);
     if (!actor.stats.useMana(manaCost)) {
       logstr log; log << "useMana failure!";
       return false;
-    }
+    }    
   }
 
-
-  switch (effect) {
-  case SP_Speedup:          Spell_Speed::init(actor, 2, p); return updateSpeed(actor, 2); break;
-  case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p); return updateSpeed(actor, 0.5); break; 
-  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p); return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
-  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p); return teleportSpell(actor, 9); break;
-  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd(5,25),p); return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
-  case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);          return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
-
-  // it's a bullet spell, so it goes here:
-  case SP_ConfuseMob:   Spell_Bullet::init(actor, item, effect, SC_Mind, p);  return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
-  case SP_TeleOtherAway:Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p);  return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
-
-  case SP_TeleportTo:   Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;
-  case SP_SummonHere:   Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;
-
-  case SP_SummonMonster: Spell_SummonMob::init(actor, p); return summonSpell(actor); break;
-  case SP_SummonObj:     Spell_SummonObj::init(actor, p); return summonObj(actor); break;
-
-  case SP_MagicMissile: Spell_Bullet::init(actor, item, effect, SC_Magic, p);  return bulletSpell(actor, item, effect, SC_Magic); break;  
-  case SP_FireBolt:     Spell_Bullet::init(actor, item, effect, SC_Fire, p);  return bulletSpell(actor, item, effect, SC_Fire); break;
-  case SP_FrostBolt:    Spell_Bullet::init(actor, item, effect, SC_Frost, p);  return bulletSpell(actor, item, effect, SC_Frost); break;
-  case SP_FireBall:     Spell_Bullet::init(actor, item, effect, SC_Fire, p);  return bulletSpell(actor, item, effect, SC_Fire); break;
-  case SP_StinkCloud:   Spell_Bullet::init(actor, item, effect, SC_Gas, p);  return bulletSpell(actor, item, effect, SC_Gas); break;
-
-  case SP_StoneToMud:   Spell_Bullet::init(actor, item, effect, SC_Air, p);  return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
-  case SP_WallBuilding: Spell_Bullet::init(actor, item, effect, SC_Earth, p);  return bulletSpell(actor, item, effect, SC_Earth); break;
-  case SP_Earthquake:   Spell_Bullet::init(actor, item, effect, SC_Earth, p);  return bulletSpell(actor, item, effect, SC_Earth); break;
-
-  case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p); return eatSpell(actor,p.deltaFood); break;
-
-  // case SP_Heal:         return healSpellPct(actor,35); break;
-  case SP_Sick:        Spell_HealPct::init(actor, -35, p); return healSpellPct(actor,p.healPct); break;
-
-  // Heal dice design: lots of small dice, so you always get some healing.
-  case SP_Heal_light:   Spell_HealDice::init(actor, Dice(4,3), p);  return healSpellDice(actor, p.healDice); break;
-  case SP_Heal_minor:   Spell_HealDice::init(actor, Dice(6,3), p);   return healSpellDice(actor, Dice(6,  3)); break;
-  case SP_Heal_mod:     Spell_HealDice::init(actor, Dice(8,3), p);   return healSpellDice(actor, Dice(8,  3)); break;
-  case SP_Heal_serious: Spell_HealDice::init(actor, Dice(10,3), p);  return healSpellDice(actor, Dice(10, 3)); break;
-  case SP_Heal_crit:    Spell_HealDice::init(actor, Dice(12,3), p);  return healSpellDice(actor, Dice(12, 3)); break;
-
-  // case SP_Poison:       healSpell(actor); break;
-  case SP_LightArea:    Spell_Light::init(actor, actor.pos,4, p);   return lightSpell(actor, actor.pos,4); break;
-  case SP_LightDir:    Spell_Bullet::init(actor, item, effect, SC_Light, p);  return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
-
-  case SP_MagicMap: log << "(magicmap not impl yet.)"; return false;
-
-  default: log << "err spell unknown:" << effect;  return false;
-  }
-  return true; 
+  // 5 - execute spell:
+  bool castOK = param.exec();
+  return castOK;
 }
 
-// Make doors!
+
+
+// (DONE) Make doors!
 
 void Spell::trySpellIdent(SpellEnum effect) {
   SpellDesc& desc = spellNC(effect);

@@ -196,15 +196,6 @@ bool HitCmd::Do(std::ostream& err) {
 
 
 
-bool ZapCmd::legal(std::ostream& err) {
-  if (!Cmd::legal(err)) { return false;  }
-  // Consider - prompt the user, if he wants to risk it.
-  if (!consumeMana) { return true; }
-
-  bool manaCheckOK = Spell::manaCostCheck(effect, mob, err);
-  return manaCheckOK;
-}
-
 
 int crossDistance(CPoint a, CPoint b) { // Returns the longer of the 2 axis-distances.
   // FIXME, move to a util-lib.
@@ -218,6 +209,16 @@ hitcmd, zapcmd, dospell and bulletspell are too mixed-up in each other
  - the mechanisms they handle: mob damage, projectile spells etc., 
 should go into a coherent design.
 */
+
+
+bool ZapCmd::legal(std::ostream& err) {
+  if (!Cmd::legal(err)) { return false;  }
+  // Consider - prompt the user, if he wants to risk it.
+  if (!consumeMana) { return true; }
+
+  bool manaCheckOK = Spell::manaCostCheck(effect, mob, err);
+  return manaCheckOK;
+}
 
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
@@ -320,13 +321,11 @@ bool ZapCmd::Do(std::ostream& err) {
 
       CPoint aim = newBullet - tgt;
 
-      SpellParam param;
-
       switch (effect) {
       case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
-          bool bSpellOK = Spell::doSpell(param, effect, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
+          bool bSpellOK = Spell::castSpell(effect, *target, NULL, zapHitItem, NoMana); // , consumeMana ? UseMana : NoMana); // in zapcmd. hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -348,7 +347,7 @@ bool ZapCmd::Do(std::ostream& err) {
 
       case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
         { logstr log; // (Actually, confusemob actually should just 'bulletspell->confuseSelf')
-          bool bSpellOK = Spell::doSpell(param, SP_ConfuseSelf, *target, NULL, log, zapHitItem, consumeMana ? UseMana : NoMana); // hitting a mob.
+          bool bSpellOK = Spell::castSpell(SP_ConfuseSelf, *target, NULL, zapHitItem, NoMana); // , consumeMana ? UseMana : NoMana); // in zapcmd. hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
           break;
         }
@@ -723,48 +722,34 @@ bool UseCmd::Do(std::ostream& err) {
 }
 
 
+// DONE: SpellBook, 
+// DONE: Persist ID'ed spells. 
+// DONE: Mark items as identified when sold to shop.
 
 
 bool CastCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
   debstr() << "doing cast command.\n";
 
-
-  // DONE: SpellBook, 
-  // DONE:PickSpell. 
-  // DONE: Persist ID'ed spells. 
-  // DONE: Mark items as identified when sold to shop.
-  // menu:
-  SpellEnum choice = Spell::pickASpell("Cast which spell?");
-  if (choice == SP_NoSpell) { return false; }
-
-  /* consider Introduce 'spellparams'. - but it would add multi-switch.
-  order is 
-  1 - choose spell.
+  /* I've introduced 'spellparams'. - it works with multi-switch.
+  order is
+  1 - choose spell. (pickASpell)
+  (the rest 2-5, handled by castSpell) 
   2 - collect complete params.(dir)
   3 - check mana is available or risked.
   4 - consume mana
   5 - execute spell.
-  
   */
 
-  // FIXME - I'd prefer to postpone this check to AFTER user has specified any direction
-  // (So we don't do the check multiple times, if he reconsiders.)
-  bool manaCheckOK = Spell::manaCostCheck(choice, mob, err);
-  if (!manaCheckOK) { return false; }
-  
-  // User-self-cast spells must cost his mana.
-  SpellParam param;
-  bool castOK = Spell::doSpell(param, choice, mob, NULL, err, NULL, UseMana);
+  // menu:
+  // DONE:PickSpell. 
+  SpellEnum spellType = Spell::pickASpell("Cast which spell?"); // (1 - choose spell)
+  if (spellType == SP_NoSpell) { return false; }
+
+  bool castOK = Spell::castSpell(spellType, actor, NULL, NULL, UseMana);
   return castOK;
-
-  /* used to work  / the reason it's worked until now.. :
-  const SpellDesc& desc = Spell::spell(choice);
-  ZapCmd zapCmd(NULL, mob, choice, desc.school); // SC_Holy); // SP_FireBolt
-  zapCmd.consumeMana = true; // Roundabout way of controlling, that user-self-cast spells must cost his mana.
-  return zapCmd.Do(err);
-  */
 }
+
 
 
 
