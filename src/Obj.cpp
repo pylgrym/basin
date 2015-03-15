@@ -495,6 +495,8 @@ void Obj::setTypeDefaults() {
     charges = rnd(0,16);
     const SpellDesc& desc = Spell::spell(effect);
     dmgDice = Dice(desc.dice.num, desc.dice.side); // better: we get info from spell-def instead of extra code.
+    // NB! this actualy has little effect, since it's the spell-desc that actually counts, 
+    // and NOT the obj-properties (unless the obj is used as a melee weapon.)
     /*
     switch (effect) {
     case SP_MagicMissile: dmgDice = Dice(2, 4); break; // 5 // FIXME, this only makes OBJECTS hit hard, how about the general spell..

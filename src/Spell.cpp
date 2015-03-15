@@ -47,6 +47,12 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 {36, 1,{9,10}, 0,40,SC_Earth,"earthquake", "Earthquake" }, // = 13,
 { 2, 3,{4,6},  2,2,SC_Earth,"focusblast", "Focus Blast" }, // = 13,
 
+{ 2, 3,{4,6},  0,12,SC_Earth,"rush", "Rush" }, // = 13,
+{ 4, 3,{4,6},  0,1,SC_Earth,"crush", "Crush" }, // = 13, // Maybe called 'pin/pinning'?
+{ 6, 3,{4,6},  0,2,SC_Earth,"embed", "Embed" }, // = 13,
+{ 8, 3,{4,6},  0,2,SC_Earth,"shove", "Shove" }, // = 13, // or kick.
+{10, 3,{4,6},  0,8,SC_Earth,"tackle", "Tackle" }, // = 13, // maybe longer min-dist req.?
+
 { 9, 2, {1,1}, 0,40,SC_Phys,"eat", "Food" }, // = 15,
 { 1, 1, {1,1}, 0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
 { 2, 2, {1,1}, 0,40,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
@@ -295,7 +301,6 @@ bool updateSpeed(Mob& actor, double factor) {
 
 class Spell_Speed : public SpellImpl { 
 public:
-  //bool getParams(SpellParam& param) { param.factor = 1.0;  return true; }
   bool execSpell(SpellParam& param) { return updateSpeed(*param.actor, param.factor);  }
   static void init(Mob& actor, double factor, SpellParam& p) { p.actor = &actor;  p.factor = factor; p.impl = &spell_speed; }
 } spell_speed;
@@ -328,7 +333,6 @@ bool teleportSpell(Mob& actor, int range) {
 
 class Spell_Tele : public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return teleportSpell(*param.actor, param.range);  }
   static void init(Mob& actor, int range, SpellParam& p) { p.actor = &actor;  p.range = range; p.impl = &spell_tele; }
 } spell_tele;
@@ -346,7 +350,6 @@ bool updateConfused(Mob& actor, int confuseCount) {
 
 class Spell_Confuse : public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.confuse);  }
   static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.confuse = confuse; p.impl = &spell_confuse; }
 } spell_confuse;
@@ -363,7 +366,6 @@ bool eatSpell(Mob& actor, int deltaFood) {
 
 class Spell_Eat: public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return eatSpell(*param.actor, param.deltaFood);  }
   static void init(Mob& actor, int deltaFood, SpellParam& p) { p.actor = &actor;  p.deltaFood = deltaFood; p.impl = &spell_eat; }
 } spell_eat;
@@ -381,7 +383,6 @@ bool healSpellPct(Mob& actor, int percent) {
 
 class Spell_HealPct: public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return healSpellPct(*param.actor, param.healPct);  }
   static void init(Mob& actor, int healPct, SpellParam& p) { p.actor = &actor;  p.healPct = healPct; p.impl = &spell_healPct; }
 } spell_healPct;
@@ -401,7 +402,6 @@ bool healSpellDice(Mob& actor, Dice dice) {
 
 class Spell_HealDice: public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return healSpellDice(*param.actor, param.healDice);  }
   static void init(Mob& actor, Dice healDice, SpellParam& p) { p.actor = &actor;  p.healDice = healDice; p.impl = &spell_healDice; }
 } spell_healDice;
@@ -417,7 +417,11 @@ bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool scho
 
 class Spell_Bullet: public SpellImpl { 
 public:
-  bool getParams(SpellParam& param) { 
+  bool getParams(SpellParam& param) {
+    return getParamsDIR(param);
+  }
+
+  static bool getParamsDIR(SpellParam& param) { 
     // If it's a mob, it will handle dir by itself.
     if (param.actor->isPlayer()) {
       param.dir = Spell::pickZapDir();
@@ -505,7 +509,76 @@ class Spell_TeleTo : public SpellImpl {
 } spell_teleTo;
 
 
+bool spellRush(Mob& actor, CPoint dir) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+  logstr log; log << "You would rush headfirst into the mob.."; 
+  // Todo: projectile + move player.. Make a toolbox to build spells..
+  return false; // true;
+}
 
+class Spell_Rush: public SpellImpl { public:
+  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_rush; }
+} spell_rush;
+
+
+bool spellCrush(Mob& actor, CPoint dir) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+  logstr log; log << "You would pin the mob against the wall.."; 
+  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  return false; 
+}
+
+class Spell_Crush: public SpellImpl { public:
+  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool execSpell(SpellParam& param) { return spellCrush(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_crush; }
+} spell_crush;
+
+
+bool spellEmbed(Mob& actor, CPoint dir) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+  logstr log; log << "You would embed the mob in the rock.."; 
+  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  return false; 
+}
+
+class Spell_Embed: public SpellImpl { public:
+  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool execSpell(SpellParam& param) { return spellEmbed(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_embed; }
+} spell_embed;
+
+
+
+bool spellShove(Mob& actor, CPoint dir) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+  logstr log; log << "You would shove the mob along the ground.."; 
+  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  return false; 
+}
+
+class Spell_Shove: public SpellImpl { public:
+  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool execSpell(SpellParam& param) { return spellShove(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_shove; }
+} spell_shove;
+
+
+
+bool spellTackle(Mob& actor, CPoint dir) {
+  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+  logstr log; log << "You would tackle the mob.."; 
+  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  return false; 
+}
+
+class Spell_Tackle: public SpellImpl { public:
+  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_tackle; }
+} spell_tackle;
 
 
 bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
@@ -582,6 +655,13 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_WallBuilding:   Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_Earthquake:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_FocusBlast:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
+
+  case SP_Rush:             Spell_Rush::init(actor, p);                        break; 
+  case SP_Crush:           Spell_Crush::init(actor, p);                        break; 
+  case SP_Embed:           Spell_Embed::init(actor, p);                        break; 
+  case SP_Shove:           Spell_Shove::init(actor, p);                        break; 
+  case SP_Tackle:         Spell_Tackle::init(actor, p);                        break; 
+
   case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // return eatSpell(actor,p.deltaFood); break;
   case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // return healSpellPct(actor,p.healPct); break;
   // Heal dice design: lots of small dice, so you always get some healing.

@@ -74,8 +74,12 @@ enum SpellEnum {
   SP_WallBuilding , // SC_Earth    // "DONE"
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
   SP_FocusBlast, // hit hard, exactly one space away.
-
-  SP_Eat ,
+  SP_Rush, // charge - you launch YOURSELF as a projectile, and bump into the mob. so - both projectile and 'teleport' (works similarly to teleport-to)
+  SP_Crush, // crush mob between hard wall and yourself (requires a wall on the other side.)
+  SP_Embed, // Push mob INTO the rock..
+  SP_Shove, // push mob sliding along the floor, to bumb into far wall.
+  SP_Tackle, // push both yourself and mob sliding along the floor, bumping into wall.
+  SP_Eat,
   SP_Heal_light,
   SP_Heal_minor,
   SP_Heal_mod,
