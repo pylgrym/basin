@@ -222,46 +222,18 @@ bool ZapCmd::legal(std::ostream& err) {
 }
 
 
-
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
-
   /* FIXME, none of this is really a Cmd - this is a utility helper for Spell class!
-  (used by bulletspell mainly, and secondly by monstermob.)
-  */
-
+  (used by bulletspell mainly, and secondly by monstermob.) */
   CPoint dir = mobZapDir;
-
   // if (mob.isPlayer()) { // Player chooses dir interactively:
   //  dir = Spell::pickZapDir();
   //  if (dir == Spell::NoDir) { return false; }
   //}
 
-  CPoint tileMagic(18, 24);
-  CPoint tileFire(22, 24);
-  CPoint tileFrost(23, 24);
-  CPoint tilePurple(34, 24);
-  CPoint tileYellow(35, 24);
-  CPoint tileGreenFire(39, 24);
-  CPoint tileGreenBall(3, 25);
-  CPoint tileLight(39, 2);
-  CPoint tileNether(0, 3);
-  CPoint tileEarth(16, 22);
-  CPoint tileStar(15,22);
-  CPoint tileWeird(39, 2);
+  CPoint tile = Spell::bulletTileForSchool(school);
   CPoint tileNone(0, 0); // Yeah it's an ant, but it's also 'none', in this context..
-
-  CPoint tile = tileMagic;
-  switch (school) {
-  case SC_Magic: tile = tileMagic; break;
-  case SC_Fire:  tile = tileFire;  break;
-  case SC_Frost: tile = tileFrost; break;
-  case SC_Earth: tile = tileYellow;break;
-  case SC_Gas:   tile = tileGreenBall; break;
-  case SC_Light: tile = tileLight; break;
-  default:       tile = tileWeird; break;
-  }
-
   const SpellDesc& spellDesc = Spell::spell(effect); // used by range-check.
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav

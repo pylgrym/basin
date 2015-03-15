@@ -189,6 +189,8 @@ public:
 
   static bool legalSpellIx(int ix);
 
+  static CPoint bulletTileForSchool(AttackSchool school); // Gives you the bullet-gfx-tile to use for a given type of magic.
+
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 

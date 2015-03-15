@@ -171,6 +171,33 @@ removeparalysis
 and auto-added to description - "A WAND OF X".
 */
 
+CPoint Spell::bulletTileForSchool(AttackSchool school) {
+  CPoint tileMagic(18, 24);
+  CPoint tileFire(22, 24);
+  CPoint tileFrost(23, 24);
+  CPoint tilePurple(34, 24);
+  CPoint tileYellow(35, 24);
+  CPoint tileGreenFire(39, 24);
+  CPoint tileGreenBall(3, 25);
+  CPoint tileLight(39, 2);
+  CPoint tileNether(0, 3);
+  CPoint tileEarth(16, 22);
+  CPoint tileStar(15,22);
+  CPoint tileWeird(39, 2);
+
+  CPoint tile = tileMagic;
+  switch (school) {
+  case SC_Magic: tile = tileMagic; break;
+  case SC_Fire:  tile = tileFire;  break;
+  case SC_Frost: tile = tileFrost; break;
+  case SC_Earth: tile = tileYellow;break;
+  case SC_Gas:   tile = tileGreenBall; break;
+  case SC_Light: tile = tileLight; break;
+  default:       tile = tileWeird; break;
+  }
+  return tile;
+}
+
 
 const char* Spell::type2str(SpellEnum type) {
   assert(type >= 0);
