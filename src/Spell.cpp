@@ -53,6 +53,8 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 8, 3,{4,6},  0,2,SC_Earth,"shove", "Shove" }, // = 13, // or kick.
 {10, 3,{4,6},  0,8,SC_Earth,"tackle", "Tackle" }, // = 13, // maybe longer min-dist req.?
 
+{10, 3,{4,10},  0,25,SC_Fire,"breath", "Breath" }, // = 13, //dragons.. fixme - all schools, not just fire - use mob default school!
+
 { 9, 2, {1,1}, 0,40,SC_Phys,"eat", "Food" }, // = 15,
 { 1, 1, {1,1}, 0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
 { 2, 2, {1,1}, 0,40,SC_Phys,"heal_minor", "Heal minor" }, // = 17,
@@ -509,6 +511,19 @@ class Spell_TeleTo : public SpellImpl {
 } spell_teleTo;
 
 
+/*
+idea: 'standing in bad' dots - leaving temp bad tiles on ground, that you must avoid standing on or possibly next to.
+
+ - these are similar - you and/or mob must slide like a projectile.
+  SP_Rush,   // charge - you launch YOURSELF as a projectile, and bump into the mob. so - both projectile and 'teleport' (works similarly to teleport-to)
+  SP_Shove,  // push mob sliding along the floor, to bumb into far wall.
+  SP_Tackle, // push both yourself and mob sliding along the floor, bumping into wall. it's 'more of rush'.
+
+  - semi-done:
+  SP_Crush,  // crush mob between hard wall and yourself (requires a wall on the other side.) (doesn't require moving anyone, just a 'spell melee')
+  SP_Embed,  // Push mob INTO the rock.. (do you move along with it?) (requires moving at least the mob. MOVE: DONE.. - rock-dmg NOT done)
+*/
+
 bool spellRush(Mob& actor, CPoint dir) {
   // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
   // (I want to discourage using it for plain moving/fast moving..)
@@ -559,9 +574,13 @@ class Spell_Crush: public SpellImpl { public:
 
 bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You would embed the mob in the rock.."; }
+  { logstr log; log << "You attempt to embed the mob in the rock.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  // FIXME - this does not push mob into wall, and move you..
+
+  // (50%done)-FIXME - this does not push mob into wall, and move you..
+  CPoint embedPos = (target.pos + dir);
+  target.moveM(embedPos); //CL->map.moveMob(target, target.pos);
+
   ZapCmd cmd(NULL, actor, SP_Embed, SC_Phys); // school);
   cmd.mobZapDir = dir;
   logstr log;
@@ -718,6 +737,9 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_Embed:           Spell_Embed::init(actor, p);                        break; 
   case SP_Shove:           Spell_Shove::init(actor, p);                        break; 
   case SP_Tackle:         Spell_Tackle::init(actor, p);                        break; 
+
+                       // FiXME, dragon-breath is NOT tackle!
+  case SP_Breath:         Spell_Tackle::init(actor, p);                        break; 
 
   case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // return eatSpell(actor,p.deltaFood); break;
   case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // return healSpellPct(actor,p.healPct); break;

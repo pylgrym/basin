@@ -79,6 +79,8 @@ enum SpellEnum {
   SP_Embed, // Push mob INTO the rock..
   SP_Shove, // push mob sliding along the floor, to bumb into far wall.
   SP_Tackle, // push both yourself and mob sliding along the floor, bumping into wall.
+  SP_Breath, // meant for dragons, not for you..
+  // SP_Claw,
   SP_Eat,
   SP_Heal_light,
   SP_Heal_minor,

@@ -214,6 +214,11 @@ CPoint Mob::playerDir() const {
 }
 
 
+void Mob::moveM(CPoint newpos) { // 'does all', 'move mob on map'.
+  CL->map.moveMob(*this, newpos);
+}
+
+
 
 void Mob::makeAngry() {
   if (mood == M_Sleeping || mood == M_Wandering) {
