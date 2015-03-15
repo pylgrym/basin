@@ -122,7 +122,14 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     int castChance = (nearPlayer() ? 7 : 33);
     bool willCast = pctChance(castChance);
     if (willCast) {
-      ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // FIXME, should be spell's school instead? 
+      /* FIxME/ consider: mobs start with zapcmd instead of Spell::castSpell.
+      / Main differences are
+       - that zapcmd works with 'cast/bullet dir' from the get-go (and won't accidentally prompt USER for mob's attack-dir..)
+       - zapcmd won't eat mana.
+       Apart from that, mobs ought to switch to castSpell, so they e.g. can cast 'improve myself/buff' spells.
+      At the core of it, zapcmd shouldn't be a command..
+      */
+      ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
       cmd.mobZapDir = dir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
 
       // not a_mob

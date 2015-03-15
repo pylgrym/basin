@@ -728,7 +728,7 @@ bool CastCmd::Do(std::ostream& err) {
   SpellEnum spellType = Spell::pickASpell("Cast which spell?"); // (1 - choose spell)
   if (spellType == SP_NoSpell) { return false; }
 
-  bool castOK = Spell::castSpell(spellType, actor, NULL, NULL, UseMana);
+  bool castOK = Spell::castSpell(spellType, actor, NULL, NULL, UseMana); // in User's cast-cmd.
   return castOK;
 }
 
