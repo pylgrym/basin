@@ -191,7 +191,9 @@ public:
   static SpellEnum pickASpell(const char* prompt);
   static SpellEnum pickSpellAction(int& offset, bool& cancel); // accept user input
   static void showSpellInv(int offset, int numItems);
-  
+
+  static CPoint pickZapDir();
+  static CPoint NoDir; // 0,0
 
   static void initQual();
 

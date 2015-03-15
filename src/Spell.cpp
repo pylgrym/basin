@@ -407,17 +407,24 @@ public:
 
 
 // Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
-bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
+bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school, CPoint dir) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
   ZapCmd cmd(spellItem, actor, effect, school);
+  cmd.mobZapDir = dir;
   logstr log;
   return cmd.Do(log);
 }
 
 class Spell_Bullet: public SpellImpl { 
 public:
-  // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return bulletSpell(*param.actor, param.item, param.effect, param.school);  }
-  static void init(Mob& actor, Obj* item, SpellEnum effect, AttackSchool school, SpellParam& p) { p.actor = &actor;  p.item = item; p.effect = effect; p.school = school; p.impl = &spell_bullet; }
+  bool getParams(SpellParam& param) { 
+    param.dir = Spell::pickZapDir();
+    if (param.dir == Spell::NoDir) { return false;  }
+    return true; // param.dir = CPoint(1, 0);  
+  }
+  bool execSpell(SpellParam& param) { return bulletSpell(*param.actor, param.item, param.effect, param.school, param.dir);  }
+  static void init(Mob& actor, Obj* item, SpellEnum effect, AttackSchool school, SpellParam& p) { 
+    p.actor = &actor;  p.item = item; p.effect = effect; p.school = school; p.impl = &spell_bullet; 
+  }
 } spell_bullet;
 
 
@@ -578,7 +585,10 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   // case SP_Poison:       healSpell(actor); break;
   default: { logstr log; log << "err spell unknown:" << effect; } return false;
   }
-  return (p.impl != NULL); // we've only prepared a spell, if we've located an 'impl'. 
+
+  if (p.impl == NULL) { return false; }  // we've only prepared a spell, if we've located an 'impl'. 
+  bool bPromptOK = p.impl->getParams(p); // e.g. prompt for dir.
+  return bPromptOK; 
 }
 
 
@@ -626,6 +636,35 @@ bool Spell::castSpell(SpellEnum spellType, Mob& actor, Mob* target, Obj* item, c
   return castOK;
 }
 
+
+
+CPoint Spell::pickZapDir() {
+  bool bFound = false;
+  int dirKey = 0;
+
+  // FIXME - respectMultiNotif and promptForKey should be integrated!
+  LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
+  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+  const char* keyPrompt = "Zap which direction?";
+  for (;!bFound;) {
+    dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
+
+    if (dirKey == VK_ESCAPE) {
+      Cuss::clear(true);
+      return NoDir; // false; // Cancelled zap operation.
+    }
+    
+    switch (dirKey) {
+    case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
+    default: TheUI::BeepWarn(); break; // Not a DIR key.
+    }      
+  } // Loop until dir key.
+
+  CPoint dir = Map::key2dir(dirKey); 
+  return dir;
+}
+
+CPoint Spell::NoDir = CPoint(0,0); // 0,0
 
 
 // (DONE) Make doors!

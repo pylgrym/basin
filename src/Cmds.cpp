@@ -213,42 +213,25 @@ should go into a coherent design.
 
 bool ZapCmd::legal(std::ostream& err) {
   if (!Cmd::legal(err)) { return false;  }
-  // Consider - prompt the user, if he wants to risk it.
-  if (!consumeMana) { return true; }
+  return true;
 
-  bool manaCheckOK = Spell::manaCostCheck(effect, mob, err);
-  return manaCheckOK;
+  // Consider - prompt the user, if he wants to risk it.
+  // if (!consumeMana) { return true; }
+  //bool manaCheckOK = Spell::manaCostCheck(effect, mob, err);
+  //return manaCheckOK;
 }
+
+
 
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
   CPoint dir = mobZapDir;
 
-  if (mob.isPlayer()) { // Player chooses dir interactively:
-    bool bFound = false;
-    int dirKey = 0;
-
-    // FIXME - respectMultiNotif and promptForKey should be integrated!
-    LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
-    Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
-    const char* keyPrompt = "Zap which direction?";
-    for (;!bFound;) {
-      dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
-
-      if (dirKey == VK_ESCAPE) {
-        Cuss::clear(true);
-        return false; // Cancelled zap operation.
-      }
-    
-      switch (dirKey) {
-      case 'H': case 'J': case 'K': case 'L': case 'N': case 'B': case 'U': case 'Y': bFound = true;  break;
-      default: TheUI::BeepWarn(); break; // Not a DIR key.
-      }      
-    } // Loop until dir key.
-    dir = Map::key2dir(dirKey); 
-  }
-
+  // if (mob.isPlayer()) { // Player chooses dir interactively:
+  //  dir = Spell::pickZapDir();
+  //  if (dir == Spell::NoDir) { return false; }
+  //}
 
   CPoint tileMagic(18, 24);
   CPoint tileFire(22, 24);
@@ -276,8 +259,6 @@ bool ZapCmd::Do(std::ostream& err) {
   }
 
   const SpellDesc& spellDesc = Spell::spell(effect); // used by range-check.
-
-  // PayMana - fixme -we used to do it here.
 
   playSound(L"sounds\\sfxr\\sweep.wav"); // travel-zap-bullet . split.wav chirp4.wav +frostbalt.wav
   CPoint bullet = tgt;
@@ -325,7 +306,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
-          bool bSpellOK = Spell::castSpell(effect, *target, NULL, zapHitItem, NoMana); // , consumeMana ? UseMana : NoMana); // in zapcmd. hitting a mob.
+          bool bSpellOK = Spell::castSpell(effect, *target, NULL, zapHitItem, NoMana); // in zapcmd. hitting a mob.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -347,7 +328,8 @@ bool ZapCmd::Do(std::ostream& err) {
 
       case SP_ConfuseMob: // This used to be a major bug - confusemob would recurse infinitely, from  dospell, zapcmd, bulletspell loop.
         { logstr log; // (Actually, confusemob actually should just 'bulletspell->confuseSelf')
-          bool bSpellOK = Spell::castSpell(SP_ConfuseSelf, *target, NULL, zapHitItem, NoMana); // , consumeMana ? UseMana : NoMana); // in zapcmd. hitting a mob.
+          bool bSpellOK = Spell::castSpell(SP_ConfuseSelf, *target, NULL, zapHitItem, NoMana); // in zapcmd. hitting a mob.
+          // (JG: The "bullet->self" are the reason tryident happens outside, and not directly in castspell.)
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
           break;
         }
