@@ -510,6 +510,10 @@ class Spell_TeleTo : public SpellImpl {
 
 
 bool spellRush(Mob& actor, CPoint dir) {
+  // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
+  // (I want to discourage using it for plain moving/fast moving..)
+  // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
+
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   logstr log; log << "You would rush headfirst into the mob.."; 
   // Todo: projectile + move player.. Make a toolbox to build spells..
@@ -523,16 +527,29 @@ class Spell_Rush: public SpellImpl { public:
 } spell_rush;
 
 
-bool spellCrush(Mob& actor, CPoint dir) {
+bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; log << "You would pin the mob against the wall.."; 
-  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  return false; 
+  { logstr log; log << "You would pin the mob against the wall.."; }
+  // NB! Must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  // Consider: maybe it's HitCmd instead?
+  // Todo: target ought to be passed along to hit/zap cmd..
+  ZapCmd cmd(NULL, actor, SP_Crush, SC_Phys); // school);
+  cmd.mobZapDir = dir;
+  logstr log;
+  return cmd.Do(log);
 }
 
 class Spell_Crush: public SpellImpl { public:
-  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
-  bool execSpell(SpellParam& param) { return spellCrush(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  bool getParams(SpellParam& p) { 
+    bool paramOK = Spell_Bullet::getParamsDIR(p); 
+    if (!paramOK) { return false;  }
+    p.pos = p.actor->pos + p.dir;
+    p.target = CL->map[p.pos].creature.m;
+    if (p.target == NULL) { if (p.actor->isPlayer()) { logstr log; log << "But there is noone there to crush?"; } return false; }
+    if (!CL->map[p.pos+p.dir].envir.blocked()) { if (p.actor->isPlayer()) { logstr log; log << "But there is no wall to crush against?"; } return false; }
+    return true;
+  }
+  bool execSpell(SpellParam& param) { return spellCrush(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_crush; }
 } spell_crush;
 
