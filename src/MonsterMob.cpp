@@ -129,13 +129,23 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
        Apart from that, mobs ought to switch to castSpell, so they e.g. can cast 'improve myself/buff' spells.
       At the core of it, zapcmd shouldn't be a command..
       */
-      ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
-      cmd.mobZapDir = dir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
 
       // not a_mob
       { logstr log; log << pronoun() << " aims a spell at you!"; }
+
+      CPoint zapDir = dir;
       logstr log; // Will show a mob attacking!
-      bool bOK = cmd.Do(log);
+
+      bool bOK = true;
+      if (false) { // Old approach.
+        ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
+        cmd.mobZapDir = zapDir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
+        bOK = cmd.Do(log);
+      } else { // new approach:
+        Mob* target = PlayerMob::ply; // NULL;
+        bOK = Spell::castSpell(mobSpell, *this, target, NULL, NoMana);
+      }
+
       if (bOK) { return 1.0; } // At least he used up his turn now..
     }
 
@@ -184,13 +194,18 @@ CPoint Mob::playerDelta() const {
   return delta;
 }
 
-CPoint Mob::playerDir() const {
-  CPoint delta = (PlayerMob::ply->pos - pos);
-  CPoint dir;
+CPoint Mob::normDir(CPoint delta) {
+  CPoint dir(0,0);
   if (delta.x > 0) { dir.x = 1; }
   if (delta.x < 0) { dir.x = -1; }
   if (delta.y > 0) { dir.y = 1; }
   if (delta.y < 0) { dir.y = -1; }
+  return dir;
+}
+
+CPoint Mob::playerDir() const {
+  CPoint delta = (PlayerMob::ply->pos - pos);
+  CPoint dir = normDir(delta);
   return dir;
 }
 

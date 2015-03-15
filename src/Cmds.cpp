@@ -226,6 +226,10 @@ bool ZapCmd::legal(std::ostream& err) {
 bool ZapCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 
+  /* FIXME, none of this is really a Cmd - this is a utility helper for Spell class!
+  (used by bulletspell mainly, and secondly by monstermob.)
+  */
+
   CPoint dir = mobZapDir;
 
   // if (mob.isPlayer()) { // Player chooses dir interactively:

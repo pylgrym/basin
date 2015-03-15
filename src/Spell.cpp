@@ -417,10 +417,19 @@ bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool scho
 class Spell_Bullet: public SpellImpl { 
 public:
   bool getParams(SpellParam& param) { 
-    param.dir = Spell::pickZapDir();
-    if (param.dir == Spell::NoDir) { return false;  }
-    return true; // param.dir = CPoint(1, 0);  
+    // If it's a mob, it will handle dir by itself.
+    if (param.actor->isPlayer()) {
+      param.dir = Spell::pickZapDir();
+      if (param.dir == Spell::NoDir) { return false;  }
+    } else {
+      if (param.target != NULL) {
+        CPoint deltaDir = (param.target->pos - param.actor->pos);
+        param.dir = Mob::normDir(deltaDir);
+      }
+    }
+    return true; 
   }
+
   bool execSpell(SpellParam& param) { return bulletSpell(*param.actor, param.item, param.effect, param.school, param.dir);  }
   static void init(Mob& actor, Obj* item, SpellEnum effect, AttackSchool school, SpellParam& p) { 
     p.actor = &actor;  p.item = item; p.effect = effect; p.school = school; p.impl = &spell_bullet; 
