@@ -539,8 +539,11 @@ bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
   return cmd.Do(log);
 }
 
+
 class Spell_Crush: public SpellImpl { public:
-  bool getParams(SpellParam& p) { 
+  bool getParams(SpellParam& p) { return getParamsCRUSH(p);  }
+
+  static bool getParamsCRUSH(SpellParam& p) { 
     bool paramOK = Spell_Bullet::getParamsDIR(p); 
     if (!paramOK) { return false;  }
     p.pos = p.actor->pos + p.dir;
@@ -554,16 +557,23 @@ class Spell_Crush: public SpellImpl { public:
 } spell_crush;
 
 
-bool spellEmbed(Mob& actor, CPoint dir) {
+bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; log << "You would embed the mob in the rock.."; 
+  { logstr log; log << "You would embed the mob in the rock.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  return false; 
+  // FIXME - this does not push mob into wall, and move you..
+  ZapCmd cmd(NULL, actor, SP_Embed, SC_Phys); // school);
+  cmd.mobZapDir = dir;
+  logstr log;
+  return cmd.Do(log);
 }
 
+
 class Spell_Embed: public SpellImpl { public:
-  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
-  bool execSpell(SpellParam& param) { return spellEmbed(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  bool getParams(SpellParam& param) { // Embed has same requirements as Crush (wall on other side, and mob in between, directly next to you.)
+    return Spell_Crush::getParamsCRUSH(param); 
+  }
+  bool execSpell(SpellParam& param) { return spellEmbed(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_embed; }
 } spell_embed;
 
