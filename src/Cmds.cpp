@@ -256,16 +256,27 @@ bool ZapCmd::Do(std::ostream& err) {
 
     // It's legal, move to it:
     bullet = newBullet;
-    CL->map[bullet].overlay = tile; // CPoint(23, 24); // c = '*';
+    CL->map[bullet].overlay = tile;
     mob.invalidateGfx(bullet, oldBullet, true);
+
+
+    /* fixme - the zapcmd-bullet-loop,
+    should be turned into an iterator-visitor-like thingy.
+     it should only handle the movement of projectiles/graphics.
+    if it's structured like an iterator, it would allow you to 
+    'iterate' the bullet-travel, until you encounter distinct stuff 
+     - an enemy, or a wall.
+     (or, alternatively, while you are passing empty squares to light or wall-build.)
+    I might use the new 'slide-player' spell to prototype this.
+    */
 
     extern bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim);
 
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       /* fixme, design: spell's minrange and maxrange should be honoured,
-      and have an effect - beware they should be 'safe',
+      and have an effect - beware they should be 'safe/secure',
       and not just allow exploiting, e.g. shooting through walls
-      (ie if you have a minimum range, the bulllet must still travel before that.
+      (ie if you have a minimum range, the bullet must still travel before that.
       */
       if (crossDistance(newBullet, tgt) < spellDesc.minRange) {
         logstr log; log << "The spell sizzles out, in too short range!";

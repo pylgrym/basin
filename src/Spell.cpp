@@ -557,10 +557,36 @@ bool spellRush(Mob& actor, CPoint dir) {
   // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
 
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; log << "You would rush headfirst into the mob.."; 
+  { logstr log; log << "You would rush headfirst into the mob..";  }
   // Todo: projectile + move player.. Make a toolbox to build spells..
-  return false; // true;
+
+  // Todo: this loop could be put in an iteratorish-class:
+  CPoint newPos = actor.pos;
+  Cell* cell = NULL;
+  for (;;) {
+    newPos += dir;
+    cell = &CL->map[newPos];
+    if (cell->blocked()) { break; }
+    actor.moveM(newPos);
+    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+  }
+
+  if (!cell->creature.empty()) { // Good: we bump into an enemy!
+    { logstr log; log << "You bump into the mob!"; }
+    HitCmd hit(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush); // FIXME; how much dmg does it do, and does it stun/confuse him?
+    logstr log;
+    return hit.Do(log);
+  }
+
+  if (cell->envir.blocked()) {
+    logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!";
+    healSpellPct(actor, -66); // Loose 66 pct of health!
+    return true;
+  }
+  logstr log; log << "Weird, your rush leads nowhere?";
+  return true;
 }
+
 
 class Spell_Rush: public SpellImpl { public:
   bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
