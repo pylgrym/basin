@@ -551,6 +551,7 @@ idea: 'standing in bad' dots - leaving temp bad tiles on ground, that you must a
   SP_Embed,  // Push mob INTO the rock.. (do you move along with it?) (requires moving at least the mob. MOVE: DONE.. - rock-dmg NOT done)
 */
 
+
 bool spellRush(Mob& actor, CPoint dir) {
   // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
   // (I want to discourage using it for plain moving/fast moving..)
@@ -579,7 +580,9 @@ bool spellRush(Mob& actor, CPoint dir) {
   }
 
   if (cell->envir.blocked()) {
-    logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!";
+    if (actor.isPlayer()) { logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!"; }
+    else { logstr log; log << "Ouch! The monster slams into the wall, seriously hurting itself!"; }
+    
     healSpellPct(actor, -66); // Loose 66 pct of health!
     return true;
   }
@@ -588,11 +591,13 @@ bool spellRush(Mob& actor, CPoint dir) {
 }
 
 
+
 class Spell_Rush: public SpellImpl { public:
   bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
   bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_rush; }
 } spell_rush;
+
 
 
 bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
@@ -625,6 +630,7 @@ class Spell_Crush: public SpellImpl { public:
 } spell_crush;
 
 
+
 bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   { logstr log; log << "You attempt to embed the mob in the rock.."; }
@@ -655,11 +661,16 @@ bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   { logstr log; log << "You would shove the mob along the ground.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  // FIXME - this does not push mob into wall, and move you..
+  // was: - this does not push mob into wall, and move you..
+
+  return spellRush(target, dir); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
+
+  /*
   ZapCmd cmd(NULL, actor, SP_Shove, SC_Phys); // school);
   cmd.mobZapDir = dir;
   logstr log;
   return cmd.Do(log);
+  */
 }
 
 class Spell_Shove: public SpellImpl { public:
@@ -682,13 +693,63 @@ class Spell_Shove: public SpellImpl { public:
 
 
 bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
+  // fiXmE - is 'target anything yet? (it might be,  because we assume both are next to each other? but actually, 'tackle' may use run-lead-up?
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   { logstr log; log << "You would tackle the mob.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+
+  // First hurl-part, only actor:
+  CPoint newActorPos = actor.pos;
+  Cell* cell = NULL;
+  for (;;) {
+    newActorPos += dir;
+    cell = &CL->map[newActorPos];
+    if (cell->blocked()) { break; }
+    actor.moveM(newActorPos);
+    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+  }
+
+  if (cell->envir.blocked()) {
+    if (actor.isPlayer()) { logstr log; log << "Augh! You slam into the wall, seriously hurting yourself!"; }
+    else { logstr log; log << "Ouch! The monster slams into the wall, seriously hurting itself!"; }    
+    healSpellPct(actor, -66); // Loose 66 pct of health!
+    return true;
+  }
+
+  if (cell->creature.empty()) { // bad unexpected we didn't bump into an enemy?
+    { logstr log; log << "Why is there noone here?"; }
+    return true;
+  }
+  Mob* mob = cell->creature.m;
+
+  // Second stage, now both mob and actor must slide along.
+  { logstr log; log << "You tackle the mob!"; }
+
+  CPoint newMobPos = newActorPos+dir;
+  for (;;) {
+    newActorPos += dir;
+    newMobPos += dir;
+    cell = &CL->map[newMobPos];
+    if (cell->blocked()) { break; }
+    mob->moveM(newMobPos);
+    actor.moveM(newActorPos);
+    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+  }
+
+  { // this is a bit cheating - tackle, ie mob hitting wall with me, gets dmg by me hitting mob with 'tackle..'
+    HitCmd hit(NULL,actor,dir.x, dir.y,SC_Phys,SP_Tackle); // FIXME; how much dmg does it do, and does it stun/confuse him?
+    logstr log;
+    return hit.Do(log);
+  }
+
+  logstr log; log << "Weird, your tackle leads nowhere?";
+
+  /*
   ZapCmd cmd(NULL, actor, SP_Tackle, SC_Phys); // school);
   cmd.mobZapDir = dir;
   logstr log;
   return cmd.Do(log);
+  */
 }
 
 class Spell_Tackle: public SpellImpl { public:
