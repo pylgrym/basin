@@ -372,7 +372,7 @@ bool updateConfused(Mob& actor, int confuseCount) {
     playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
   }
 
-  logstr log; if (confuseCount > 0) { log << "You feel confused."; } else { log << "You feel less confused."; }
+  logstr log; if (confuseCount > 0) { log << actor.pronoun() << "?You feel confused."; } else { log << actor.pronoun() << "?You feel less confused."; }
   actor.stats.confused = confuseCount; 
   return true;
 }
@@ -403,8 +403,8 @@ public:
 bool healSpellPct(Mob& actor, int percent) {
   {
     logstr log; 
-    if (percent > 0) { log << "You feel healing energies."; }
-    if (percent < 0) { log << "You feel sick."; }
+    if (percent > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
+    if (percent < 0) { log << actor.pronoun() << "(You?) feel sick."; }
   }
   actor.stats.healPct(percent);
   return true;
@@ -422,8 +422,8 @@ bool healSpellDice(Mob& actor, Dice dice) {
   int val = dice.roll(dummy);
   {
     logstr log;
-    if (val > 0) { log << "You feel healing energies."; }
-    if (val < 0) { log << "You feel sick."; }
+    if (val > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
+    if (val < 0) { log << actor.pronoun() << "(You?) feel sick."; }
   }
   actor.stats.healAbs(val);
   return true;

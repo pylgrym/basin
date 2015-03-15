@@ -450,9 +450,9 @@ void Stats::healPct(int percent) { // May also be used negative.
 
   logstr log;
   if (percent > 0) {
-    log << "You feel your health returning.";
+    log << "p:" << this->isPlayer << "You feel your health returning.";
   } else {
-    log << "Your health worsens.";
+    log << "p:" << this->isPlayer << "Your health worsens.";
   }
 }
 
