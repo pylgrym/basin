@@ -673,6 +673,11 @@ bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   */
 }
 
+/* thoughts: i should consider making 'floodfill-laby' prettier.
+
+i should make restore mana
+*/
+
 class Spell_Shove: public SpellImpl { public:
   bool getParams(SpellParam& param) { return getParamsSHOVE(param); }
 

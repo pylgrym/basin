@@ -21,7 +21,10 @@ public:
   WalkCmd(class Mob& mob_, int dx, int dy, bool force):old(mob_.pos), mob(mob_) {
     // JG: I'm not sure about force - the intent is, that with 'force', you can make sure Walk will 'do what you tell it to do', even if player is challenged/confused.
     if (mob.stats.isConfused() && oneIn(2) && !force) {
-      logstr log; log << "You stumble randomly, still confused.";
+
+      if (mob.isPlayer() { logstr log; log << "You stumble randomly, still confused."; }
+      else { logstr log; log << "The monster appears confused." }
+
       dx = rndC(-1, 1); dy = rndC(-1, 1);
     }
     newpos = old; newpos.x += dx; newpos.y += dy;

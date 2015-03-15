@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "Equ.h"
-
 #include "numutil/myrnd.h"
 #include "Obj.h"
-
 #include "Bag.h"
-
 #include "Cuss.h"
 #include "theUI.h"
+#include <iomanip>
 
-//Equ::Equ() {}
 
 
 Equ Equ::worn;
@@ -215,8 +212,10 @@ void Equ::showWorn() {
     Obj* o = equ[slot];
 
     std::string descA; std::string label;
+    double weight = 0.0;
     if (o != NULL) {
       descA = o->an_item();
+      weight = o->kweight();
       label = ""; // std::string(slotDesc(slot)) + ":";
     } else  {
       descA = " - ";
@@ -224,7 +223,9 @@ void Equ::showWorn() {
 
 
     std::stringstream ss;
-    ss << ix << " " << label << descA;
+    ss << ix << " " << std::fixed << std::setprecision(1);
+    if (o) { ss << weight; } else  { ss << " .";  }
+    ss << " " << label << descA;
     Cuss::prtL(ss.str().c_str());  
   }
 
