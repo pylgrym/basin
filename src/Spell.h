@@ -73,6 +73,7 @@ enum SpellEnum {
   SP_StoneToMud ,   // SC_Air/Elm? // "DONE"
   SP_WallBuilding , // SC_Earth    // "DONE"
   SP_Earthquake ,   // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
+  SP_FocusBlast, // hit hard, exactly one space away.
 
   SP_Eat ,
   SP_Heal_light,

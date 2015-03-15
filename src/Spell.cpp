@@ -45,6 +45,7 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 {26, 2, {7,8}, 0,40,SC_Earth,"stonetomud", "Stone to mud" }, // = 11,
 {31, 4, {8,9}, 0,40,SC_Earth,"wallbuilding", "Wallbuilding" }, // = 12
 {36, 1,{9,10}, 0,40,SC_Earth,"earthquake", "Earthquake" }, // = 13,
+{ 2, 3,{4,6},  2,2,SC_Earth,"focusblast", "Focus Blast" }, // = 13,
 
 { 9, 2, {1,1}, 0,40,SC_Phys,"eat", "Food" }, // = 15,
 { 1, 1, {1,1}, 0,40,SC_Phys,"heal_light", "Heal light" }, // = 16,
@@ -580,6 +581,7 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_StoneToMud:     Spell_Bullet::init(actor, item, effect, SC_Air, p);  break; // return bulletSpell(actor, item, effect, SC_Air); break;  // error/fixme: spell already knows school, so specifying it twice leads to ambiguity redundancy errors!
   case SP_WallBuilding:   Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_Earthquake:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
+  case SP_FocusBlast:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // return eatSpell(actor,p.deltaFood); break;
   case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // return healSpellPct(actor,p.healPct); break;
   // Heal dice design: lots of small dice, so you always get some healing.
@@ -864,6 +866,7 @@ bool Spell::isDmgSpell(SpellEnum stype) {
   case SP_StoneToMud:   // SC_Air/Elm? // "DONE"
   case SP_WallBuilding: // SC_Earth    // "DONE"
   case SP_Earthquake:  // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
+  case SP_FocusBlast:  // SC_Earth    // Todo - different kind of spell! (it's like a 'mass digging'.)
     return true;
   }
   return false;

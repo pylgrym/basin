@@ -130,6 +130,10 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
       At the core of it, zapcmd shouldn't be a command..
       */
 
+      /* focus blast: a spell that hits exactly 2 spaces away, and hits hard. may require los free.
+      also possible cooldown. the idea is, that it takes 'logistics' to navigate the adversary in place.
+      strike of opportunity?
+      */
       // not a_mob
       { logstr log; log << pronoun() << " aims a spell at you!"; }
 

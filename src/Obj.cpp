@@ -468,7 +468,7 @@ void Obj::initRandom() { // - clear should not init.
 
   itemUnits = rnd(20, 400);
 
-  dmgDice = Levelize::randDiceForLevel(ilevel);
+  dmgDice = Levelize::randDiceForLevel(ilevel); // normal weapon-dmg comes from level machine, not from object defs.
   ac = Levelize::suggestLevel(ilevel);
 
   setTypeDefaults(); // Bring some sanity back..
@@ -493,6 +493,9 @@ void Obj::setTypeDefaults() {
   case OB_Staff: case OB_Wand:
     consumed = false; // 'chargey' items are not consumed on use-up, so far.
     charges = rnd(0,16);
+    const SpellDesc& desc = Spell::spell(effect);
+    dmgDice = Dice(desc.dice.num, desc.dice.side); // better: we get info from spell-def instead of extra code.
+    /*
     switch (effect) {
     case SP_MagicMissile: dmgDice = Dice(2, 4); break; // 5 // FIXME, this only makes OBJECTS hit hard, how about the general spell..
     case SP_StinkCloud:   dmgDice = Dice(3, 4); break; // 7.5 // FIXME, what levels..?
@@ -502,7 +505,9 @@ void Obj::setTypeDefaults() {
     case SP_StoneToMud:   dmgDice = Dice(7, 8); break; // 31.5 
     case SP_WallBuilding: dmgDice = Dice(8, 9); break; // 40
     case SP_Earthquake:   dmgDice = Dice(9,10); break; // 49.5
+    case SP_FocusBlast:   dmgDice =  Dice(4,6); break; // ?49.5      
     }
+    */
     break;
   }
 
