@@ -65,8 +65,9 @@ void LOS::deal(int ax, int ay, int bx, int by) {
   std::vector<LCell*>::iterator i; 
   for (i = disted.begin(); i != disted.end(); ++i) {
     LCell& c = **i; // Now use c.dark
-    CPoint pA(vA.x*c.x, vA.y*c.y); // FiXME, is this correct?
-    CPoint pB(vB.x*c.x, vB.y*c.y);
+    // You get 'x'-amount of vA, and 'y'-amount of vB:
+    CPoint pA(vA.x*c.x, vA.y*c.x); // FiXME, is this correct?
+    CPoint pB(vB.x*c.y, vB.y*c.y);
     CPoint p = pA + pB;
     c.dark;
     // map[p].dark = c.dark;
