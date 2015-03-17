@@ -11,6 +11,7 @@
 Dungeon::Dungeon(int level_)
   :level(level_) 
 {
+  lightmap.map = &map; // ugly init of map ptr.
 }
 
 

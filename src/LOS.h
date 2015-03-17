@@ -9,6 +9,45 @@
 
 extern bool operator < (CPoint a, CPoint b);
 
+class LightMap {
+public:
+  enum Sizes { SidePart = 20, Side = SidePart * 2 + 1 }; // FIXME, call them 'SideHalf' instead.
+
+  // Ctor to clear/init darks contents.
+  LightMap():map(NULL) { clear(); } // NB, map ptr is initialized in ugly way.
+
+  // static LightMap lightmap; // NO, put it in map/dungeon instead.
+  CPoint map_offset; // Origo-player pos.
+  class Map* map; // Used to check if a cell is blocked/casting shadows.
+
+  void clear() {
+    for (int x = -SidePart; x <= SidePart; ++x) {
+      for (int y = -SidePart; y <= SidePart; ++y) {
+        CPoint p(x, y);
+        dark(p) = false;
+      }
+    }
+  }
+
+  bool darks[Side][Side];
+
+  bool& dark(CPoint p) {
+    CPoint center(SidePart, SidePart);
+    CPoint i = p + center;
+    assert(i.x >= 0);
+    assert(i.y >= 0);
+    assert(i.x < Side);
+    assert(i.y < Side);
+    return darks[i.x][i.y];
+  }
+
+  void useDark(CPoint rel, class LCell& cell); // Takes note, whether relative-point is in shadow or not.
+  bool isBlocked(CPoint rel); // Checks the map, if relative-point is blocked or not.
+  bool isDark(CPoint mapPoint); // uses map_offset.
+  bool legalRelPos(CPoint rel) const;
+
+};
+
 class LCell : public CPoint {
 public:
   LCell() { ix = 0; distsq = 0; dark = false; } // visited = false;
@@ -33,6 +72,8 @@ class NearOrder { // distance-based sorting.
 public:
   bool operator () (LCell* L, LCell* R) { return L->distsq < R->distsq;  }
 };
+
+
 
 class LOS
 {
@@ -81,6 +122,7 @@ public:
   LOS();
   ~LOS();
 
+  static LOS los;
 
 
   void popuBehinds() {
@@ -130,27 +172,14 @@ public:
     }
   }
 
-  bool blocked(LCell& c); // Todo: look up 'is map cell blocked' LOI
+  bool blocked(LCell& c, LightMap& light); // Todo: look up 'is map cell blocked' LOI
 
-  void propShadows() {
-    std::vector<LCell*>::iterator i; 
-    for (i = disted.begin(); i != disted.end(); ++i) {
-      LCell& c = **i;
-      bool isBlocked = blocked(c);
-      // NB! 'is-blocked' puts your BEHINDS in shadow, but not yourself!
-      if (c.dark || isBlocked) {
-        std::set<CPoint>::iterator pi;
-        for (pi = c.behinds.begin(); pi != c.behinds.end(); ++pi) {
-          CPoint behind = *pi;
-          LCell& cBehind = cell(behind);
-          cBehind.dark = true;
-        }
-      }
-    }
-  }
+  void propShadows(LightMap& light);
+  void recalcLOS(LightMap& lm); // just a better name for popuLightMap.
 
-  void test();
-  void deal(int ax, int ay, int bx, int by);
+  void popuLightMap(LightMap& light);
+
+  void doOctant(LightMap& light, int ax, int ay, int bx, int by);
   CPoint vA, vB;
 };
 

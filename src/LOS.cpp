@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LOS.h"
-
+#include "cellmap/cellmap.h"
 // #include "Bresenham.h"
 
 LOS::LOS() {
@@ -8,15 +8,18 @@ LOS::LOS() {
   initDisted(); // Populates dist-sorted vector, referring to cells from 'cells'.
   popuBehinds(); // draws lines from every point to (0,0), and notes 'behind-cells' on every cell.
   reverseBehinds(); // uses  the 'behinder' data to populate an opposite 'fronts' list on every cell. (every (immediate)in-front cell.)
-
-  // clear();
-  propShadows(); // 'push' shadow-info from nearest cell, outwards.
 }
+
+
 
 
 LOS::~LOS()
 {
 }
+
+LOS LOS::los;
+// LightMap  static LightMap lightmap;
+
 
 bool operator < (CPoint a, CPoint b) {
   if (a.x != b.x) { return a.x < b.x;  }
@@ -24,7 +27,14 @@ bool operator < (CPoint a, CPoint b) {
 }
 
 
-void LOS::test() {
+
+
+void LOS::recalcLOS(LightMap& lm) {
+  popuLightMap(lm); // 'push' shadow-info from nearest cell, outwards.
+}
+
+void LOS::popuLightMap(LightMap& light) {
+
   /* use of propShadows: must be called 8 times.
 
   oct 0 is ( x,y) ident. (x,y)
@@ -39,20 +49,104 @@ void LOS::test() {
   oct 7 is ( y,-x)
   */
 
-  deal( 1, 0,    0, 1); //  x, y
-  deal( 0, 1,    1, 0); //  y, x
+  doOctant(light, 1, 0,    0, 1); //  x, y
+  doOctant(light, 0, 1,    1, 0); //  y, x
 
-  deal(-1, 0,    0, 1); // -x, y
-  deal(0, -1,    1, 0); // -y, x
+  doOctant(light,-1, 0,    0, 1); // -x, y
+  doOctant(light,0, -1,    1, 0); // -y, x
 
-  deal( 1, 0,    0,-1); //  x,-y
-  deal( 0, 1,   -1, 0); //  y,-x
+  doOctant(light, 1, 0,    0,-1); //  x,-y
+  doOctant(light, 0, 1,   -1, 0); //  y,-x
 
-  deal(-1, 0,    0,-1); // -x,-y
-  deal( 0,-1,   -1, 0); // -y,-x
+  doOctant(light,-1, 0,    0,-1); // -x,-y
+  doOctant(light, 0,-1,   -1, 0); // -y,-x
 
+  // Now, isDark properties of lightmap have been filled out.
 }
 
+
+
+void LOS::doOctant(LightMap& light, int ax, int ay, int bx, int by) { // Idea - test map/los/behinds/fronts? with mouse-over highlights?
+  bool withDiag = (ax != 0); // The (x,y)'s include the diag, the (y,x) skip the diag. (to avoid doing diag twice.)
+
+  vA.x = ax; vA.y = ay;
+  vB.x = bx; vB.y = by;
+
+  clear(); // We must re-clear it for every octant.
+  propShadows(light); // 'push' shadow-info from nearest cell, outwards.
+
+  // Now transfer dark/light markings, from 'disted LCell' structure, to the LightMap:
+  std::vector<LCell*>::iterator i; 
+  for (i = disted.begin(); i != disted.end(); ++i) {
+    LCell& c = **i; // Now use c.dark:
+    if (c.x == c.y && !withDiag) { continue; }
+
+    CPoint pA(vA.x*c.x, vA.y*c.x); // You get 'x'-amount of vA, and 'y'-amount of vB:
+    CPoint pB(vB.x*c.y, vB.y*c.y);
+    CPoint rel = pA + pB;
+
+    light.useDark(rel, c); // (transfer LCell.dark to 'rel' point in map. 
+  }
+}
+
+void LightMap::useDark(CPoint rel, LCell& cell) {
+  // (NB: Because we transfer to all cells in lightmap, we don't have to clear the lightmap.)
+  dark(rel) = cell.dark; // LightMap has a zero-centered (-Side,+Side) coord-sys.
+}
+
+
+bool LOS::blocked(LCell& c, LightMap& light) { // Todo: look up 'is map cell blocked' LOI.
+  // 'c' is a (x,y) (octant 0) point, we'll transform it to any octant, with our vector-base:
+  CPoint pA(vA.x*c.x, vA.y*c.x); // You get 'x'-amount of vA, and 'y'-amount of vB:
+  CPoint pB(vB.x*c.y, vB.y*c.y);
+  CPoint rel = pA + pB; // NB, It's still (0,0) based.
+
+  bool isBlocked = light.isBlocked(rel);
+  return isBlocked;
+}
+
+bool LightMap::isBlocked(CPoint rel) {
+  // (Demeter is crying, about all my isblocked' delegation?)
+  // (LightMap: introduced LOI object, so we can query the actual map about blocking cells.)
+  CPoint mapPoint = (map_offset + rel);
+  Cell& mapCell = (*map)[mapPoint];
+  return mapCell.blocked(); 
+}
+
+
+bool LightMap::legalRelPos(CPoint rel) const { 
+  bool xOK = (rel.x >= -SidePart && rel.x <= SidePart);
+  bool yOK = (rel.y >= -SidePart && rel.y <= SidePart);
+  return xOK && yOK;
+}
+
+bool LightMap::isDark(CPoint mapPoint) { // uses map_offset.
+  CPoint rel = (mapPoint - map_offset);
+  if (!legalRelPos(rel)) { return true;  }
+  bool isItDark = dark(rel); 
+  return isItDark;
+}
+
+
+void LOS::propShadows(LightMap& light) {
+  // Consider: in theory, propShadows might also use 'bool withDiag', to skip doing diag twice,
+  // but OTOH, I wonder if it would cause assymetrical artifacts from 'side shadows'..?
+
+  std::vector<LCell*>::iterator i; 
+  for (i = disted.begin(); i != disted.end(); ++i) {
+    LCell& c = **i;
+    bool isBlocked = blocked(c, light);
+    // NB! 'is-blocked' puts your BEHINDS in shadow, but not yourself!
+    if (c.dark || isBlocked) {
+      std::set<CPoint>::iterator pi;
+      for (pi = c.behinds.begin(); pi != c.behinds.end(); ++pi) {
+        CPoint behind = *pi;
+        LCell& cBehind = cell(behind);
+        cBehind.dark = true;
+      }
+    }
+  }
+}
 
 /* we need a lookup-adapter,
 that does coord-offset, and probably (-y,x) transposing.
@@ -73,30 +167,3 @@ class  LTrans {
 };
 
 */
-
-bool LOS::blocked(LCell& c) { // Todo: look up 'is map cell blocked' LOI.
-  // (introduce LOI object, so we can query the actual map about blocking cells.)
-  return false; 
-}
-
-
-void LOS::deal(int ax, int ay, int bx, int by) { // Idea - test map/los/behinds/fronts? with mouse-over highlights?
-  vA.x = ax; vA.y = ay;
-  vB.x = bx; vB.y = by;
-
-  clear();
-  propShadows(); // 'push' shadow-info from nearest cell, outwards.
-
-  std::vector<LCell*>::iterator i; 
-  for (i = disted.begin(); i != disted.end(); ++i) {
-    LCell& c = **i; // Now use c.dark:
-    // You get 'x'-amount of vA, and 'y'-amount of vB:
-    CPoint pA(vA.x*c.x, vA.y*c.x); // FiXME, is this correct?
-    CPoint pB(vB.x*c.y, vB.y*c.y);
-    CPoint p = pA + pB;
-
-    // todo: Now use 'p' and cell.is-dark:
-    c.dark;
-    // map[p].dark = c.dark;
-  }
-}

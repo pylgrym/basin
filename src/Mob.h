@@ -15,7 +15,8 @@
 
 #include "Dungeons.h"
 
-struct AttackInf {
+struct AttackInf { // consider: combat-system should be isolated? 
+
   // HIT-OR-MISS info:
   int hitRoll; // the d20 hit roll.
   int wpHitBonus; // any bonus to our hit roll, e.g. plus-hit on weapon.

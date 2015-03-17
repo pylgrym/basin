@@ -3,12 +3,16 @@
 #include "cellmap/cellmap.h"
 #include "MobQueue.h"
 
+#include "LOS.h"
+
 class Dungeon
 {
 public:
   int level;
   Map map;
   MobQueue mobs;
+
+  LightMap lightmap;
 
   Dungeon(int level_);
   ~Dungeon();
