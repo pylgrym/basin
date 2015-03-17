@@ -134,7 +134,7 @@ public:
   int stealth() const; // based on dex mod + level.
   int alertness() const; // based on WIS mod + level.
 
-  void healPct(int percent);
+  void healPct(int percent, class Mob*); // mob along, so we can make log messages.
   void healAbs(int val);
 
   bool useMana(int manaCost);

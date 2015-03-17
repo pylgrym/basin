@@ -108,6 +108,8 @@ bool Dungeons::initLoadGame() {
   // CL->map.lightmap.map_offset = PlayerMob::ply->pos;
   //LOS::los.recalcLOS(CL->map.lightmap);
 
+  Spell::spellNC(SP_LightArea).ability = true; // Player starts out knowing light-area.. for now.
+
   extern void bresenExample();
   bresenExample(); // Just show how it looks.. :-)
 

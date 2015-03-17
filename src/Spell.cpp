@@ -11,6 +11,12 @@
 
 extern void playSound(CString soundFile);
 
+/* spell notes: 'light area' appears to be 'critically useful', 
+so ability to learn it should happen early,
+and/or user should be equippd with a 'helper start' supply
+of 'light area' scrolls or similar.
+*/
+
 Spell::Spell()
 {
 }
@@ -62,7 +68,7 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 4, 8, {1,1}, 0,40,SC_Phys,"heal_serious", "Heal serious" }, // = 19,
 { 5,12, {1,1}, 0,40,SC_Phys,"heal_crit", "Healing critical" }, // = 20,
 { 1, 1, {1,1}, 0,40,SC_Phys,"sick", "Sickness" }, // = 21,
-{ 3, 2, {1,1}, 0,40,SC_Light,"lightarea", "Light area" }, // = 22,
+{ 1, 2, {1,1}, 0,40,SC_Light,"lightarea", "Light area" }, // = 22, // TODO: I want to make 'light area' easy to learn early/straight away.
 { 5, 3, {1,1}, 0,40,SC_Light,"lightbeam", "Light beam" }, // = 23,
 { 2, 1, {1,1}, 0,40,SC_None,"magicmap", "Magic mapping" }, // = 24,
 { 2, 1, {1,1}, 0,40,SC_None,"phasedoor", "Phase door" }, // = 25,
@@ -389,7 +395,7 @@ bool eatSpell(Mob& actor, int deltaFood) {
     logstr log; log << "You eat a bit and feel less hungry!";
     actor.stats.hunger += deltaFood; // Eat 300 something.
   }
-  actor.stats.healPct(25);
+  actor.stats.healPct(25, &actor);
   return true; 
 }
 
@@ -406,7 +412,7 @@ bool healSpellPct(Mob& actor, int percent) {
     if (percent > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
     if (percent < 0) { log << actor.pronoun() << "(You?) feel sick."; }
   }
-  actor.stats.healPct(percent);
+  actor.stats.healPct(percent, &actor);
   return true;
 }
 
@@ -806,7 +812,7 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
   err << "You fumble and damage your health.";
   int severity = rnd(25, 50);
   debstr() << "hurt-severity-pct:" << severity << "\n";
-  mob.stats.healPct(-severity);
+  mob.stats.healPct(-severity, &mob);
   return false;
 }
 
