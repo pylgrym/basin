@@ -260,6 +260,39 @@ void TheUI::invalidateVPCell(CPoint vp) {
 CPoint Viewport::w2v(CPoint w) { return w - offset; }
 CPoint Viewport::v2w(CPoint v) { return v + offset; }
 
+class TimeMeasure {
+public:
+  int a, b;
+  std::string what;
+  TimeMeasure(const char* what_) {
+    what = what_;
+    a = measure(); // fixme, find way to measure time from sys.
+  }
+  TimeMeasure() {
+    b = 1 + measure();
+    showTime();
+  }
+  int measure() { return 1;  }
+  void showTime() {
+    int delta = (b - a);
+    debstr() << "time:" << delta << ", " << what << "\n";
+  }
+
+};
+
+
+void CChildView::drawTermChar(CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
+  // Terminal-char cell.
+  ++cost;
+  dc.SelectObject(largeFont);
+  const COLORREF txtColor = tcell.tcolor; 
+  dc.SetTextColor(txtColor);  
+  CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
+  dc.FillRect(&cellR, &txtBk);
+
+  CString s; s.Format(L"%c", tcell.c);
+  dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+}
 
 void CChildView::OnPaint() {
 	CPaintDC dc(this); // device context for painting
@@ -277,25 +310,33 @@ void CChildView::OnPaint() {
   VPoint vp;
   for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
     for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
-      CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
-
-      bool losDark = CL->lightmap.isDark(wp);
-      // if (losDark) {
-      //   tiles.drawTile(vp.p.x, vp.p.y, L"key", dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
-      //  continue;
-      //}
-
-      // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
-      CellColumn& column = CL->map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
-      Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
-      TCell& tcell = Term::term[vp.p];
-
-      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
 
       // Used by 'all' that follow:
       int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
       CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
+      // If it's a terminal-text-char, just draw that and be done with it:
+      TCell& tcell = Term::term[vp.p];
+      if (!tcell.charEmpty()) { // Terminal-char cell.
+        drawTermChar(dc, gr, txtBk, largeFont, tcell, px, py, cost); // cellR, 
+      }
+
+      CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
+      Cell& cell = CL->map[wp]; 
+      // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
+
+      bool losDark = CL->lightmap.isDark(wp);
+      if (losDark && !cell.light() && !cell.hasOverlay()) { // (Actually, don't draw ANYTHING.., when dark.)       
+        // CPoint darkTile(36, 22); // tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); // was: L"key".
+        continue;
+      }
+
+      /* FIXME, move map-tile-drawing to drawer-class,
+      with 'class scope variables', and separate methods for all the drawing logic.
+      */
+
+      // DRAW FLOOR:
+      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
       bool floorStat = false; // true;
       if (floorStat) {
 
@@ -309,7 +350,7 @@ void CChildView::OnPaint() {
       }
 
 
-
+      // DRAW ITEM:
       if (!cell.item.empty()) { 
         ++cost;
         CString tile = CA2T(cell.item.atypeS()); // .c_str()
@@ -382,35 +423,32 @@ void CChildView::OnPaint() {
         tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); // draws bullet sprites, spell effects, rain etc.
       }
 
-      if (!tcell.charEmpty()) { // Term cell.
-        ++cost;
-	      dc.SelectObject(largeFont);
-        const COLORREF txtColor = tcell.tcolor; // RGB(255, 255, 255);
-        dc.SetTextColor(txtColor);  
-		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-        dc.FillRect(&cellR, &txtBk); // FIXMEXE ?
+      // DARKENING according to light level (we draw 'black darkness' on top of things,
+      //  to emulate light/shadow.
+      if (cell.light()) {
+        // Nothing: if cell is perma-lit, don't try to darken it.
+      } else { // No perma-light in cell:
+        // Base darkening on tile-distance to player:
+        int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
+        if (dist < 0) { dist = 0;  }
 
-        CString s; s.Format(L"%c", tcell.c);
-		    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-      } else { // Only draw light-shading when not text-cell:
-
-        if (!cell.light()) {
-          // Base darkening on tile-distance to player:
-          int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
-          if (dist < 0) { dist = 0;  }
-
-
-          int blend = (int) (255.0 - (255.0 / (dist+1)));
-
-          if (losDark) {
-            dist *= 4;
-            blend = 240; // 10;
-          }
-
-          CPoint blendTile(29,20); 
-          ++cost;
-          tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, colorNone,cost); 
+        int blend = 128;
+        COLORREF darkness = RGB(0, 0, 255);
+        if (losDark) { // It should be very totally dark.
+          dist *= 99; // 14;
+          // blend = 250; // 40; // 10;
+        } else { // Her er lyst:
+          dist *= 1; // 2;
+          darkness = colorNone;
+          // blend = 10;
         }
+
+        blend = (int) (255.0 - (255.0 / (dist+1)));
+
+
+        CPoint blendTile(29,20); 
+        ++cost;
+        tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, darkness,cost); // was:colorNone
       }
 
     }

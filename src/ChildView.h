@@ -8,6 +8,7 @@
 #include "cellmap/cellmap.h"
 #include "sprites/Tilemap.h"
 #include "Mob.h"
+#include <gdiplus.h>
 
 // CChildView window
 
@@ -23,6 +24,9 @@ public:
 public:
   Tiles tiles;
   //MobQueue queue;
+
+  void drawTermChar(CDC& dc, Gdiplus::Graphics& gr, CBrush& txtBk, CFont& largeFont, class TCell& tcell, int px, int py, int cost); // , CRect& cellR
+
 
 private:
   static CChildView* singletonWnd;
