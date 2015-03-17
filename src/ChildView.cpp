@@ -326,8 +326,9 @@ void CChildView::OnPaint() {
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
 
       bool losDark = CL->lightmap.isDark(wp);
-      if (losDark && !cell.light() && !cell.hasOverlay()) { // (Actually, don't draw ANYTHING.., when dark.)       
-        // CPoint darkTile(36, 22); // tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); // was: L"key".
+      if (losDark && !cell.light() && !cell.hasOverlay()) { // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
+        CPoint darkTile(29,20); // (36, 22);
+        tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); // was: L"key".
         continue;
       }
 
@@ -438,7 +439,7 @@ void CChildView::OnPaint() {
           dist *= 99; // 14;
           // blend = 250; // 40; // 10;
         } else { // Her er lyst:
-          dist *= 1; // 2;
+          dist *= dist; // 2;
           darkness = colorNone;
           // blend = 10;
         }
@@ -446,9 +447,9 @@ void CChildView::OnPaint() {
         blend = (int) (255.0 - (255.0 / (dist+1)));
 
 
-        CPoint blendTile(29,20); 
+        CPoint blendDarkenTile(29,20); 
         ++cost;
-        tiles.drawTileB(vp.p.x, vp.p.y, blendTile, dc, gr, true, blend, darkness,cost); // was:colorNone
+        tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
       }
 
     }
