@@ -453,11 +453,12 @@ void Stats::healPct(int percent, Mob* mob) { // May also be used negative.
     if (isPlayer) { log << "You feel your health returning."; } 
     else          { log << mob->pronoun() << " appears healthier."; }
   } else {
-    log << "p:" << this->isPlayer << "Your health worsens.";
+    if (isPlayer) { log << "Your health worsens."; } 
+    else          { log << mob->pronoun() << " appears less healthy."; }
   }
 }
 
-void Stats::healAbs(int val) { // May also be used negative.
+void Stats::healAbs(int val, Mob* mob) { // May also be used negative.
   int newHP = hp + val;
   if (newHP > maxHP) {
     newHP = maxHP;
@@ -466,10 +467,12 @@ void Stats::healAbs(int val) { // May also be used negative.
 
   logstr log;
   if (val > 0) {
-    log << "p:" << this->isPlayer << "You feel your health returning.";
+    if (isPlayer) { log << "You feel your health returning."; } 
+    else          { log << mob->pronoun() << " appears healthier."; }
   }
   else {
-    log << "p:" << this->isPlayer << "Your health worsens.";
+    if (isPlayer) { log << "Your health worsens."; } 
+    else          { log << mob->pronoun() << " appears less healthy."; }
   }
 }
 

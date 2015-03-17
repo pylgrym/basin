@@ -431,7 +431,7 @@ bool healSpellDice(Mob& actor, Dice dice) {
     if (val > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
     if (val < 0) { log << actor.pronoun() << "(You?) feel sick."; }
   }
-  actor.stats.healAbs(val);
+  actor.stats.healAbs(val, &actor);
   return true;
 }
 

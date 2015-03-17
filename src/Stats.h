@@ -135,7 +135,7 @@ public:
   int alertness() const; // based on WIS mod + level.
 
   void healPct(int percent, class Mob*); // mob along, so we can make log messages.
-  void healAbs(int val);
+  void healAbs(int val, Mob* mob);
 
   bool useMana(int manaCost);
 
