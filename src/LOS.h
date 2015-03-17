@@ -83,8 +83,12 @@ public:
 
 
 
-  void popBehinds() {
-    /* fixme: establish what 'visited' really means
+  void popuBehinds() {
+    /* 
+    fixme: can we speed this up, skip any parts?
+    right now, we draw lines to everywhere, and 
+
+    fixme: establish what 'visited' really means
      - which invariants we are trying to establish,
      and what the various processing steps are supposed to do.
     
@@ -148,5 +152,8 @@ public:
     }
   }
 
+  void test();
+  void deal(int ax, int ay, int bx, int by);
+  CPoint vA, vB;
 };
 
