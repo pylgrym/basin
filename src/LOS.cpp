@@ -33,6 +33,7 @@ void LOS::recalcLOS(LightMap& lm) {
   popuLightMap(lm); // 'push' shadow-info from nearest cell, outwards.
 }
 
+
 void LOS::popuLightMap(LightMap& light) {
 
   /* use of propShadows: must be called 8 times.

@@ -279,6 +279,12 @@ void CChildView::OnPaint() {
     for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
       CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
 
+      bool losLight = CL->lightmap.isDark(wp);
+      if (!losLight) {
+        tiles.drawTile(vp.p.x, vp.p.y, L"key", dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
+        continue;
+      }
+
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
       CellColumn& column = CL->map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
       Cell& cell = column[wp.y];           // VIEWPORT STUFF. // y + Viewport::vp.offset.y];
