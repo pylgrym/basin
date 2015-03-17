@@ -121,6 +121,7 @@
     <ClInclude Include="GrowSeed.h" />
     <ClInclude Include="Levelize.h" />
     <ClInclude Include="LogEvents.h" />
+    <ClInclude Include="LOS.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="MobCombat.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="GrowSeed.cpp" />
     <ClCompile Include="Levelize.cpp" />
     <ClCompile Include="LogEvents.cpp" />
+    <ClCompile Include="LOS.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="MobCombat.cpp" />
