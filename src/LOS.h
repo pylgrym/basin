@@ -11,21 +11,25 @@ extern bool operator < (CPoint a, CPoint b);
 
 class LCell : public CPoint {
 public:
-  LCell() { ix = 0; distsq = 0; dark = false; visited = false; }
+  LCell() { ix = 0; distsq = 0; dark = false; } // visited = false;
+
   int ix;
   // int x, y, ix;
 
   int distsq;
   int calcdistsq() const { return x*x + y*y; }
 
-  bool dark;
-  bool visited;
+  bool dark; // in shadow.
+  void clear() {
+    dark = false; // So far, we only have the 'dark' flag, no 'visited' flag.
+  }
+  // bool visited;
   // These are only populated in some cases.
   std::set<CPoint> behinds; // all points immediately behind me.
-  std::vector<CPoint> fronts; // all points immediately in front of me.
+  std::set<CPoint> fronts; // all points immediately in front of me.
 };
 
-class NearOrder {
+class NearOrder { // distance-based sorting.
 public:
   bool operator () (LCell* L, LCell* R) { return L->distsq < R->distsq;  }
 };
@@ -56,12 +60,30 @@ public:
     }
     std::sort(disted.begin(), disted.end(), NearOrder() );
   }
+
+
+  void reverseBehinds() { // create fronts, based on behinds.
+
+    std::vector<LCell*>::iterator i; 
+    for (i = disted.begin(); i != disted.end(); ++i) {
+      LCell& cFront = **i;
+      std::set<CPoint>::iterator pi;
+      for (pi = cFront.behinds.begin(); pi != cFront.behinds.end(); ++pi) {
+        CPoint behind = *pi;
+        LCell& cBehind = cell(behind);
+        cBehind.fronts.insert(cFront);
+      }
+    }
+
+  } // reverseBehinds.
+
+
   LOS();
   ~LOS();
 
 
 
-  void test() {
+  void popBehinds() {
     /* fixme: establish what 'visited' really means
      - which invariants we are trying to establish,
      and what the various processing steps are supposed to do.
@@ -73,8 +95,8 @@ public:
     std::vector<LCell*>::reverse_iterator i; 
     for (i = disted.rbegin(); i != disted.rend(); ++i) {
       LCell& c = **i;
-      if (c.visited) { continue; }
-      c.visited = true;
+      // if (c.visited) { continue; }
+      // c.visited = true;
 
       //Loop through all pixels, farthest to nearest:
       CPoint ep1(c); CPoint ep2(0, 0);
@@ -94,5 +116,37 @@ public:
     }
     // for (int ix = 0; ix < disted.size(); ++ix) { }
   }
+
+  void clear() {
+    // todo -reset all 'visisted/dark' flags 
+    std::vector<LCell*>::iterator i; 
+    for (i = disted.begin(); i != disted.end(); ++i) {
+      LCell& c = **i;
+      c.clear();
+    }
+  }
+
+  bool blocked(LCell& c) { // Todo: look up 'is map cell blocked' LOI.
+    // (introduce LOI object, so we can query the actual map about blocking cells.)
+    return false; 
+  }
+
+  void propShadows() {
+    std::vector<LCell*>::iterator i; 
+    for (i = disted.begin(); i != disted.end(); ++i) {
+      LCell& c = **i;
+      bool isBlocked = blocked(c);
+      // NB! 'is-blocked' puts your BEHINDS in shadow, but not yourself!
+      if (c.dark || isBlocked) {
+        std::set<CPoint>::iterator pi;
+        for (pi = c.behinds.begin(); pi != c.behinds.end(); ++pi) {
+          CPoint behind = *pi;
+          LCell& cBehind = cell(behind);
+          cBehind.dark = true;
+        }
+      }
+    }
+  }
+
 };
 
