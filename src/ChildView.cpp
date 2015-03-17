@@ -279,11 +279,11 @@ void CChildView::OnPaint() {
     for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
       CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
 
-      bool losLight = CL->lightmap.isDark(wp);
-      if (!losLight) {
-        tiles.drawTile(vp.p.x, vp.p.y, L"key", dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
-        continue;
-      }
+      bool losDark = CL->lightmap.isDark(wp);
+      // if (losDark) {
+      //   tiles.drawTile(vp.p.x, vp.p.y, L"key", dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
+      //  continue;
+      //}
 
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
       CellColumn& column = CL->map[wp.x]; // VIEWPORT STUFF. // x + Viewport::vp.offset.x
@@ -398,7 +398,14 @@ void CChildView::OnPaint() {
           // Base darkening on tile-distance to player:
           int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
           if (dist < 0) { dist = 0;  }
+
+
           int blend = (int) (255.0 - (255.0 / (dist+1)));
+
+          if (losDark) {
+            dist *= 4;
+            blend = 240; // 10;
+          }
 
           CPoint blendTile(29,20); 
           ++cost;

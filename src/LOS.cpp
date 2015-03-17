@@ -112,7 +112,7 @@ bool LightMap::isBlocked(CPoint rel) {
   CPoint mapPoint = (map_offset + rel);
   if (!map->legalPos(mapPoint)) { return true; } // If it's outside map, it's blocked..
   Cell& mapCell = (*map)[mapPoint];
-  return mapCell.blocked(); 
+  return mapCell.envir.blocked(); 
 }
 
 
