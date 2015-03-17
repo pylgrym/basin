@@ -58,4 +58,17 @@ void LOS::test() {
 void LOS::deal(int ax, int ay, int bx, int by) {
   vA.x = ax; vA.y = ay;
   vB.x = bx; vB.y = by;
+
+  clear();
+  propShadows(); // 'push' shadow-info from nearest cell, outwards.
+
+  std::vector<LCell*>::iterator i; 
+  for (i = disted.begin(); i != disted.end(); ++i) {
+    LCell& c = **i; // Now use c.dark
+    CPoint pA(vA.x*c.x, vA.y*c.y); // FiXME, is this correct?
+    CPoint pB(vB.x*c.x, vB.y*c.y);
+    CPoint p = pA + pB;
+    c.dark;
+    // map[p].dark = c.dark;
+  }
 }
