@@ -72,8 +72,9 @@ public:
 private:
   CellColumn cellColumns[Width];
 public:
-  CellColumn& operator [] (int x); // { return cellColumns[x];  }
-  Cell& operator [] (CPoint p); // { return cellColumns[p.x][p.y];  }
+  CellColumn& operator [] (int x); 
+  Cell& operator [] (CPoint p); 
+  Cell* cell(CPoint p); // NULL if outside.
 
   bool legalPos(CPoint pos);
 

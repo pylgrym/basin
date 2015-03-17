@@ -192,7 +192,7 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 
 
 
-void doFont(CFont& largeFont, CFont& smallFont, CPaintDC& dc) {
+void doFont(CFont& largeFont, CFont& smallFont, CDC& dc) { // CPaintDC& dc) {
 	LOGFONT logFont;
 	CFont* pOldFont = dc.GetCurrentFont();
 	pOldFont->GetLogFont(&logFont);
@@ -281,178 +281,220 @@ public:
 };
 
 
-void CChildView::drawTermChar(CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
-  // Terminal-char cell.
-  ++cost;
-  dc.SelectObject(largeFont);
-  const COLORREF txtColor = tcell.tcolor; 
-  dc.SetTextColor(txtColor);  
-  CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-  dc.FillRect(&cellR, &txtBk);
 
-  CString s; s.Format(L"%c", tcell.c);
-  dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-}
+class TileDraw {
+public:
 
-void CChildView::OnPaint() {
-	CPaintDC dc(this); // device context for painting
-	Graphics gr(dc);
+  void drawTermChar(TCell& tcell) { // CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
+    // Terminal-char cell.
+    ++cost;
+    dc.SelectObject(largeFont);
+    const COLORREF txtColor = tcell.tcolor; 
+    dc.SetTextColor(txtColor);  
+    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
+    dc.FillRect(&cellR, &txtBk);
 
+    CString s; s.Format(L"%c", tcell.c);
+    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+  }
+
+
+  TileDraw(CDC& dc_, Tiles& tiles_) 
+  :dc(dc_), tiles(tiles_) 
+  ,gr(dc_)
+  ,txtBk(RGB(0, 0, 20)) 
+  {}
+
+  CDC& dc;
+  Tiles& tiles;
+  Graphics gr; // (dc);
   CFont largeFont, smallFont;
-  doFont(largeFont,smallFont, dc);
-	dc.SelectObject(largeFont);
+  CBrush txtBk; // (RGB(0, 0, 20));
 
-  dc.SetBkMode(TRANSPARENT);
-  CBrush txtBk(RGB(0, 0, 20));
+  VPoint vp; // viewport coords.
+  CPoint wp; // 'world' (map) coords.
+  int cost; // diagnostics - are we drawing too much.
+  int px, py;
+  CRect cellR_buf;
+  const CRect& cellR() const { return cellR_buf; }
 
-  int cost = 0;
+  void drawFloorTile(Cell& cell) {
+    // DRAW FLOOR:
+    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, cost); 
+    bool floorStat = false; // true;
+    if (floorStat) {
 
-  VPoint vp;
-  for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
-    for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
+      int zeroMobAlert = 0;
+      CString s; s.Format(L"%3.0f ",  (double) Mob::noticePlayerProb(wp, zeroMobAlert)); 
 
-      // Used by 'all' that follow:
-      int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-      CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
-
-      // If it's a terminal-text-char, just draw that and be done with it:
-      TCell& tcell = Term::term[vp.p];
-      if (!tcell.charEmpty()) { // Terminal-char cell.
-        drawTermChar(dc, gr, txtBk, largeFont, tcell, px, py, cost); // cellR, 
-      }
-
-      CPoint wp = Viewport::vp.v2w(vp.p); // + Viewport::vp.offset;
-      Cell& cell = CL->map[wp]; 
-      // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
-
-      bool losDark = CL->map.lightmap.isDark(wp);
-      if (losDark && !cell.light() && !cell.hasOverlay()) { // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
-        CPoint darkTile(29,20); // (36, 22);
-        tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); // was: L"key".
-        continue;
-      }
-
-      /* FIXME, move map-tile-drawing to drawer-class,
-      with 'class scope variables', and separate methods for all the drawing logic.
-      */
-
-      // DRAW FLOOR:
-      tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone,cost); // FLOOR // COLORREF (1,2,3)
-      bool floorStat = false; // true;
-      if (floorStat) {
-
-        int zeroMobAlert = 0;
-        CString s; s.Format(L"%3.0f ",  (double) Mob::noticePlayerProb(wp, zeroMobAlert)); 
-
-        dc.SelectObject(smallFont);
-        const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
-        dc.SetTextColor(RGB(255,255,0));  
-        dc.DrawText(s, &cellR, fontFlags);
-      }
-
-
-      // DRAW ITEM:
-      if (!cell.item.empty()) { 
-        ++cost;
-        CString tile = CA2T(cell.item.atypeS()); // .c_str()
-        const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-        tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,cost); // false);  // THINGS
-
-        // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-        // CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
-        CString s; s.Format(L"<%d>", cell.item.o->ilevel);
-
-        dc.SelectObject(smallFont);
-        // const int fontFlags = DT_CENTER | DT_VCENTER | DT_SINGLELINE;
-        const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
-        dc.SetTextColor(RGB(0,255,0)); // RGB(0, 0, 255)); // RED.
-        dc.DrawText(s, &cellR, fontFlags);
-      }
-
-
-
-      if (!cell.creature.empty()) { 
-        ++cost;
-        COLORREF mobColor = colorNone;
-        const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
-        mobColor = sd.color;
-        tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, cost); // false); MOBS
-
-        // Draw stats/HP:
-        Mob* mob = cell.creature.m;
-		    // int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-		    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight)); // we modify, so need our own.
-        CString s; s.Format(L"%d ", mob->stats.hp);
-
-	      dc.SelectObject(smallFont);
-        const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
-        dc.SetTextColor(mob->color); // RGB(0, 0, 255)); // RED.
-		    dc.DrawText(s, &cellR,  fontFlags);
-        dc.SetTextColor(RGB(0,0,0)); // BLACK.
-		    cellR.OffsetRect(2, 2); dc.DrawText(s, &cellR, fontFlags);
-        dc.SetTextColor(RGB(255, 255, 255)); // WHITE.
-		    cellR.OffsetRect(-1, -1); dc.DrawText(s, &cellR, fontFlags);
-
-        if (false) {
-          // Draw level upper right:
-          const int upperRightFlags = DT_RIGHT | DT_TOP | DT_SINGLELINE;
-          dc.SetTextColor(RGB(0, 255, 0)); // RGB(0, 0, 255)); // RED.
-          s.Format(L"%dL", mob->stats.level());
-          dc.DrawText(s, &cellR, upperRightFlags);
-        }
-
-
-        if (false) {
-          // Draw str upper left:
-          const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
-          dc.SetTextColor(RGB(255, 0, 0)); //strength is red.
-          s.Format(L"%d", mob->stats.Str.v());
-          dc.DrawText(s, &cellR, upperLeftFlags);
-        }
-
-        if (false) {
-          // Draw dex lower left:
-          const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
-          dc.SetTextColor(RGB(0,0,255)); // dex is blue.
-          s.Format(L"%d", mob->stats.Dex.v());
-		      dc.DrawText(s, &cellR,  lowerLeftFlags);
-        }
-      }
-
-      if (cell.hasOverlay()) { 
-        ++cost;
-        tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); // draws bullet sprites, spell effects, rain etc.
-      }
-
-      // DARKENING according to light level (we draw 'black darkness' on top of things,
-      //  to emulate light/shadow.
-      if (cell.light()) {
-        // Nothing: if cell is perma-lit, don't try to darken it.
-      } else { // No perma-light in cell:
-        // Base darkening on tile-distance to player:
-        int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
-        if (dist < 0) { dist = 0; }
-        dist = (dist*dist); // gives better darkness.. faster falloff..
-
-        COLORREF darkness = RGB(0, 0, 255);
-        if (losDark) { // It should be very totally dark.
-          dist *= 99; 
-        } else { // Her er lyst:
-          darkness = colorNone;
-        }
-        int blend = (int) (255.0 - (255.0 / (dist+1)));
-
-        CPoint blendDarkenTile(29,20); 
-        ++cost;
-        tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
-      }
-
+      dc.SelectObject(smallFont);
+      const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+      dc.SetTextColor(RGB(255,255,0));  
+      CRect lr = cellR();
+      dc.DrawText(s, &lr, fontFlags);
     }
   }
 
-  debstr() << "cost:" << cost << "\n";
-}
+  void drawItemTile(Cell& cell) {
+    ++cost;
+    CString tile = CA2T(cell.item.atypeS()); // .c_str()
+    const SpellDesc& sd = Spell::spell(cell.item.o->effect);
+    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,cost); // false);  // THINGS
 
+    CString s; s.Format(L"<%d>", cell.item.o->ilevel);
+
+    dc.SelectObject(smallFont);
+    const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+    dc.SetTextColor(RGB(0,255,0)); // RGB(0, 0, 255)); // RED.
+    CRect lr = cellR();
+    dc.DrawText(s, &lr, fontFlags);
+  }
+
+
+
+  void drawMobTile(Cell& cell) {
+    ++cost;
+    COLORREF mobColor = colorNone;
+    const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
+    mobColor = sd.color;
+    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, cost); // false); MOBS
+
+    // Draw stats/HP:
+    Mob* mob = cell.creature.m;
+		// int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+		CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight)); // we modify, so need our own.
+    CString s; s.Format(L"%d ", mob->stats.hp);
+
+	  dc.SelectObject(smallFont);
+    const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+    dc.SetTextColor(mob->color); // RGB(0, 0, 255)); // RED.
+		dc.DrawText(s, &cellR,  fontFlags);
+    dc.SetTextColor(RGB(0,0,0)); // BLACK.
+		cellR.OffsetRect(2, 2); dc.DrawText(s, &cellR, fontFlags);
+    dc.SetTextColor(RGB(255, 255, 255)); // WHITE.
+		cellR.OffsetRect(-1, -1); dc.DrawText(s, &cellR, fontFlags);
+
+    if (false) {
+      // Draw level upper right:
+      const int upperRightFlags = DT_RIGHT | DT_TOP | DT_SINGLELINE;
+      dc.SetTextColor(RGB(0, 255, 0)); // RGB(0, 0, 255)); // RED.
+      s.Format(L"%dL", mob->stats.level());
+      dc.DrawText(s, &cellR, upperRightFlags);
+    }
+
+
+    if (false) {
+      // Draw str upper left:
+      const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
+      dc.SetTextColor(RGB(255, 0, 0)); //strength is red.
+      s.Format(L"%d", mob->stats.Str.v());
+      dc.DrawText(s, &cellR, upperLeftFlags);
+    }
+
+    if (false) {
+      // Draw dex lower left:
+      const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
+      dc.SetTextColor(RGB(0,0,255)); // dex is blue.
+      s.Format(L"%d", mob->stats.Dex.v());
+		  dc.DrawText(s, &cellR,  lowerLeftFlags);
+    }
+  }
+
+
+  void drawLightShadow(Cell& cell, bool losDark) {
+    // DARKENING according to light level (we draw 'black darkness' on top of things,
+    //  to emulate light/shadow.
+    if (cell.light()) {
+      // Nothing: if cell is perma-lit, don't try to darken it.
+    } else { // No perma-light in cell:
+      // Base darkening on tile-distance to player:
+      int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
+      if (dist < 0) { dist = 0; }
+      dist = (dist*dist); // gives better darkness.. faster falloff..
+
+      COLORREF darkness = RGB(0, 0, 255);
+      if (losDark) { // It should be very totally dark.
+        dist *= 99; 
+      } else { // Her er lyst:
+        darkness = colorNone;
+      }
+      int blend = (int) (255.0 - (255.0 / (dist+1)));
+
+      CPoint blendDarkenTile(29,20); 
+      ++cost;
+      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
+    }
+
+  }
+
+
+  void doDraw() {
+
+    doFont(largeFont,smallFont, dc);
+	  dc.SelectObject(largeFont);
+
+    dc.SetBkMode(TRANSPARENT);
+
+    cost = 0;
+
+    for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
+      for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
+        // Used by 'all' that follow:
+        px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+
+        TCell& tcell = Term::term[vp.p];
+        if (!tcell.charEmpty()) { // If it's a terminal-text-char, just draw that and be done with it:
+          drawTermChar(tcell); // dc, gr, txtBk, largeFont, tcell, px, py, cost);
+          continue;
+        }
+
+        wp = Viewport::vp.v2w(vp.p); // world coords.
+
+        bool losDark = CL->map.lightmap.isDark(wp);
+        // (- no, used to..) map (will) return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
+        Cell* pCell = CL->map.cell(wp); 
+        if (pCell == NULL  || (losDark && !pCell->light() && !pCell->hasOverlay()) ) { 
+          // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
+          CPoint darkTile(29,20); // (36, 22);
+          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); 
+          continue;
+        }
+
+        Cell& cell = *pCell; 
+        drawFloorTile(cell); // DRAW FLOOR. (and possibly some debug stats.)
+
+        if (!cell.item.empty()) { // DRAW ITEM:
+          drawItemTile(cell);
+        }
+
+        if (!cell.creature.empty()) { // DRAW MOB (and possibly some debug-stats.)
+          drawMobTile(cell); 
+        }
+
+        if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
+          ++cost;
+          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); 
+        }
+
+        drawLightShadow(cell,losDark);
+      } // for y.
+    } // for x.
+
+    debstr() << "cost:" << cost << "\n";
+  } // doDraw.
+
+}; // end tiledraw.
+
+
+
+
+void CChildView::OnPaint() {
+  CPaintDC dc(this); // device context for painting
+
+  TileDraw draw(dc, tiles);
+  draw.doDraw(); // dc);
+}
 
 
 

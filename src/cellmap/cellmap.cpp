@@ -491,6 +491,18 @@ void Map::addObj(class Obj& o, CPoint pos) {
 
 
 
+Cell* Map::cell(CPoint p) { 
+  if (p.x < 0 || p.x >= Map::Width || p.y < 0 || p.y >= Map::Height) {
+    return NULL;
+  }
+  assert(p.x >= 0);
+  assert(p.y >= 0);
+  assert(p.x < Map::Width);
+  assert(p.y < Map::Height);
+  return &cellColumns[p.x][p.y];  
+}
+
+
 Cell& Map::operator [] (CPoint p) { 
   if (p.x < 0 || p.x >= Map::Width || p.y < 0 || p.y >= Map::Height) {
     int badThingsHappen = 42;
