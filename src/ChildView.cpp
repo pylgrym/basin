@@ -291,11 +291,11 @@ public:
     dc.SelectObject(largeFont);
     const COLORREF txtColor = tcell.tcolor; 
     dc.SetTextColor(txtColor);  
-    CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight));
-    dc.FillRect(&cellR, &txtBk);
+    CRect rect = cellR(); // (CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+    dc.FillRect(&rect, &txtBk);
 
     CString s; s.Format(L"%c", tcell.c);
-    dc.DrawText(s, &cellR,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    dc.DrawText(s, &rect,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
   }
 
 
@@ -362,24 +362,24 @@ public:
     // Draw stats/HP:
     Mob* mob = cell.creature.m;
 		// int px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
-		CRect cellR( CPoint(px,py), CSize(Tiles::TileWidth,Tiles::TileHeight)); // we modify, so need our own.
+    CRect rect = cellR(); // CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight)); // we modify, so need our own.
     CString s; s.Format(L"%d ", mob->stats.hp);
 
 	  dc.SelectObject(smallFont);
     const int fontFlags = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
     dc.SetTextColor(mob->color); // RGB(0, 0, 255)); // RED.
-		dc.DrawText(s, &cellR,  fontFlags);
+		dc.DrawText(s, &rect,  fontFlags);
     dc.SetTextColor(RGB(0,0,0)); // BLACK.
-		cellR.OffsetRect(2, 2); dc.DrawText(s, &cellR, fontFlags);
+		rect.OffsetRect(2, 2); dc.DrawText(s, &rect, fontFlags);
     dc.SetTextColor(RGB(255, 255, 255)); // WHITE.
-		cellR.OffsetRect(-1, -1); dc.DrawText(s, &cellR, fontFlags);
+		rect.OffsetRect(-1, -1); dc.DrawText(s, &rect, fontFlags);
 
     if (false) {
       // Draw level upper right:
       const int upperRightFlags = DT_RIGHT | DT_TOP | DT_SINGLELINE;
       dc.SetTextColor(RGB(0, 255, 0)); // RGB(0, 0, 255)); // RED.
       s.Format(L"%dL", mob->stats.level());
-      dc.DrawText(s, &cellR, upperRightFlags);
+      dc.DrawText(s, &rect, upperRightFlags);
     }
 
 
@@ -388,7 +388,7 @@ public:
       const int upperLeftFlags = DT_LEFT | DT_TOP | DT_SINGLELINE;
       dc.SetTextColor(RGB(255, 0, 0)); //strength is red.
       s.Format(L"%d", mob->stats.Str.v());
-      dc.DrawText(s, &cellR, upperLeftFlags);
+      dc.DrawText(s, &rect, upperLeftFlags);
     }
 
     if (false) {
@@ -396,7 +396,7 @@ public:
       const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
       dc.SetTextColor(RGB(0,0,255)); // dex is blue.
       s.Format(L"%d", mob->stats.Dex.v());
-		  dc.DrawText(s, &cellR,  lowerLeftFlags);
+		  dc.DrawText(s, &rect,  lowerLeftFlags);
     }
   }
 
@@ -404,7 +404,7 @@ public:
   void drawLightShadow(Cell& cell, bool losDark) {
     // DARKENING according to light level (we draw 'black darkness' on top of things,
     //  to emulate light/shadow.
-    if (cell.light()) {
+    if (cell.light() || cell.hasOverlay()) {
       // Nothing: if cell is perma-lit, don't try to darken it.
     } else { // No perma-light in cell:
       // Base darkening on tile-distance to player:
