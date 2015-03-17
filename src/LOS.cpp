@@ -2,11 +2,16 @@
 #include "LOS.h"
 
 
-LOS::LOS()
-{
+LOS::LOS() {
+  initDisted();
 }
 
 
 LOS::~LOS()
 {
+}
+
+
+void LOS::test() {
+
 }

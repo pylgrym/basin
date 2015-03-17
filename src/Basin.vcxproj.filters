@@ -141,6 +141,9 @@
     <ClInclude Include="LOS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Bresenham.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -255,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LOS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bresenham.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -36,5 +36,7 @@ public:
   }
   LOS();
   ~LOS();
+
+  void test();
 };
 
