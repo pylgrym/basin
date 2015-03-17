@@ -325,7 +325,7 @@ void CChildView::OnPaint() {
       Cell& cell = CL->map[wp]; 
       // map will return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
 
-      bool losDark = CL->lightmap.isDark(wp);
+      bool losDark = CL->map.lightmap.isDark(wp);
       if (losDark && !cell.light() && !cell.hasOverlay()) { // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
         CPoint darkTile(29,20); // (36, 22);
         tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); // was: L"key".
@@ -431,21 +431,16 @@ void CChildView::OnPaint() {
       } else { // No perma-light in cell:
         // Base darkening on tile-distance to player:
         int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
-        if (dist < 0) { dist = 0;  }
+        if (dist < 0) { dist = 0; }
+        dist = (dist*dist); // gives better darkness.. faster falloff..
 
-        int blend = 128;
         COLORREF darkness = RGB(0, 0, 255);
         if (losDark) { // It should be very totally dark.
-          dist *= 99; // 14;
-          // blend = 250; // 40; // 10;
+          dist *= 99; 
         } else { // Her er lyst:
-          dist *= dist; // 2;
           darkness = colorNone;
-          // blend = 10;
         }
-
-        blend = (int) (255.0 - (255.0 / (dist+1)));
-
+        int blend = (int) (255.0 - (255.0 / (dist+1)));
 
         CPoint blendDarkenTile(29,20); 
         ++cost;

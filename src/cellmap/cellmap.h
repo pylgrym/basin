@@ -9,6 +9,7 @@
 #include "Obj.h"
 #include "Creature.h"
 
+#include "../LOS.h"
 
 
 
@@ -65,6 +66,9 @@ public:
     Width = 101, //100, //48, //16, 
     Height = CellColumn::Height 
   };
+
+  LightMap lightmap;
+
 private:
   CellColumn cellColumns[Width];
 public:

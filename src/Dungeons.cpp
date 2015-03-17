@@ -105,8 +105,8 @@ bool Dungeons::initLoadGame() {
   bool bLoadOK = persist(p); // Dungeons::the_dungeons.
 
   // Kludge: not how we want to do it..
-  CL->lightmap.map_offset = PlayerMob::ply->pos;
-  LOS::los.recalcLOS(CL->lightmap);
+  // CL->map.lightmap.map_offset = PlayerMob::ply->pos;
+  //LOS::los.recalcLOS(CL->map.lightmap);
 
   extern void bresenExample();
   bresenExample(); // Just show how it looks.. :-)

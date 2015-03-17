@@ -95,7 +95,9 @@ void Map::scatterObjsAtPos(CPoint pos, int n, int level, int radius) {
 
 
 
-Map::Map() {}
+Map::Map() {
+  lightmap.map = this; // necessary init of map ptr.
+}
 
 
 /* maze fixmes, todo:
@@ -471,18 +473,12 @@ void Map::moveMob(class Mob& m, CPoint newpos) {
   if (m.isPlayer()) {
     Viewport::vp.adjust(m.pos);
 
-    if (CL == NULL) {
-
+    bool bChangedPos = !!(lightmap.map_offset != newpos);
+    if (bChangedPos) {
+      lightmap.map_offset = newpos;
+      LOS::los.recalcLOS(lightmap);
+      // fixme/Todo: is some sort of invalidategfx.. necessary?
     }
-    else {
-      bool bChangedPos = !!(CL->lightmap.map_offset != newpos);
-      if (bChangedPos) {
-        CL->lightmap.map_offset = newpos;
-        LOS::los.recalcLOS(CL->lightmap);
-        // fixme/Todo: some sort of invalidategfx..?
-      }
-    }
-
   }
 }
 
