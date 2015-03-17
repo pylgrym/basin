@@ -40,6 +40,7 @@ public:
     do { CPoint p = next(); } while (!done());
   }
 
+  BresIter(CPoint p1, CPoint p2) :BresIter(p1.x, p1.y, p2.x, p2.y) {} // int x1, int y1, int x2, int y2);
 
 }; // end class BresIter 
 
