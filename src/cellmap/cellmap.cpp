@@ -471,11 +471,16 @@ void Map::moveMob(class Mob& m, CPoint newpos) {
   if (m.isPlayer()) {
     Viewport::vp.adjust(m.pos);
 
-    bool bChangedPos = !!(CL->lightmap.map_offset != newpos);
-    if (bChangedPos) {
-      CL->lightmap.map_offset = newpos;
-      LOS::los.recalcLOS(CL->lightmap);
-      // fixme/Todo: some sort of invalidategfx..?
+    if (CL == NULL) {
+
+    }
+    else {
+      bool bChangedPos = !!(CL->lightmap.map_offset != newpos);
+      if (bChangedPos) {
+        CL->lightmap.map_offset = newpos;
+        LOS::los.recalcLOS(CL->lightmap);
+        // fixme/Todo: some sort of invalidategfx..?
+      }
     }
 
   }

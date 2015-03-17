@@ -110,6 +110,7 @@ bool LightMap::isBlocked(CPoint rel) {
   // (Demeter is crying, about all my isblocked' delegation?)
   // (LightMap: introduced LOI object, so we can query the actual map about blocking cells.)
   CPoint mapPoint = (map_offset + rel);
+  if (!map->legalPos(mapPoint)) { return true; } // If it's outside map, it's blocked..
   Cell& mapCell = (*map)[mapPoint];
   return mapCell.blocked(); 
 }
