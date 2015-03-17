@@ -130,10 +130,7 @@ public:
     }
   }
 
-  bool blocked(LCell& c) { // Todo: look up 'is map cell blocked' LOI.
-    // (introduce LOI object, so we can query the actual map about blocking cells.)
-    return false; 
-  }
+  bool blocked(LCell& c); // Todo: look up 'is map cell blocked' LOI
 
   void propShadows() {
     std::vector<LCell*>::iterator i; 
