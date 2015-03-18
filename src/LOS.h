@@ -78,7 +78,7 @@ public:
 class LOS
 {
 public:
-  enum Sizes { Side = 20};
+  enum Sizes { Side = 20+1};
   LCell cells[Side][Side];
   std::vector<LCell*> disted;
 
@@ -145,8 +145,8 @@ public:
       // c.visited = true;
 
       //Loop through all pixels, farthest to nearest:
-      CPoint ep1(c); CPoint ep2(0, 0);
-      BresIter bres(ep1, ep2); bres.iterAll1();
+      CPoint ep1(c); CPoint center(0, 0);
+      BresIter bres(ep1, center); bres.iterAll1();
 
       CPoint prev;
       std::vector<CPoint>::iterator pi;
@@ -155,13 +155,12 @@ public:
         LCell& c = cell(p);
         //if (c.visited) { continue;  }
         if (pi != bres.pixels.begin()) { // Skip the first iteration.
-          c.behinds.insert(prev);
+          c.behinds.insert(prev); // note on the nearer point, which point is behind it.
         }
         prev = p;
       }
     }
-    // for (int ix = 0; ix < disted.size(); ++ix) { }
-  }
+  } // end popuBehinds.
 
   void clear() {
     // todo -reset all 'visisted/dark' flags 
