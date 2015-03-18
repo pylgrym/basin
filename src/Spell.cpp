@@ -536,11 +536,12 @@ struct IsTrap : public CheckCellBase { virtual bool check(const Cell& c) { retur
 
 struct IsTreasure : public CheckCellBase {
   virtual bool check(const Cell& c) {
-    switch (c.item.type()) {
-    case OB_Gold: return true;
-    case OB_Emeralds: return true;
-    }
-    return false;
+    return Obj::isCurrency(c.item.type());
+    // switch (c.item.type()) {
+    // case OB_Gold: return true;
+    // case OB_Emeralds: return true;
+    // }
+    // return false;
   }
   std::string what(){return "treasure";}
 };

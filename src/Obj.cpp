@@ -476,8 +476,10 @@ void Obj::initRandom() { // - clear should not init.
 
 void Obj::setTypeDefaults() {
   switch (otype()) {
+
+  
     // Edible stuff and similar, have ONE charge and is consumed on use:
-  case OB_Potion: case OB_Scroll: case OB_Water: case OB_Bandage: case OB_Food: case OB_Mushroom: case OB_LampOil:
+  case OB_Potion: case OB_Scroll: case OB_Water: case OB_Bandage: case OB_Food: case OB_Mushroom: case OB_LampOil: case OB_SpellBook:
     this->charges = 1;
     this->consumed = true;
 

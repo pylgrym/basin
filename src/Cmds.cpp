@@ -9,6 +9,8 @@
 
 #include "stdlib.h" // abs.
 
+#include "FightDashboard.h"
+
 
 #include <MMSystem.h>
 #pragma comment(lib, "winmm.lib")
@@ -131,6 +133,13 @@ bool HitCmd::Do(std::ostream& err) {
 
   AttackInf ai;
   bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy); 
+
+  if (mob.isPlayer()) {
+    FightDashboard::dashboard.hp = hittee->stats.hp;
+    FightDashboard::dashboard.maxHP = hittee->stats.maxHP;
+    FightDashboard::dashboard.hp = ai.dmg;
+  }
+
   if (!bHit) { 
     if (mob.isPlayer()) {  
       playSound(L"sounds\\sfxr\\failure2.wav"); // HIT MOB
@@ -145,9 +154,7 @@ bool HitCmd::Do(std::ostream& err) {
 
     ai.rep(err, mob.stats);
     return false; 
-  }
-
-  { // It HITS!
+  } else { // It HITS!
     if (mob.isPlayer()) {
       playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
     }

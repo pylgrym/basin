@@ -120,6 +120,7 @@
     <ClInclude Include="Encumb.h" />
     <ClInclude Include="Envir.h" />
     <ClInclude Include="Equ.h" />
+    <ClInclude Include="FightDashboard.h" />
     <ClInclude Include="GrowSeed.h" />
     <ClInclude Include="Levelize.h" />
     <ClInclude Include="LogEvents.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Encumb.cpp" />
     <ClCompile Include="Envir.cpp" />
     <ClCompile Include="Equ.cpp" />
+    <ClCompile Include="FightDashboard.cpp" />
     <ClCompile Include="GrowSeed.cpp" />
     <ClCompile Include="Levelize.cpp" />
     <ClCompile Include="LogEvents.cpp" />

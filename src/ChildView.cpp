@@ -177,7 +177,7 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	// do stuff..
   debstr() << "Starting queue-process..\n";
   for (bool isRunning=true; isRunning && !TheUI::hasQuit; ) {
-    isRunning = CL->mobs.dispatchFirst();
+    bool ignored = CL->mobs.dispatchFirst(); //      isRunning = // This was a bug, random mob dying shouldn't throw us out of game-loop..
     // debstr() << "isRunning?" << isRunning << "\n";
     if (PlayerMob::ply->isDead()) {
       logstr log; log << "!You have died!";
@@ -407,7 +407,7 @@ public:
     //  to emulate light/shadow.
 
     COLORREF darkness = RGB(0, 0, 255);
-    int dist = 999,distStat=999,distDyn=999;
+    int dist = 999, distStat = 999, distDyn = 999;
 
     if (cell.light() || cell.hasOverlay()) {
       // Nothing: if cell is perma-lit, don't try to darken it.
@@ -434,12 +434,13 @@ public:
 
     dist = distDyn; if (distStat < dist) { dist = distStat;  }
 
-    if (dist != 0) {
+    if (dist != 0) { //  && !losDark
       int blend = (int) (255.0 - (255.0 / (dist+1)));
 
       CPoint blendDarkenTile(29,20); 
       ++cost;
-      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
+      bool transp = true; // (!losDark && !cell.light());
+      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, transp /*true*/, blend, darkness,cost); // was:colorNone
     }
 
     if (0) { // true) {
@@ -517,7 +518,7 @@ public:
           tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); 
         }
 
-        drawLightShadow(cell,losDark);
+        drawLightShadow(cell,losDark); // NB!, this is a major performance hit!
       } // for y.
     } // for x.
 
