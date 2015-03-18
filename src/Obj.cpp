@@ -584,7 +584,7 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
     }
     return false;
   }
-
+  
   bool bOK = false;
   { // Act on obj.effect:
     logstr log;
@@ -592,6 +592,12 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
     if (bOK) {
       if (bOK && who.isPlayer()) {
         Spell::trySpellIdent(effect);
+
+        if ((otype() == OB_Food || otype() == OB_Mushroom) && effect != SP_Eat) { // Kludge - make sure we eat enough :-)
+          extern bool eatSpell(Mob& actor, int deltaFood);
+          eatSpell(who, itemUnits);
+        }
+
         // Now eat the charge (fixme - castSpell should indicate how we failed - user cancel or not?)
         if (!eatCharge(err)) { return false; }
       }

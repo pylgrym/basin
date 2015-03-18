@@ -442,7 +442,7 @@ public:
       tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
     }
 
-    if (true) {
+    if (0) { // true) {
       dc.SelectObject(smallFont);
       CRect rect = cellR();
       dc.SetTextColor(RGB(255,255,0)); CString s; // yel not dex is blue. 
