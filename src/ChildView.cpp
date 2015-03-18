@@ -402,6 +402,7 @@ public:
 
 
   void drawLightShadow(Cell& cell, bool losDark) {
+    /* there is a bug, where permlit areas don't respect gradual lighting, like torch light does. instead, you get an on/off effect. */
     // DARKENING according to light level (we draw 'black darkness' on top of things,
     //  to emulate light/shadow.
 
@@ -454,6 +455,14 @@ public:
       dc.SetTextColor(RGB(0,255,0));  // yel not dex is blue. 
       s.Format(L"%d ", distDyn); const int flags3 = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
 		  dc.DrawText(s, &rect,  flags3);
+
+      dc.SetTextColor(RGB(255,0,0));  // yel not dex is blue. 
+      s.Format(L"%d ", cell.envir.permLight); const int flags4 = DT_LEFT | DT_TOP | DT_SINGLELINE;
+		  dc.DrawText(s, &rect,  flags4);
+
+      dc.SetTextColor(RGB(0,0,255));  // yel not dex is blue. 
+      s.Format(L" %d ", losDark); const int flags5 = DT_CENTER |  DT_VCENTER | DT_SINGLELINE;
+		  dc.DrawText(s, &rect,  flags5);
     }
 
   } // end drawLightShadow.
