@@ -126,7 +126,12 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     // if (nearPlayer()) { will change prob. (longer range, higher chance of spell attack.)
     int castChance = (nearPlayer() ? 7 : 33);
     bool willCast = pctChance(castChance);
-    if (willCast) {
+    bool canCast = canSee(PlayerMob::ply->pos,true);
+    if (willCast && !canCast) {
+      { logstr log; log << pronoun() << " sputters: 'You..hiding coward!'"; }
+    }
+
+    if (willCast && canCast) {
       /* FIxME/ consider: mobs start with zapcmd instead of Spell::castSpell.
       / Main differences are
        - that zapcmd works with 'cast/bullet dir' from the get-go (and won't accidentally prompt USER for mob's attack-dir..)
