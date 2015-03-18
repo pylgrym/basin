@@ -35,6 +35,7 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 2, 1, {3,4}, 0,40,SC_Mind,  "confuse", "Confuse self" }, // = 3,
 { 1, 1, {1,1}, 0,40,SC_Mind,  "unconfuse", "Unconfuse" }, // = 4,
 { 2, 1, {3,4}, 0,40,SC_Mind,  "confusemob", "Confuse monster" }, // = 5,
+{ 2, 1, {3,4}, 0,40,SC_Mind,  "sleepmob", "Sleep monster" }, // = 5,
 { 5, 2, {1,1 },0,40,SC_Magic, "teleport_me", "Teleport Self" }, // = 6,
 { 6, 3, {1,1 },0,40,SC_Magic, "teleport_you", "Teleport Other" }, // = 6,
 // JG, fixme: these powerlevels are arbitrary.
@@ -318,6 +319,22 @@ void Spell::initQual() {
 
 
 
+bool sleepMob(Mob* target) {
+  MonsterMob* monster = dynamic_cast<MonsterMob*>(target);
+  if (monster != NULL) {
+    monster->mood = M_Sleeping;
+    logstr log;
+    log << target->pronoun() << "falls to sleep!";
+    return true;
+  }
+
+  // error - probably a monster trying to sleep the player.
+  debstr() << "err, impl player being put to sleep\n";
+  logstr log; log << "(fixme) impl. monster putting player to sleep.\n";
+  return false;
+}
+
+
 
 class SpellImpl {
 public:
@@ -378,7 +395,7 @@ bool updateConfused(Mob& actor, int confuseCount) {
     playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
   }
 
-  logstr log; if (confuseCount > 0) { log << actor.pronoun() << "?You feel confused."; } else { log << actor.pronoun() << "?You feel less confused."; }
+  logstr log; if (confuseCount > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " confused."; } else { log << actor.pronoun() << " feel" << actor.verbS() << " less confused."; }
   actor.stats.confused = confuseCount; 
   return true;
 }
@@ -409,8 +426,12 @@ public:
 bool healSpellPct(Mob& actor, int percent) {
   {
     logstr log; 
-    if (percent > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
-    if (percent < 0) { log << actor.pronoun() << "(You?) feel sick."; }
+    if (percent > 0) { 
+      log << actor.pronoun() << " feel" << actor.verbS()<< " healing energies."; 
+    }
+    if (percent < 0) { 
+      log << actor.pronoun() << " feel" << actor.verbS() << " sick."; 
+    }
   }
   actor.stats.healPct(percent, &actor);
   return true;
@@ -428,8 +449,8 @@ bool healSpellDice(Mob& actor, Dice dice) {
   int val = dice.roll(dummy);
   {
     logstr log;
-    if (val > 0) { log << actor.pronoun() << "(You?) feel healing energies."; }
-    if (val < 0) { log << actor.pronoun() << "(You?) feel sick."; }
+    if (val > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " healing energies."; }
+    if (val < 0) { log << actor.pronoun() << " feel" << actor.verbS() << " sick."; }
   }
   actor.stats.healAbs(val, &actor);
   return true;
@@ -478,7 +499,9 @@ public:
 
 
 
-bool lightSpell(Mob& actor, CPoint pos, int radius) { 
+bool lightSpell(Mob& actor, CPoint pos, int radius) {
+  /* idea: that light-area sets s light-strength on the tiles.
+  */
   // Do a 'light' command:
   actor.lightArea(pos,radius); 
   logstr log;

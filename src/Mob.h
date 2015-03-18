@@ -138,6 +138,7 @@ public:
   void moveM(CPoint newpos); // 'does all', 'move mob on map'.
 
   bool playerOnStar() const; // If player is on a '8-star direction', we can use spells against him.
+  bool canSee(CPoint b, bool onlyEnvir);
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
@@ -177,7 +178,7 @@ public:
       for (int dy = -radius; dy <= radius; ++dy) {
         CPoint p(pos.x + dx, pos.y + dy);
         if (CL->map.legalPos(p)) {
-          CL->map[p].lightCells();//  Walls();
+          CL->map[p].lightCells(p);//  Walls();
         }
       }
     }

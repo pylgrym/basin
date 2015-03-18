@@ -57,6 +57,7 @@ enum SpellEnum {
   SP_ConfuseSelf ,
   SP_Unconfuse, 
   SP_ConfuseMob,
+  SP_SleepOther,
   SP_TeleSelfAway,
   SP_TeleOtherAway,
 
@@ -172,7 +173,7 @@ enum ManaEnum { NoMana = 0, UseMana = 1 };
 
 class Spell {
 public:
-  enum Nums { SpellPageSize = 19 }; // 20 }; // 5 is good for testing..
+  enum Nums { SpellPageSize = 15 }; // 19}; // 20 }; // 5 is good for testing..
 
   Spell();
   ~Spell();

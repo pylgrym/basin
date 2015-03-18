@@ -30,7 +30,7 @@ public:
 
   bool light() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
   void markWalls() { envir.markWalls();  }
-  void lightCells() { envir.lightCells();  }
+  void lightCells(CPoint pos) { envir.lightCells(pos);  }
 
   bool blocked() const {
     // debstr() << "blocked, envir:" << envir.blocked() << "/" << envir.type << ", mob:" << creature.blocked() << "\n";
@@ -77,6 +77,7 @@ public:
   Cell* cell(CPoint p); // NULL if outside.
 
   bool legalPos(CPoint pos);
+  bool canSee(CPoint a, CPoint b, bool onlyEnvir);
 
   void moveMob(class Mob& m, CPoint newpos);
   void addObj(class Obj& o, CPoint pos);

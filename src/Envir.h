@@ -35,22 +35,33 @@ public:
   bool permLight;
   int envUnits; // E.g. strength of rock.
 
+  int tmpLightStr; // embellishes permLight, but is not currently saved.
+
   bool persist(class Persist& p) {
     // JG: enums are problematic, require a template or something, or manual approach.
     // Do I want fixed-width BD AF hex numbers? (for grid appearance and easier parsing.)
     if (p.bOut) {
-      p.os << (char) type << " "; // p.transfer(type, "envir"); // p.os << type;
-    } else {
-      // int intType = 0;
+      p.os << (char)type;
+      p.os << " "; 
+      p.os << (permLight ? ',' : '.');
+      p.os << " "; 
+
+    } else { // input.
       char charType = 0;
       p.is >> charType;
       type = (EnvirEnum) charType;
+
+      
+      p.is >> charType;
+      permLight = (charType == ',');
+      
     }
     return true;
   }
 
   Envir():type(EN_Floor), permLight(false) {
     envUnits = rnd(50, 1500);
+    tmpLightStr = 0; // 14;
   }
 
   bool blocked() const { return isBlockingEnv(type);  }
@@ -61,11 +72,7 @@ public:
     }
   }
 
-  void lightCells() { // Used by light-spells.
-    permLight = true;
-    //if (type == EN_Wall) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.
-    //}
-  }
+  void lightCells(CPoint pos); // Used by light-spells.
 
   bool interacts() const {  // FIXME, make a differentiate-mechanism
     return (type == EN_Shop);

@@ -136,7 +136,7 @@ bool HitCmd::Do(std::ostream& err) {
       playSound(L"sounds\\sfxr\\failure2.wav"); // HIT MOB
       err << "You miss! "; 
     } else {
-      err << "It misses. "; 
+      err << mob.pronoun() << " misses. "; 
     }
 
     err << "(th";
@@ -153,8 +153,8 @@ bool HitCmd::Do(std::ostream& err) {
     }
     logstr log;
     log
-      << mob.pronoun()
-      << " hit" << mob.verbS() << mob.stats.level() << " "
+      << mob.pronoun() << mob.stats.level() // "you hit"<-grep-target-string..
+      << " hit" << mob.verbS()  << " "
       << hittee->pronoun() << " for " << ai.dmgTaken;
 
     log << "(";
@@ -305,6 +305,7 @@ bool ZapCmd::Do(std::ostream& err) {
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
+
       case SP_SummonHere: // mob <- target, dir
         { logstr log;                
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
@@ -318,6 +319,14 @@ bool ZapCmd::Do(std::ostream& err) {
           bool bSpellOK = Spell::castSpell(SP_ConfuseSelf, *target, NULL, zapHitItem, NoMana); // in zapcmd. hitting a mob.
           // (JG: The "bullet->self" are the reason tryident happens outside, and not directly in castspell.)
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } // we identify 'confusemob', not 'confuse'.
+          break;
+        }
+
+      case SP_SleepOther: 
+        { logstr log;
+          extern bool sleepMob(Mob* target);
+          bool bSpellOK = sleepMob(target); // teleportTo(*target, targetpos, &mob);
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }
 
@@ -352,7 +361,7 @@ bool ZapCmd::Do(std::ostream& err) {
       CL->map[bullet].envir.setType(EN_Wall);
     }
     if (effect == SP_LightDir) {
-      CL->map[bullet].lightCells();
+      CL->map[bullet].lightCells(bullet);
     }
 
     TheUI::microSleepForRedraw(7); // 4);

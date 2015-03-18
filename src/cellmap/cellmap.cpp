@@ -10,6 +10,7 @@
 #include "MobDist.h"
 
 #include "../GrowSeed.h"
+#include "../CanSee.h"
 
 
 void Map::addRandomMob(int levelbase) {  
@@ -653,4 +654,9 @@ bool Map::transferObj(Persist& p) { // Only works for obj IN, to map:
   Cell& cell = (*this)[pos];
   cell.item.setObj(o); // In transferObj (persistence helper.)
   return true;
+}
+
+
+bool Map::canSee(CPoint a, CPoint b, bool onlyEnvir) {
+  return CanSee::canSee(a, b, *this, onlyEnvir);
 }

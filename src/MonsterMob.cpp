@@ -113,6 +113,11 @@ bool Mob::playerOnStar() const { // If player is on a '8-star direction', we can
 }
 
 
+bool Mob::canSee(CPoint b, bool onlyEnvir) {
+  return CL->map.canSee(pos, b, onlyEnvir);
+}
+
+
 
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   CPoint dir = playerDir();

@@ -404,20 +404,29 @@ public:
   void drawLightShadow(Cell& cell, bool losDark) {
     // DARKENING according to light level (we draw 'black darkness' on top of things,
     //  to emulate light/shadow.
+
+    COLORREF darkness = RGB(0, 0, 255);
+    int dist = 0;
+
     if (cell.light() || cell.hasOverlay()) {
       // Nothing: if cell is perma-lit, don't try to darken it.
+      if (!cell.hasOverlay()) {
+        dist = cell.envir.tmpLightStr;
+      }
     } else { // No perma-light in cell:
       // Base darkening on tile-distance to player:
-      int dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
+      dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
       if (dist < 0) { dist = 0; }
       dist = (dist*dist); // gives better darkness.. faster falloff..
 
-      COLORREF darkness = RGB(0, 0, 255);
       if (losDark) { // It should be very totally dark.
-        dist *= 99; 
+        dist *= 99;
       } else { // Her er lyst:
         darkness = colorNone;
       }
+    }
+
+    if (dist != 0) {
       int blend = (int) (255.0 - (255.0 / (dist+1)));
 
       CPoint blendDarkenTile(29,20); 
@@ -425,7 +434,7 @@ public:
       tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
     }
 
-  }
+  } // end drawLightShadow.
 
 
   void doDraw() {

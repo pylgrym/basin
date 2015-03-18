@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Envir.h"
-
-
+#include "PlayerMob.h"
 #include <vector>
 
 
@@ -107,4 +106,24 @@ EnvirEnum Envir::ranDoor() {
   case 6: return EN_DoorCullis; // these two are experimental.
   }
   return EN_DoorOpen;
+}
+
+
+
+/* idea, LOS check! canSee.
+if map.canSee(pos,pos)
+*/
+
+void Envir::lightCells(CPoint pos) { // Used by light-spells.
+  permLight = true;
+
+  //if (type == EN_Wall) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.
+  //}
+
+  int newStr = PlayerMob::distPly(pos); // consider  distPlyLight
+  newStr = newStr = 50;
+  if (tmpLightStr == 0 || newStr < tmpLightStr) { // Don't dampen existing/earlier light..
+    tmpLightStr = newStr;
+  }
+
 }
