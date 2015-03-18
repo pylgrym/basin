@@ -564,6 +564,8 @@ bool detectCells(CPoint pos, int radius, CheckCellBase& checker) {
   if (count == 0) {
     logstr log; log << "You don't sense anything nearby.";
   } else {
+    // Invalidate / cuss::
+    Cuss::invalidate(); // FIXME, is this the right way?
     logstr log; log << "You sense " << checker.what() << " nearby!";
   }
   return true;
