@@ -546,7 +546,7 @@ struct IsTreasure : public CheckCellBase {
 };
 
 
-bool detectCells(CPoint pos, int radius, CheckCellBase& checker) {
+bool detectCells(Mob& actor, CPoint pos, int radius, CheckCellBase& checker) {
   int count = 0;
   for (int dx = -radius; dx <= radius; ++dx) {
     for (int dy = -radius; dy <= radius; ++dy) {
@@ -555,6 +555,8 @@ bool detectCells(CPoint pos, int radius, CheckCellBase& checker) {
         Cell& c = CL->map[p];
         if (checker.check(c)) {
           c.lightCells(p); //FIXME, you could argue we only want a temp highlight.
+          // Also, this highlight follows the cell, not the item/feature..
+          TheUI::invalidateCell(p); 
           ++count;
         }
         // if (c.envir.blocked()) {}
@@ -562,30 +564,30 @@ bool detectCells(CPoint pos, int radius, CheckCellBase& checker) {
     }
   }
   if (count == 0) {
-    logstr log; log << "You don't sense anything nearby.";
+    logstr log; log << actor.pronoun() << " don't sense" << actor.verbS() << " anything nearby."; // FIXME, 'doesn't'.
   } else {
-    // Invalidate / cuss::
-    Cuss::invalidate(); // FIXME, is this the right way?
-    logstr log; log << "You sense " << checker.what() << " nearby!";
+    // Invalidate / cuss:: (it's ok, invalidateCell above does this.)
+    //Cuss::invalidate(); // FIXME, is this the right way?
+    logstr log; log << actor.pronoun() << " sense" << actor.verbS() << checker.what() << " nearby!";
   }
   return true;
 }
 
-bool detectDoors(CPoint pos, int radius) { return detectCells(pos, radius, IsDoor()); } //, CheckCellBase& checker) {
-bool detectTraps(CPoint pos, int radius) { return detectCells(pos, radius, IsTrap()); } //, CheckCellBase& checker) {
-bool detectTreasure(CPoint pos, int radius) { return detectCells(pos, radius, IsTreasure()); } //, CheckCellBase& checker) {
-bool detectObj(CPoint pos, int radius) { return detectCells(pos, radius, IsObj()); } //, CheckCellBase& checker) {
-bool detectMobs(CPoint pos, int radius) { return detectCells(pos, radius, IsMob()); } //, CheckCellBase& checker) {
+bool detectDoors(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsDoor()); } //, CheckCellBase& checker) {
+bool detectTraps(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsTrap()); } //, CheckCellBase& checker) {
+bool detectTreasure(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsTreasure()); } //, CheckCellBase& checker) {
+bool detectObj(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsObj()); } //, CheckCellBase& checker) {
+bool detectMobs(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsMob()); } //, CheckCellBase& checker) {
 
 bool spellDetect(Mob& actor, SpellEnum effect) {
   CPoint pos = actor.pos;
   int rad = 23;
   switch (effect) {
-  case SP_DetectDoor:    return detectObj(pos, rad);
-  case SP_DetectTrap:    return detectTraps(pos, rad);
-  case SP_DetectTreasure:return detectTreasure(pos, rad);
-  case SP_DetectObject:  return detectObj(pos, rad);
-  case SP_DetectMobs:    return detectMobs(pos, rad);
+  case SP_DetectDoor:    return detectObj(pos, rad,actor);
+  case SP_DetectTrap:    return detectTraps(pos, rad,actor);
+  case SP_DetectTreasure:return detectTreasure(pos, rad,actor);
+  case SP_DetectObject:  return detectObj(pos, rad,actor);
+  case SP_DetectMobs:    return detectMobs(pos, rad,actor);
   }
   assert(false);  // spellDetect shouldn't happen.
   return false;
