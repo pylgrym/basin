@@ -441,7 +441,7 @@ void Stats::updateConfusion() {
 
 
 void Stats::healPct(int percent, Mob* mob) { // May also be used negative.
-  int deltaHP = hp*percent / 100;
+  int deltaHP = maxHP*percent / 100;
   int newHP = hp + deltaHP;
   if (newHP > maxHP) {
     newHP = maxHP;
@@ -475,6 +475,28 @@ void Stats::healAbs(int val, Mob* mob) { // May also be used negative.
     else          { log << mob->pronoun() << " appears less healthy."; }
   }
 }
+
+
+
+void Stats::manaPct(int percent, Mob* mob) { // May also be used negative.
+  
+  int deltaMana = maxMana*percent / 100;
+  int newMana = mana + deltaMana;
+  if (newMana > maxMana) {
+    newMana = maxMana;
+  }
+  mana = newMana;
+
+  logstr log;
+  if (percent > 0) {
+    if (isPlayer) { log << "You feel your mana returning."; } 
+    else          { log << mob->pronoun() << " glows with mana."; }
+  } else {
+    if (isPlayer) { log << "Your mana drains away."; } 
+    else          { log << mob->pronoun() << " appears to leak mana."; }
+  }
+}
+
 
 
 void pr(std::stringstream& ss) {

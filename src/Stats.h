@@ -138,6 +138,7 @@ public:
   void healAbs(int val, Mob* mob);
 
   bool useMana(int manaCost);
+  void manaPct(int percent, class Mob*); // mob along, so we can make log messages.
 
   void recoverHP() { // Randomized healing.
     int frac = (maxHP / 10)+1;

@@ -97,6 +97,8 @@ enum SpellEnum {
   SP_DetectTrap,
   SP_DetectTreasure,
   SP_DetectObject, // 30
+  SP_DetectMobs,
+  SP_RestoreMana,
   // SP_x
   SP_MaxSpells
 };
@@ -138,6 +140,7 @@ public:
    deltaFood = 0; 
    healPct = 0;
    healDice =Dice(1,1);
+   manaPct = 0;
 
    item = NULL;
    effect = SP_NoSpell;
@@ -157,6 +160,7 @@ public:
   int deltaFood; 
   int healPct;
   Dice healDice;
+  int manaPct;
 
   class Obj* item;
   SpellEnum effect;

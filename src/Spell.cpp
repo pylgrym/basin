@@ -77,6 +77,8 @@ SpellDesc Spell::spells[SP_MaxSpells] = {
 { 4, 1, {1,1}, 0,40,SC_None,"detecttrap", "Detect trap" }, // = 27,
 { 5, 4, {1,1}, 0,40,SC_None,"detecttreasure", "Detect treasure" }, // = 28,
 { 6, 2, {1,1}, 0,40,SC_None,"detectobject", "Detect object" }, // = 29x,
+{ 4, 1, {1,1}, 0,40,SC_None,"detectmobs", "Detect monsters" }, // = 27,
+{41, 2, {1,1}, 0,40,SC_None,"restoremana", "Restore Mana" }, // = 29x, // You will NOT be able to learn this..
 /*
 {"detectmagic",""}, // 
 {"light",""}, // 
@@ -463,6 +465,29 @@ public:
 } spell_healDice;
 
 
+
+bool manaSpellPct(Mob& actor, int percent) {
+  {
+    logstr log; 
+    if (percent > 0) { 
+      log << actor.pronoun() << " feel" << actor.verbS()<< " mana flowing through 'you'."; 
+    }
+    if (percent < 0) { 
+      log << actor.pronoun() << " feel" << actor.verbS() << " mana draining away from 'you'."; 
+    }
+  }
+  actor.stats.manaPct(percent, &actor);
+  return true;
+}
+
+class Spell_ManaPct: public SpellImpl { 
+public:
+  bool execSpell(SpellParam& param) { return manaSpellPct(*param.actor, param.manaPct);  }
+  static void init(Mob& actor, int manaPct, SpellParam& p) { p.actor = &actor;  p.manaPct = manaPct; p.impl = &spell_manaPct; }
+} spell_manaPct;
+
+
+
 // Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
 bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school, CPoint dir) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
   ZapCmd cmd(spellItem, actor, effect, school);
@@ -497,6 +522,72 @@ public:
   }
 } spell_bullet;
 
+
+struct CheckCellBase { 
+  virtual bool check(const Cell&) = 0; 
+  virtual std::string what() = 0;
+};
+
+struct IsObj  : public CheckCellBase { virtual bool check(const Cell& c) { return !c.item.empty(); }      std::string what(){return "items";} };
+struct IsMob  : public CheckCellBase { virtual bool check(const Cell& c) { return !c.creature.empty(); }  std::string what(){return "monsters";} };
+struct IsDoor : public CheckCellBase { virtual bool check(const Cell& c) { return !c.envir.isDoor(); }    std::string what(){return "doors";} };
+struct IsTrap : public CheckCellBase { virtual bool check(const Cell& c) { return !(c.item.type() == OB_Trap); }   std::string what(){return "traps";} };
+
+
+struct IsTreasure : public CheckCellBase {
+  virtual bool check(const Cell& c) {
+    switch (c.item.type()) {
+    case OB_Gold: return true;
+    case OB_Emeralds: return true;
+    }
+    return false;
+  }
+  std::string what(){return "treasure";}
+};
+
+
+bool detectCells(CPoint pos, int radius, CheckCellBase& checker) {
+  int count = 0;
+  for (int dx = -radius; dx <= radius; ++dx) {
+    for (int dy = -radius; dy <= radius; ++dy) {
+      CPoint p(pos.x + dx, pos.y + dy);
+      if (CL->map.legalPos(p)) {
+        Cell& c = CL->map[p];
+        if (checker.check(c)) {
+          c.lightCells(p); //FIXME, you could argue we only want a temp highlight.
+          ++count;
+        }
+        // if (c.envir.blocked()) {}
+      }
+    }
+  }
+  if (count == 0) {
+    logstr log; log << "You don't sense anything nearby.";
+  } else {
+    logstr log; log << "You sense " << checker.what() << " nearby!";
+  }
+  return true;
+}
+
+bool detectDoors(CPoint pos, int radius) { return detectCells(pos, radius, IsDoor()); } //, CheckCellBase& checker) {
+bool detectTraps(CPoint pos, int radius) { return detectCells(pos, radius, IsTrap()); } //, CheckCellBase& checker) {
+bool detectTreasure(CPoint pos, int radius) { return detectCells(pos, radius, IsTreasure()); } //, CheckCellBase& checker) {
+bool detectObj(CPoint pos, int radius) { return detectCells(pos, radius, IsObj()); } //, CheckCellBase& checker) {
+bool detectMobs(CPoint pos, int radius) { return detectCells(pos, radius, IsMob()); } //, CheckCellBase& checker) {
+
+bool spellDetect(Mob& actor, SpellEnum effect) {
+  CPoint pos = actor.pos;
+  int rad = 23;
+  switch (effect) {
+  case SP_DetectDoor:    return detectObj(pos, rad);
+  case SP_DetectTrap:    return detectTraps(pos, rad);
+  case SP_DetectTreasure:return detectTreasure(pos, rad);
+  case SP_DetectObject:  return detectObj(pos, rad);
+  case SP_DetectMobs:    return detectMobs(pos, rad);
+  }
+  assert(false);  // spellDetect shouldn't happen.
+  return false;
+}
 
 
 bool lightSpell(Mob& actor, CPoint pos, int radius) {
@@ -684,6 +775,11 @@ class Spell_Embed: public SpellImpl { public:
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_embed; }
 } spell_embed;
 
+
+class Spell_Detect: public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return spellDetect(*param.actor, param.effect);  } // Consider: we could impl directly here!
+  static void init(Mob& actor, SpellEnum effect, SpellParam& p) { p.actor = &actor; p.effect = effect; p.impl = &spell_detect; }
+} spell_detect;
 
 
 bool spellShove(Mob& actor, Mob& target, CPoint dir) {
@@ -899,7 +995,21 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_Heal_crit:    Spell_HealDice::init(actor, Dice(12,3), p);            break; //return healSpellDice(actor, Dice(12, 3)); break;
   case SP_LightArea:       Spell_Light::init(actor, actor.pos,4, p);           break; //return lightSpell(actor, actor.pos,4); break;
   case SP_LightDir:       Spell_Bullet::init(actor, item, effect, SC_Light, p);break; //return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
+
+  case SP_DetectDoor: case SP_DetectTrap: case SP_DetectTreasure: case SP_DetectObject: case SP_DetectMobs:
+                          Spell_Detect::init(actor, effect,p);                   break;
+
   case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
+    // Idea -it could be partial with blanks/particles?
+    /* todo:
+void detectObj(CPoint pos, int radius) { return detectCells(pos, radius, IsObj()); } //, CheckCellBase& checker) {
+void detectMobs(CPoint pos, int radius) { return detectCells(pos, radius, IsMob()); } //, CheckCellBase& checker) {
+void detectDoors(CPoint pos, int radius) { return detectCells(pos, radius, IsDoor()); } //, CheckCellBase& checker) {
+void detectTraps(CPoint pos, int radius) { return detectCells(pos, radius, IsTrap()); } //, CheckCellBase& checker) {
+void detectTreasure(CPoint pos, int radius) { return detectCells(pos, radius, IsTreasure()); } //, CheckCellBase& checker) {
+    */
+
+  case SP_RestoreMana:   Spell_ManaPct::init(actor, 33, p);                    break; // return healSpellPct(actor,p.healPct); break;
   // case SP_Poison:       healSpell(actor); break;
   default: { logstr log; log << "err spell unknown:" << effect; } return false;
   }
