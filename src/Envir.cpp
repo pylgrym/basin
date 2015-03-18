@@ -121,7 +121,7 @@ void Envir::lightCells(CPoint pos) { // Used by light-spells.
   //}
 
   int newStr = PlayerMob::distPly(pos); // consider  distPlyLight
-  newStr = newStr = 50;
+  newStr = newStr/10; // / 10;
   if (tmpLightStr == 0 || newStr < tmpLightStr) { // Don't dampen existing/earlier light..
     tmpLightStr = newStr;
   }

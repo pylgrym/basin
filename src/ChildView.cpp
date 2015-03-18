@@ -406,25 +406,32 @@ public:
     //  to emulate light/shadow.
 
     COLORREF darkness = RGB(0, 0, 255);
-    int dist = 0;
+    int dist = 999,distStat=999,distDyn=999;
 
     if (cell.light() || cell.hasOverlay()) {
       // Nothing: if cell is perma-lit, don't try to darken it.
-      if (!cell.hasOverlay()) {
-        dist = cell.envir.tmpLightStr;
+      if (!cell.hasOverlay()) { // Then you get relative str of this cells permalight:
+        distStat = cell.envir.tmpLightStr;
+        distStat = distStat*distStat;
+      } else { // Overlap means brightest light, guaranteed.
+        distStat = 0;
       }
-    } else { // No perma-light in cell:
+    } // was: else
+
+    { // No perma-light in cell:
       // Base darkening on tile-distance to player:
-      dist = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
-      if (dist < 0) { dist = 0; }
-      dist = (dist*dist); // gives better darkness.. faster falloff..
+      distDyn = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
+      if (distDyn < 0) { distDyn = 0; }
+      distDyn = (distDyn*distDyn); // gives better darkness.. faster falloff..
 
       if (losDark) { // It should be very totally dark.
-        dist *= 99;
+        distDyn *= 99;
       } else { // Her er lyst:
         darkness = colorNone;
       }
     }
+
+    dist = distDyn; if (distStat < dist) { dist = distStat;  }
 
     if (dist != 0) {
       int blend = (int) (255.0 - (255.0 / (dist+1)));
@@ -432,6 +439,21 @@ public:
       CPoint blendDarkenTile(29,20); 
       ++cost;
       tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, true, blend, darkness,cost); // was:colorNone
+    }
+
+    if (true) {
+      dc.SelectObject(smallFont);
+      CRect rect = cellR();
+      dc.SetTextColor(RGB(255,255,0)); CString s; // yel not dex is blue. 
+      s.Format(L" %d", dist); const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
+		  dc.DrawText(s, &rect,  lowerLeftFlags);
+
+      s.Format(L"%d ", distStat); const int flags2 = DT_RIGHT | DT_TOP | DT_SINGLELINE;
+		  dc.DrawText(s, &rect,  flags2);
+
+      dc.SetTextColor(RGB(0,255,0));  // yel not dex is blue. 
+      s.Format(L"%d ", distDyn); const int flags3 = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+		  dc.DrawText(s, &rect,  flags3);
     }
 
   } // end drawLightShadow.
