@@ -79,6 +79,7 @@ public:
   bool legalPos(CPoint pos);
   bool canSee(CPoint a, CPoint b, bool onlyEnvir);
 
+  void clearMob(class Mob& m); // helper for using stairs
   void moveMob(class Mob& m, CPoint newpos);
   void addObj(class Obj& o, CPoint pos);
 

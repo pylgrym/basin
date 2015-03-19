@@ -465,7 +465,9 @@ CPoint Map::key2dir(char nChar) {
 }
 
 
-
+void Map::clearMob(class Mob& m) {
+  (*this)[m.pos].creature.clearMob();
+}
 
 void Map::moveMob(class Mob& m, CPoint newpos) {
   (*this)[m.pos].creature.clearMob();
