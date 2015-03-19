@@ -108,7 +108,7 @@ logstr::~logstr() {
   if (s.empty()) { return;  } // Don't log empty stuff.
 
   CA2T uc(s.c_str(), CP_ACP);
-  OutputDebugString(uc);
+  // OutputDebugString(uc);
 
   LogEvents::log.add(s);
 

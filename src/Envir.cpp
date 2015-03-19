@@ -3,6 +3,7 @@
 #include "PlayerMob.h"
 #include <vector>
 
+#include "theUI.h"
 
 bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
   switch (type) {
@@ -116,6 +117,7 @@ if map.canSee(pos,pos)
 
 void Envir::lightCells(CPoint pos) { // Used by light-spells.
   permLight = true;
+  TheUI::invalidateCell(pos);
 
   //if (type == EN_Wall) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.
   //}

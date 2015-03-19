@@ -11,6 +11,7 @@
 
 #include "../GrowSeed.h"
 #include "../CanSee.h"
+#include "../Cuss.h"
 
 
 void Map::addRandomMob(int levelbase) {  
@@ -594,6 +595,7 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   we should probably just stay there?
   */
 
+  Cuss::invalidate();
   return true; // We adjusted..
 }
 

@@ -293,7 +293,7 @@ public:
 
   void drawTermChar(TCell& tcell) { // CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
     // Terminal-char cell.
-    ++cost;
+    ++zcost;
     dc.SelectObject(largeFont);
 
     const COLORREF txtColor = tcell.tcolor; 
@@ -326,14 +326,14 @@ public:
 
   VPoint vp; // viewport coords.
   CPoint wp; // 'world' (map) coords.
-  int cost; // diagnostics - are we drawing too much.
+  int zcost; // diagnostics - are we drawing too much.
   int px, py;
   CRect cellR_buf;
   const CRect& cellR() const { return cellR_buf; }
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
-    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, cost); 
+    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, zcost); 
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -349,10 +349,10 @@ public:
   }
 
   void drawItemTile(Cell& cell) {
-    ++cost;
+    ++zcost;
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,cost); // false);  // THINGS
+    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,zcost); // false);  // THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -366,11 +366,11 @@ public:
 
 
   void drawMobTile(Cell& cell) {
-    ++cost;
+    ++zcost;
     COLORREF mobColor = colorNone;
     const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
     mobColor = sd.color;
-    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, cost); // false); MOBS
+    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, zcost); // false); MOBS
 
     // Draw stats/HP:
     Mob* mob = cell.creature.m;
@@ -422,7 +422,7 @@ public:
     COLORREF darkness = RGB(0, 0, 255);
     int dist = 999, distStat = 999, distDyn = 999;
 
-    if (cell.light() || cell.hasOverlay()) {
+    if (cell.is_lit() || cell.hasOverlay()) {
       // Nothing: if cell is perma-lit, don't try to darken it.
       if (!cell.hasOverlay()) { // Then you get relative str of this cells permalight:
         distStat = cell.envir.tmpLightStr;
@@ -451,9 +451,9 @@ public:
       int blend = (int) (255.0 - (255.0 / (dist+1)));
 
       CPoint blendDarkenTile(29,20); 
-      ++cost;
-      bool transp = true; // (!losDark && !cell.light());
-      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, transp /*true*/, blend, darkness,cost); // was:colorNone
+      ++zcost;
+      bool transp = true; // (!losDark && !cell.is_lit());
+      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, transp /*true*/, blend, darkness,zcost); // was:colorNone
     }
 
     if (0) { // true) {
@@ -489,7 +489,7 @@ public:
 
     dc.SetBkMode(TRANSPARENT);
 
-    cost = 0;
+    zcost = 0;
 
     for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
       for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
@@ -511,10 +511,10 @@ public:
         bool losDark = CL->map.lightmap.isDark(wp);
         // (- no, used to..) map (will) return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
         Cell* pCell = CL->map.cell(wp); 
-        if (pCell == NULL  || (losDark && !pCell->light() && !pCell->hasOverlay()) ) { 
+        if (pCell == NULL  || (losDark && !pCell->is_lit() && !pCell->hasOverlay()) ) { 
           // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
           CPoint darkTile(29,20); // (36, 22);
-          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,cost); 
+          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,zcost); 
           continue;
         }
 
@@ -530,8 +530,8 @@ public:
         }
 
         if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
-          ++cost;
-          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,cost); 
+          ++zcost;
+          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,zcost); 
         }
 
         drawLightShadow(cell,losDark); // NB!, this is a major performance hit!
@@ -539,7 +539,7 @@ public:
     } // for x.
 
     Term::term.dirtyall = false;
-    debstr() << "cost:" << cost << "\n";
+    debstr() << "cost:" << zcost << "\n";
   } // doDraw.
 
 }; // end tiledraw.
@@ -548,8 +548,16 @@ public:
 
 
 void CChildView::OnPaint() {
+  CRect u; GetUpdateRect(&u);
+  if (u.left == 0 && u.bottom > 700) {   // Kludge - idea: if suff. large area is dirty, redraw all..
+    Term::term.dirtyall = true;  
+    debstr() << u.left << "/" <<  u.top << "/" << u.right << "/" << u.bottom << "\n";
+  }
+
   CPaintDC dc(this); // device context for painting
 
+
+  // dc.ExcludeUpdateRgn
   TileDraw draw(dc, tiles);
   draw.doDraw(); // dc);
 }
