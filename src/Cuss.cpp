@@ -84,9 +84,16 @@ COLORREF Cuss::curBkColor = RGB(0, 0, 64); // 255, 255, 255);
 
 bool Cuss::putchar(char c, bool bClip) {
   // debstr() << "[§" << c << "]\n";
-  TCell& cell = Term::term[csr]; //CL->map[csr];
+  TCell& cell = Term::term[csr]; 
+
+  bool changed = false;
+  if (cell.c != c || cell.bkcolor != curBkColor) { changed = true;  }
+
   cell.c = c; cell.tcolor = curTxtColor; cell.bkcolor = curBkColor;
-  TheUI::invalidateVPCell(csr);
+
+  if (changed) {
+    TheUI::invalidateVPCell(csr);
+  }
 
   ++csr.x;
   if (csr.x >= Term::Width) { // Map::Width) {
@@ -102,6 +109,8 @@ bool Cuss::putchar(char c, bool bClip) {
   }
   return false;
 }
+
+// remember, only invalidate if changed contents.
 
 void Cuss::invalidate() {
   TheUI::invalidateWndJG(NULL, true);
