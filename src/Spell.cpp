@@ -530,8 +530,8 @@ struct CheckCellBase {
 
 struct IsObj  : public CheckCellBase { virtual bool check(const Cell& c) { return !c.item.empty(); }      std::string what(){return "items";} };
 struct IsMob  : public CheckCellBase { virtual bool check(const Cell& c) { return !c.creature.empty(); }  std::string what(){return "monsters";} };
-struct IsDoor : public CheckCellBase { virtual bool check(const Cell& c) { return !c.envir.isDoor(); }    std::string what(){return "doors";} };
-struct IsTrap : public CheckCellBase { virtual bool check(const Cell& c) { return !(c.item.type() == OB_Trap); }   std::string what(){return "traps";} };
+struct IsDoor : public CheckCellBase { virtual bool check(const Cell& c) { return c.envir.isDoor() || c.envir.isStair(); }    std::string what(){return "doors or stairs";} };
+struct IsTrap : public CheckCellBase { virtual bool check(const Cell& c) { return (c.item.type() == OB_Trap); }   std::string what(){return "traps";} };
 
 
 struct IsTreasure : public CheckCellBase {

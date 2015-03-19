@@ -229,6 +229,7 @@ void TheUI::invalidateWndJG(CRect* pRect, bool erase) {
   if (CChildView::singletonWnd == NULL) { debstr() << "no sing wnd?\n";  return; }
   if (CChildView::singletonWnd->GetSafeHwnd() == NULL) { debstr() << "no hWnd yet\n";  return; }
   CChildView::singletonWnd->InvalidateRect(pRect, erase);
+  Term::term.dirtyall = true;
 }
 
 
@@ -251,6 +252,8 @@ void TheUI::invalidateCellXY(int w_tx, int w_ty) {
 
 
 void TheUI::invalidateVPCell(CPoint vp) { 
+  Term::term[vp].dirty = true;
+
   int px = vp.x * Tiles::TileWidth, py = vp.y * Tiles::TileHeight;
 	CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
   invalidateWndJG(&cellR, false);
@@ -289,9 +292,16 @@ public:
     // Terminal-char cell.
     ++cost;
     dc.SelectObject(largeFont);
+
     const COLORREF txtColor = tcell.tcolor; 
     dc.SetTextColor(txtColor);  
+
+    const COLORREF bkColor = tcell.bkcolor; 
+    // dc.SetBkColor(bkColor);  
+
     CRect rect = cellR(); // (CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+
+    CBrush txtBk(bkColor); // (RGB(0, 0, 20));
     dc.FillRect(&rect, &txtBk);
 
     CString s; s.Format(L"%c", tcell.c);
@@ -302,14 +312,14 @@ public:
   TileDraw(CDC& dc_, Tiles& tiles_) 
   :dc(dc_), tiles(tiles_) 
   ,gr(dc_)
-  ,txtBk(RGB(0, 0, 20)) 
+  // ,txtBk(RGB(0, 0, 20)) 
   {}
 
   CDC& dc;
   Tiles& tiles;
   Graphics gr; // (dc);
   CFont largeFont, smallFont;
-  CBrush txtBk; // (RGB(0, 0, 20));
+
 
   VPoint vp; // viewport coords.
   CPoint wp; // 'world' (map) coords.
@@ -480,11 +490,14 @@ public:
 
     for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
       for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
+        TCell& tcell = Term::term[vp.p];
+        if (!tcell.dirty && !Term::term.dirtyall) { continue; }
+        tcell.dirty = false; // as we are drawing it now, it's no longer dirty.
+
         // Used by 'all' that follow:
         px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
-        TCell& tcell = Term::term[vp.p];
         if (!tcell.charEmpty()) { // If it's a terminal-text-char, just draw that and be done with it:
           drawTermChar(tcell); // dc, gr, txtBk, largeFont, tcell, px, py, cost);
           continue;
@@ -522,6 +535,7 @@ public:
       } // for y.
     } // for x.
 
+    Term::term.dirtyall = false;
     debstr() << "cost:" << cost << "\n";
   } // doDraw.
 

@@ -6,11 +6,12 @@ class TCell {
 public:
   enum Consts { EmptyChar = '\0' };
   char c;
-  COLORREF tcolor;
+  bool dirty;
+  COLORREF tcolor,bkcolor;
   TCell() { clearChar(); } // c = '\0'; }
-  TCell(char c_):c(c_) {}
+  TCell(char c_):c(c_), dirty(true),tcolor(RGB(255,255,0)), bkcolor(RGB(128,0,0)) {}
 
-  void clearChar() { c = EmptyChar; tcolor = RGB(255, 255, 255);  } // Consider if def tcolor can be set, to e.g. green.
+  void clearChar() { c = EmptyChar; tcolor = RGB(255, 255, 255); bkcolor = RGB(0, 32, 0); dirty = true;  } // Consider if def tcolor can be set, to e.g. green.
   bool charEmpty() const { return c == EmptyChar; }
 };
 
@@ -22,6 +23,7 @@ public:
 	  Height = 20 // 25 
   };
 
+  bool dirtyall;
   TCell cells[Width][Height];
 
   TCell& operator[] (CPoint tp) {

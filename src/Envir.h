@@ -93,6 +93,15 @@ public:
     return false; // Everything else is not a door..
   }
 
+  bool isStair() const {
+    switch (type) {
+    case EN_StairDown:
+    case EN_StairUp:
+      return true;
+    }
+    return false; // Everything else is not a door..
+  }
+
   void setType(EnvirEnum type_) { type = type_;  }
   const TCHAR* typeS() { return etypeAsStr(type);  }
   const std::string typestr();

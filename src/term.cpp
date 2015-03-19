@@ -4,6 +4,7 @@
 
 Term::Term(void)
 {
+  dirtyall = false;
 }
 
 

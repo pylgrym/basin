@@ -21,6 +21,9 @@ public:
   std::vector< std::string > lines;
   void add(const std::string& s);
   void show();
+
+  void prtL_bar(const std::string& s); // Hack-kludge to make coloured fight-bar
+
 };
 
 class logstr : public std::stringstream { 

@@ -137,7 +137,7 @@ bool HitCmd::Do(std::ostream& err) {
   if (mob.isPlayer()) {
     FightDashboard::dashboard.hp = hittee->stats.hp;
     FightDashboard::dashboard.maxHP = hittee->stats.maxHP;
-    FightDashboard::dashboard.hp = ai.dmg;
+    FightDashboard::dashboard.lastHit = ai.dmg;
   }
 
   if (!bHit) { 

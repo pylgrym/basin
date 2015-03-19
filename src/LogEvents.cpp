@@ -5,6 +5,9 @@
 #include "util/debstr.h"
 #include "cellmap/cellmap.h"
 #include "Term.h"
+#include "FightDashboard.h"
+
+
 
 LogEvents::LogEvents()
 {
@@ -29,6 +32,47 @@ void LogEvents::respectMultiNotif() {
 }
 
 
+enum HitCase { HC_RemHP=0, HC_LastHit=1,HC_MaxHP = 2};
+
+HitCase LogEvents_remainingHP(int ix, int maxIx) { // , int lastHit) {
+  FightDashboard& board = FightDashboard::dashboard;
+  // board.hp, board.maxHP, board.lastHit
+  // ratio board.hp/board.maxHP  must match 
+  // ratio ix/maxIx = hp/maxHP
+  // IE  ix = maxIx*hp/maxHP
+  int maxHP_adj = board.maxHP;
+  if (maxHP_adj == 0) { maxHP_adj = 1;  }
+
+  double thres = (double)maxIx*board.hp / (double) maxHP_adj;
+  int intThres = int(thres + 0.5);
+
+  if (ix <= intThres) { return HC_RemHP; } // If so low, you are within the remaining-HP.
+  int deltaIx = (ix - intThres);
+
+  double LH_thres = (double)maxIx*board.lastHit / (double) maxHP_adj; // board.maxHP;
+  int int_LHThres = int(LH_thres + 0.5);
+  if (deltaIx <= int_LHThres) { return HC_LastHit; }
+
+  return HC_MaxHP;
+}
+
+void LogEvents::prtL_bar(const std::string& s) {
+  // NB!, this entire approach is kludgey, and meant as experiment.
+  for (int i = 0; i < (int) s.length(); ++i) {
+    HitCase remHP = LogEvents_remainingHP(i, 40); // 48);
+    COLORREF color = (remHP == HC_RemHP ? RGB(0, 128, 0) : RGB(128, 128, 128));
+    if (remHP == HC_LastHit) { color = RGB(255, 0, 0); } // red.
+
+    Cuss::setTxtColor(RGB(245, 245, 255)); // color); // should be white/remove.
+    Cuss::setBkColor(color); // should remain when impl correctly.
+    char c = s[i];
+    Cuss::putchar(c, true);
+  }
+
+  // reset background when finished:
+  Cuss::setBkColor(RGB(0, 0, 32)); // color); // should remain when impl correctly.
+ }
+
 void LogEvents::add(const std::string& s) {
   lines.push_back(s);
 
@@ -36,7 +80,14 @@ void LogEvents::add(const std::string& s) {
 
   incNotif();
   Cuss::move(CPoint(0,0));
-  Cuss::prtL(s.c_str());
+
+  bool classicWay = false;
+  if (classicWay) {
+    Cuss::prtL(s.c_str()); // todo - color bar here.
+  } else {
+    prtL_bar(s);
+  }
+
   /* JG; fixme/todo: instead of just printing this,
   we need some 'feeding, breaking down msgs' for the user..
   If we print a small info that fits,

@@ -67,11 +67,13 @@ void Cuss::CRLF() { // Do carriage-return + lineFeed.
 void Cuss::setTxtColor(COLORREF tcol) { curTxtColor = tcol; }
 COLORREF Cuss::curTxtColor = RGB(255,255,255);
 
+void Cuss::setBkColor(COLORREF tcol) { curBkColor = tcol; }
+COLORREF Cuss::curBkColor = RGB(0, 0, 64); // 255, 255, 255);
 
 bool Cuss::putchar(char c, bool bClip) {
   // debstr() << "[§" << c << "]\n";
   TCell& cell = Term::term[csr]; //CL->map[csr];
-  cell.c = c; cell.tcolor = curTxtColor;
+  cell.c = c; cell.tcolor = curTxtColor; cell.bkcolor = curBkColor;
   TheUI::invalidateVPCell(csr);
 
   ++csr.x;
@@ -91,6 +93,7 @@ bool Cuss::putchar(char c, bool bClip) {
 
 void Cuss::invalidate() {
   TheUI::invalidateWndJG(NULL, true);
+
 }
 
 
