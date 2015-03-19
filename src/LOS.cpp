@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "LOS.h"
 #include "cellmap/cellmap.h"
+#include "./theUI.h"
+
 // #include "Bresenham.h"
 
 LOS::LOS() {
@@ -27,6 +29,22 @@ bool operator < (CPoint a, CPoint b) {
 }
 
 
+
+void LightMap::invalidateDiff(LightMap& newLM) {
+  LightMap& old = *this;
+  int losInvalidate = 0;
+  for (int x = -SidePart-1; x <= SidePart+1; ++x) {
+    for (int y = -SidePart-1; y <= SidePart+1; ++y) {
+      CPoint p(x, y);
+      p += newLM.map_offset;
+      if (old.isDark(p) != newLM.isDark(p)) {
+        TheUI::invalidateCell(p);
+        ++losInvalidate;
+      }
+    }
+  }
+  debstr() << "Los-Inv:" << losInvalidate << "\n";
+}
 
 
 void LOS::recalcLOS(LightMap& lm) {

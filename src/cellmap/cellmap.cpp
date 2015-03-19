@@ -479,9 +479,11 @@ void Map::moveMob(class Mob& m, CPoint newpos) {
 
     bool bChangedPos = !!(lightmap.map_offset != newpos);
     if (bChangedPos) {
+      LightMap oldMap = lightmap;
       lightmap.map_offset = newpos;
       LOS::los.recalcLOS(lightmap);
-      // fixme/Todo: is some sort of invalidategfx.. necessary?
+      // Todo: is some sort of invalidategfx.. necessary?
+      oldMap.invalidateDiff(lightmap);
     }
   }
 }

@@ -451,9 +451,10 @@ public:
       int blend = (int) (255.0 - (255.0 / (dist+1)));
 
       CPoint blendDarkenTile(29,20); 
+      CPoint blendTintTile(36,22); 
       ++zcost;
       bool transp = true; // (!losDark && !cell.is_lit());
-      tiles.drawTileB(vp.p.x, vp.p.y, blendDarkenTile, dc, gr, transp /*true*/, blend, darkness,zcost); // was:colorNone
+      tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost); // was:colorNone
     }
 
     if (0) { // true) {

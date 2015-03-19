@@ -29,6 +29,8 @@ public:
     }
   }
 
+  void invalidateDiff(LightMap& newLightmap);
+
   bool darks[Side][Side];
 
   bool& dark(CPoint p) {

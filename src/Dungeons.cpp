@@ -87,7 +87,8 @@ Dungeon* Dung::CL = NULL; // should at least be in a namespace with 'using'.
 
 
 void Dungeons::setCurLevel(int level) {
-  CL->map.clearMob(*PlayerMob::ply); // Clear player from prev. level.
+  if (CL != NULL) { CL->map.clearMob(*PlayerMob::ply); } // Clear player from prev. level.
+
   Dungeon* dung = get(level);
   Dung::CL = dung;
 }
