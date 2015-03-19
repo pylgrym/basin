@@ -52,11 +52,13 @@ enum AttackSchool {
 
 enum SpellEnum {
   SP_NoSpell = 0,
-  SP_Speedup ,
-  SP_Slowdown ,
-  SP_ConfuseSelf ,
+
+  SP_Speedup,
+  SP_Slowdown,
+  SP_ConfuseSelf,
   SP_Unconfuse, 
   SP_ConfuseMob,
+
   SP_SleepOther,
   SP_TeleSelfAway,
   SP_TeleOtherAway,

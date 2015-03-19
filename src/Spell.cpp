@@ -652,6 +652,8 @@ public:
 
 bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
   CL->map.moveMob(actor, targetpos);
+  if (actor.isPlayer()) { actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
+
   logstr log;
   log << "The air shimmers!";
   return true;
@@ -960,17 +962,25 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   switch (effect) {
   case SP_Speedup:          Spell_Speed::init(actor, 2, p);       break; // return updateSpeed(actor, 2); break;
   case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p);     break; //return updateSpeed(actor, 0.5); break; 
-  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
-  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
+
   case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
   case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
+  case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
+
+    // sleep other, here?
+  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  // tele other
+  case SP_TeleOtherAway:   Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p); break; // return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
+
+    // where does this go?
+  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
+
+  case SP_SummonHere:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // x goes to me.
   case SP_SummonMonster:Spell_SummonMob::init(actor, p); break; //return summonSpell(actor); break;
   case SP_SummonObj:    Spell_SummonObj::init(actor, p); break; //return summonObj(actor); break;
   // it's a bullet spell, so it goes here:
-  case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
-  case SP_TeleOtherAway:  Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p); break; // return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
-  case SP_TeleportTo:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;
-  case SP_SummonHere:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;
+  case SP_TeleportTo:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i go to mob x.
+  case SP_TeleSwap:       Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i swap with x.
 
   case SP_MagicMissile:   Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_FireBolt:       Spell_Bullet::init(actor, item, effect, SC_Fire, p); break; // return bulletSpell(actor, item, effect, SC_Fire); break;
@@ -1003,9 +1013,11 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_LightDir:       Spell_Bullet::init(actor, item, effect, SC_Light, p);break; //return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
 
   case SP_DetectDoor: case SP_DetectTrap: case SP_DetectTreasure: case SP_DetectObject: case SP_DetectMobs:
-                          Spell_Detect::init(actor, effect,p);                   break;
+                          Spell_Detect::init(actor, effect,p);                 break;
 
-  case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
+  case SP_MagicMap:        Spell_Light::init(actor, actor.pos,22, p);          break; //return lightSpell(actor, actor.pos,4); break;
+  // case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
+
     // Idea -it could be partial with blanks/particles?
     /* todo:
 void detectObj(CPoint pos, int radius) { return detectCells(pos, radius, IsObj()); } //, CheckCellBase& checker) {

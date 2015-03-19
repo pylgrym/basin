@@ -44,7 +44,7 @@ bool WalkCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }
 
   CL->map.moveMob(mob, newpos);
-  if (mob.isPlayer()) { mob.lightWalls(mob.pos); } 
+  if (mob.isPlayer()) { mob.lightWalls(); } 
 
   if (mob.isPlayer()) {
     playSound(L"sounds\\sfxr\\walk@.wav"); // was: walk2.wav
@@ -306,7 +306,7 @@ bool ZapCmd::Do(std::ostream& err) {
         }
 
       case SP_TeleportTo: // mob -> target, dir
-        { logstr log;                     
+        { { logstr log; log << mob.pronoun() << " phase" << mob.verbS() << " next to " << target->pronoun(); }
           CPoint targetpos = target->pos - dir; // The space in front of target.
           bool bSpellOK = teleportTo(mob, targetpos, target);
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
@@ -314,7 +314,7 @@ bool ZapCmd::Do(std::ostream& err) {
         }
 
       case SP_SummonHere: // mob <- target, dir
-        { logstr log;                
+        { { logstr log; log << mob.pronoun() << " pull" << mob.verbS() << target->pronoun() << " nearer."; }
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
           bool bSpellOK = teleportTo(*target, targetpos, &mob);
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 

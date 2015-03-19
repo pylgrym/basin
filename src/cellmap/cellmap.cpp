@@ -470,9 +470,12 @@ void Map::clearMob(class Mob& m) {
 }
 
 void Map::moveMob(class Mob& m, CPoint newpos) {
+  CPoint oldpos = m.pos;
   (*this)[m.pos].creature.clearMob();
   m.pos = newpos;
   (*this)[m.pos].creature.setMob(&m);
+
+  m.invalidateGfx(newpos, oldpos, false);  
 
   if (m.isPlayer()) {
     Viewport::vp.adjust(m.pos);

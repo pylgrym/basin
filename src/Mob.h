@@ -164,7 +164,7 @@ public:
 
   bool canCarry(class Obj*) const { return true; } //  oneIn(2) == 1;
 
-  void lightWalls(CPoint pos) {
+  void lightWalls() { // CPoint pos) {
     for (int dx = -1; dx <= 1; ++dx) {
       for (int dy = -1; dy <= 1; ++dy) {
         CPoint p(pos.x + dx, pos.y + dy);
