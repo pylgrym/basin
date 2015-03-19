@@ -29,7 +29,7 @@ public:
   Cell() { }
 
   bool is_lit() const { return envir.permLight;  } // So far, only envir/floor can contribute to 'cell lighted', but it might be e.g. a glowing monster instead.
-  void markWalls() { envir.markWalls();  }
+  void markWalls(CPoint pos) { envir.markWalls(pos);  }
   void lightCells(CPoint pos) { envir.lightCells(pos);  }
 
   bool blocked() const {

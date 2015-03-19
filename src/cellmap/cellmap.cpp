@@ -568,6 +568,7 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   if (sweetspotArea.PtInRect(vp.p)) { return false; } // No adjustment necessary.
 
   // Move offset, so wpos is in center of screen.
+  CPoint oldOffset = offset;
 
   if (vp.p.x < sweetspotArea.left || vp.p.x > sweetspotArea.right) {
     int halfVPWidth = (Width / 2);
@@ -595,7 +596,9 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   we should probably just stay there?
   */
 
-  Cuss::invalidate();
+  if (offset != oldOffset) {
+    Cuss::invalidate();
+  }
   return true; // We adjusted..
 }
 

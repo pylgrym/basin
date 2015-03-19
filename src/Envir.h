@@ -66,11 +66,7 @@ public:
 
   bool blocked() const { return isBlockingEnv(type);  }
 
-  void markWalls() { 
-    if (type == EN_Wall) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.
-      permLight = true;
-    }
-  }
+  void markWalls(CPoint pos);
 
   void lightCells(CPoint pos); // Used by light-spells.
 

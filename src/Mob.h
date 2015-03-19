@@ -168,7 +168,7 @@ public:
     for (int dx = -1; dx <= 1; ++dx) {
       for (int dy = -1; dy <= 1; ++dy) {
         CPoint p(pos.x + dx, pos.y + dy);
-        CL->map[p].markWalls(); 
+        CL->map[p].markWalls(p); 
       }
     }
   }

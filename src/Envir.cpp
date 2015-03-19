@@ -115,6 +115,13 @@ EnvirEnum Envir::ranDoor() {
 if map.canSee(pos,pos)
 */
 
+void Envir::markWalls(CPoint pos) { 
+  if (type == EN_Wall || type == EN_Border) { // What about EN_Border? I don't really want to mark it, because it's a technical thing, not a 'game thing'.      
+    permLight = true;
+  }
+  TheUI::invalidateCell(pos);
+}
+
 void Envir::lightCells(CPoint pos) { // Used by light-spells.
   permLight = true;
   TheUI::invalidateCell(pos);
