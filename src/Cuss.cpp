@@ -10,19 +10,31 @@
 CPoint Cuss::csr = CPoint(0, 0);  
 
 
-void Cuss::clear(bool bInvalidate) { 
+void Cuss::clearLine(int y, bool bInvalidate) {
+  csr = CPoint(0, 0);  
+  // clear map:
+  for (int x = 0; x < Term::Width; ++x) {
+    CPoint p(x,y);
+    TCell& cell = Term::term[p]; 
+    cell.clearChar();
+    if (bInvalidate) {
+      TheUI::invalidateVPCell(p);
+    }
+  }
+}
+
+void Cuss::clear(bool bInvalidateAll) { 
    
   csr = CPoint(0, 0);  
   // clear map:
   for (int x = 0; x < Term::Width; ++x) {
-    //CellColumn& column = CL->map[x];
     for (int y = 0; y < Term::Height; ++y) {
       CPoint p(x,y);
       TCell& cell = Term::term[p]; //column[y];
       cell.clearChar();
     }
   }
-  if (bInvalidate) {
+  if (bInvalidateAll) {
     TheUI::invalidateWndJG(NULL, true);
   }
 }
@@ -93,7 +105,6 @@ bool Cuss::putchar(char c, bool bClip) {
 
 void Cuss::invalidate() {
   TheUI::invalidateWndJG(NULL, true);
-
 }
 
 

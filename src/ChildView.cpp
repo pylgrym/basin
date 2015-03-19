@@ -229,7 +229,10 @@ void TheUI::invalidateWndJG(CRect* pRect, bool erase) {
   if (CChildView::singletonWnd == NULL) { debstr() << "no sing wnd?\n";  return; }
   if (CChildView::singletonWnd->GetSafeHwnd() == NULL) { debstr() << "no hWnd yet\n";  return; }
   CChildView::singletonWnd->InvalidateRect(pRect, erase);
-  Term::term.dirtyall = true;
+
+  if (pRect == NULL) {
+    Term::term.dirtyall = true;
+  }
 }
 
 
@@ -256,7 +259,7 @@ void TheUI::invalidateVPCell(CPoint vp) {
 
   int px = vp.x * Tiles::TileWidth, py = vp.y * Tiles::TileHeight;
 	CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
-  invalidateWndJG(&cellR, false);
+  invalidateWndJG(&cellR, true); // false); // Is supposed to be 'false' -only experiment, with true.
 }
 
 

@@ -557,7 +557,7 @@ bool detectCells(Mob& actor, CPoint pos, int radius, CheckCellBase& checker) {
         if (checker.check(c)) {
           c.lightCells(p); //FIXME, you could argue we only want a temp highlight.
           // Also, this highlight follows the cell, not the item/feature..
-          TheUI::invalidateCell(p); 
+          TheUI::invalidateCell(p); // JG - there is a bug here - though we do the invalidate, we don't get our redraw? do we need to specify 'erase'?
           ++count;
         }
         // if (c.envir.blocked()) {}
@@ -569,7 +569,8 @@ bool detectCells(Mob& actor, CPoint pos, int radius, CheckCellBase& checker) {
   } else {
     // Invalidate / cuss:: (it's ok, invalidateCell above does this.)
     //Cuss::invalidate(); // FIXME, is this the right way?
-    logstr log; log << actor.pronoun() << " sense" << actor.verbS() << checker.what() << " nearby!";
+    Cuss::invalidate(); // hack, because we are not getting our expected redraw?!
+    logstr log; log << actor.pronoun() << " sense" << actor.verbS() << " " << checker.what() << " nearby!";
   }
   return true;
 }
@@ -584,7 +585,7 @@ bool spellDetect(Mob& actor, SpellEnum effect) {
   CPoint pos = actor.pos;
   int rad = 23;
   switch (effect) {
-  case SP_DetectDoor:    return detectObj(pos, rad,actor);
+  case SP_DetectDoor:    return detectDoors(pos, rad,actor);
   case SP_DetectTrap:    return detectTraps(pos, rad,actor);
   case SP_DetectTreasure:return detectTreasure(pos, rad,actor);
   case SP_DetectObject:  return detectObj(pos, rad,actor);

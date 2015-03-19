@@ -62,7 +62,7 @@ bool WalkCmd::Do(std::ostream& err) {
 
 
   mob.invalidateGfx(newpos, old, false);
-  TheUI::invalidateWndJG(NULL, false);
+  // TheUI::invalidateWndJG(NULL, false);
   return true;
 }
 
@@ -798,13 +798,13 @@ bool DoorBashCmd::Do(std::ostream& err) {
 
   // FIXME - respectMultiNotif and promptForKey should be integrated!
   LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
-  Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
+  Cuss::clearLine(0,false); // Must come after respectMultiNotif, or we'll never see msg.
   const char* keyPrompt = "Which door? (dir.)";
   for (;!bFound;) {
     dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
 
     if (dirKey == VK_ESCAPE) {
-      Cuss::clear(true);
+      Cuss::clearLine(0,false); // true);
       return false; // Cancelled zap operation.
     }
     
@@ -814,7 +814,7 @@ bool DoorBashCmd::Do(std::ostream& err) {
     }      
   } // Loop until dir key.
 
-  Cuss::clear(true);
+  Cuss::clearLine(0,false); // true);
 
   CPoint dir = Map::key2dir(dirKey); 
   CPoint doorPos = mob.pos + dir;
