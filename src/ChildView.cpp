@@ -363,7 +363,7 @@ public:
     dc.DrawText(s, &lr, fontFlags);
   }
 
-
+  // zeromobalet+
 
   void drawMobTile(Cell& cell) {
     ++zcost;
@@ -526,8 +526,8 @@ public:
           drawItemTile(cell);
         }
 
-        if (!cell.creature.empty()) { // DRAW MOB (and possibly some debug-stats.)
-          drawMobTile(cell); 
+        if (!cell.creature.empty() && !losDark) { // DRAW MOB (and possibly some debug-stats.)
+          drawMobTile(cell); // note we only draw mob is not los-dark.. (equals LOS to player.)
         }
 
         if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
