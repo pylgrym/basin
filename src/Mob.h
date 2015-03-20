@@ -144,6 +144,7 @@ public:
   bool canPass(CPoint newpos);
 
   bool canChase(CPoint target);
+  bool canFlee(CPoint target);
 
   bool mobCasts(CPoint dir);
   bool mobMeleesPlayer(CPoint dir);

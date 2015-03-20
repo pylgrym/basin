@@ -169,6 +169,24 @@ bool Mob::canPass(CPoint newpos) {
   return true;
 }
 
+bool Mob::canFlee(CPoint target) {
+  CPoint delta = (pos - target);
+  CPoint dir = normDir(delta);
+
+  CPoint p1 = (pos + dir);
+  if (canPass(p1)) { return true; }
+  CPoint dirV = dir, dirH = dir;
+  dirV.x = 0; dirH.y = 0;
+
+  p1 = (pos + dirV);
+  if (canPass(p1)) { return true; }
+
+  p1 = (pos + dirH);
+  if (canPass(p1)) { return true; }
+
+  return false;
+}
+
 bool Mob::canChase(CPoint target) {
   CPoint delta = (target - pos);
   CPoint dir = normDir(delta);
@@ -425,7 +443,10 @@ bool MonsterMob::too_close() {
   int dist = PlayerMob::distPlyCart(pos); // not distPly, so far.
   return (dist < def.minrange); 
 }
-bool MonsterMob::can_incr() { return false; }
+
+bool MonsterMob::can_incr() { 
+  return canFlee(PlayerMob::ply->pos); 
+}
 
 bool MonsterMob::incr_prob() {
   const MobDef& def = mobDef();  
@@ -446,7 +467,9 @@ bool MonsterMob::too_far() {
   return (dist > def.maxrange); 
 }
 
-bool MonsterMob::can_decr() { return false; }
+bool MonsterMob::can_decr() { 
+  return canChase(PlayerMob::ply->pos); 
+}
 
 bool MonsterMob::decr_prob() { 
   const MobDef& def = mobDef();  
