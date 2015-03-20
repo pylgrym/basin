@@ -163,6 +163,24 @@ bool Mob::mobMeleesPlayer(CPoint dir) {
 }
 
 
+bool Mob::chasePlayer(CPoint dir) {
+  if (MLog) { debstr() << "I am far from player and will chase!\n"; }
+  std::stringstream ss;
+  WalkCmd walk(*this, dir.x, dir.y, false);
+  if (!walk.legal(ss)) { // If moving straight across is blocked..
+    CPoint dirV = dir, dirH = dir;
+    dirV.x = 0; dirH.y = 0;
+    walk.newpos = (pos + dirV); // what about going vertical?
+    if (!walk.legal(ss)) { // if vertical doesn't work, what about horizontal?
+      walk.newpos = (pos + dirH);
+    }
+  }
+  bool bLegal = walk.Do(ss);
+  return bLegal;
+}
+
+
+
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   CPoint dir = playerDir();
 
@@ -177,28 +195,15 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
 
     if (willCast && canCast) {
       bool bOK = mobCasts(dir);
-      return 1.0; // good or bad, at least he's spent his turn now.
-      // if (bOK) { return 1.0; } // At least he used up his turn now..
+      return 1.0; // good or bad, at least he's spent his turn now.  // if (bOK) { return 1.0; } // At least he used up his turn now..
     }
-
   }
 
   if (nearPlayer()) {
     debstr() << "I am near player and will attack!\n"; // JG, If player is on neighbour tile, we should ALWAYS attack.
      mobMeleesPlayer(dir);    
   } else { // Else, chase the player:
-    if (MLog) { debstr() << "I am far from player and will chase!\n"; }
-    std::stringstream ss;
-    WalkCmd walk(*this, dir.x, dir.y, false);
-    if (!walk.legal(ss)) { // If moving straight across is blocked..
-      CPoint dirV = dir, dirH = dir;
-      dirV.x = 0; dirH.y = 0;
-      walk.newpos = (pos + dirV); // what about going vertical?
-      if (!walk.legal(ss)) { // if vertical doesn't work, what about horizontal?
-        walk.newpos = (pos + dirH);
-      }
-    }
-    bool bLegal = walk.Do(ss);
+    chasePlayer(dir);
   }
 
   if (lowHealth()) {
@@ -400,7 +405,11 @@ bool MonsterMob::decr_prob() {
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.chargePct);  
 }
-bool MonsterMob::decr_dist() { return false; }
+
+bool MonsterMob::decr_dist() { 
+  CPoint dir = playerDir();
+  return chasePlayer(dir);
+}
 
 // figure out, why rush etc doesn't let us discover?
 

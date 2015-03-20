@@ -144,6 +144,7 @@ public:
 
   bool mobCasts(CPoint dir);
   bool mobMeleesPlayer(CPoint dir);
+  bool chasePlayer(CPoint dir);
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
