@@ -163,6 +163,31 @@ bool Mob::mobMeleesPlayer(CPoint dir) {
 }
 
 
+bool Mob::canPass(CPoint newpos) {
+  if (!CL->map.legalPos(newpos)) { return false; }
+  if (CL->map[newpos].blocked()) { return false; }
+  return true;
+}
+
+bool Mob::canChase(CPoint target) {
+  CPoint delta = (target - pos);
+  CPoint dir = normDir(delta);
+
+  CPoint p1 = (pos + dir);
+  if (canPass(p1)) { return true; }
+  CPoint dirV = dir, dirH = dir;
+  dirV.x = 0; dirH.y = 0;
+
+  p1 = (pos + dirV);
+  if (canPass(p1)) { return true; }
+
+  p1 = (pos + dirH);
+  if (canPass(p1)) { return true; }
+
+  return false;
+}
+
+
 bool Mob::chasePlayer(CPoint dir) {
   if (MLog) { debstr() << "I am far from player and will chase!\n"; }
   std::stringstream ss;
@@ -359,19 +384,39 @@ bool MonsterMob::hurt() {
 }
 
 bool MonsterMob::can_flee() { return false; }
+
 bool MonsterMob::flee_prob() { 
   const MobDef& def = mobDef();  
-  return rnd::pctChance(def.retreatPct);  // rnd::
+  return rnd::pctChance(def.retreatPct);  
 }
-bool MonsterMob::flee() { return false; }
+bool MonsterMob::flee() { 
+  actFlee();
+  return true;
+}
 
-bool MonsterMob::can_attack() { return false; }
+bool MonsterMob::can_attack() { 
+  // Hmm, did I interpret 'can-attack' correctly, or did it just mean 'can-melee'..?)
+  if (melee_range()) {
+    return true;
+  } else {
+    return can_ranged();
+  }
+}
+
 bool MonsterMob::hurt_attack_prob() { 
   const MobDef& def = mobDef();  
-  return rnd::pctChance(def.chargePct);  // rnd::
-  //return false; 
+  return rnd::pctChance(def.chargePct); 
 }
-bool MonsterMob::attack() { return false; }
+
+bool MonsterMob::attack() { 
+  bool bOK = false;
+  if (melee_range()) {
+    bOK = attack_melee();
+  } else {
+    bOK = attack_ranged();
+  }
+  return bOK; 
+}
 
 
 
@@ -400,7 +445,9 @@ bool MonsterMob::too_far() {
   int dist = PlayerMob::distPlyCart(pos); // not distPly so far.
   return (dist > def.maxrange); 
 }
+
 bool MonsterMob::can_decr() { return false; }
+
 bool MonsterMob::decr_prob() { 
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.chargePct);  
@@ -430,12 +477,17 @@ bool MonsterMob::attack_melee() {
 bool MonsterMob::can_ranged() { 
   return playerOnStar() && canSeePlayer();
 }
-bool MonsterMob::ranged_prob() { return false; }
+
+bool MonsterMob::ranged_prob() { 
+  const MobDef& def = mobDef();  
+  return rnd::oneIn(2); 
+}
 
 bool MonsterMob::attack_ranged() { 
   CPoint dir = playerDir();
   return mobCasts(dir);
 }
+
 
 bool MonsterMob::stay() { return true; } // possibly this should cast some spell.
 

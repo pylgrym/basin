@@ -141,6 +141,9 @@ public:
   bool playerOnStar() const; // If player is on a '8-star direction', we can use spells against him.
   bool canSee(CPoint b, bool onlyEnvir);
   bool canSeePlayer();
+  bool canPass(CPoint newpos);
+
+  bool canChase(CPoint target);
 
   bool mobCasts(CPoint dir);
   bool mobMeleesPlayer(CPoint dir);
