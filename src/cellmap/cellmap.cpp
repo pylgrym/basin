@@ -17,7 +17,7 @@
 void Map::addRandomMob(int levelbase) {  
   const int maxRetries = 75;
   for (int i = 0; i < maxRetries; ++i) {
-    CPoint pos(rnd(1, Width), rnd(1, Height));
+    CPoint pos(Rnd::rnd(1, Width), Rnd::rnd(1, Height));
     assert(legalPos(pos));
     if (!(*this)[pos].creature.empty()) { continue; }
     addRandomMobAtPos(pos,levelbase);
@@ -47,8 +47,8 @@ void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
 
     const int maxRetries = 10;
     for (int j = 0; j < maxRetries; ++j) {
-      posA.x += rndC(-radius, radius);
-      posA.y += rndC(-radius, radius);
+      posA.x += Rnd::rndC(-radius, radius);
+      posA.y += Rnd::rndC(-radius, radius);
       if (!legalPos(posA)) { continue;  }
       if ((*this)[posA].blocked()) { continue;  }
       if (!(*this)[posA].creature.empty()) { continue;  }
@@ -60,7 +60,7 @@ void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
 
 
 void Map::addRandomObj(int level) {
-  CPoint pos(rnd(1, Width), rnd(1, Height));
+  CPoint pos(Rnd::rnd(1, Width), Rnd::rnd(1, Height));
   assert(legalPos(pos));
   addObjAtPos(pos,level);
 }
@@ -76,7 +76,7 @@ void Map::addObjAtPos(CPoint pos,int levelbase) {
   Obj* newObj = new Obj(ranDef,ilevel); 
 
   if (newObj->otype() == OB_Lamp) {
-    newObj->itemUnits += rnd(500, 2500);
+    newObj->itemUnits += Rnd::rnd(500, 2500);
   }
 
   if (newObj->otype() ==  OB_WinItem && levelbase < 39) { // You can't find it before level 39..
@@ -89,8 +89,8 @@ void Map::addObjAtPos(CPoint pos,int levelbase) {
 void Map::scatterObjsAtPos(CPoint pos, int n, int level, int radius) {
   for (int i = 0; i < n; ++i) {
     CPoint posA = pos;
-    posA.x += rndC(-radius, radius);
-    posA.y += rndC(-radius, radius);
+    posA.x += Rnd::rndC(-radius, radius);
+    posA.y += Rnd::rndC(-radius, radius);
     addObjAtPos(posA, level);
   }
 }
@@ -218,7 +218,7 @@ void Map::initTunnels2(int level) {
         }
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
 
-        if (!isWall && oneIn(9)) {
+        if (!isWall && Rnd::oneIn(9)) {
           addObjAtPos(cur, level);
         }
 
@@ -268,7 +268,7 @@ void Map::initTunnels(int level) {
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
 
         if (etype == EN_Vein) {
-          bool hasThing = oneIn(4);
+          bool hasThing = Rnd::oneIn(4);
           if (hasThing) {
             ObjEnum otype = OB_Gold; //  (ObjEnum)rnd(1, OB_MaxLimit); // (type2 ? OB_Lamp : OB_Sword);
             const ObjDef& goldType = Obj::objDesc(OB_Gold);
@@ -278,7 +278,7 @@ void Map::initTunnels(int level) {
         }
 
         if (!isWall) {
-          bool hasThing = oneIn(9); // 90); // was: 9);
+          bool hasThing = Rnd::oneIn(9); // 90); // was: 9);
           if (hasThing) {
             addObjAtPos(p, level);
           }
@@ -399,7 +399,7 @@ void Map::addStair(EnvirEnum type) {
 CPoint Map::findFreeEnvir(EnvirEnum type) {
   const int limit = 100;
   for (int i = 0; i < limit; ++i) {
-    CPoint cand(rnd(1,Map::Width-1), rnd(1,Map::Height-1));
+    CPoint cand(Rnd::rnd(1,Map::Width-1), Rnd::rnd(1,Map::Height-1));
     if ((*this)[cand].envir.type == type) { return cand; }
   }
   CPoint notFound(-1, 1);

@@ -80,7 +80,7 @@ Dice Levelize::randDiceForLevel(Level L) {
 Dice Levelize::DiceSet::randDice() { // Pick a random choice from the set:
   Dice choice(1, 4);
   if (dice.size() > 0) {
-    int ix = rnd(dice.size());
+    int ix = Rnd::rnd(dice.size());
     choice = dice[ix];
   }
   return choice;
@@ -95,7 +95,7 @@ int Levelize::suggestExtra(Level ilevel) {
   // was: int bonus = suggestLevel(0);
   const int limitPct = 38 + (ilevel/2); 
   int delta = -1;
-  for (int roll = 0; (roll < limitPct); ++delta, roll = rnd(100)) { }
+  for (int roll = 0; (roll < limitPct); ++delta, roll = Rnd::rnd(100)) { }
   
   return delta;
 }
@@ -113,6 +113,6 @@ Levelize::Level Levelize::suggestLevel(Level outset) {
 
   const int limitPct = 38; // 33;
   int delta = -1;
-  for (int roll = 0; (roll < limitPct); ++delta, roll = rnd(100)) { }
+  for (int roll = 0; (roll < limitPct); ++delta, roll = Rnd::rnd(100)) { }
   return outset + delta;
 }

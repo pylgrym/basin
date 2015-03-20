@@ -60,7 +60,7 @@ public:
   }
 
   Envir():type(EN_Floor), permLight(false) {
-    envUnits = rnd(50, 1500);
+    envUnits = Rnd::rnd(50, 1500);
     tmpLightStr = 0; // 14;
   }
 

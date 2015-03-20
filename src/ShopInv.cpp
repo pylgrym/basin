@@ -41,7 +41,7 @@ void ShopInv::updateShop() { // restockshop
   debstr() << "shop might update.\n";
   // mindstemanden
   const int maxShopItems = 20;
-  if (!oneIn(3)) {
+  if (!Rnd::oneIn(3)) {
     return;
   }
   debstr() << "shop will update.\n";
@@ -50,10 +50,10 @@ void ShopInv::updateShop() { // restockshop
   int bufmax = 6;
   if (buf < bufmax) { // If we have plenty, shuffle some.
     debstr() << "shop will shuffle.\n";
-    if (XinY(buf, bufmax)) {
-      int n = rndC(1, 3);
+    if (Rnd::XinY(buf, bufmax)) {
+      int n = Rnd::rndC(1, 3);
       removeN(n);
-      int n2 = rndC(1, 3);
+      int n2 = Rnd::rndC(1, 3);
       restockN(n2);
       return;
     }
@@ -61,7 +61,7 @@ void ShopInv::updateShop() { // restockshop
 
   // If we don't have plenty, just add some more.
   debstr() << "shop will add inv.\n";
-  int n3 = rndC(1, 5); // 3);
+  int n3 = Rnd::rndC(1, 5); // 3);
   restockN(n3);
 }
 
@@ -69,7 +69,7 @@ void ShopInv::updateShop() { // restockshop
 void ShopInv::removeN(int n) { // Throw away n random shop items.
   for (int i = 0; i < n; ++i) {
     if (shop.empty()) { return;  }
-    int ix = rnd(shop.size());
+    int ix = Rnd::rnd(shop.size());
     shop.destroy(ix);
   }
 }
@@ -82,7 +82,7 @@ void ShopInv::restockN(int n) { // Add n random items to shop.
 
 void ShopInv::restock() {
   // Add a single "random" item: (but useful/necessary/in theme with shop)
-  ObjEnum otype = rnd(2) ? OB_Food : OB_LampOil;
+  ObjEnum otype = Rnd::rnd(2) ? OB_Food : OB_LampOil;
   std::stringstream ignore;
   ShopInv::shop.add(new Obj(Obj::objDesc(otype), 1), ignore);
 

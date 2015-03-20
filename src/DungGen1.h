@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <assert.h>
+#include "numutil/myrnd.h"
 
 class DungGen1
 {
@@ -43,8 +44,8 @@ public:
 };
 
 
-int rnd(int n); // { return rand() % n; }
-int rnd(int n1, int n2); // { return n1 + rand() % (n2 - n1); }
+//int rnd(int n); // { return rand() % n; }
+//int rnd(int n1, int n2); // { return n1 + rand() % (n2 - n1); }
 
 
 
@@ -132,12 +133,12 @@ struct Laby {
   }
 
   void addRoom() {
-    CSize s(rnd(2, 4) * 2, rnd(3, 7) * 2);
-    if (rnd(0, 2)) {
+    CSize s(Rnd::rnd(2, 4) * 2, Rnd::rnd(3, 7) * 2);
+    if (Rnd::rnd(0, 2)) {
       int tmp = s.cx;
       s.cx = s.cy; s.cy = tmp;
     }
-    CPoint ul(1 + (rnd(1, Side - s.cx - 1) / 2) * 2, 1 + (rnd(1, Side - s.cy - 1) / 2) * 2);
+    CPoint ul(1 + (Rnd::rnd(1, Side - s.cx - 1) / 2) * 2, 1 + (Rnd::rnd(1, Side - s.cy - 1) / 2) * 2);
     CRect r(ul, s);
     fillRoom(r);
   }

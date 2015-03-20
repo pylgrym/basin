@@ -214,7 +214,7 @@ void Obj::initPrices() {
   for (int i = 0; i < numObjDefs; ++i) {
     ObjDef& def = objDefs[i];
     if (def.price == 0) {
-      def.price = rndC(1, 11);
+      def.price = Rnd::rndC(1, 11);
     }
   }
 }
@@ -223,13 +223,13 @@ void Obj::initWeights() {
   for (int i = 0; i < numObjDefs; ++i) {
     ObjDef& def = objDefs[i];
     if (def.kilo == 0) {
-      def.kilo = rndC(1, 50) *0.1;
+      def.kilo = Rnd::rndC(1, 50) *0.1;
     }
   }
 }
 
 const ObjDef& Obj::randObjDescBad() { // will give too many weapons.
-  int ix = rnd(numObjDefs);
+  int ix = Rnd::rnd(numObjDefs);
   ObjDef* od = &objDefs[ix];
   return *od;
 }
@@ -241,14 +241,14 @@ const ObjDef& Obj::randObjDesc() { // works better, on types instead.
       ObjDef& def = objDefs[i];
       descs[def.type].push_back(&def);
       if (def.price == 0) {
-        def.price = rndC(1, 11);
+        def.price = Rnd::rndC(1, 11);
       }
     }
   }
 
-  ObjEnum ranType = (ObjEnum) rnd(OB_MaxLimit);
+  ObjEnum ranType = (ObjEnum) Rnd::rnd(OB_MaxLimit);
   std::vector<ObjDef*>& defs = descs[ranType];
-  int choice = rnd(defs.size());
+  int choice = Rnd::rnd(defs.size());
   ObjDef* od = defs[choice];
   return *od;
 }
@@ -267,7 +267,7 @@ const char* Obj::objdefAsStr(const ObjDef& def) {
       std::string sName = Obj::make_indef_item(def.desc);
       shortNames[i] = sName;
       if (def.price == 0) {
-        def.price = rndC(1, 11);
+        def.price = Rnd::rndC(1, 11);
       }
       // theset << "\"" << sName << "\"" << " " << i % 40 << " 11\n";
     }
@@ -453,20 +453,20 @@ int Obj::digStrength() const {
 
 
 void Obj::initRandom() { // - clear should not init.
-  charges = rnd(-1, 7); 
-  consumed = oneIn(2); 
+  charges = Rnd::rnd(-1, 7); 
+  consumed = Rnd::oneIn(2); 
 
   // Plusses need to become a lot rarer: (and more -levelizer?)
   toHit = Levelize::suggestExtra(ilevel); // rndC(-2, ilevel); // 5);
   toDmg = Levelize::suggestExtra(ilevel); // rndC(-2, ilevel); // 6);
-  if (XinY(3,11)) { // Make more trash..
+  if (Rnd::XinY(3,11)) { // Make more trash..
     toHit = -toHit;
   }
-  if (XinY(3,11)) {
+  if (Rnd::XinY(3,11)) {
     toDmg = -toDmg;
   }
 
-  itemUnits = rnd(20, 400);
+  itemUnits = Rnd::rnd(20, 400);
 
   dmgDice = Levelize::randDiceForLevel(ilevel); // normal weapon-dmg comes from level machine, not from object defs.
   ac = Levelize::suggestLevel(ilevel);
@@ -484,9 +484,9 @@ void Obj::setTypeDefaults() {
     this->consumed = true;
 
     if (otype() == OB_Food) {
-      if (oneIn(2)) { 
+      if (Rnd::oneIn(2)) { 
         effect = SP_Eat;  
-        this->itemUnits = rnd(700, 4500);
+        this->itemUnits = Rnd::rnd(700, 4500);
       }
     }
     break;
@@ -494,7 +494,7 @@ void Obj::setTypeDefaults() {
 
   case OB_Staff: case OB_Wand:
     consumed = false; // 'chargey' items are not consumed on use-up, so far.
-    charges = rnd(0,16);
+    charges = Rnd::rnd(0,16);
     const SpellDesc& desc = Spell::spell(effect);
     dmgDice = Dice(desc.dice.num, desc.dice.side); // better: we get info from spell-def instead of extra code.
     // NB! this actualy has little effect, since it's the spell-desc that actually counts, 
@@ -523,11 +523,11 @@ void Obj::setTypeDefaults() {
     case OB_Amethysts: rate = 9;  break; // FIXME/depending on 'growth slope', these should be adjusted.
     case OB_Emeralds:  rate = 12; break;
     }
-    itemUnits = Dx( ilevel*rate + 1); // At level 10, expect to find up to 50g.
+    itemUnits = Rnd::Dx( ilevel*rate + 1); // At level 10, expect to find up to 50g.
   }
 
   if (eqslot() != EQ_None) { // try-out hack:
-    ac = rnd(1, 7) + (ilevel/2); // Item level will give us better items.
+    ac = Rnd::rnd(1, 7) + (ilevel/2); // Item level will give us better items.
   }
 
 }

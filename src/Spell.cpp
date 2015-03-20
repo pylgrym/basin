@@ -280,7 +280,7 @@ SpellEnum Spell::str2type(const char* str) {
 
 
 SpellEnum Spell::rndSpell_dangerous() {
-  int ix = rnd(SP_MaxSpells);
+  int ix = Rnd::rnd(SP_MaxSpells);
   return (SpellEnum)ix;
 }
 
@@ -288,7 +288,7 @@ SpellEnum Spell::rndSpell_dangerous() {
 SpellEnum Spell::rndSpell_level(int ilevel) {
   bool demandDmg = false; // Kludge.
   for (int i = 0; i < 20; ++i) {
-    int ix = rnd(SP_MaxSpells);
+    int ix = Rnd::rnd(SP_MaxSpells);
     SpellEnum stype = (SpellEnum)ix;
     //  make sure we don't get a too powerful blast spell at low level.
     const SpellDesc& d = spell(stype);
@@ -373,7 +373,7 @@ bool teleportSpell(Mob& actor, int range) {
   for (int i = 0; i < 10; ++i) { // We try a number of times, to avoid teleporting into rock.
     CPoint delta;
     for (;;) {
-      delta.x = rndC(-range, range); delta.y = rndC(-range, range);
+      delta.x = Rnd::rndC(-range, range); delta.y = Rnd::rndC(-range, range);
       CPoint newPos = actor.pos + delta;
       if (CL->map.legalPos(newPos)) { break; }
     }
@@ -618,7 +618,7 @@ public:
 bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
   // CONSIDER: Summon-Mob-Type, e.g. undead, demon, dragon, elemental, etc.
   CPoint pos = actor.pos;
-  int mlevel = rndC(1,2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
+  int mlevel = Rnd::rndC(1,2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
   CL->map.scatterMobsAtPos(pos, 1, mlevel, 1);
   // actor.lightArea(pos, radius);
   logstr log;
@@ -636,7 +636,7 @@ public:
 bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
   CPoint pos = actor.pos;
   int ilevel = Levelize::suggestLevel(actor.stats.level());
-  CL->map.scatterObjsAtPos(pos, rndC(1,2), ilevel, 1);
+  CL->map.scatterObjsAtPos(pos, Rnd::rndC(1,2), ilevel, 1);
   // actor.lightArea(pos, radius);
   logstr log;
   log << "Items shimmer before you!";
@@ -928,14 +928,14 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
     if (YN_Key == 'Y') {bFound = true;  break;}
   } // Loop until Y/N/Esc key.
 
-  bool bFail = oneIn(3); 
+  bool bFail = Rnd::oneIn(3); 
   if (!bFail) {
     logstr log; log << "You pull it off! ..";
     return true;
   }
 
   err << "You fumble and damage your health.";
-  int severity = rnd(25, 50);
+  int severity = Rnd::rnd(25, 50);
   debstr() << "hurt-severity-pct:" << severity << "\n";
   mob.stats.healPct(-severity, &mob);
   return false;
@@ -961,7 +961,7 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_Speedup:          Spell_Speed::init(actor, 2, p);       break; // return updateSpeed(actor, 2); break;
   case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p);     break; //return updateSpeed(actor, 0.5); break; 
 
-  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_ConfuseSelf:    Spell_Confuse::init(actor,Rnd::rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
   case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
   case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
 
@@ -1115,7 +1115,7 @@ CPoint Spell::NoDir = CPoint(0,0); // 0,0
 void Spell::trySpellIdent(SpellEnum effect) {
   SpellDesc& desc = spellNC(effect);
   if (desc.ident) { debstr() << "(already known)\n"; return;  }
-  if (oneIn(2)) { // Maybe every use should identify automatically.. 
+  if (Rnd::oneIn(2)) { // Maybe every use should identify automatically.. 
     logstr log; log << "you get a sense of what this item does!";
     // NB; Selling should ID it! 
     // DONE NB!  - spells should cost differently! 

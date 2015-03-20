@@ -32,7 +32,7 @@ void Laby::buildMaze() {
   Pool pool;  // pool of active cells
 
   for (int i = 0; i < 1; ++i) {
-    CPoint seed(rnd(1, Side / 2) * 2 + 1, rnd(1, Side / 2) * 2 + 1);
+    CPoint seed(Rnd::rnd(1, Side / 2) * 2 + 1, Rnd::rnd(1, Side / 2) * 2 + 1);
     if (isVisited(seed)) { continue; }
     pool.Push(seed); // add a seed cell to the pool.    
     grid[seed].c = M_Open; // Now taken.
@@ -61,7 +61,7 @@ void Laby::buildMaze() {
       continue;
     }
 
-    int choice_ix = rnd(options_count);
+    int choice_ix = Rnd::rnd(options_count);
     CPoint dir = options[choice_ix];
     CPoint choice = p + dir + dir;
 

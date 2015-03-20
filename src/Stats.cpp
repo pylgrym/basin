@@ -78,7 +78,7 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , confused(0)
 , gold(0)
 {
-  baseMobAC = nDx(2, 2);
+  baseMobAC = Rnd::nDx(2, 2);
 
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
 
@@ -277,7 +277,7 @@ int Stats::calcMaxMana() {
   // These are fixed from start - they must be persisted!
   if (manaRolls.empty() || manaRolls[1] == 0) {
     for (int i = 0; i < 40; ++i) {
-      manaRolls.push_back(rnd(1000));
+      manaRolls.push_back(Rnd::rnd(1000));
     }
   }
 
@@ -302,7 +302,7 @@ Stats::~Stats()
 
 void Stat::roll() {
   // https://klubkev.org/~ksulliva/ralph/dnd-stats.html
-  base = nDx(3, 6);
+  base = Rnd::nDx(3, 6);
   // JG: Version 2 - instead, roll 4d6, and pick highest 3 (or rather, throw away minimum.)
 }
 
@@ -409,8 +409,8 @@ void Stats::passTime() {
   updateHunger();
   updateConfusion();
 
-  if (oneIn(100)) {
-    if (oneIn(2)) {
+  if (Rnd::oneIn(100)) {
+    if (Rnd::oneIn(2)) {
       logstr log; log << "You feel a monster appearing.";
       CL->map.addRandomMob(CL->level);
     } else {
@@ -679,7 +679,7 @@ bool Stats::useMana(int manaCost) {
 
 
 bool Stat::rollCheck(bool guifeedback) const {
-  int roll = Dx(20);
+  int roll = Rnd::Dx(20);
   bool success = ( roll <= v() ); // A high stat is easy to roll under.
   // 1's and 20's ought to show up in gui!
   if (roll == 1) { // 1 is always low enough:

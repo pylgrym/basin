@@ -96,7 +96,7 @@ const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
 
 EnvirEnum Envir::ranDoor() {
   const int DoorTypeCount = 7;
-  int choice = rnd(DoorTypeCount);
+  int choice = Rnd::rnd(DoorTypeCount);
   switch (choice) { // FIXME: locked/stuck must become more rare! (i'm tired of having to kick doors..)
   case 0: return EN_DoorOpen;
   case 1: return EN_DoorClosed;

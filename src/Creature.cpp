@@ -153,11 +153,11 @@ void Creature::initMobDefs() {
 }
 
 void Creature::initBehaviour(MobDef& def) {
-  def.minrange   = rndC(0, 4);
-  def.maxrange   = rnd(def.minrange, 40);
-  def.moralePct  = rndC(0, 100);
-  def.chargePct  = rndC(0, 100);
-  def.retreatPct = rndC(0, 100);;
+  def.minrange   = Rnd::rndC(0, 4);
+  def.maxrange   = Rnd::rnd(def.minrange, 40);
+  def.moralePct  = Rnd::rndC(0, 100);
+  def.chargePct  = Rnd::rndC(0, 100);
+  def.retreatPct = Rnd::rndC(0, 100);;
 }
 
 void funfun() {
