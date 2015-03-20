@@ -19,21 +19,21 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
   // mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
   mobDummyWeapon = Levelize::randDiceForLevel(mlevel);
 
-  m_mobType = (CreatureEnum) Rnd::rnd(CR_Kobold, CR_MaxLimit);
+  m_mobType = (CreatureEnum) rnd::Rnd(CR_Kobold, CR_MaxLimit);
 
-  pos.x = Rnd::rnd(1, Map::Width-1); 
-  pos.y = Rnd::rnd(2, Map::Height-1);
+  pos.x = rnd::Rnd(1, Map::Width-1); 
+  pos.y = rnd::Rnd(2, Map::Height-1);
   color = RGB(rand()%255,rand()%255,rand()%255);
   speed = 1.0;
 
-  defSchool = (AttackSchool) Rnd::rnd(0, SC_MaxSchools);
+  defSchool = (AttackSchool) rnd::Rnd(0, SC_MaxSchools);
   mobSpell = Spell::rndSpell_level(mlevel);
 
-  bool badMood = Rnd::oneIn(12);
+  bool badMood = rnd::oneIn(12);
   if (badMood) { 
-    mood = (MoodEnum) Rnd::rnd(0, M_MaxMoods);
+    mood = (MoodEnum) rnd::Rnd(0, M_MaxMoods);
   } else { // Most monsters start out sleeping, or wandering.
-    bool awake = Rnd::oneIn(6);
+    bool awake = rnd::oneIn(6);
     mood = (awake ? M_Wandering : M_Sleeping);
   }
   

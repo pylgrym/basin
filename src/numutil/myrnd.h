@@ -13,10 +13,10 @@ struct Dice {
   int roll(std::ostream& os) const;
 };
 
-namespace Rnd {
+namespace rnd {
 
-extern int rnd(int range); // from 0 to (range-1), evenly distributed.
-extern int rnd(int from, int to); // from, NOT including 'to'. 
+extern int Rnd(int range); // from 0 to (range-1), evenly distributed.
+extern int Rnd(int from, int to); // from, NOT including 'to'. 
 extern int rndC(int from, int to); // from, AND including 'to'.  ("Closed")
 
 extern bool oneIn(int Nth); // "one out of N", e.g. 1/6 chance.
@@ -30,6 +30,6 @@ extern int nDxDetail(int n, int x, std::vector<int>& details); // roll n Dice-x 
 
 }; // namespace rnd.
 
-// using namespace Rnd;
+// using namespace rnd;
 
 #endif // MY_RND_H.

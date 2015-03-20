@@ -31,7 +31,7 @@ void AttackInf::repHitChance(std::ostream& os) {
 
 bool Mob::hitTest(class Mob& adv, AttackInf& ai) { 
   // int& hitRoll, int hitBonus) { // FIXME: consider passing entire weapon-obj instead of just the hitbonus.
-  ai.hitRoll = Rnd::Dx(20);
+  ai.hitRoll = rnd::Dx(20);
 
   // toHit is your ability to hit,
   // your opponent's ac will counter your ability to hit.

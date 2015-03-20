@@ -182,11 +182,11 @@ bool HitCmd::Do(std::ostream& err) {
       PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
     }
 
-    bool bLoot = Rnd::oneIn(2);
+    bool bLoot = rnd::oneIn(2);
     if (bLoot) {
       CL->map.addObjAtPos(hittee->pos,CL->level);
-      if (Rnd::oneIn(8)) {
-        CL->map.scatterObjsAtPos(hittee->pos, Rnd::rnd(1,6), CL->level, 1);
+      if (rnd::oneIn(8)) {
+        CL->map.scatterObjsAtPos(hittee->pos, rnd::Rnd(1,6), CL->level, 1);
       }
     }
     CL->mobs.deleteMob(hittee); // in HitCmd::Do.
@@ -413,11 +413,11 @@ bool DigCmd::Do(std::ostream& err) {
   {
     logstr log; log << "You've dug through the wall!";
   }
-  if (Rnd::oneIn(3)) { // Loot?
+  if (rnd::oneIn(3)) { // Loot?
     logstr log; log << "You found something embedded in the rock!";
     CL->map.addObjAtPos(tgt,CL->level);
-    if (Rnd::oneIn(8)) {
-      CL->map.scatterObjsAtPos(tgt, Rnd::rnd(1,6),CL->level,1);
+    if (rnd::oneIn(8)) {
+      CL->map.scatterObjsAtPos(tgt, rnd::Rnd(1,6),CL->level,1);
     }
     mob.invalidateGfx(tgt, tgt, true); // FIXME: invalidateTile should go on CL->map/Cell! (maybe)
   }

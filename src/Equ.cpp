@@ -14,7 +14,7 @@ Equ Equ::worn;
 Equ::~Equ() {}
 
 EquipSlotEnum Equ::rndSlot() {
-  int val = Rnd::rnd(0, EQ_MaxSlot);
+  int val = rnd::Rnd(0, EQ_MaxSlot);
   EquipSlotEnum slot = (EquipSlotEnum)val;
   return slot;
 }

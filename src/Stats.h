@@ -142,7 +142,7 @@ public:
 
   void recoverHP() { // Randomized healing.
     int frac = (maxHP / 10)+1;
-    int inst = Rnd::rnd(frac / 2, frac+ frac/2);
+    int inst = rnd::Rnd(frac / 2, frac+ frac/2);
     int newHP = hp + inst;
     if (newHP > maxHP) { newHP = maxHP;  }
     hp = newHP;
@@ -150,7 +150,7 @@ public:
 
   void recoverMana() { // Randomized mana recov.
     int frac = (maxMana / 10)+1;
-    int inst = Rnd::rnd(frac / 2, frac+ frac/2);
+    int inst = rnd::Rnd(frac / 2, frac+ frac/2);
     if (inst < 1) { inst = 1; }
     int newMana = mana + inst;
     if (newMana > maxMana) { newMana = maxMana;  }

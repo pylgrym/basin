@@ -42,7 +42,7 @@ public:
 
   CreatureEnum rndMob() {
     assert(ratingSum != 0.0); // Means level has not been initialized.
-    double rndChoice = Rnd::rnd( (int) ratingSum);
+    double rndChoice = rnd::Rnd( (int) ratingSum);
     double accum = 0.0;
     std::set< MobRating >::iterator i;
     for (i = mobs.begin(); i != mobs.end(); ++i) {

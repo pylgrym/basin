@@ -20,12 +20,12 @@ class WalkCmd : public Cmd {
 public:
   WalkCmd(class Mob& mob_, int dx, int dy, bool force):old(mob_.pos), mob(mob_) {
     // JG: I'm not sure about force - the intent is, that with 'force', you can make sure Walk will 'do what you tell it to do', even if player is challenged/confused.
-    if (mob.stats.isConfused() && Rnd::oneIn(2) && !force) {
+    if (mob.stats.isConfused() && rnd::oneIn(2) && !force) {
 
       if (mob.isPlayer()) { logstr log; log << "You stumble randomly, still confused."; }
       else { logstr log; log << mob.pronoun() << " appears confused."; } // "The monster
 
-      dx = Rnd::rndC(-1, 1); dy = Rnd::rndC(-1, 1);
+      dx = rnd::rndC(-1, 1); dy = rnd::rndC(-1, 1);
     }
     newpos = old; newpos.x += dx; newpos.y += dy;
   }
@@ -332,7 +332,7 @@ public:
       log << "You wait.";
     }
 
-    bool chance = Rnd::oneIn(4);
+    bool chance = rnd::oneIn(4);
     if (chance) { 
       if (mob.stats.hp < mob.stats.maxHP) { // resting
         mob.invalidateGfx();

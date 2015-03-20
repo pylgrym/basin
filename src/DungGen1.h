@@ -133,12 +133,12 @@ struct Laby {
   }
 
   void addRoom() {
-    CSize s(Rnd::rnd(2, 4) * 2, Rnd::rnd(3, 7) * 2);
-    if (Rnd::rnd(0, 2)) {
+    CSize s(rnd::Rnd(2, 4) * 2, rnd::Rnd(3, 7) * 2);
+    if (rnd::Rnd(0, 2)) {
       int tmp = s.cx;
       s.cx = s.cy; s.cy = tmp;
     }
-    CPoint ul(1 + (Rnd::rnd(1, Side - s.cx - 1) / 2) * 2, 1 + (Rnd::rnd(1, Side - s.cy - 1) / 2) * 2);
+    CPoint ul(1 + (rnd::Rnd(1, Side - s.cx - 1) / 2) * 2, 1 + (rnd::Rnd(1, Side - s.cy - 1) / 2) * 2);
     CRect r(ul, s);
     fillRoom(r);
   }

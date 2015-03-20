@@ -308,7 +308,7 @@ void PlayerMob::updateLight() {
     if (burnout) { logstr log; log << "Your light flickers out!"; }
 
   } else {
-    setLightStrength(Rnd::rnd(0,2),0);  // Flicker-torch.
+    setLightStrength(rnd::Rnd(0,2),0);  // Flicker-torch.
   }
 }
 

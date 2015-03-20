@@ -57,7 +57,7 @@ double Mob::noticePlayerProb(CPoint coords, int mobAlert) {
 
 bool Mob::noticePlayer(double& noticeChance) {
   noticeChance = noticePlayerProb( pos, stats.alertness() ); 
-  int roll = Rnd::Dx( (int) noticeDSize);
+  int roll = rnd::Dx( (int) noticeDSize);
   bool noticed = (roll <= noticeChance);  
   return noticed;
 }
@@ -74,7 +74,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
     {      
       logstr log; log << chance << ":" << a_mob() << " notices you!";
     }
-    bool angry = Rnd::oneIn(2);  
+    bool angry = rnd::oneIn(2);  
     mood = angry ? M_Angry : M_Wandering;
   } else {
     if (MLog) { debstr() << "I stay asleep.\n"; } 
@@ -88,7 +88,7 @@ double MonsterMob::actSleep() { // returns time that action requires (0 means ke
 double MonsterMob::actWander() { // returns time that action requires (0 means keep doing actions/keep initiative.)
 	// stagger to a random location:
   if (MLog) { debstr() << "I wander around randomly.\n"; }
-  int dx = Rnd::rndC(-1, 1), dy = Rnd::rndC(-1, 1);
+  int dx = rnd::rndC(-1, 1), dy = rnd::rndC(-1, 1);
   std::stringstream ss;
   bool bLegal = WalkCmd(*this, dx, dy, false).Do(ss);
   return 1.0; // duration.
@@ -125,7 +125,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   if (playerOnStar()) {
     // if (nearPlayer()) { will change prob. (longer range, higher chance of spell attack.)
     int castChance = (nearPlayer() ? 7 : 33);
-    bool willCast = Rnd::pctChance(castChance);
+    bool willCast = rnd::pctChance(castChance);
     bool canCast = canSee(PlayerMob::ply->pos,true);
     if (willCast && !canCast) {
       { logstr log; log << pronoun() << " sputters: 'You..hiding coward!'"; }
@@ -188,7 +188,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   }
 
   if (lowHealth()) {
-    if (Rnd::oneIn(3)) {
+    if (rnd::oneIn(3)) {
       // monster 
       logstr log; log << pronoun() << " flees, feeling hurt.";
       mood = M_Afraid;
@@ -259,7 +259,7 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
   if (!walk.legal(ss)) { // if we can't flee in that dir, try a random dir:
 
     // try to stagger to a random location:
-    int dx = Rnd::rndC(-1, 1), dy = Rnd::rndC(-1, 1);
+    int dx = rnd::rndC(-1, 1), dy = rnd::rndC(-1, 1);
     walk.newpos = (pos + CPoint(dx, dy));
     if (!walk.legal(ss)) {
 
@@ -342,14 +342,14 @@ bool MonsterMob::hurt() {
 bool MonsterMob::can_flee() { return false; }
 bool MonsterMob::flee_prob() { 
   const MobDef& def = mobDef();  
-  return Rnd::pctChance(def.retreatPct);  // rnd::
+  return rnd::pctChance(def.retreatPct);  // rnd::
 }
 bool MonsterMob::flee() { return false; }
 
 bool MonsterMob::can_attack() { return false; }
 bool MonsterMob::hurt_attack_prob() { 
   const MobDef& def = mobDef();  
-  return Rnd::pctChance(def.chargePct);  // rnd::
+  return rnd::pctChance(def.chargePct);  // rnd::
   //return false; 
 }
 bool MonsterMob::attack() { return false; }
