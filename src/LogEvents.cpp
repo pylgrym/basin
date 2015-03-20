@@ -58,16 +58,25 @@ HitCase LogEvents_remainingHP(int ix, int maxIx) { // , int lastHit) {
 
 void LogEvents::prtL_bar(const std::string& s) {
   // NB!, this entire approach is kludgey, and meant as experiment.
-  for (int i = 0; i < (int) s.length(); ++i) {
+  bool bClipped = false;
+  for (int i = 0; i < (int) s.length() || !bClipped; ++i) {
     HitCase remHP = LogEvents_remainingHP(i, 40); // 48);
     COLORREF color = (remHP == HC_RemHP ? RGB(0, 128, 0) : RGB(128, 128, 128));
     if (remHP == HC_LastHit) { color = RGB(255, 0, 0); } // red.
 
     Cuss::setTxtColor(RGB(245, 245, 255)); // color); // should be white/remove.
     Cuss::setBkColor(color); // should remain when impl correctly.
-    char c = s[i];
-    Cuss::putchar(c, true);
+
+    char c = ' ';
+    if (i < (int)s.length()) {
+      c = s[i];
+    }
+    bClipped = Cuss::putchar(c, true);
   }
+
+  // while (!bClipped) { // clear rest of line.
+  //   bClipped = putchar(' ', true);
+  //}
 
   // reset background when finished:
   Cuss::setBkColor(RGB(0, 0, 32)); // color); // should remain when impl correctly.

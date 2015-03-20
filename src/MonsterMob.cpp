@@ -188,7 +188,7 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   if (lowHealth()) {
     if (oneIn(3)) {
       // monster 
-      logstr log; log << "The " << pronoun() << " flees, feeling hurt.";
+      logstr log; log << pronoun() << " flees, feeling hurt.";
       mood = M_Afraid;
     }
   }

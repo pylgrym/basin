@@ -330,7 +330,7 @@ bool ZapCmd::Do(std::ostream& err) {
         }
 
       case SP_SleepOther: 
-        { logstr log;
+        { // logstr log;
           extern bool sleepMob(Mob* target);
           bool bSpellOK = sleepMob(target); // teleportTo(*target, targetpos, &mob);
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 

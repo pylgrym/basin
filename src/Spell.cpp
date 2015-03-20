@@ -326,7 +326,7 @@ bool sleepMob(Mob* target) {
   if (monster != NULL) {
     monster->mood = M_Sleeping;
     logstr log;
-    log << target->pronoun() << "falls to sleep!";
+    log << target->pronoun() << " falls to sleep!";
     return true;
   }
 
@@ -556,6 +556,7 @@ bool detectCells(Mob& actor, CPoint pos, int radius, CheckCellBase& checker) {
         Cell& c = CL->map[p];
         if (checker.check(c)) {
           c.lightCells(p); //FIXME, you could argue we only want a temp highlight.
+          c.envir.tmpLightStr = 0; // this was the reason detect-x didn't work: the weird lighting stuff made distant cells blackish.
           // Also, this highlight follows the cell, not the item/feature..
           TheUI::invalidateCell(p); // JG - there is a bug here - though we do the invalidate, we don't get our redraw? do we need to specify 'erase'?
           ++count;
@@ -968,12 +969,10 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
 
     // sleep other, here?
+  case SP_SleepOther:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
-  // tele other
   case SP_TeleOtherAway:   Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p); break; // return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
 
-    // where does this go?
-  case SP_PhaseDoor:         Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
 
   case SP_SummonHere:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // x goes to me.
   case SP_SummonMonster:Spell_SummonMob::init(actor, p); break; //return summonSpell(actor); break;
@@ -1017,6 +1016,7 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
 
   case SP_MagicMap:        Spell_Light::init(actor, actor.pos,22, p);          break; //return lightSpell(actor, actor.pos,4); break;
   // case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
+  case SP_PhaseDoor:        Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
 
     // Idea -it could be partial with blanks/particles?
     /* todo:
