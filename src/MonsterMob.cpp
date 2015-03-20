@@ -401,7 +401,9 @@ bool MonsterMob::hurt() {
   return bLow;
 }
 
-bool MonsterMob::can_flee() { return false; }
+bool MonsterMob::can_flee() { 
+  return canFlee(PlayerMob::ply->pos); 
+}
 
 bool MonsterMob::flee_prob() { 
   const MobDef& def = mobDef();  
