@@ -10,12 +10,12 @@ double MonsterMob::act() { // returns time that action requires (0 means keep do
   double duration = 1.0; // actionDuration  // seconds.
 
   switch (mood) {
-  case M_Sleeping:  duration = actSleep(); break;
+  case M_Sleeping:  duration = actSleep();  break;
   case M_Wandering: duration = actWander(); break;
-  case M_Angry:     duration = actAngry(); break;
-  case M_Afraid:    duration = actFlee(); break;
+  case M_Angry:     duration = actAngry();  break;
+  case M_Afraid:    duration = actFlee();   break;
+  case M_Driven:    duration = actDriven(); break; // a more complex ai.
   }
-
 
 	return duration;
 }
@@ -354,27 +354,52 @@ bool MonsterMob::hurt_attack_prob() {
 }
 bool MonsterMob::attack() { return false; }
 
-bool MonsterMob::too_close() { return false; }
+
+
+bool MonsterMob::too_close() { 
+  const MobDef& def = mobDef();  
+  int dist = PlayerMob::distPlyCart(pos); // not distPly, so far.
+  return (dist < def.minrange); 
+}
 bool MonsterMob::can_incr() { return false; }
 bool MonsterMob::incr_prob() { return false; }
-bool MonsterMob::incr_dist() { return false; }
+bool MonsterMob::incr_dist() { 
+  const MobDef& def = mobDef();  
+  return rnd::pctChance(def.retreatPct);  
+}
 
-bool MonsterMob::too_far() { return false; }
+
+
+bool MonsterMob::too_far() { 
+  const MobDef& def = mobDef();  
+  int dist = PlayerMob::distPlyCart(pos); // not distPly so far.
+  return (dist > def.maxrange); 
+}
 bool MonsterMob::can_decr() { return false; }
-bool MonsterMob::decr_prob() { return false; }
+bool MonsterMob::decr_prob() { 
+  const MobDef& def = mobDef();  
+  return rnd::pctChance(def.chargePct);  
+}
 bool MonsterMob::decr_dist() { return false; }
+
+
 
 bool MonsterMob::melee_range() { 
   return nearPlayer();
 }
-bool MonsterMob::melee_prob() { return false; }
+bool MonsterMob::melee_prob() { 
+  const MobDef& def = mobDef();  
+  return rnd::pctChance(def.chargePct);  
+}
 bool MonsterMob::attack_melee() { return false; }
 
-bool MonsterMob::can_ranged() { return false; }
+bool MonsterMob::can_ranged() { 
+  return playerOnStar();
+}
 bool MonsterMob::ranged_prob() { return false; }
 bool MonsterMob::attack_ranged() { return false; }
 
-bool MonsterMob::stay() { return false; }
+bool MonsterMob::stay() { return true; } // possibly this should cast some spell.
 
 
 double MonsterMob::actDriven() {

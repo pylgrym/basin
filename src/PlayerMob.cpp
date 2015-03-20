@@ -272,6 +272,13 @@ PlayerMob::PlayerMob():Mob(1, true) {
 
 PlayerMob::~PlayerMob() { ply = NULL;  }
 
+int PlayerMob::distPlyCart(CPoint p) {
+  if (ply == NULL) { return 100;  } // Far away then..
+  CPoint delta = p - ply->pos;
+  int dist = abs(delta.x) + abs(delta.y); // delta.x*delta.x + delta.y*delta.y;
+  return dist;
+}
+
 
 int PlayerMob::distPly(CPoint p) {
   if (ply == NULL) { return 100;  } // Far away then..

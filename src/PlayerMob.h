@@ -33,6 +33,7 @@ public:
   void dashboard();
 
   static PlayerMob* ply;
+  static int distPlyCart(CPoint p); // right-angle distance.raw/true calc.
   static int distPly(CPoint p); // raw/true calc. (square)
   static int distPlyLight(CPoint p); // light-adjusted
 
