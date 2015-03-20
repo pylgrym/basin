@@ -703,9 +703,10 @@ bool spellRush(Mob& actor, CPoint dir) {
 
   if (!cell->creature.empty()) { // Good: we bump into an enemy!
     { logstr log; log << "You bump into the mob!"; }
-    HitCmd hit(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush); // FIXME; how much dmg does it do, and does it stun/confuse him?
+    const bool doOverrideHit = true;
+    HitCmd rush(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
     logstr log;
-    return hit.Do(log);
+    return rush.Do(log);
   }
 
   if (cell->envir.blocked()) {
@@ -832,6 +833,9 @@ class Spell_Shove: public SpellImpl { public:
 
 
 bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
+  /* fixme - the physical spells don't seem to either identify or eat-charges correctly - 'shove' never eats its charges?
+  */
+
   // fiXmE - is 'target anything yet? (it might be,  because we assume both are next to each other? but actually, 'tackle' may use run-lead-up?
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   { logstr log; log << "You would tackle the mob.."; }
@@ -876,9 +880,10 @@ bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
   }
 
   { // this is a bit cheating - tackle, ie mob hitting wall with me, gets dmg by me hitting mob with 'tackle..'
-    HitCmd hit(NULL,actor,dir.x, dir.y,SC_Phys,SP_Tackle); // FIXME; how much dmg does it do, and does it stun/confuse him?
+    const bool overrideHit = true;
+    HitCmd tackle(NULL,actor,dir.x, dir.y,SC_Phys,SP_Tackle,overrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
     logstr log;
-    return hit.Do(log);
+    return tackle.Do(log);
   }
 
   logstr log; log << "Weird, your tackle leads nowhere?";

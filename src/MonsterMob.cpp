@@ -169,7 +169,9 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     debstr() << "I am near player and will attack!\n";
     // JG, If player is on neighbour tile, we should ALWAYS attack.
     logstr log;
-    HitCmd(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell).Do(log); // FIXME: monsters should have a preferred attack type..
+    const bool dontOverrideHit = false;
+    HitCmd mobHits(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell,dontOverrideHit);
+    mobHits.Do(log); // FIXME: monsters should have a preferred attack type..
   } else { // Else, chase the player:
     if (MLog) { debstr() << "I am far from player and will chase!\n"; }
     std::stringstream ss;
@@ -269,7 +271,9 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
         if (!walk.legal(ss)) { // if horizontal doesn't work, what about fighting back..
           if (nearPlayer()) {
             logstr log; log << "Cornered, the scared monster fights back!";
-            HitCmd(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell).Do(ss);  
+            const bool dontOverrideHit = false;
+            HitCmd mobCornered(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell, dontOverrideHit);
+            mobCornered.Do(ss);
             return 1.0;
           }
         }

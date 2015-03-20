@@ -132,7 +132,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy); 
+  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy, overrideHit); 
 
   if (mob.isPlayer()) {
     FightDashboard::dashboard.hp = hittee->stats.hp;
@@ -344,8 +344,9 @@ bool ZapCmd::Do(std::ostream& err) {
           // FIXME - items must hit much harder. HitCmd should pass the weapon along I think,
           // this way it can both use item and weapon..
           playSound(L"sounds\\sfxr\\firebolt@.wav"); // zap-spell-projectile
-          HitCmd cmd(zapHitItem, mob, aim.x, aim.y, school, effect); // Doing a zap.
-          bool bOK = cmd.Do(err);
+          const bool overrideHit = true; // false; // FIXME: also mobs hit this hard now! We need a second, or balanced, to-hit check..
+          HitCmd bulletSpellHit(zapHitItem, mob, aim.x, aim.y, school, effect,overrideHit); // Doing a zap.
+          bool bOK = bulletSpellHit.Do(err);
         }
       } // (End switch (which-spell-type-hit-mob-target).)
       break; // (Skip out of bullet-travel-loop.)

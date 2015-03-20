@@ -53,8 +53,8 @@ public:
 
 class HitCmd : public Cmd {
 public:
-  HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_, SpellEnum spell_)
-    :mob(mob_), hittee(NULL), school(school_), spell(spell_), hitItem(hitItem_) 
+  HitCmd(Obj* hitItem_, Mob& mob_, int dx, int dy, AttackSchool school_, SpellEnum spell_, bool overrideHit_)
+    :mob(mob_), hittee(NULL), school(school_), spell(spell_), hitItem(hitItem_), overrideHit(overrideHit_)
   {
     tgt = mob.pos; tgt.x += dx; tgt.y += dy;
     hittee = CL->map[tgt].creature.m; 
@@ -77,6 +77,7 @@ public:
   AttackSchool school;
   SpellEnum spell;
   Obj* hitItem;
+  bool overrideHit; // kludge, used for spells that MUST hit.
 
   virtual bool Do(std::ostream& err);
 

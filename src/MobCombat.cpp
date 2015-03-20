@@ -52,7 +52,7 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) {
 
 
 
-bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, SpellEnum spell, std::ostream& os) { 
+bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, SpellEnum spell, std::ostream& os, bool overrideHit) { 
   // Collect 'attack info' in an AttackInfo struct.
 
   //ai.school = school; // FIXME, record that..
@@ -62,7 +62,8 @@ bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchoo
     if (attackItem != NULL) { ai.wpHitBonus = attackItem->toHit; }  
   }
 
-  ai.bHit = hitTest(adv, ai);  
+  ai.bHit = hitTest(adv, ai); 
+  if (overrideHit) { ai.bHit = true; }
   if (!ai.bHit) { return false;  }
 
   if (spell == SP_NoSpell) { // A physical/melee attack.. (or an arrow/throw-item?)
