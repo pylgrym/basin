@@ -117,6 +117,43 @@ bool Mob::canSee(CPoint b, bool onlyEnvir) {
   return CL->map.canSee(pos, b, onlyEnvir);
 }
 
+bool Mob::canSeePlayer() {
+  return canSee(PlayerMob::ply->pos, true);
+}
+
+
+bool Mob::mobCasts(CPoint dir) {
+  /* FIxME/ consider: mobs start with zapcmd instead of Spell::castSpell.
+  / Main differences are
+    - that zapcmd works with 'cast/bullet dir' from the get-go (and won't accidentally prompt USER for mob's attack-dir..)
+    - zapcmd won't eat mana.
+    Apart from that, mobs ought to switch to castSpell, so they e.g. can cast 'improve myself/buff' spells.
+  At the core of it, zapcmd shouldn't be a command..
+  */
+
+  /* focus blast: a spell that hits exactly 2 spaces away, and hits hard. may require los free.
+  also possible cooldown. the idea is, that it takes 'logistics' to navigate the adversary in place.
+  strike of opportunity?
+  */
+  // not a_mob
+  { logstr log; log << pronoun() << " aims a spell at you!"; }
+
+  CPoint zapDir = dir;
+  logstr log; // Will show a mob attacking!
+
+  bool bOK = true;
+  if (false) { // Old approach.
+    ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
+    cmd.mobZapDir = zapDir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
+    bOK = cmd.Do(log);
+  } else { // new approach:
+    Mob* target = PlayerMob::ply; // NULL;
+    bOK = Spell::castSpell(mobSpell, *this, target, NULL, NoMana);
+  }
+
+  return bOK;
+}
+
 
 
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
@@ -126,41 +163,15 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
     // if (nearPlayer()) { will change prob. (longer range, higher chance of spell attack.)
     int castChance = (nearPlayer() ? 7 : 33);
     bool willCast = rnd::pctChance(castChance);
-    bool canCast = canSee(PlayerMob::ply->pos,true);
+    bool canCast = canSeePlayer();
     if (willCast && !canCast) {
       { logstr log; log << pronoun() << " sputters: 'You..hiding coward!'"; }
     }
 
     if (willCast && canCast) {
-      /* FIxME/ consider: mobs start with zapcmd instead of Spell::castSpell.
-      / Main differences are
-       - that zapcmd works with 'cast/bullet dir' from the get-go (and won't accidentally prompt USER for mob's attack-dir..)
-       - zapcmd won't eat mana.
-       Apart from that, mobs ought to switch to castSpell, so they e.g. can cast 'improve myself/buff' spells.
-      At the core of it, zapcmd shouldn't be a command..
-      */
-
-      /* focus blast: a spell that hits exactly 2 spaces away, and hits hard. may require los free.
-      also possible cooldown. the idea is, that it takes 'logistics' to navigate the adversary in place.
-      strike of opportunity?
-      */
-      // not a_mob
-      { logstr log; log << pronoun() << " aims a spell at you!"; }
-
-      CPoint zapDir = dir;
-      logstr log; // Will show a mob attacking!
-
-      bool bOK = true;
-      if (false) { // Old approach.
-        ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
-        cmd.mobZapDir = zapDir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
-        bOK = cmd.Do(log);
-      } else { // new approach:
-        Mob* target = PlayerMob::ply; // NULL;
-        bOK = Spell::castSpell(mobSpell, *this, target, NULL, NoMana);
-      }
-
-      if (bOK) { return 1.0; } // At least he used up his turn now..
+      bool bOK = mobCasts(dir);
+      return 1.0; // good or bad, at least he's spent his turn now.
+      // if (bOK) { return 1.0; } // At least he used up his turn now..
     }
 
   }
@@ -362,10 +373,16 @@ bool MonsterMob::too_close() {
   return (dist < def.minrange); 
 }
 bool MonsterMob::can_incr() { return false; }
-bool MonsterMob::incr_prob() { return false; }
-bool MonsterMob::incr_dist() { 
+
+bool MonsterMob::incr_prob() {
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.retreatPct);  
+  return false; 
+}
+
+bool MonsterMob::incr_dist() { 
+  actFlee();
+  return true; // possibly we should track if we succeeded or not (?)
 }
 
 
@@ -382,7 +399,7 @@ bool MonsterMob::decr_prob() {
 }
 bool MonsterMob::decr_dist() { return false; }
 
-
+// figure out, why rush etc doesn't let us discover?
 
 bool MonsterMob::melee_range() { 
   return nearPlayer();
@@ -394,10 +411,14 @@ bool MonsterMob::melee_prob() {
 bool MonsterMob::attack_melee() { return false; }
 
 bool MonsterMob::can_ranged() { 
-  return playerOnStar();
+  return playerOnStar() && canSeePlayer();
 }
 bool MonsterMob::ranged_prob() { return false; }
-bool MonsterMob::attack_ranged() { return false; }
+
+bool MonsterMob::attack_ranged() { 
+  CPoint dir = playerDir();
+  return mobCasts(dir);
+}
 
 bool MonsterMob::stay() { return true; } // possibly this should cast some spell.
 

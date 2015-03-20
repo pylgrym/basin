@@ -140,6 +140,10 @@ public:
 
   bool playerOnStar() const; // If player is on a '8-star direction', we can use spells against him.
   bool canSee(CPoint b, bool onlyEnvir);
+  bool canSeePlayer();
+
+  bool mobCasts(CPoint dir);
+
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
