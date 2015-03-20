@@ -324,7 +324,12 @@ double MonsterMob::actGeneric() {
   return 1.0;
 }
 
-
+/* ideas - rnd in namespace
+better dmg understand for rush/crush etc.
+manual control of light strength, to determine sweet-spot.
+ai details
+DONE: los demand for drawing mobs.
+*/
 
 
 bool MonsterMob::hurt() { 

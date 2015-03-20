@@ -180,8 +180,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case '.': 
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
-    case VK_ADD:      if (DexModCmd(+1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
-    case VK_SUBTRACT: if (DexModCmd(-1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+    case VK_ADD:      if (LightModCmd(+1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+    case VK_SUBTRACT: if (LightModCmd(-1).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
 
     case 'S': 

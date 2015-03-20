@@ -600,6 +600,20 @@ bool DexModCmd::Do(std::ostream& err) {
   return true;
 }
 
+bool LightModCmd::Do(std::ostream& err) {
+  debstr() << "lightmod-cmd do begin..\n";
+  Obj* lamp = PlayerMob::ply->findLight();
+  if (lamp == NULL) { return false; }
+  double rate = (100.0 + delta) / 100.0;
+  lamp->itemUnits = int(rate * lamp->itemUnits + 0.5);
+
+  PlayerMob::ply->updateLight();
+  // PlayerMob::ply->stats.Dex.base += delta;
+  //PlayerMob::ply->stats.calcStats();
+  Cuss::clear(true);
+  return true;
+}
+
 
 
 bool FillLampCmd::Do(std::ostream& err) {
