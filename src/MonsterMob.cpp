@@ -320,43 +320,59 @@ std::string  MonsterMob::a_mob() const { // { return "you";  } // "You"/"An orc"
   return sAsc;
 }
 
-
-
-bool hurt() { return false; }
-bool can_flee() { return false; }
-bool flee_prob() { return false; }
-bool flee() { return false; }
-
-bool can_attack() { return false; }
-bool hurt_attack_prob() { return false; }
-bool attack() { return false; }
-
-bool too_close() { return false; }
-bool can_incr() { return false; }
-bool incr_prob() { return false; }
-bool incr_dist() { return false; }
-
-bool too_far() { return false; }
-bool can_decr() { return false; }
-bool decr_prob() { return false; }
-bool decr_dist() { return false; }
-
-bool melee_range() { return false; }
-bool melee_prob() { return false; }
-bool attack_melee() { return false; }
-
-bool can_ranged() { return false; }
-bool ranged_prob() { return false; }
-bool attack_ranged() { return false; }
-
-bool stay() { return false; }
-
-
 double MonsterMob::actGeneric() {
   return 1.0;
 }
 
-void f_ai() {
+
+
+
+bool MonsterMob::hurt() { 
+  const MobDef& def = mobDef();  
+  // bool bLow = ( (stats.hp/def.moralePct) < (stats.maxHP/100) ); 
+  bool bLow =    ( (stats.hp*100) < (stats.maxHP*def.moralePct) ); 
+  return bLow;
+}
+
+bool MonsterMob::can_flee() { return false; }
+bool MonsterMob::flee_prob() { 
+  const MobDef& def = mobDef();  
+  return rnd::pctChance(def.retreatPct); 
+}
+bool MonsterMob::flee() { return false; }
+
+bool MonsterMob::can_attack() { return false; }
+bool MonsterMob::hurt_attack_prob() { 
+  const MobDef& def = mobDef();  
+  return rnd::pctChance(def.chargePct); 
+  //return false; 
+}
+bool MonsterMob::attack() { return false; }
+
+bool MonsterMob::too_close() { return false; }
+bool MonsterMob::can_incr() { return false; }
+bool MonsterMob::incr_prob() { return false; }
+bool MonsterMob::incr_dist() { return false; }
+
+bool MonsterMob::too_far() { return false; }
+bool MonsterMob::can_decr() { return false; }
+bool MonsterMob::decr_prob() { return false; }
+bool MonsterMob::decr_dist() { return false; }
+
+bool MonsterMob::melee_range() { 
+  return nearPlayer();
+}
+bool MonsterMob::melee_prob() { return false; }
+bool MonsterMob::attack_melee() { return false; }
+
+bool MonsterMob::can_ranged() { return false; }
+bool MonsterMob::ranged_prob() { return false; }
+bool MonsterMob::attack_ranged() { return false; }
+
+bool MonsterMob::stay() { return false; }
+
+
+double MonsterMob::actDriven() {
   /* todo - compare with article http://www.roguebasin.com/index.php?title=Roguelike_Intelligence_-_Stateless_AIs
   to understand if I'm missing out on features he manages to fit in.
   */
@@ -371,6 +387,7 @@ void f_ai() {
     if (can_ranged() & ranged_prob()) { attack_ranged(); return; }
     stay();
   }
+  return 1.0; 
 }
 
 /* ai info:

@@ -50,6 +50,7 @@ enum MoodEnum {
   M_Wandering, // bumbling around.
   M_Angry, // wants to attack player.
   M_Afraid, // fleeing from player, to survive and to trouble him (train him into other monsters.)
+  M_Driven, // new clever logic.
   M_MaxMoods
 };
 
@@ -142,13 +143,14 @@ public:
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
+  const MobDef&  mobDef();
 
   virtual double act() = 0; // returns time that action requires (0 means keep doing actions/keep initiative.)
   virtual void passTime() {} // Currently only activated for player mob.
 
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 
-   virtual std::string a_mob()  const = 0;
+  virtual std::string a_mob()  const = 0;
   virtual std::string pronoun() const = 0; // "You"/"The orc".
   virtual std::string verbS() const = 0; // "he hitS".
 
@@ -212,6 +214,7 @@ public:
   virtual double actSleep();
   virtual double actWander();
   virtual double actAngry();
+  virtual double actDriven();
   virtual double actFlee();
 
   virtual double actGeneric();
@@ -219,5 +222,37 @@ public:
   virtual std::string a_mob() const;
   virtual std::string pronoun() const; //(FIXME, maybe should be called 'the_mob' instead of 'pronoun'. { return "you";  } // "You"/"The orc".
   virtual std::string verbS() const { return "s";  } // "he hitS".
+
+
+
+  bool hurt(); //  { return false; }
+  bool can_flee(); //  { return false; }
+  bool flee_prob(); //  { return false; }
+  bool flee(); //  { return false; }
+
+  bool can_attack(); //  { return false; }
+  bool hurt_attack_prob(); //  { return false; }
+  bool attack(); //  { return false; }
+
+  bool too_close(); //  { return false; }
+  bool can_incr(); //  { return false; }
+  bool incr_prob(); //  { return false; }
+  bool incr_dist(); //  { return false; }
+
+  bool too_far(); //  { return false; }
+  bool can_decr(); //  { return false; }
+  bool decr_prob(); //  { return false; }
+  bool decr_dist(); //  { return false; }
+
+  bool melee_range(); //  { return false; }
+  bool melee_prob(); //  { return false; }
+  bool attack_melee(); //  { return false; }
+
+  bool can_ranged(); //  { return false; }
+  bool ranged_prob(); //  { return false; }
+  bool attack_ranged(); //  { return false; }
+
+  bool stay(); //  { return false; }
+
 };
 

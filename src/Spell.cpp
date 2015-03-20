@@ -799,18 +799,10 @@ bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   // was: - this does not push mob into wall, and move you..
 
   return spellRush(target, dir); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
-
-  /*
-  ZapCmd cmd(NULL, actor, SP_Shove, SC_Phys); // school);
-  cmd.mobZapDir = dir;
-  logstr log;
-  return cmd.Do(log);
-  */
 }
 
 /* thoughts: i should consider making 'floodfill-laby' prettier.
-
-i should make restore mana
+DONE: i should make restore mana
 */
 
 class Spell_Shove: public SpellImpl { public:

@@ -56,8 +56,9 @@ void Mob::invalidateGfx() {
   TheUI::invalidateCell(pos); 
 }
 
-
-
-
+const MobDef&  Mob::mobDef() {
+  const MobDef& def = Creature::mobDef(ctype());
+  return def;
+}
 
 

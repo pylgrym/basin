@@ -13,6 +13,8 @@ struct Dice {
   int roll(std::ostream& os) const;
 };
 
+namespace rnd {
+
 extern int rnd(int range); // from 0 to (range-1), evenly distributed.
 extern int rnd(int from, int to); // from, NOT including 'to'. 
 extern int rndC(int from, int to); // from, AND including 'to'.  ("Closed")
@@ -25,5 +27,9 @@ extern int Dx(int x); // 1 x-die.
 extern int nDx(int n, int x); // roll n Dice-x and add them. 
 extern int nDx_ss(int n, int x, std::ostream& os); // roll n Dice-x and add them. 
 extern int nDxDetail(int n, int x, std::vector<int>& details); // roll n Dice-x and add them. 
+
+}; // namespace rnd.
+
+using rnd;
 
 #endif // MY_RND_H.
