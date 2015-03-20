@@ -155,6 +155,13 @@ bool Mob::mobCasts(CPoint dir) {
 }
 
 
+bool Mob::mobMeleesPlayer(CPoint dir) {
+  logstr log;
+  const bool dontOverrideHit = false;
+  HitCmd mobHits(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell,dontOverrideHit);
+  return mobHits.Do(log); // FIXME: monsters should have a preferred attack type..
+}
+
 
 double MonsterMob::actAngry() { // returns time that action requires (0 means keep doing actions/keep initiative.)
   CPoint dir = playerDir();
@@ -177,12 +184,8 @@ double MonsterMob::actAngry() { // returns time that action requires (0 means ke
   }
 
   if (nearPlayer()) {
-    debstr() << "I am near player and will attack!\n";
-    // JG, If player is on neighbour tile, we should ALWAYS attack.
-    logstr log;
-    const bool dontOverrideHit = false;
-    HitCmd mobHits(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell,dontOverrideHit);
-    mobHits.Do(log); // FIXME: monsters should have a preferred attack type..
+    debstr() << "I am near player and will attack!\n"; // JG, If player is on neighbour tile, we should ALWAYS attack.
+     mobMeleesPlayer(dir);    
   } else { // Else, chase the player:
     if (MLog) { debstr() << "I am far from player and will chase!\n"; }
     std::stringstream ss;
@@ -408,7 +411,12 @@ bool MonsterMob::melee_prob() {
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.chargePct);  
 }
-bool MonsterMob::attack_melee() { return false; }
+
+
+bool MonsterMob::attack_melee() { 
+  CPoint dir = playerDir();
+  return mobMeleesPlayer(dir);    
+}
 
 bool MonsterMob::can_ranged() { 
   return playerOnStar() && canSeePlayer();

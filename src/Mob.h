@@ -143,7 +143,7 @@ public:
   bool canSeePlayer();
 
   bool mobCasts(CPoint dir);
-
+  bool mobMeleesPlayer(CPoint dir);
 
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
