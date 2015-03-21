@@ -40,6 +40,9 @@ void LightMap::invalidateDiff(LightMap& newLM) {
       if (old.isDark(p) != newLM.isDark(p)) {
         TheUI::invalidateCell(p);
         ++losInvalidate;
+      } else if (!newLM.isDark(p)) { // JG: - I realise, that for proper shading, still-lighted cells must be invalidated too.
+        TheUI::invalidateCell(p);
+        ++losInvalidate;
       }
     }
   }

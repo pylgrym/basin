@@ -426,7 +426,7 @@ public:
       // Nothing: if cell is perma-lit, don't try to darken it.
       if (!cell.hasOverlay()) { // Then you get relative str of this cells permalight:
         distStat = cell.envir.tmpLightStr;
-        distStat = distStat*distStat;
+        //distStat = distStat*distStat;
       } else { // Overlap means brightest light, guaranteed.
         distStat = 0;
       }
@@ -434,10 +434,7 @@ public:
 
     { // No perma-light in cell:
       // Base darkening on tile-distance to player:
-      distDyn = PlayerMob::distPlyLight(CPoint(wp.x, wp.y));
-      if (distDyn < 0) { distDyn = 0; }
-      distDyn = (distDyn*distDyn); // gives better darkness.. faster falloff..
-
+      distDyn = int(0.5+PlayerMob::distPlyLight(CPoint(wp.x, wp.y)));
       if (losDark) { // It should be very totally dark.
         distDyn *= 99;
       } else { // Her er lyst:
@@ -447,8 +444,10 @@ public:
 
     dist = distDyn; if (distStat < dist) { dist = distStat;  }
 
+    int blend = -1;
     if (dist != 0) { //  && !losDark
-      int blend = (int) (255.0 - (255.0 / (dist+1)));
+      blend = dist * 15; // (int)(255.0 - (255.0 / ((0.9*dist) + 1.0)));
+      if (blend > 255) { blend = 255;  }
 
       CPoint blendDarkenTile(29,20); 
       CPoint blendTintTile(36,22); 
@@ -457,27 +456,35 @@ public:
       tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost); // was:colorNone
     }
 
-    if (0) { // true) {
+    if (0) { // 1) { // true) {
       dc.SelectObject(smallFont);
       CRect rect = cellR();
-      dc.SetTextColor(RGB(255,255,0)); CString s; // yel not dex is blue. 
+      dc.SetTextColor(RGB(255,255,255)); CString s; //white: dist
       s.Format(L" %d", dist); const int lowerLeftFlags = DT_LEFT | DT_BOTTOM | DT_SINGLELINE;
 		  dc.DrawText(s, &rect,  lowerLeftFlags);
 
-      s.Format(L"%d ", distStat); const int flags2 = DT_RIGHT | DT_TOP | DT_SINGLELINE;
-		  dc.DrawText(s, &rect,  flags2);
-
-      dc.SetTextColor(RGB(0,255,0));  // yel not dex is blue. 
-      s.Format(L"%d ", distDyn); const int flags3 = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
-		  dc.DrawText(s, &rect,  flags3);
-
-      dc.SetTextColor(RGB(255,0,0));  // yel not dex is blue. 
-      s.Format(L"%d ", cell.envir.permLight); const int flags4 = DT_LEFT | DT_TOP | DT_SINGLELINE;
+      dc.SetTextColor(RGB(255,0,0));  // red: blend
+      s.Format(L"%d ", blend); const int flags4 = DT_LEFT | DT_TOP | DT_SINGLELINE;
 		  dc.DrawText(s, &rect,  flags4);
 
-      dc.SetTextColor(RGB(0,0,255));  // yel not dex is blue. 
-      s.Format(L" %d ", losDark); const int flags5 = DT_CENTER |  DT_VCENTER | DT_SINGLELINE;
-		  dc.DrawText(s, &rect,  flags5);
+      if (0) {
+        //              // yell: distStat
+        dc.SetTextColor(RGB(255,255,0));  // yel: dist
+        s.Format(L"%d ", distStat); const int flags2 = DT_RIGHT | DT_TOP | DT_SINGLELINE;
+		    dc.DrawText(s, &rect,  flags2);
+
+        dc.SetTextColor(RGB(0,255,0));  // green: distdyn
+        s.Format(L"%d ", distDyn); const int flags3 = DT_RIGHT | DT_BOTTOM | DT_SINGLELINE;
+		    dc.DrawText(s, &rect,  flags3);
+
+        dc.SetTextColor(RGB(255,0,0));  // red: permlight
+        s.Format(L"%d ", cell.envir.permLight); const int flags4 = DT_LEFT | DT_TOP | DT_SINGLELINE;
+		    dc.DrawText(s, &rect,  flags4);
+
+        dc.SetTextColor(RGB(0,0,255));  // blue: losDark-bool
+        s.Format(L" %d ", losDark); const int flags5 = DT_CENTER |  DT_VCENTER | DT_SINGLELINE;
+		    dc.DrawText(s, &rect,  flags5);
+      }
     }
 
   } // end drawLightShadow.

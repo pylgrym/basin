@@ -180,8 +180,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case '.': 
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
 
-    case VK_ADD:      if (LightModCmd(+15).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
-    case VK_SUBTRACT: if (LightModCmd(-15).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 
+    case VK_ADD:      if (LightModCmd(+15).Do(ss)) { actionDuration = 0; bActionDone = false; } break; 
+    case VK_SUBTRACT: if (LightModCmd(-15).Do(ss)) { actionDuration = 0; bActionDone = false; } break; 
 
 
     case 'S': 
@@ -287,15 +287,15 @@ int PlayerMob::distPly(CPoint p) {
   return dist;
 }
 
-int PlayerMob::distPlyLight(CPoint p) {
-  int dist = distPly(p);
+double PlayerMob::distPlyLight(CPoint p) {
+  double dist = distPly(p);
 
   // Clip dist, for stronger torch:
   int strength = ply->lightStrength();
   if (strength > 0) {
-    dist = dist / strength;
+    dist = dist / (0.1*strength); // The 0.1
   } else {
-    dist *= 5; // or set it to 'far away'?
+    dist /= 5.0; // or set it to 'far away'?
   }
 
   //dist = dist - 2; 
