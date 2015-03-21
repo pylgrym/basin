@@ -671,7 +671,7 @@ bool TakeCmd::Do(std::ostream& err) {
 
   if (!Bag::bag.add(o, err)) { return false; } // err << "Couldn't fit item in bag.";  
 
-  char itemIx = Bag::bag.letterIx(o);
+  char itemIx = Bag::bag.letterIxStacked(o); // fixme - not good - need stacker to find this!
   // std::string anItem = o->an_item();
   std::string theItem = o->the_item();
   err << "You pick up (" << itemIx << ") " << theItem;

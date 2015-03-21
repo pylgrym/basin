@@ -51,17 +51,6 @@ void Bag::destroy(int ix) {
 
 
 
-char Bag::letterIx(Obj* item) {
-  char ix = 'a';
-  BagCont::iterator i;
-  for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
-    Obj* o = *i;
-    if (o == item) {
-      return ix;
-    }
-  }
-  return '?';
-}
 
 double Bag::bagWeight() {
   double totalWeight = 0;
@@ -163,6 +152,25 @@ void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
 }
 
 
+
+char Bag::letterIxStacked(Obj* item) { // follows stacker
+  BagStack stack(*this); // hack/kludge.
+
+  char ix = 'a';
+  StackMap::iterator si;
+  for (si = stack.stacks.begin(); si != stack.stacks.end(); ++si, ++ix) {
+    Coll& coll = si->second;
+    Coll::iterator j;
+    for (j = coll.begin(); j != coll.end(); ++j) {
+      Obj* o = *j;
+      if (o == item) {
+        return ix;
+      }
+    }
+  }
+  return '?';
+}
+
 Obj* Bag::pickActionStacked(class BagStack& stack) { 
   const char firstKey = 'A';
   char lastKey = firstKey + stack.stacks.size()-1; // Bag::bag.
@@ -211,6 +219,19 @@ Obj* Bag::findItem(ObjEnum otype) {
     if (obj->otype() == otype) { return obj;  }
   }
   return NULL;
+}
+
+
+char Bag::letterIxOld(Obj* item) { // Must be fixed to follow stacker
+  char ix = 'a';
+  BagCont::iterator i;
+  for (i = objs.begin(); i != objs.end(); ++i, ++ix) {
+    Obj* o = *i;
+    if (o == item) {
+      return ix;
+    }
+  }
+  return '?';
 }
 
 

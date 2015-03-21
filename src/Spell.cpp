@@ -543,7 +543,7 @@ struct IsTreasure : public CheckCellBase {
     // }
     // return false;
   }
-  std::string what(){return "treasure";}
+  std::string what() {return "treasure";}
 };
 
 

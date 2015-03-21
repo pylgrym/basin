@@ -23,7 +23,8 @@ public:
   bool add(Obj* o, std::ostream& err);
   bool remove(Obj* obj, std::ostream& err);
   void destroy(int ix);
-  char letterIx(Obj* obj);
+  char letterIxOld(Obj* obj); // NB, doesn't follow stack!
+  char letterIxStacked(Obj* item); // follows stacker
 
   void showBagInv(bool bShowPrice);
   void showBagInvStacked(bool bShowPrice);
