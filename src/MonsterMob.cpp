@@ -337,14 +337,14 @@ bool MonsterMob::hurt() {
 bool MonsterMob::can_flee() { return false; }
 bool MonsterMob::flee_prob() { 
   const MobDef& def = mobDef();  
-  return rnd::pctChance(def.retreatPct); 
+  return pctChance(def.retreatPct);  // rnd::
 }
 bool MonsterMob::flee() { return false; }
 
 bool MonsterMob::can_attack() { return false; }
 bool MonsterMob::hurt_attack_prob() { 
   const MobDef& def = mobDef();  
-  return rnd::pctChance(def.chargePct); 
+  return pctChance(def.chargePct);  // rnd::
   //return false; 
 }
 bool MonsterMob::attack() { return false; }
@@ -377,14 +377,14 @@ double MonsterMob::actDriven() {
   to understand if I'm missing out on features he manages to fit in.
   */
   if (hurt()) { // (morale-check)
-    if (can_flee() && flee_prob()) { flee(); return; }
-    if (can_attack() && hurt_attack_prob()) { attack(); return; }
+    if (can_flee() && flee_prob()) { flee(); return 0; }
+    if (can_attack() && hurt_attack_prob()) { attack(); return 0; }
     stay(); // Stay may involve spellcast/healing/alerting.
   } else { // Not hurt.
-    if (too_close() && can_incr() && incr_prob() ) { incr_dist(); return; }
-    if (too_far() && can_decr() && decr_prob() ) { decr_dist(); return; }
-    if (melee_range() & melee_prob()) { attack_melee(); return; }
-    if (can_ranged() & ranged_prob()) { attack_ranged(); return; }
+    if (too_close() && can_incr() && incr_prob() ) { incr_dist(); return 0; }
+    if (too_far() && can_decr() && decr_prob() ) { decr_dist(); return 0; }
+    if (melee_range() & melee_prob()) { attack_melee(); return 0; }
+    if (can_ranged() & ranged_prob()) { attack_ranged(); return 0; }
     stay();
   }
   return 1.0; 
