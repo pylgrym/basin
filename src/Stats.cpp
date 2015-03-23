@@ -174,7 +174,10 @@ int Stats::calcBaseAC() {
 }
 
 int Stats::mobAC() {
-  return level() + 2 + baseMobAC;  // This is too much, I think..?
+  // return level() + 2 + baseMobAC;  // This is too much, I think..?
+  return (level()/2) + 2 + baseMobAC;  // This is too much, I think..?
+  /* JG: This is complex: the 'TOO HARD' RULEÆØ
+  */
 }
 
 
@@ -533,11 +536,11 @@ void Stats::showStats() {
   s << ", fuel left:" << lightUnits;          
   pr(s);
 
-  int enc1 = Encumb::encLimits(Encumb::LightE);
-  int enc2 = Encumb::encLimits(Encumb::MediumE);
-  int enc3 = Encumb::encLimits(Encumb::HeavyE);
+  int unEnc = Encumb::encLimits(Encumb::LightE);
+  int lightEnc = Encumb::encLimits(Encumb::MediumE); // Yeah I know, 'medium == light' is not cool.
+  int hardEnc = Encumb::encLimits(Encumb::HeavyE);
   //int enc4 = Encumb::encLimits(Encumb::CantLiftE);
-  s << "enc.limits:" << enc1 << "/" << enc2 << "/" << enc3;   pr(s);
+  s << "enc.limits:" << unEnc << "/" << lightEnc << "/" << hardEnc;   pr(s);
 
   // Cuss::prtL(s.str().c_str());  
 }
@@ -551,7 +554,6 @@ bool Stats::persist(Persist& p) {
   Con.persist(p);
   Wis.persist(p);
   Chr.persist(p);
-
 
   p.transfer(theLevel,  "level"); 
   p.transfer(maxHP,     "maxHP"); 
@@ -570,7 +572,6 @@ bool Stats::persist(Persist& p) {
   p.transfer(confused,  "confused"); 
   p.transfer(gold,      "gold"); 
 
-
   // FIXME: - these should probably be persisted with a count, instead of hardcoding 40.
   if (manaRolls.empty()) {
     manaRolls.resize(40);
@@ -579,8 +580,6 @@ bool Stats::persist(Persist& p) {
     p.transfer(manaRolls[i], "manaRoll"); 
   }
 
-  // just temporary: (is not necessary, because we save and load mana/maxMana too)
-  // calcStats(); // Now we have all (?) data, we can recalc maxMana/maxHP.
   return true;
 }
 
@@ -593,7 +592,7 @@ bool Stat::persist(Persist& p) {
 }
 
 
-int Stats::calcAvgACeffect() {
+int Stats::calcAvgACeffect() { // used to display a hint to the user.
   int level = PlayerMob::ply->stats.level();
   Stats avgStats(level, false); // Make stats for an avg same-level monster.
   avgStats.makeAvg();
@@ -635,48 +634,15 @@ int Stats::lvlAdj(int in) const {
 bool Stats::useMana(int manaCost) { 
   int newMana = mana - manaCost;
   if (newMana < 0) {
-
-    /*
-    if (mob.stats.mana < Spell::manaCost(effect)) {
-
-      // FIXME, make a general prompter helper func, that integrates all this:
-      LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
-      Cuss::clear(false);
-      const char* keyPrompt = "Your mana is exhausted. Risk it Y/N?";
-      int YN_Key = 0;
-      bool bFound = false;
-      for (;!bFound;) {
-        YN_Key = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "risk cast,Y/N"); 
-
-        if (YN_Key == VK_ESCAPE || YN_Key == 'N') {
-          Cuss::clear(true);
-          return false; // Cancelled zap operation.
-        }
-        if (YN_Key == 'Y') {bFound = true;  break;}
-      } // Loop until Y/N/Esc key.
-
-      bool bFail = oneIn(3); 
-      if (!bFail) {
-        logstr log; log << "You pull it off! ..";
-        return true;
-      }
-
-      err << "You fumble and damage your health.";
-      int severity = rnd(25, 50);
-      debstr() << "hurt-severity-pct:" << severity << "\n";
-      mob.stats.healPct(-severity);
-      return false;
-    }
-    */
-
     newMana = 0;
   }
-
   mana = newMana;
   return true;
 }
 
 
+
+// Check why mob armour is so high..
 
 bool Stat::rollCheck(bool guifeedback) const {
   int roll = rnd::Dx(20);

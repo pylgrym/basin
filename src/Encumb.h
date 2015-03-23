@@ -3,7 +3,12 @@
 class Encumb
 {
 public:
-  enum EncumbEnum { LightE = 0, MediumE = 1, HeavyE = 4, CantLiftE = 10 }; // these values also act as penalties.
+  enum EncumbEnum { 
+    LightE = 0,  // unburdened.    ("-0")
+    MediumE = 1, // light penalty  ("-1")
+    HeavyE = 4,  // severe penalty ("-4")
+    CantLiftE = 10 // crushing penalty.
+  }; // these values also act as penalties.
 
   Encumb();
   ~Encumb();

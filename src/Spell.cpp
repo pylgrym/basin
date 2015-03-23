@@ -907,6 +907,7 @@ class Spell_Tackle: public SpellImpl { public:
 } spell_tackle;
 
 
+// zap which?
 bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
   if (mob.stats.mana >= Spell::manaCost(effect)) {
     return true; 
@@ -925,7 +926,7 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
       Cuss::clear(true);
       return false; // Cancelled zap operation.
     }
-    if (YN_Key == 'Y') {bFound = true;  break;}
+    if (YN_Key == 'Y') { bFound = true;  break; }
   } // Loop until Y/N/Esc key.
 
   bool bFail = rnd::oneIn(3); 
@@ -1088,7 +1089,7 @@ CPoint Spell::pickZapDir() {
   // FIXME - respectMultiNotif and promptForKey should be integrated!
   LogEvents::respectMultiNotif(); // Pause if we have queued messages, before prompting.
   Cuss::clear(false); // Must come after respectMultiNotif, or we'll never see msg.
-  const char* keyPrompt = "Zap which direction?";
+  const char* keyPrompt = "Which direction?"; // was: 'zap which direction?'
   for (;!bFound;) {
     dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
 
