@@ -168,7 +168,8 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
     //}
   }
   else {
-    img.StretchBlt(dc, tgt, src);
+    // img.StretchBlt(dc, tgt, src);
+    img.BitBlt(dc, tgt, src.TopLeft(), SRCCOPY); // Hmm sems a bit faster than StretchBlt.
   }
 
 }

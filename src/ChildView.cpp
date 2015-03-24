@@ -440,11 +440,21 @@ public:
       if (1) {
         tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost, tintCost); // shadows-transp.
       } else { // try simpler shading.
-        CRect rect = cellR();  
+        // JG: Actually, doesn't help at all.
+        CRect r = cellR();  
+        Gdiplus::Rect r2(r.left, r.top, r.Width(), r.Height());
+
+        Gdiplus::Color alf(blend, 5, 10, 15); // = Color::FromArgb(blend, 5, 10, 15);
+        SolidBrush alfBrush(alf); // = new SolidBrush(clr);
+        gr.FillRectangle(&alfBrush, r2);
+
         // Won't work - no alpha channel in basic GDI :-(
         // COLORREF transColor = RGB(5, 10, 15, blend);
         // dc.FillSolidRect(&rect, transColor);
       }
+      /* IDEA: Instead, make a stand-alone app that solely does drawing and timing,
+      no complicated code whatsoever..
+      */
     }
 
     if (0) { // 1) { // true) {
