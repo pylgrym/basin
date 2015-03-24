@@ -168,6 +168,8 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
     background, //reinterpret_cast<HBRUSH>(COLOR_WINDOW+1), 
     NULL);
 
+  //  | WS_EX_COMPOSITED
+
 	return TRUE;
 }
 
@@ -175,6 +177,15 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	debstr() << "ontimer:" << nIDEvent << "\n";
 	KillTimer(timerID);
+
+  const bool wantDoubleBuffer = true; // JG: It actually seems to work.
+  if (wantDoubleBuffer && 0) { // 1) {
+    // hack to get doublebuffer:  WS_EX_COMPOSITED 
+    int style = GetWindowLong( GetSafeHwnd(), GWL_EXSTYLE);
+    style |= WS_EX_COMPOSITED;
+    SetWindowLong( GetSafeHwnd(), GWL_EXSTYLE, style);
+  }
+
 	// do stuff..
   debstr() << "Starting queue-process..\n";
   for (bool isRunning=true; isRunning && !TheUI::hasQuit; ) {

@@ -54,7 +54,13 @@ public:
 
   CString tileFile;
   Tilemap keys;
+
+  bool hasCompatDC;
+  CDC compatDC;
+  void initCompatDC(CDC& src);
+
   CImage img;
+  // CImage img2;
 
   Gdiplus::Image* imgPlus;
 

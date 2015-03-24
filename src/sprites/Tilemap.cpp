@@ -107,16 +107,27 @@ void Tilemap::buildHashes() {
 
 
 
+void Tiles::initCompatDC(CDC& src) {
+  assert(false); // not active currently.
+  /*
+  assert(!hasCompatDC);
+  compatDC.CreateCompatibleDC(&src);
+  compatDC.SelectObject((HBITMAP)img2);
+  hasCompatDC = true;
+  */
+}
 
 
 Tiles::Tiles()
 :imgPlus(NULL) //L"") 
+,hasCompatDC(false)
 {
   tileFile = L"sprites\\tiles1"; 
   bool bKeyOK = keys.load(keyFile());
   keys.buildHashes();
 
   bool bImgOK = (img.Load(imgFile()) > 0);
+  // bImgOK = (img2.Load(imgFile()) > 0);
 
   Gdiplus::Image readImg(imgFile());
   imgPlus = readImg.Clone();
@@ -156,11 +167,21 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, DrawT
   } // http://www.codeproject.com/Articles/5034/How-to-implement-Alpha-blending
 
 
+  // if (!hasCompatDC) { initCompatDC(dc);  } // Make sure we have dc-bitmap.
+
   // bTransp = Raw; // Even with raw BitBlt, I get 150ms = long time! (15% of a second.)
   COLORREF colTrans = RGB(1, 2, 3);    //COLORREF colTrans = RGB(64, 128, 192);
   switch (bTransp) {
-  case Raw:   img.BitBlt(dc, tgt, src.TopLeft(), SRCCOPY); break;// Hmm sems a bit faster than StretchBlt.
-                                                               // img.StretchBlt(dc, tgt, src);
+  case Raw:   
+    {
+      if (1) {
+        img.BitBlt(dc, tgt, src.TopLeft(), SRCCOPY); break;// Hmm sems a bit faster than img.StretchBlt(dc, tgt, src);
+      } else { // Hmm, compatDC didn't seem to help/speed-up :-(
+        dc.BitBlt(tgt.left, tgt.top, tgt.Width(), tgt.Height(), &compatDC, src.left, src.top, SRCCOPY);
+      }
+    }
+    break;
+
   case Mask:  img.TransparentBlt(dc, tgt, src, colTrans); break; // blendOp:AC_SRC_OVER == 0.
 
   case Blend: img.AlphaBlend(dc, tgt, src, factor); break; // blendOp:AC_SRC_OVER == 0.
