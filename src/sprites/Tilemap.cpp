@@ -123,16 +123,16 @@ Tiles::Tiles()
 }
 
 
-void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CA2T ukey(key, CP_ACP);
   CPoint tilePos = tile(CString(ukey));
-  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost, numTints);
 }
 
 
-void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
+void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CPoint tilePos = tile(key);
-  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color,cost);
+  drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color,cost,numTints);
 }
 
     // JG: NO, this doesn't really work, FIXME/TODO: I still lack something,
@@ -142,7 +142,7 @@ void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool
     //img.TransparentBlt(dc, tgt, src);
 
 
-void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost) {
+void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
@@ -151,6 +151,7 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
     // CBrush brush(color); // Just testing the color..
     // dc.FillRect(&tgt, &brush);
     tintTile(src, tgt, gr, color);
+    ++numTints;
     return;
   } // http://www.codeproject.com/Articles/5034/How-to-implement-Alpha-blending
   

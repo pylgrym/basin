@@ -14,6 +14,7 @@
 #include "PlayerMob.h"
 #include "Dungeons.h"
 
+#include "TimeMeasure.h"
 
 
 #include <gdiplus.h>
@@ -266,25 +267,6 @@ void TheUI::invalidateVPCell(CPoint vp) {
 CPoint Viewport::w2v(CPoint w) { return w - offset; }
 CPoint Viewport::v2w(CPoint v) { return v + offset; }
 
-class TimeMeasure {
-public:
-  int a, b;
-  std::string what;
-  TimeMeasure(const char* what_) {
-    what = what_;
-    a = measure(); // fixme, find way to measure time from sys.
-  }
-  TimeMeasure() {
-    b = 1 + measure();
-    showTime();
-  }
-  int measure() { return 1;  }
-  void showTime() {
-    int delta = (b - a);
-    debstr() << "time:" << delta << ", " << what << "\n";
-  }
-
-};
 
 
 
@@ -327,13 +309,14 @@ public:
   VPoint vp; // viewport coords.
   CPoint wp; // 'world' (map) coords.
   int zcost; // diagnostics - are we drawing too much.
+  int tintCost;
   int px, py;
   CRect cellR_buf;
   const CRect& cellR() const { return cellR_buf; }
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
-    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, zcost); 
+    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -352,7 +335,7 @@ public:
     ++zcost;
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,zcost); // false);  // THINGS
+    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,zcost, tintCost); // drawing THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -370,7 +353,7 @@ public:
     COLORREF mobColor = colorNone;
     const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
     mobColor = sd.color;
-    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, zcost); // false); MOBS
+    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, zcost, tintCost); // drawing MOBS
 
     // Draw stats/HP:
     Mob* mob = cell.creature.m;
@@ -414,6 +397,7 @@ public:
   }
 
 
+  // MakeMS-timer
   void drawLightShadow(Cell& cell, bool losDark) {
     /* there is a bug, where permlit areas don't respect gradual lighting, like torch light does. instead, you get an on/off effect. */
     // DARKENING according to light level (we draw 'black darkness' on top of things,
@@ -453,7 +437,14 @@ public:
       CPoint blendTintTile(36,22); 
       ++zcost;
       bool transp = true; // (!losDark && !cell.is_lit());
-      tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost); // was:colorNone
+      if (1) {
+        tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost, tintCost); // shadows-transp.
+      } else { // try simpler shading.
+        CRect rect = cellR();  
+        // Won't work - no alpha channel in basic GDI :-(
+        // COLORREF transColor = RGB(5, 10, 15, blend);
+        // dc.FillSolidRect(&rect, transColor);
+      }
     }
 
     if (0) { // 1) { // true) {
@@ -498,6 +489,7 @@ public:
     dc.SetBkMode(TRANSPARENT);
 
     zcost = 0;
+    tintCost = 0;
 
     for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
       for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
@@ -522,7 +514,7 @@ public:
         if (pCell == NULL  || (losDark && !pCell->is_lit() && !pCell->hasOverlay()) ) { 
           // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
           CPoint darkTile(29,20); // (36, 22);
-          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,zcost); 
+          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,zcost,tintCost); // clearing empty/outside cells.
           continue;
         }
 
@@ -539,7 +531,7 @@ public:
 
         if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
           ++zcost;
-          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,zcost); 
+          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,zcost, tintCost); // overlays/bulletsprites.
         }
 
         drawLightShadow(cell,losDark); // NB!, this is a major performance hit!
@@ -547,7 +539,7 @@ public:
     } // for x.
 
     Term::term.dirtyall = false;
-    debstr() << "cost:" << zcost << "\n";
+    debstr() << "cost:" << zcost << ", tints:" << tintCost << "\n";
   } // doDraw.
 
 }; // end tiledraw.
@@ -565,9 +557,10 @@ void CChildView::OnPaint() {
   CPaintDC dc(this); // device context for painting
 
 
+  TimeMeasure measureDrawing("drawupd");
   // dc.ExcludeUpdateRgn
   TileDraw draw(dc, tiles);
-  draw.doDraw(); // dc);
+  draw.doDraw(); 
 }
 
 
