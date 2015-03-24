@@ -316,7 +316,7 @@ public:
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
-    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, false, 255, colorNone, zcost, tintCost); // drawing floor.
+    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, colorNone, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -335,7 +335,7 @@ public:
     ++zcost;
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, true,255, sd.color,zcost, tintCost); // drawing THINGS
+    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, sd.color,zcost, tintCost); // drawing THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -353,7 +353,7 @@ public:
     COLORREF mobColor = colorNone;
     const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
     mobColor = sd.color;
-    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, true,255, mobColor, zcost, tintCost); // drawing MOBS
+    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, Tiles::Mask, 255, mobColor, zcost, tintCost); // drawing MOBS
 
     // Draw stats/HP:
     Mob* mob = cell.creature.m;
@@ -433,12 +433,13 @@ public:
       blend = dist * 15; // (int)(255.0 - (255.0 / ((0.9*dist) + 1.0)));
       if (blend > 255) { blend = 255;  }
 
-      CPoint blendDarkenTile(29,20); 
-      CPoint blendTintTile(36,22); 
+      CPoint blendDarkenTile(29,20); // "Pure black"
+      CPoint blendTintTile(36,22); // gray-dither-mass-shadow. 
       ++zcost;
-      bool transp = true; // (!losDark && !cell.is_lit());
+      //Tiles::DrawType transp = Tiles::Blend; // true; // (!losDark && !cell.is_lit());
       if (1) {
-        tiles.drawTileB(vp.p.x, vp.p.y, (losDark ? blendDarkenTile : blendTintTile), dc, gr, transp /*true*/, blend, darkness,zcost, tintCost); // shadows-transp.
+        CPoint theTile = (losDark ? blendDarkenTile : blendTintTile);
+        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, darkness,zcost, tintCost); // shadows-transp.
       } else { // try simpler shading.
         // JG: Actually, doesn't help at all.
         CRect r = cellR();  
@@ -524,7 +525,7 @@ public:
         if (pCell == NULL  || (losDark && !pCell->is_lit() && !pCell->hasOverlay()) ) { 
           // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
           CPoint darkTile(29,20); // (36, 22);
-          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, false, 255, colorNone,zcost,tintCost); // clearing empty/outside cells.
+          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // clearing empty/outside cells.
           continue;
         }
 
@@ -541,7 +542,7 @@ public:
 
         if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
           ++zcost;
-          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, true,255, colorNone,zcost, tintCost); // overlays/bulletsprites.
+          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
         }
 
         drawLightShadow(cell,losDark); // NB!, this is a major performance hit!

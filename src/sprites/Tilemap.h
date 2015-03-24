@@ -49,7 +49,8 @@ const COLORREF colorNone = RGB(1, 2, 3);
 
 class Tiles {
 public:
-  enum SizesEnum { TileWidth=32,TileHeight=32};
+  enum SizesEnum { TileWidth=32,TileHeight=32 };
+  enum DrawType { Blend=0,Mask=1,Raw=2};
 
   CString tileFile;
   Tilemap keys;
@@ -73,9 +74,9 @@ public:
     return nonePos;
   }
 
-  void drawTile( int x, int y, const TCHAR* key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints);
-  void drawTileB(int x, int y, CPoint tilePos,   CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints);
-  void drawTileA(int x, int y, const char*  key, CDC& dc, Gdiplus::Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints);
+  void drawTile( int x, int y, const TCHAR* key, CDC& dc, Gdiplus::Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints);
+  void drawTileB(int x, int y, CPoint tilePos,   CDC& dc, Gdiplus::Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints);
+  void drawTileA(int x, int y, const char*  key, CDC& dc, Gdiplus::Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints);
 
   // requires gdi+:
   void tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORREF matColor);

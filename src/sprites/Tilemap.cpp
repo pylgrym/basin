@@ -123,14 +123,14 @@ Tiles::Tiles()
 }
 
 
-void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
+void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CA2T ukey(key, CP_ACP);
   CPoint tilePos = tile(CString(ukey));
   drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost, numTints);
 }
 
 
-void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
+void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CPoint tilePos = tile(key);
   drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color,cost,numTints);
 }
@@ -142,7 +142,7 @@ void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, bool
     //img.TransparentBlt(dc, tgt, src);
 
 
-void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool bTransp, int factor, COLORREF color, int& cost, int& numTints) {
+void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
@@ -154,25 +154,19 @@ void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, bool 
     ++numTints;
     return;
   } // http://www.codeproject.com/Articles/5034/How-to-implement-Alpha-blending
-  
-  
-  if (bTransp) { // TransparentBlt too!
-    // Why doesn't this work?
-    //COLORREF colTrans2 = RGB(1, 2, 3);
-    //COLORREF colTrans = RGB(64, 128, 192);
-    //img.TransparentBlt(dc, tgt, src, colTrans); // blendOp:AC_SRC_OVER == 0.
-    img.AlphaBlend(dc, tgt, src, factor); // blendOp:AC_SRC_OVER == 0.
 
-    // if (color != colorNone && ) {
-    //  tintTile(src, tgt, gr, color);
-    //}
-  }
-  else {
-    // img.StretchBlt(dc, tgt, src);
-    img.BitBlt(dc, tgt, src.TopLeft(), SRCCOPY); // Hmm sems a bit faster than StretchBlt.
+
+  // bTransp = Raw; // Even with raw BitBlt, I get 150ms = long time! (15% of a second.)
+  COLORREF colTrans = RGB(1, 2, 3);    //COLORREF colTrans = RGB(64, 128, 192);
+  switch (bTransp) {
+  case Raw:   img.BitBlt(dc, tgt, src.TopLeft(), SRCCOPY); break;// Hmm sems a bit faster than StretchBlt.
+                                                               // img.StretchBlt(dc, tgt, src);
+  case Mask:  img.TransparentBlt(dc, tgt, src, colTrans); break; // blendOp:AC_SRC_OVER == 0.
+
+  case Blend: img.AlphaBlend(dc, tgt, src, factor); break; // blendOp:AC_SRC_OVER == 0.
   }
 
-}
+} // end drawTileB.
 
 
 
