@@ -29,13 +29,27 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
   defSchool = (AttackSchool) rnd::Rnd(0, SC_MaxSchools);
   mobSpell = Spell::rndSpell_level(mlevel);
 
-  bool badMood = rnd::oneIn(12);
-  if (badMood) { 
-    mood = (MoodEnum) rnd::Rnd(0, M_MaxMoods);
-  } else { // Most monsters start out sleeping, or wandering.
-    bool awake = rnd::oneIn(6);
-    mood = (awake ? M_Wandering : M_Sleeping);
-  }
+
+  // starting-Mood distribution..
+  mood = M_Sleeping; // The default..
+
+  bool isSleepy = rnd::XinY(2,3); // 2 out of 3 mobs start out sleeping.
+  if (!isSleepy) {
+    bool drivenMoodType = rnd::oneIn(2);
+    if (drivenMoodType) {
+      mood = M_Driven;
+    } else {  // old approach..
+
+      bool badMood = rnd::oneIn(12);
+      if (badMood) { 
+        mood = (MoodEnum) rnd::Rnd(0, M_MaxMoods);
+      } else { // Most monsters start out sleeping, or wandering.
+        bool awake = rnd::oneIn(6);
+        mood = (awake ? M_Wandering : M_Sleeping);
+      }
+
+    }
+  } // if not default-sleeping.
   
 }
 
