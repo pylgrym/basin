@@ -179,11 +179,12 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	KillTimer(timerID);
 
   const bool wantDoubleBuffer = true; // JG: It actually seems to work.
-  if (wantDoubleBuffer && 0) { // 1) {
+  if (wantDoubleBuffer && 0) { // 1) { //0) { // 1) {
     // hack to get doublebuffer:  WS_EX_COMPOSITED 
-    int style = GetWindowLong( GetSafeHwnd(), GWL_EXSTYLE);
+    int style = GetWindowLongPtr( GetSafeHwnd(), GWL_EXSTYLE ); // GetWindowLong
     style |= WS_EX_COMPOSITED;
-    SetWindowLong( GetSafeHwnd(), GWL_EXSTYLE, style);
+    SetWindowLongPtr( GetSafeHwnd(), GWL_EXSTYLE, style ); // SetWindowLong
+    // 
   }
 
 	// do stuff..
