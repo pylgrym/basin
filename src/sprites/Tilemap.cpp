@@ -154,14 +154,22 @@ void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, Draw
     //img.TransparentBlt(dc, tgt, src);
 
 
+/* Idea: I suspect the slow drawing is really caused by tile-lookup!
+I can verify this, by assigning stock-tiles to mobs, items, envir.
+*/
+
 void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CRect src( CPoint(tilePos.x*TileWidth, tilePos.y*TileHeight), CSize(TileWidth, TileHeight) );
   CRect tgt( CPoint(x*TileWidth, y*TileHeight), CSize(TileWidth, TileHeight) );
 
   if (color != colorNone) { //  && oneIn(2) ) {
     ++cost;
-    // CBrush brush(color); // Just testing the color..
-    // dc.FillRect(&tgt, &brush);
+    if (bTransp == Raw) { // We are just drawing/coloring floor!
+       CBrush brush(color); // Just  the color..
+      dc.FillRect(&tgt, &brush);
+      return;
+    }
+
     tintTile(src, tgt, gr, color);
     ++numTints;
     return;

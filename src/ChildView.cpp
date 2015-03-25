@@ -328,6 +328,9 @@ public:
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
+    /* fixme - tints are very expensive,
+    and for floor-tint, we really should just draw the coloured square instead!
+    */
     COLORREF tileColor = cell.envir.ecolor;
     tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;

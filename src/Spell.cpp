@@ -1116,7 +1116,7 @@ CPoint Spell::NoDir = CPoint(0,0); // 0,0
 void Spell::trySpellIdent(SpellEnum effect) {
   // todo - figure out, if/why it fails for rush/crush/tackle.
 
-  SpellDesc& desc = spellNC(effect);
+   SpellDesc& desc = spellNC(effect);
   if (desc.ident) { debstr() << "(already known)\n"; return;  }
   if (rnd::oneIn(2)) { // Maybe every use should identify automatically.. 
     logstr log; log << "you get a sense of what this item does!";
