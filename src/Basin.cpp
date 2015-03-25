@@ -59,8 +59,10 @@ BOOL CBasinApp::InitInstance()
   unsigned int myRandSeed = 320; //  319; // 318;
   srand(myRandSeed); // I want my player character, on start-up, to have some different stats..
 
-  Obj::initPrices();
-  Obj::initWeights();
+  // Obj::initPrices();
+  // Obj::initWeights();
+  Obj::initShortnames();
+
   Creature::initMobDefs();
   Spell::initQual();
   MobDist::enumerate();

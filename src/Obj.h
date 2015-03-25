@@ -173,6 +173,9 @@ public:
   static void initWeights();
   static void initTiles(class Tiles& tiles);
 
+  static std::vector< std::string > shortNames;
+  static void initShortnames();
+
 };
 
 

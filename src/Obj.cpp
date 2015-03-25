@@ -91,7 +91,7 @@ CString Obj::some_item() const {
 
 
 
-
+/////////////////////////////////////////////price  dice  kilo 
 ObjDef objDefs[] = {
 {OB_None,      EQ_None,    "nothing",           0, "1d1", 0.0 },
 {OB_Lamp,      EQ_None,    ". lamp",            2, "1d2", 0.5 }, 
@@ -243,12 +243,15 @@ const ObjDef& Obj::randObjDesc() { // works better, on types instead.
 
 
 
+std::vector< std::string > Obj::shortNames;
+
+
 
 void Obj::initTiles(Tiles& tiles) {
   for (int i = 0; i < numObjDefs; ++i) {
     ObjDef& def = objDefs[i];
 
-    CA2T ukey(def.desc, CP_ACP);
+    CA2T ukey( objdefAsStr(def), CP_ACP);
     CPoint tilePos = tiles.tile(CString(ukey));  // FIXME, SHOULD USE SHORTNAMES i think?
     def.tilekey = tilePos;
   }
@@ -258,6 +261,7 @@ void Obj::initTiles(Tiles& tiles) {
 
 
 void Obj::initPrices() {
+  debstr() << "no, prices are already specified.\n"; return; 
   for (int i = 0; i < numObjDefs; ++i) {
     ObjDef& def = objDefs[i];
     if (def.price == 0) {
@@ -266,7 +270,9 @@ void Obj::initPrices() {
   }
 }
 
+
 void Obj::initWeights() {
+  debstr() << "no, weights are already specified.\n"; return; 
   for (int i = 0; i < numObjDefs; ++i) {
     ObjDef& def = objDefs[i];
     if (def.kilo == 0) {
@@ -276,24 +282,25 @@ void Obj::initWeights() {
 }
 
 
-const char* Obj::objdefAsStr(const ObjDef& def) {  
-  const ObjDef* defptr = &def;
-  int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
-  static std::vector< std::string > shortNames;
+void Obj::initShortnames() {
   if (shortNames.size() == 0) {
-    const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
     shortNames.resize(numObjDefs);
     // std::ofstream theset("theset.key");
     for (int i = 0; i < numObjDefs; ++i) {
       ObjDef& def = objDefs[i];
       std::string sName = Obj::make_indef_item(def.desc);
       shortNames[i] = sName;
-      if (def.price == 0) { // fixme - this is crap, must cooperate with Obj::initPrices!
-        def.price = rnd::rndC(1, 11);
-      }
-      // theset << "\"" << sName << "\"" << " " << i % 40 << " 11\n";
     }
   }
+}
+
+
+const char* Obj::objdefAsStr(const ObjDef& def) {  
+  const ObjDef* defptr = &def;
+  int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
+
+  assert(shortNames.size() > 0);
+
   assert(ix >= 0);
   assert(ix < (int) shortNames.size());
   return shortNames[ix].c_str();
@@ -690,5 +697,6 @@ bool Obj::persist(Persist& p, CPoint& pos) {
   }
   return true;
 }
+
 
 
