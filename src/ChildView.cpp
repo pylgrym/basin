@@ -334,8 +334,8 @@ public:
     /* fixme - tints are very expensive,
     and for floor-tint, we really should just draw the coloured square instead!
     */
-    COLORREF tileColor = cell.envir.ecolor;
-    tiles.drawTileA(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
+    COLORREF tileColor = cell.envir.ecolor; // typeS() NB/fixme - typeS doesn't work atm anymore?
+    tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -518,6 +518,9 @@ public:
     /* goal here is to make the tighest fastest loop that 'gets the job done',
     to demonstrate a 'lower bound' for how fast/slow this can be done..
     */
+    doFont(largeFont,smallFont, dc);
+    dc.SetBkMode(TRANSPARENT);
+
     const CPoint greyDitherTile(36, 22), greyTile2(36,21);
 
     for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
@@ -529,6 +532,11 @@ public:
         // Used by 'all' that follow:
         px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
         cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+
+        if (!tcell.charEmpty()) { // If it's a terminal-text-char, just draw that and be done with it:
+          drawTermChar(tcell); // dc, gr, txtBk, largeFont, tcell, px, py, cost);
+          continue;
+        }
 
         wp = Viewport::vp.v2w(vp.p); // world coords.
 
@@ -570,10 +578,14 @@ public:
         int dist = int(0.5+PlayerMob::distPlyLight(CPoint(wp.x, wp.y)));
         int blend = dist * 15; 
         if (blend > 255) { blend = 255;  }
-        if (litCell) { blend = 128; }
+        if (litCell && losDark) { blend = 128; }
 
         if ( (dist != 0 && !losDark) || litCell) {
           tiles.drawTileB(vp.p.x, vp.p.y, greyDitherTile, dc, gr, Tiles::Blend, blend, colorNone,zcost,tintCost); // draw darkening.
+        }
+
+        if (pCell != NULL && pCell->hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
+          tiles.drawTileB(vp.p.x, vp.p.y, pCell->overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
         }
 
       }
@@ -584,7 +596,7 @@ public:
 
 
   void doDraw() {
-    newDraw(); return;
+    // newDraw(); return;
 
     doFont(largeFont,smallFont, dc);
 	  dc.SelectObject(largeFont);
