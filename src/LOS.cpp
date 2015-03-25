@@ -46,7 +46,7 @@ void LightMap::invalidateDiff(LightMap& newLM) {
       }
     }
   }
-  debstr() << "Los-Inv:" << losInvalidate << "\n";
+  //debstr() << "Los-Inval#:" << losInvalidate << "\n";
 }
 
 

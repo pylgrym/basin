@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "theUI.h"
+#include "sprites/Tilemap.h"
 
 bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
   switch (type) {
@@ -42,55 +43,81 @@ bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
 
 
 const std::string Envir::typestr() {
+  return typeS();
+  /*
   CString us = typeS();
   CT2A as(us);
   std::string s = as;
   return s;
+  */
+}
+
+void Envir::initEnvirs(Tiles& tiles) {
+  if (priv_envirKeys.size() == 0) { initEnvirKeys();  }
+
+  for (int i = 0; i < EN_MaxLimit; ++i) {
+    std::string key = priv_envirKeys[i];
+    if (key.empty()) { continue; }
+
+    EnvirDef& def = envirs[i];
+    def.desc = key;
+
+    // init cpoint tilekey:
+    CA2T ukey(key.c_str(), CP_ACP);
+    CPoint tilePos = tiles.tile(CString(ukey)); 
+    def.tilekey = tilePos;
+  }
 }
 
 
-const TCHAR* Envir::etypeAsStr(EnvirEnum type) {
-  static std::vector<CString> envirKeys;
-  if (envirKeys.size() == 0) {
-    envirKeys.resize(EN_MaxLimit);
-    envirKeys[EN_Floor] = L"."; // floor";
-    envirKeys[EN_Wall] = L"#"; // wall";
-    envirKeys[EN_Border] = L"border"; // @"; // border";
-    envirKeys[EN_Vein] = L"vein"; //
-    envirKeys[EN_StairUp] = L"stairup";
-    envirKeys[EN_StairDown] = L"stairdown";
-    envirKeys[EN_Shop] = L"shop"; 
+void Envir::initEnvirKeys() {
+  if (priv_envirKeys.size() == 0) {
+    priv_envirKeys.resize(EN_MaxLimit);
+    priv_envirKeys[EN_Floor]  = "."; // floor";
+    priv_envirKeys[EN_Wall]  = "#"; // wall";
+    priv_envirKeys[EN_Border]  = "border"; // @"; // border";
+    priv_envirKeys[EN_Vein]  = "vein"; //
+    priv_envirKeys[EN_StairUp]  = "stairup";
+    priv_envirKeys[EN_StairDown]  = "stairdown";
+    priv_envirKeys[EN_Shop]  = "shop"; 
 
-    envirKeys[EN_Tree] = L"tree"; 
-    envirKeys[EN_Green] = L"green"; 
-    envirKeys[EN_Water] = L"waterlight"; 
+    priv_envirKeys[EN_Tree]  = "tree"; 
+    priv_envirKeys[EN_Green]  = "green"; 
+    priv_envirKeys[EN_Water]  = "waterlight"; 
 
-    envirKeys[EN_DoorOpen]   = L"door_open"; 
-    envirKeys[EN_DoorClosed] = L"door_closed";
-    envirKeys[EN_DoorLocked] = L"door_locked";
-    envirKeys[EN_DoorStuck]  = L"door_stuck";
-    envirKeys[EN_DoorBroken] = L"door_broken";
+    priv_envirKeys[EN_DoorOpen]    = "door_open"; 
+    priv_envirKeys[EN_DoorClosed]  = "door_closed";
+    priv_envirKeys[EN_DoorLocked]  = "door_locked";
+    priv_envirKeys[EN_DoorStuck]   = "door_stuck";
+    priv_envirKeys[EN_DoorBroken]  = "door_broken";
 
-    envirKeys[EN_DoorOneWay] = L"door_oneway";
-    envirKeys[EN_DoorCullis] = L"door_cullis";
+    priv_envirKeys[EN_DoorOneWay]  = "door_oneway";
+    priv_envirKeys[EN_DoorCullis]  = "door_cullis";
 
-    // envirKeys[EN_] = L""; 
-    // envirKeys[EN_] = L""; 
+    // priv_envirKeys[EN_]  = ""; 
+    // priv_envirKeys[EN_]  = ""; 
 
     /// {OB_StairUp, EQ_None, ". stair up"},
     /// { OB_StairDown, EQ_None, ". stair down" },
 
-    //envirKeys[EN_Unv]   = L"unv"; //
-    //envirKeys[EN_Vis]   = L"vis"; //
-    //envirKeys[EN_Wall1] = L"#"; //
-    //envirKeys[EN_Wall2] = L"wall2"; //
-    //envirKeys[EN_Open]  = L"open"; //
-    //envirKeys[EN_Open2] = L"open2"; //
-
-
+    //priv_envirKeys[EN_Unv]    = "unv"; //
+    //priv_envirKeys[EN_Vis]    = "vis"; //
+    //priv_envirKeys[EN_Wall1]  = "#"; //
+    //priv_envirKeys[EN_Wall2]  = "wall2"; //
+    //priv_envirKeys[EN_Open]   = "open"; //
+    //priv_envirKeys[EN_Open2]  = "open2"; //
   }
-  if (type < 0 || type >= (int) envirKeys.size()) { return L"out of bounds, envir enum.";  }
-  return envirKeys[type];
+}
+
+
+
+std::vector<std::string> Envir::priv_envirKeys;
+
+std::string Envir::etypeAsStr(EnvirEnum type) {
+  if (priv_envirKeys.size() == 0) { initEnvirKeys(); }
+
+  if (type < 0 || type >= (int) priv_envirKeys.size()) { return "out of bounds, envir enum.";  }
+  return priv_envirKeys[type];
 }
 
 
@@ -135,4 +162,20 @@ void Envir::lightCells(CPoint pos) { // Used by light-spells.
     tmpLightStr = newStr;
   }
 
+}
+
+
+
+EnvirDef Envir::envirs[EN_MaxLimit];
+
+const EnvirDef& Envir::envDef(EnvirEnum etype) {
+  assert(etype >= 0);
+  assert(etype < EN_MaxLimit);
+  return envirs[etype];
+}
+
+EnvirDef& Envir::envDefNC(EnvirEnum etype) {
+  assert(etype >= 0);
+  assert(etype < EN_MaxLimit);
+  return envirs[etype];
 }

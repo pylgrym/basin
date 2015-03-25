@@ -287,6 +287,7 @@ public:
 
   void drawTermChar(TCell& tcell) { // CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
     // Terminal-char cell.
+    //return;
     ++zcost;
     dc.SelectObject(largeFont);
 
@@ -332,7 +333,7 @@ public:
     and for floor-tint, we really should just draw the coloured square instead!
     */
     COLORREF tileColor = cell.envir.ecolor;
-    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
+    tiles.drawTileA(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -351,7 +352,7 @@ public:
     ++zcost;
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-    tiles.drawTile(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, sd.color,zcost, tintCost); // drawing THINGS
+    tiles.drawTileU(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, sd.color,zcost, tintCost); // drawing THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -508,7 +509,39 @@ public:
   } // end drawLightShadow.
 
 
+
+
+  void newDraw() {
+    for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
+      for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
+        TCell& tcell = Term::term[vp.p];
+        if (!tcell.dirty && !Term::term.dirtyall) { continue; }
+        tcell.dirty = false; // as we are drawing it now, it's no longer dirty.
+
+        // Used by 'all' that follow:
+        px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+
+        wp = Viewport::vp.v2w(vp.p); // world coords.
+
+        CPoint tilekey(36, 22); // (36, 22)
+        Cell* pCell = CL->map.cell(wp); 
+        if (pCell != NULL) {
+          tilekey = pCell->envir.tilekey();
+        }
+        bool losDark = CL->map.lightmap.isDark(wp);
+        // if (losDark) { tilekey = CPoint(36, 22); }
+
+        tiles.drawTileB(vp.p.x, vp.p.y, tilekey, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // draw envir.
+        // 15-30 ms for this part..
+      }
+    }
+  }
+  
+
+
   void doDraw() {
+    newDraw(); return;
 
     doFont(largeFont,smallFont, dc);
 	  dc.SelectObject(largeFont);
@@ -578,7 +611,7 @@ void CChildView::OnPaint() {
   CRect u; GetUpdateRect(&u);
   if (u.left == 0 && u.bottom > 700) {   // Kludge - idea: if suff. large area is dirty, redraw all..
     Term::term.dirtyall = true;  
-    debstr() << u.left << "/" <<  u.top << "/" << u.right << "/" << u.bottom << "\n";
+    //debstr() << u.left << "/" <<  u.top << "/" << u.right << "/" << u.bottom << "\n";
   }
 
   CPaintDC dc(this); // device context for painting

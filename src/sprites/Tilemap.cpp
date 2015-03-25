@@ -11,7 +11,7 @@
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
-
+#include "../Envir.h"
 
 Tilemap::Tilemap()
 {
@@ -132,18 +132,20 @@ Tiles::Tiles()
 
   Gdiplus::Image readImg(imgFile());
   imgPlus = readImg.Clone();
+
+  Envir::initEnvirs(*this);
 }
 
 
 void Tiles::drawTileA(int x, int y, const char* key, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
   CA2T ukey(key, CP_ACP);
-  CPoint tilePos = tile(CString(ukey));
+  CPoint tilePos = tile(CString(ukey)); //CPoint(3, 4); // 
   drawTileB(x, y, tilePos, dc, gr, bTransp, factor, colorNone,cost, numTints);
 }
 
 
-void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
-  CPoint tilePos = tile(key);
+void Tiles::drawTileU(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {
+  CPoint tilePos = tile(key); //CPoint(2, 3); // 
   drawTileB(x, y, tilePos, dc, gr, bTransp, factor, color,cost,numTints);
 }
 
@@ -156,6 +158,11 @@ void Tiles::drawTile(int x, int y, const TCHAR* key, CDC& dc, Graphics& gr, Draw
 
 /* Idea: I suspect the slow drawing is really caused by tile-lookup!
 I can verify this, by assigning stock-tiles to mobs, items, envir.
+
+sadly, it doesn't seem to be it :-(
+then, we have letter-drawing.
+
+fix: objdesc items should have tile-key assigned on start-up!
 */
 
 void Tiles::drawTileB(int x, int y, CPoint tilePos, CDC& dc, Graphics& gr, DrawType bTransp, int factor, COLORREF color, int& cost, int& numTints) {

@@ -8,6 +8,7 @@
 
 
 enum EnvirEnum {
+  EN_None=0,
   EN_Floor='.',
   EN_Wall='#',
   EN_Border='&',
@@ -32,6 +33,14 @@ enum EnvirEnum {
 };
 
 
+struct EnvirDef {
+  EnvirDef() {
+    etype = EN_None;
+  }
+  EnvirEnum etype;
+  CPoint tilekey;
+  std::string desc; // key-label.
+};
 
 class Envir {
 public:
@@ -41,6 +50,11 @@ public:
   COLORREF ecolor; // default colorNone.
 
   int tmpLightStr; // embellishes permLight, but is not currently saved.
+
+  CPoint tilekey() const {
+    const EnvirDef& def = envDef(type);
+    return def.tilekey;
+  }
 
   bool persist(class Persist& p) {
     // JG: enums are problematic, require a template or something, or manual approach.
@@ -102,9 +116,26 @@ public:
   }
 
   void setType(EnvirEnum type_) { type = type_;  }
-  const TCHAR* typeS() { return etypeAsStr(type);  }
+
+  // const TCHAR* typeS() {  std::string s = etypeAsStr(type); }
+
+  const char* typeS() { 
+    std::string s = etypeAsStr(type);
+    return s.c_str();
+  }
+
+
   const std::string typestr();
-  static const TCHAR* etypeAsStr(EnvirEnum type);
+  static std::string etypeAsStr(EnvirEnum type);
   static bool isBlockingEnv(EnvirEnum type); // May be put in different class.
+
+  static EnvirDef envirs[EN_MaxLimit];
+  static std::vector<std::string> priv_envirKeys;
+
+  static void initEnvirs(class Tiles& tiles);
+  static void initEnvirKeys();
+
+  static const EnvirDef& envDef(EnvirEnum etype);
+  static EnvirDef& envDefNC(EnvirEnum etype);
 };
 
