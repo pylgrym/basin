@@ -65,6 +65,7 @@ struct ObjDef { // For declaring POD struct sets. Intention is to eventually rea
   int price;
   const char* defDice;
   double kilo;
+  CPoint tilekey;
 };
 
 
@@ -170,6 +171,7 @@ public:
 
   static void initPrices();
   static void initWeights();
+  static void initTiles(class Tiles& tiles);
 
 };
 
@@ -180,6 +182,7 @@ class ObjSlot { // We have two layers, so we can have virtuals - otherwise, Obj 
 public:
   virtual ObjEnum type() const;
   virtual const ObjDef& objDef() const;
+  CPoint tilekey() const;
   Obj* o;
   ObjSlot():o(NULL) {} 
 

@@ -17,13 +17,19 @@ public:
     start = measure(); // find way to measure time from sys. (nb, GetSystemTime is  not very accurate.)
   }
 
-  void stopClock() {
+  int stopClock() {
     end = measure();
+    return getDelta();
   }
 
   ~TimeMeasure() {
     stopClock();
     showTime();
+  }
+
+  int getDelta() {
+    int delta = (end - start);
+    return delta;
   }
 
   void showTime() {

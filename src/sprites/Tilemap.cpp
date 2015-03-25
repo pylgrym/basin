@@ -12,6 +12,8 @@ using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
 #include "../Envir.h"
+#include "../Obj.h"
+#include "../Creature.h"
 
 Tilemap::Tilemap()
 {
@@ -134,6 +136,9 @@ Tiles::Tiles()
   imgPlus = readImg.Clone();
 
   Envir::initEnvirs(*this);
+  Obj::initTiles(*this); // something is wrong, because weapons don't appear correctly.
+  Creature::initMobTiles(*this);
+
 }
 
 
@@ -229,6 +234,8 @@ void Tiles::tintTile(CRect& src, CRect& tgt, Gdiplus::Graphics& graphics, COLORR
 
   ImageAttributes  imageAttributes;
 	imageAttributes.SetColorMatrix( &colorMatrix,  ColorMatrixFlagsDefault, ColorAdjustTypeBitmap );   
+
+  // this is the slow crap..
 
   // graphics.SetCompositingMode(CompositingModeSourceOver); // CompositingModeSourceCopy); // CompositingModeSourceOver);
 	graphics.DrawImage(

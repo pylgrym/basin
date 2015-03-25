@@ -73,6 +73,7 @@ struct MobDef {
   std::vector< const char* > tags;
 
   int minrange, maxrange, moralePct, chargePct, retreatPct;
+  CPoint mtilekey;
 };
 
 
@@ -88,6 +89,7 @@ public:
   }
 
   const char* typeS() { return ctypeAsStr(type());  }
+  CPoint mtilekey() const { return mobDef(type()).mtilekey; }
 
   bool empty() const { return type() == CR_None; }
   bool blocked() const { return isBlockingCreature(type());  }
@@ -106,5 +108,6 @@ public:
 
   static bool isBlockingCreature(CreatureEnum type);
 
-  static void initMobDefs();
+  static void initMobDefs(); // class Tiles& tiles);
+  static void initMobTiles(class Tiles& tiles);
 };

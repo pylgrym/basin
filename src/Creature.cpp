@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Mob.h"
+#include "sprites/Tilemap.h"
 
 bool Creature::isBlockingCreature(CreatureEnum type) {
   switch (type) {
@@ -151,6 +152,16 @@ void Creature::initMobDefs() {
     initBehaviour(def);
   }
 }
+
+void Creature::initMobTiles(Tiles& tiles) {
+  for (int i = 0; i < maxMob; ++i) {
+    MobDef& def = mobDefNC((CreatureEnum) i);
+
+    CA2T ukey(def.tilekey);
+    def.mtilekey = tiles.tile(CString(ukey));
+  }
+}
+
 
 void Creature::initBehaviour(MobDef& def) {
   def.minrange   = rnd::rndC(0, 4);

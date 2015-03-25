@@ -24,6 +24,8 @@ public:
 public:
   Tiles tiles;
   //MobQueue queue;
+  CPoint mouseTile;
+  std::string hoverInfo;
 
   void drawTermChar(CDC& dc, Gdiplus::Graphics& gr, CBrush& txtBk, CFont& largeFont, class TCell& tcell, int px, int py, int cost); // , CRect& cellR
 
@@ -51,5 +53,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
   friend class TheUI;
+public:
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 

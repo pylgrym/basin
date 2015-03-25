@@ -12,6 +12,7 @@
 
 #include "Cmds.h"
 #include "PlayerMob.h"
+#include "sprites/Tilemap.h"
 
 
 bool IsVowel(TCHAR c) {
@@ -228,6 +229,18 @@ void Obj::initWeights() {
   }
 }
 
+
+void Obj::initTiles(Tiles& tiles) {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+
+    CA2T ukey(def.desc, CP_ACP);
+    CPoint tilePos = tiles.tile(CString(ukey)); 
+    def.tilekey = tilePos;
+  }
+}
+
+
 const ObjDef& Obj::randObjDescBad() { // will give too many weapons.
   int ix = rnd::Rnd(numObjDefs);
   ObjDef* od = &objDefs[ix];
@@ -254,7 +267,7 @@ const ObjDef& Obj::randObjDesc() { // works better, on types instead.
 }
 
 
-const char* Obj::objdefAsStr(const ObjDef& def) {
+const char* Obj::objdefAsStr(const ObjDef& def) {  
   const ObjDef* defptr = &def;
   int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
   static std::vector< std::string > shortNames;
@@ -419,6 +432,12 @@ ObjEnum ObjSlot::type() const {
 const ObjDef& ObjSlot::objDef() const {
   return o != NULL ? *o->objdef : Obj::objDesc(OB_None);
 }
+
+CPoint ObjSlot::tilekey() const {
+  return o != NULL ? o->objdef->tilekey : Obj::objDesc(OB_None).tilekey;
+}
+
+
 
 
 

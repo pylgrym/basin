@@ -76,6 +76,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_PAINT()
 	ON_WM_TIMER()
   // ON_WM_CHAR()
+  ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -326,6 +327,7 @@ public:
   int px, py;
   CRect cellR_buf;
   const CRect& cellR() const { return cellR_buf; }
+  CPoint mouseTile;
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
@@ -510,8 +512,14 @@ public:
 
 
 
+  std::string hoverInfo2;
 
   void newDraw() {
+    /* goal here is to make the tighest fastest loop that 'gets the job done',
+    to demonstrate a 'lower bound' for how fast/slow this can be done..
+    */
+    const CPoint greyDitherTile(36, 22), greyTile2(36,21);
+
     for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
       for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
         TCell& tcell = Term::term[vp.p];
@@ -524,18 +532,53 @@ public:
 
         wp = Viewport::vp.v2w(vp.p); // world coords.
 
-        CPoint tilekey(36, 22); // (36, 22)
-        Cell* pCell = CL->map.cell(wp); 
-        if (pCell != NULL) {
-          tilekey = pCell->envir.tilekey();
-        }
-        bool losDark = CL->map.lightmap.isDark(wp);
-        // if (losDark) { tilekey = CPoint(36, 22); }
+        CPoint floortile = greyDitherTile; // By default, assume any cell is gray/dark.
 
-        tiles.drawTileB(vp.p.x, vp.p.y, tilekey, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // draw envir.
+        bool losDark = CL->map.lightmap.isDark(wp);
+        Cell* pCell = NULL;
+        if (!losDark) {
+          pCell = CL->map.cell(wp); 
+          if (pCell != NULL) { floortile = pCell->envir.tilekey(); }
+        }
+
+        if (vp.p == mouseTile) { floortile = greyTile2; }
+
+        tiles.drawTileB(vp.p.x, vp.p.y, floortile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // draw envir.
         // 15-30 ms for this part..
+
+        bool litCell = false;
+        if (!losDark && pCell != NULL) { // nothing visible to draw.
+          Cell& c = *pCell; // We are certain we have a cell, and it's in light.
+          litCell = c.is_lit();
+
+          if (!c.item.empty()) {
+            const SpellDesc& sd = Spell::spell(c.item.o->effect);
+            COLORREF color = colorNone; // sd.color; // colorNone; // sd.color;
+            CPoint itemTile = c.item.tilekey();
+            tiles.drawTileB(vp.p.x, vp.p.y, itemTile, dc, gr, Tiles::Mask, 255, color, zcost, tintCost); // draw item.
+            if (vp.p == mouseTile) { hoverInfo2 = c.item.atypeS(); }
+          }
+
+          if (!c.creature.empty()) {
+            CPoint mobTile = c.creature.mtilekey();
+            tiles.drawTileB(vp.p.x, vp.p.y, mobTile, dc, gr, Tiles::Mask, 255, colorNone, zcost, tintCost); // draw mob.
+          }
+        } // draw if cell
+
+
+        // now darken:
+        int dist = int(0.5+PlayerMob::distPlyLight(CPoint(wp.x, wp.y)));
+        int blend = dist * 15; 
+        if (blend > 255) { blend = 255;  }
+        if (litCell) { blend = 128; }
+
+        if ( (dist != 0 && !losDark) || litCell) {
+          tiles.drawTileB(vp.p.x, vp.p.y, greyDitherTile, dc, gr, Tiles::Blend, blend, colorNone,zcost,tintCost); // draw darkening.
+        }
+
       }
     }
+    reportCost();
   }
   
 
@@ -599,8 +642,12 @@ public:
     } // for x.
 
     Term::term.dirtyall = false;
-    debstr() << "cost:" << zcost << ", tints:" << tintCost << "\n";
+    reportCost();
   } // doDraw.
+
+  void reportCost() {
+    debstr() << "cost:" << zcost << ", tints:" << tintCost << "\n";
+  }
 
 }; // end tiledraw.
 
@@ -617,10 +664,19 @@ void CChildView::OnPaint() {
   CPaintDC dc(this); // device context for painting
 
 
-  TimeMeasure measureDrawing("drawupd");
+  TimeMeasure measure("drawupd");
   // dc.ExcludeUpdateRgn
   TileDraw draw(dc, tiles);
+  draw.mouseTile = mouseTile;
   draw.doDraw(); 
+
+
+  int delta = measure.stopClock();
+  std::stringstream ss; ss << delta; std::string s = ss.str();
+
+  CA2T us(s.c_str());
+  // CA2T us(draw.hoverInfo2.c_str());
+  GetParent()->SetWindowText(us);
 }
 
 
@@ -685,3 +741,15 @@ void tintTileDemoCode(CRect& dest, Gdiplus::Graphics& graphics, COLORREF matColo
 
 
 
+
+
+void CChildView::OnMouseMove(UINT nFlags, CPoint point) {
+  CWnd::OnMouseMove(nFlags, point);
+
+  //mousepos = point;
+
+  CPoint oldTile = mouseTile;
+  mouseTile = CPoint(point.x / 32, point.y / 32);
+  TheUI::invalidateVPCell(mouseTile);
+  TheUI::invalidateVPCell(oldTile);
+}
