@@ -211,34 +211,9 @@ ObjDef objDefs[] = {
 
 const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
 
-void Obj::initPrices() {
-  for (int i = 0; i < numObjDefs; ++i) {
-    ObjDef& def = objDefs[i];
-    if (def.price == 0) {
-      def.price = rnd::rndC(1, 11);
-    }
-  }
-}
-
-void Obj::initWeights() {
-  for (int i = 0; i < numObjDefs; ++i) {
-    ObjDef& def = objDefs[i];
-    if (def.kilo == 0) {
-      def.kilo = rnd::rndC(1, 50) *0.1;
-    }
-  }
-}
 
 
-void Obj::initTiles(Tiles& tiles) {
-  for (int i = 0; i < numObjDefs; ++i) {
-    ObjDef& def = objDefs[i];
 
-    CA2T ukey(def.desc, CP_ACP);
-    CPoint tilePos = tiles.tile(CString(ukey)); 
-    def.tilekey = tilePos;
-  }
-}
 
 
 const ObjDef& Obj::randObjDescBad() { // will give too many weapons.
@@ -267,6 +242,40 @@ const ObjDef& Obj::randObjDesc() { // works better, on types instead.
 }
 
 
+
+
+void Obj::initTiles(Tiles& tiles) {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+
+    CA2T ukey(def.desc, CP_ACP);
+    CPoint tilePos = tiles.tile(CString(ukey));  // FIXME, SHOULD USE SHORTNAMES i think?
+    def.tilekey = tilePos;
+  }
+}
+
+
+
+
+void Obj::initPrices() {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+    if (def.price == 0) {
+      def.price = rnd::rndC(1, 11);
+    }
+  }
+}
+
+void Obj::initWeights() {
+  for (int i = 0; i < numObjDefs; ++i) {
+    ObjDef& def = objDefs[i];
+    if (def.kilo == 0) {
+      def.kilo = rnd::rndC(1, 50) *0.1;
+    }
+  }
+}
+
+
 const char* Obj::objdefAsStr(const ObjDef& def) {  
   const ObjDef* defptr = &def;
   int ix = defptr - &objDefs[0]; // if you subtract two ptrs, you get the array index.
@@ -279,7 +288,7 @@ const char* Obj::objdefAsStr(const ObjDef& def) {
       ObjDef& def = objDefs[i];
       std::string sName = Obj::make_indef_item(def.desc);
       shortNames[i] = sName;
-      if (def.price == 0) {
+      if (def.price == 0) { // fixme - this is crap, must cooperate with Obj::initPrices!
         def.price = rnd::rndC(1, 11);
       }
       // theset << "\"" << sName << "\"" << " " << i % 40 << " 11\n";
@@ -290,9 +299,10 @@ const char* Obj::objdefAsStr(const ObjDef& def) {
   return shortNames[ix].c_str();
 }
 
+
+
 const TCHAR* Obj::not_used_otypeAsStr(ObjEnum type) {
-  /* JG: This was/is used for the tilemap-keyname assoc.:
-  */
+  /* JG: This was/is used for the tilemap-keyname assoc.: */
   static std::vector<CString> thingKeys;
   if (thingKeys.size() == 0) {
     thingKeys.resize(OB_MaxLimit);
@@ -382,7 +392,7 @@ const char* Obj::flavorUse(ObjEnum type) {
 }
 
 
-const char* Obj::typeAsDescA(ObjEnum type) { // not currently used!
+const char* Obj::DONT_typeAsDescA(ObjEnum type) { // not currently used!
   const ObjDef& od = objDesc(type);
   //const int numObjDefs = (sizeof objDefs / sizeof ObjDef);
   //if (type >= 0 && type < numObjDefs) {

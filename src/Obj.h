@@ -161,7 +161,7 @@ public:
   static const char* objdefAsStr(const ObjDef& def);
   static const TCHAR* not_used_otypeAsStr(ObjEnum type);
   // static const TCHAR* typeAsDescU(ObjEnum type);
-  static const char* typeAsDescA(ObjEnum type);
+  static const char* DONT_typeAsDescA(ObjEnum type);
 
   static const char* flavorUse(ObjEnum type);
 

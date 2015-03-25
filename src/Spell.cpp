@@ -304,6 +304,7 @@ SpellEnum Spell::rndSpell_level(int ilevel) {
   determine a level-appropriate item of that category.
   todo/fixme: same way that I should categorize my monsters, I
   should categorize my items.
+  AND MY SPELLS ! ?
   */
   debstr() << "rndSpell_level warning, we gave up..\n";
   return SP_DetectDoor; // Kludge: if we give up, give him a detect-door spell..
