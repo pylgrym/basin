@@ -5,6 +5,7 @@
 #include "../util/debstr.h"
 
 #include "../numutil/myrnd.h"
+#include "myconsts.h"
 
 #include <gdiplus.h>
 using namespace Gdiplus;
