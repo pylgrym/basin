@@ -153,6 +153,9 @@
     <ClInclude Include="TimeMeasure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="myconsts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -279,6 +282,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TimeMeasure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="myconsts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

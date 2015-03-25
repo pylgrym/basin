@@ -328,7 +328,8 @@ public:
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
-    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, colorNone, zcost, tintCost); // drawing floor.
+    COLORREF tileColor = cell.envir.ecolor;
+    tiles.drawTile(vp.p.x, vp.p.y, cell.envir.typeS(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
     bool floorStat = false; // true;
     if (floorStat) {
 

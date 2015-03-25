@@ -131,6 +131,7 @@
     <ClInclude Include="MobDist.h" />
     <ClInclude Include="MobQueue.h" />
     <ClInclude Include="MonsterMob.h" />
+    <ClInclude Include="myconsts.h" />
     <ClInclude Include="numutil\myrnd.h" />
     <ClInclude Include="Obj.h" />
     <ClInclude Include="parser\ParseCSV.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="MobDist.cpp" />
     <ClCompile Include="MobQueue.cpp" />
     <ClCompile Include="MonsterMob.cpp" />
+    <ClCompile Include="myconsts.cpp" />
     <ClCompile Include="numutil\myrnd.cpp" />
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="parser\ParseCSV.cpp" />

@@ -26,9 +26,11 @@ class Mark {
 public:
   MarkEnum c;
   int count;
+  COLORREF color;
   Mark() {
     c = M_Wall;
     count = -1;
+    color = RGB(192, 128,64);
   }
 
   bool visited() const { return c != M_Wall; } 
@@ -144,10 +146,15 @@ struct Laby {
   }
 
   void fillRoom(CRect r) {
+    extern COLORREF rndColor();
+    COLORREF randCol = rndColor();
+
     for (int x = r.left; x <= r.right; ++x) {
       for (int y = r.top; y <= r.bottom; ++y) {
         CPoint p(x, y);
-        grid[p].c = M_Open; 
+        Mark& m = grid[p];
+        m.c = M_Open; 
+        m.color = randCol;
       }
     }
   }

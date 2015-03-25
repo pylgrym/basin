@@ -245,13 +245,17 @@ void Map::initTunnels(int level) {
         cell.envir.type = EN_Border;
       } else { // Inside-area:
         CPoint p(x, y);
+        Mark& mark = laby.grid[p];
 
+        COLORREF ecolor = colorNone;
         EnvirEnum etype = EN_Floor;
-        bool isWall = laby.grid[p].isWall(); // oneIn(3);
+        bool isWall = laby.grid[p].isWall();
         switch (laby.grid[p].c) {
-        case M_Wall: etype = EN_Wall;  break; // M_Unvisited
-        case M_Open: etype = EN_Floor; break;
         case M_Vein: etype = EN_Vein;  break; 
+        case M_Wall: etype = EN_Wall;  break; 
+        case M_Open: etype = EN_Floor;
+          ecolor = mark.color;
+          break;
         }
 
         int openCount = countOpens(p, laby);
@@ -266,6 +270,7 @@ void Map::initTunnels(int level) {
         }
 
         cell.envir.type = etype; // (isWall ? EN_Wall : EN_Floor);
+        cell.envir.ecolor = ecolor;
 
         if (etype == EN_Vein) {
           bool hasThing = rnd::oneIn(4);

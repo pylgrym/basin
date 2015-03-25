@@ -4,6 +4,8 @@
 #include <ostream>
 
 #include "Persist.h"
+#include "myconsts.h"
+
 
 enum EnvirEnum {
   EN_Floor='.',
@@ -29,11 +31,14 @@ enum EnvirEnum {
   EN_MaxLimit = 127 // highest nr to size arrays.
 };
 
+
+
 class Envir {
 public:
   EnvirEnum type;
   bool permLight;
   int envUnits; // E.g. strength of rock.
+  COLORREF ecolor; // default colorNone.
 
   int tmpLightStr; // embellishes permLight, but is not currently saved.
 
@@ -49,9 +54,7 @@ public:
     } else { // input.
       char charType = 0;
       p.is >> charType;
-      type = (EnvirEnum) charType;
-
-      
+      type = (EnvirEnum) charType;      
       p.is >> charType;
       permLight = (charType == ',');
       
@@ -59,7 +62,7 @@ public:
     return true;
   }
 
-  Envir():type(EN_Floor), permLight(false) {
+  Envir():type(EN_Floor), permLight(false), ecolor(colorNone) {
     envUnits = rnd::Rnd(50, 1500);
     tmpLightStr = 0; // 14;
   }

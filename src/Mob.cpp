@@ -53,6 +53,11 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
   
 }
 
+/* idea: +2,+3 str / stat mod food, with 200-300 time expire timers (counters part of map.)
+*/
+
+/* idea - consider having 'grey floor' made with fill-brush and cell-colours.
+*/
 
 Mob::~Mob() {}
 

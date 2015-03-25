@@ -45,7 +45,6 @@ public:
 };
 
 
-const COLORREF colorNone = RGB(1, 2, 3);
 
 class Tiles {
 public:
