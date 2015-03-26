@@ -61,6 +61,41 @@ void addInf(std::stringstream& ss, CPoint& dash) {
 }
 
 
+void addInfHZ(std::ostream& ss, const char* label, int val1, int val2) { //  , int width, CPoint& dash) {
+  ss << label << val1 << "/" << val2 << " "; 
+  // std::string right = ss.str();
+  //addInfS(label, right, width, dash);
+}
+
+void PlayerMob::dashboardMini2() { 
+  const int width = 8; // 10;
+  const int maxwidth = 40;
+  CPoint dash(0, 1); // Viewport::Width, 1);
+
+  std::stringstream ss; 
+  addInfHZ(ss, "hp",  stats.hp,   stats.maxHP ); //   width, dash);
+  addInfHZ(ss,"mana", stats.mana, stats.maxMana);// , width, dash);
+  std::string s = ss.str();
+  s += std::string("                                                              ").substr(0, (maxwidth - s.length()) );
+
+  Cuss::move(dash);
+  PushBkCol bg(RGB(32, 32, 32)); // Cuss::setBkColor(RGB(32, 32, 32)); // 128, 128, 255));
+  Cuss::prt(s.c_str(), true);
+
+  /*
+  if (stats.isConfused()) { // Only show if confused..
+    addInfHZ("", stats.isConfused() ? "confused" : "-", width, dash);
+  }
+
+  Encumb::EncumbEnum encumb = Encumb::enc(); 
+  if (encumb != Encumb::LightE) { // Only display if encumbered..
+    const char* sEncumb = Encumb::encTxt(encumb); 
+    addInfHZ("enc", sEncumb, width, dash); 
+  }
+  */
+}
+
+
 void addInfS(const char* label, std::string right, int width,  CPoint& dash) {
   std::string row = label;
 
@@ -92,6 +127,7 @@ void addInf2(const char* label, int val1, int val2, int width,  CPoint& dash) {
 }
 
 
+
 void PlayerMob::dashboardMini() { 
   // Todo - make a new 'void addInfS(const char* label, std::string right, int width,  CPoint& dash) 
   // - which displays on row 2 horiz.
@@ -116,7 +152,7 @@ void PlayerMob::dashboardMini() {
 }
 
 void PlayerMob::dashboard() {
-  dashboardMini(); return; 
+  dashboardMini2(); return; 
 
   const int width = 8; // 10;
   /* FIXME - make functions for these. */

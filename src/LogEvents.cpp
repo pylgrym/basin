@@ -64,8 +64,9 @@ void LogEvents::prtL_bar(const std::string& s) {
     COLORREF color = (remHP == HC_RemHP ? RGB(0, 128, 0) : RGB(128, 128, 128));
     if (remHP == HC_LastHit) { color = RGB(255, 0, 0); } // red.
 
-    Cuss::setTxtColor(RGB(245, 245, 255)); // color); // should be white/remove.
-    Cuss::setBkColor(color); // should remain when impl correctly.
+
+    PushFgCol fg(RGB(245, 245, 255)); // Cuss::setTxtColor(RGB(245, 245, 255)); // color); // should be white/remove.
+    PushBkCol bg(color); // Cuss::setBkColor(color); // should remain when impl correctly.
 
     char c = ' ';
     if (i < (int)s.length()) {
@@ -79,7 +80,7 @@ void LogEvents::prtL_bar(const std::string& s) {
   //}
 
   // reset background when finished:
-  Cuss::setBkColor(RGB(0, 0, 32)); // color); // should remain when impl correctly.
+  //Cuss::setBkColor(RGB(0, 0, 32)); // color); // should remain when impl correctly.
  }
 
 void LogEvents::add(const std::string& s) {

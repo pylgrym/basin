@@ -1,5 +1,6 @@
 #pragma once
 
+
 struct Cuss {
   static CPoint csr;
 
@@ -22,3 +23,29 @@ struct Cuss {
   static void invalidate();
 };
 
+
+class PushBkCol {
+public:
+  COLORREF oldCol;
+  PushBkCol(COLORREF newCol) {
+    oldCol = Cuss::curBkColor;
+    Cuss::setBkColor(newCol);
+  }
+
+  ~PushBkCol() {
+    Cuss::setBkColor(oldCol);
+  }
+};
+
+class PushFgCol {
+public:
+  COLORREF oldCol;
+  PushFgCol(COLORREF newCol) {
+    oldCol = Cuss::curTxtColor;
+    Cuss::setTxtColor(newCol);
+  }
+
+  ~PushFgCol() {
+    Cuss::setTxtColor(oldCol);
+  }
+};

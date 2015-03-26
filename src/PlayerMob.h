@@ -31,7 +31,8 @@ public:
   virtual int digStrength();
 
   void dashboard();
-  void dashboardMini();
+  void dashboardMini(); // Few stats.
+  void dashboardMini2(); // horizontal.
 
   static PlayerMob* ply;
   static int distPlyCart(CPoint p); // right-angle distance.raw/true calc.

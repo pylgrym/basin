@@ -1183,7 +1183,8 @@ void Spell::showSpellInv(int offset, int numItems) {
     COLORREF rowColor = RGB(255, 255, 255);
     rowColor = (d.ability ? RGB(0, 255, 0) : RGB(100,100,100) ); // Green is known, grey is unknown, red is too high.
     if (d.level > PlayerMob::ply->stats.level()) { rowColor = RGB(175, 0, 0);  }
-    Cuss::setTxtColor(rowColor);
+
+    PushFgCol fg(rowColor); // Cuss::setTxtColor(rowColor);
     
     Cuss::prtL(ss.str().c_str());  
 
