@@ -286,6 +286,31 @@ CPoint Viewport::v2w(CPoint v) { return v + offset; }
 class TileDraw {
 public:
 
+  TileDraw(CDC& dc_, Tiles& tiles_) 
+  :dc(dc_), tiles(tiles_) 
+  ,gr(dc_)
+  , measure("drawUpd",0)
+  // ,txtBk(RGB(0, 0, 20)) 
+  {}
+
+  TimeMeasure measure; // ("drawupd", 0);
+
+  CDC& dc;
+  Tiles& tiles;
+  Graphics gr; // (dc);
+  CFont largeFont, smallFont;
+
+
+  VPoint vp; // viewport coords.
+  CPoint wp; // 'world' (map) coords.
+  int zcost; // diagnostics - are we drawing too much.
+  int tintCost;
+  int px, py;
+  CRect cellR_buf;
+  const CRect& cellR() const { return cellR_buf; }
+  CPoint mouseTile;
+
+
   void drawTermChar(TCell& tcell) { // CDC& dc, Graphics& gr, CBrush& txtBk, CFont& largeFont, TCell& tcell, int px, int py, int cost) { // CRect& cellR, 
     // Terminal-char cell.
     //return;
@@ -306,28 +331,6 @@ public:
     CString s; s.Format(L"%c", tcell.c);
     dc.DrawText(s, &rect,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
   }
-
-
-  TileDraw(CDC& dc_, Tiles& tiles_) 
-  :dc(dc_), tiles(tiles_) 
-  ,gr(dc_)
-  // ,txtBk(RGB(0, 0, 20)) 
-  {}
-
-  CDC& dc;
-  Tiles& tiles;
-  Graphics gr; // (dc);
-  CFont largeFont, smallFont;
-
-
-  VPoint vp; // viewport coords.
-  CPoint wp; // 'world' (map) coords.
-  int zcost; // diagnostics - are we drawing too much.
-  int tintCost;
-  int px, py;
-  CRect cellR_buf;
-  const CRect& cellR() const { return cellR_buf; }
-  CPoint mouseTile;
 
   void drawFloorTile(Cell& cell) {
     // DRAW FLOOR:
@@ -354,7 +357,8 @@ public:
     ++zcost;
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
-    tiles.drawTileU(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, sd.color,zcost, tintCost); // drawing THINGS
+    COLORREF itemColor = sd.color; //colorNone; // sd.color; // colorNone; // sd.color;
+    tiles.drawTileU(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, itemColor, zcost, tintCost); // drawing THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -590,7 +594,7 @@ public:
 
       }
     }
-    reportCost();
+    // reportCost();
   }
   
 
@@ -654,11 +658,12 @@ public:
     } // for x.
 
     Term::term.dirtyall = false;
-    reportCost();
+    // reportCost();
   } // doDraw.
 
   void reportCost() {
-    debstr() << "cost:" << zcost << ", tints:" << tintCost << "\n";
+    int delta = measure.stopClock();
+    debstr() << delta << "(ms-time), cost:" << zcost << ", tints:" << tintCost << "\n";
   }
 
 }; // end tiledraw.
@@ -676,14 +681,18 @@ void CChildView::OnPaint() {
   CPaintDC dc(this); // device context for painting
 
 
-  TimeMeasure measure("drawupd");
   // dc.ExcludeUpdateRgn
   TileDraw draw(dc, tiles);
   draw.mouseTile = mouseTile;
+
+  // draw.newDraw(); // 28ms
   draw.doDraw(); 
 
+  if (draw.zcost > 3) { // Don't spam out reports on tiny-redraws.
+    draw.reportCost();
+  }
 
-  int delta = measure.stopClock();
+  int delta = draw.measure.getDelta(); // stopClock();
   std::stringstream ss; ss << delta; std::string s = ss.str();
 
   CA2T us(s.c_str());

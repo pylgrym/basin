@@ -6,8 +6,11 @@ class TimeMeasure {
 public:
   int start, end;
   std::string what;
+  bool autoLog;
 
-  TimeMeasure(const char* what_) {
+  TimeMeasure(const char* what_, bool autoLog_)
+  :autoLog(autoLog_)
+  {
     start = end = 0;
     what = what_;
     startClock();
@@ -24,7 +27,7 @@ public:
 
   ~TimeMeasure() {
     stopClock();
-    showTime();
+    if (autoLog) { showTime(); }
   }
 
   int getDelta() {

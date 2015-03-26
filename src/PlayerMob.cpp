@@ -92,7 +92,32 @@ void addInf2(const char* label, int val1, int val2, int width,  CPoint& dash) {
 }
 
 
+void PlayerMob::dashboardMini() { 
+  // Todo - make a new 'void addInfS(const char* label, std::string right, int width,  CPoint& dash) 
+  // - which displays on row 2 horiz.
+
+  // FIXME - current impl won't clear prev fields/variable size!
+
+  const int width = 8; // 10;
+  /* FIXME - make functions for these. */
+  CPoint dash(Viewport::Width, 1);
+  addInf2("hp", stats.hp, stats.maxHP, width, dash);
+  addInf2("mana", stats.mana, stats.maxMana, width, dash);
+
+  if (stats.isConfused()) { // Only show if confused..
+    addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
+  }
+
+  Encumb::EncumbEnum encumb = Encumb::enc(); 
+  if (encumb != Encumb::LightE) { // Only display if encumbered..
+    const char* sEncumb = Encumb::encTxt(encumb); 
+    addInfS("enc", sEncumb, width, dash); 
+  }
+}
+
 void PlayerMob::dashboard() {
+  dashboardMini(); return; 
+
   const int width = 8; // 10;
   /* FIXME - make functions for these. */
   CPoint dash(Viewport::Width, 1);
