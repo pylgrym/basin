@@ -47,7 +47,9 @@ bool WalkCmd::Do(std::ostream& err) {
   if (mob.isPlayer()) { mob.lightWalls(); } 
 
   if (mob.isPlayer()) {
-    playSound(L"sounds\\chosen\\walk3.wav"); // walk@.wav"); // was: walk2.wav
+    // disabling constant 'bell' sound, for now..:
+    //playSound(L"sounds\\chosen\\walk3.wav"); // walk@.wav"); // was: walk2.wav
+
     if (mob.isPlayer() && CL->map[newpos].envir.interacts()) {
       ShopCmd shop;
       bool bOK = shop.Do(err);

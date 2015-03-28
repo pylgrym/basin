@@ -402,7 +402,7 @@ std::string Obj::flavorUse(ObjEnum type) {
 
   case OB_Food:     return "You eat the food."; // drink, sip, ?
   case OB_Mushroom: return "You eat the mushroom."; // drink, sip, ?
-  case OB_LampOil:  return NULL; // IE don't show flavor-text.
+  case OB_LampOil:  return "You pour the oil into your lamp.";  //NULL; // IE don't show flavor-text.
   }
 
   std::stringstream ss;

@@ -682,7 +682,7 @@ idea: 'standing in bad' dots - leaving temp bad tiles on ground, that you must a
 */
 
 
-bool spellRush(Mob& actor, CPoint dir) {
+bool spellRush(Mob& actor, CPoint dir, std::string verb) {
   // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
   // (I want to discourage using it for plain moving/fast moving..)
   // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
@@ -703,7 +703,14 @@ bool spellRush(Mob& actor, CPoint dir) {
   }
 
   if (!cell->creature.empty()) { // Good: we bump into an enemy!
-    { logstr log; log << "You rush into the mob!"; }
+    { 
+      logstr log;
+      if (!verb.empty()) {
+        log << verb;
+      } else {
+        log << "You rush into the mob!"; 
+      }
+    }
     const bool doOverrideHit = true;
     HitCmd rush(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
     logstr log;
@@ -727,7 +734,7 @@ class Spell_Rush: public SpellImpl { public:
   bool getParams(SpellParam& param) { 
     return Spell_Bullet::getParamsDIR(param); 
   }
-  bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir);  } // Consider: we could impl directly here!
+  bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir, "");  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_rush; }
 } spell_rush;
 
@@ -797,11 +804,13 @@ class Spell_Detect: public SpellImpl { public:
 
 bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You would shove the mob along the ground.."; }
-  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  // was: - this does not push mob into wall, and move you..
+  // { logstr log; log << "You would shove the mob along the ground.."; }
 
-  return spellRush(target, dir); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
+  //DONE:Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  // was: - this does not push mob into wall, and move you..
+  // (class Spell_Shove handles the checks for us.)
+
+  return spellRush(target, dir, "You shove the mob!"); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
 }
 
 /* thoughts: i should consider making 'floodfill-laby' prettier.

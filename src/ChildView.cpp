@@ -426,7 +426,7 @@ public:
     // DARKENING according to light level (we draw 'black darkness' on top of things,
     //  to emulate light/shadow.
 
-    COLORREF darkness = RGB(0, 0, 255);
+    //COLORREF darkness = RGB(0, 0, 255);
     int dist = 999, distStat = 999, distDyn = 999;
 
     if (cell.is_lit() || cell.hasOverlay()) {
@@ -445,7 +445,7 @@ public:
       if (losDark) { // It should be very totally dark.
         distDyn *= 99;
       } else { // Her er lyst:
-        darkness = colorNone;
+        //darkness = colorNone;
       }
     }
 
@@ -462,7 +462,7 @@ public:
       //Tiles::DrawType transp = Tiles::Blend; // true; // (!losDark && !cell.is_lit());
       if (1) {
         CPoint theTile = (losDark ? blendDarkenTile : blendTintTile);
-        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, darkness,zcost, tintCost); // shadows-transp.
+        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, colorNone,zcost, tintCost); // shadows-transp.
       } else { // try simpler shading.
         // JG: Actually, doesn't help at all.
         CRect r = cellR();  
