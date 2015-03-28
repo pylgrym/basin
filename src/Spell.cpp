@@ -688,7 +688,7 @@ bool spellRush(Mob& actor, CPoint dir) {
   // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
 
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You would rush headfirst into the mob..";  }
+  // { logstr log; log << "You would rush headfirst into the mob..";  }
   // Todo: projectile + move player.. Make a toolbox to build spells..
 
   // Todo: this loop could be put in an iteratorish-class:
@@ -703,7 +703,7 @@ bool spellRush(Mob& actor, CPoint dir) {
   }
 
   if (!cell->creature.empty()) { // Good: we bump into an enemy!
-    { logstr log; log << "You bump into the mob!"; }
+    { logstr log; log << "You rush into the mob!"; }
     const bool doOverrideHit = true;
     HitCmd rush(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
     logstr log;
@@ -724,7 +724,9 @@ bool spellRush(Mob& actor, CPoint dir) {
 
 
 class Spell_Rush: public SpellImpl { public:
-  bool getParams(SpellParam& param) { return Spell_Bullet::getParamsDIR(param); }
+  bool getParams(SpellParam& param) { 
+    return Spell_Bullet::getParamsDIR(param); 
+  }
   bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_rush; }
 } spell_rush;
@@ -1084,6 +1086,9 @@ bool Spell::castSpell(SpellEnum spellType, Mob& actor, Mob* target, Obj* item, c
 
 
 CPoint Spell::pickZapDir() {
+  /* jG, nb: after pickzapdir, multinotif shouldn't be active.
+  (this is why we call 'resetNotif' afterwards.)
+  */
   bool bFound = false;
   int dirKey = 0;
 
@@ -1095,7 +1100,8 @@ CPoint Spell::pickZapDir() {
     dirKey = TheUI::promptForKey(keyPrompt, __FILE__, __LINE__, "pick-zap-dir"); 
 
     if (dirKey == VK_ESCAPE) {
-      Cuss::clear(true);
+      LogEvents::log.resetNotif();
+      Cuss::clearLine(0, true); // Cuss::clear(true);
       return NoDir; // false; // Cancelled zap operation.
     }
     
@@ -1105,6 +1111,8 @@ CPoint Spell::pickZapDir() {
     }      
   } // Loop until dir key.
 
+  Cuss::clearLine(0, true);
+  LogEvents::log.resetNotif();
   CPoint dir = Map::key2dir(dirKey); 
   return dir;
 }

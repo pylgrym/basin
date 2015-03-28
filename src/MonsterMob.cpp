@@ -522,17 +522,17 @@ double MonsterMob::actDriven() {
   to understand if I'm missing out on features he manages to fit in.
   */
   if (hurt()) { // (morale-check)
-    if (can_flee() && flee_prob()) { flee(); return 0; }
-    if (can_attack() && hurt_attack_prob()) { attack(); return 0; }
+    if (can_flee() && flee_prob()) { flee(); return 1.0; }
+    if (can_attack() && hurt_attack_prob()) { attack(); return 1.0; }
     stay(); // Stay may involve spellcast/healing/alerting.
   } else { // Not hurt.
-    if (too_close() && can_incr() && incr_prob() ) { incr_dist(); return 0; }
-    if (too_far() && can_decr() && decr_prob() ) { decr_dist(); return 0; }
-    if (melee_range() & melee_prob()) { attack_melee(); return 0; }
-    if (can_ranged() & ranged_prob()) { attack_ranged(); return 0; }
+    if (too_close() && can_incr() && incr_prob() ) { incr_dist(); return 1.0; }
+    if (too_far() && can_decr() && decr_prob() ) { decr_dist(); return 1.0; }
+    if (melee_range() & melee_prob()) { attack_melee(); return 1.0; }
+    if (can_ranged() & ranged_prob()) { attack_ranged(); return 1.0; }
     stay();
   }
-  return 1.0; 
+  return 1.0;  // shouldn't ever reach this point..
 }
 
 /* ai info:
