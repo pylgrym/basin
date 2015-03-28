@@ -116,6 +116,7 @@ public:
 
   std::string an_item() const; 
   std::string the_item() const; 
+  std::string the_short_item() const;  // like the_item, but without all the verbose modifiers..
   std::string indef_item() const; 
   CString some_item() const; 
 
@@ -163,7 +164,8 @@ public:
   // static const TCHAR* typeAsDescU(ObjEnum type);
   static const char* DONT_typeAsDescA(ObjEnum type);
 
-  static const char* flavorUse(ObjEnum type);
+  //static std::string flavorUse(ObjEnum type);
+  std::string flavorUse(ObjEnum type);
 
   static std::string make_indef_item(const std::string& s); // used to make short-names.
   static bool isCurrency(ObjEnum otype);

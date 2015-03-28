@@ -828,13 +828,14 @@ class Spell_Shove: public SpellImpl { public:
 
 
 bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
+  // fixme -tackle seems to require being next to mob, that doesn't sound right?
+
   /* fixme - the physical spells don't seem to either identify or eat-charges correctly - 'shove' never eats its charges?
   */
 
   // fiXmE - is 'target anything yet? (it might be,  because we assume both are next to each other? but actually, 'tackle' may use run-lead-up?
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You would tackle the mob.."; }
-  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+  // { logstr log; log << "You would tackle the mob.."; }
 
   // First hurl-part, only actor:
   CPoint newActorPos = actor.pos;
@@ -891,6 +892,9 @@ bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
   */
 }
 
+// you use the thingey -> real name!
+// that way is blocked by x.
+
 class Spell_Tackle: public SpellImpl { public:
   bool getParams(SpellParam& param) { return getParamsTACKLE(param); }
 
@@ -898,10 +902,13 @@ class Spell_Tackle: public SpellImpl { public:
     bool paramOK = Spell_Bullet::getParamsDIR(p); 
     if (!paramOK) { return false;  }
     p.pos = p.actor->pos + p.dir;
-    p.target = CL->map[p.pos].creature.m;
+
+    // tackle doesn't work this way, this is left-over code from crush:
+    // p.target = CL->map[p.pos].creature.m;
     // FIXME - tackle doesn't work this way! it's more akin to rush!
-    if (p.target == NULL) { if (p.actor->isPlayer()) { logstr log; log << "But there is noone there to tackle?"; } return false; }
+    // if (p.target == NULL) { if (p.actor->isPlayer()) { logstr log; log << "But there is noone there to tackle?"; } return false; }
     // if (!CL->map[p.pos+p.dir].envir.blocked()) { if (p.actor->isPlayer()) { logstr log; log << "But there is no wall to crush against?"; } return false; }
+
     return true;
   }
 
@@ -1119,6 +1126,8 @@ CPoint Spell::pickZapDir() {
 
 CPoint Spell::NoDir = CPoint(0,0); // 0,0
 
+/* I still have bug where tackle expects me to be next to mob!
+*/
 
 // (DONE) Make doors!
 
