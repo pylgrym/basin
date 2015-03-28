@@ -43,13 +43,7 @@ bool Envir::isBlockingEnv(EnvirEnum type) { // May be put in different class.
 
 
 const std::string Envir::typestr() {
-  return typeS();
-  /*
-  CString us = typeS();
-  CT2A as(us);
-  std::string s = as;
-  return s;
-  */
+  return etypeAsStr(type); // typeS();
 }
 
 void Envir::initEnvirs(Tiles& tiles) {

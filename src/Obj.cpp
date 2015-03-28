@@ -406,7 +406,7 @@ std::string Obj::flavorUse(ObjEnum type) {
   }
 
   std::stringstream ss;
-  ss << "You use " << the_short_item(); //the thingey.";
+  ss << "You use " << the_short_item() << "."; //the thingey.";
   return ss.str();
 }
 

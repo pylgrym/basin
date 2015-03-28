@@ -371,12 +371,12 @@ bool teleportSpell(Mob& actor, int range) {
 
   { logstr log; log << "Your body shifts in time and space."; }
 
-  for (int i = 0; i < 10; ++i) { // We try a number of times, to avoid teleporting into rock.
+  for (int i = 0; i < 15; ++i) { // We try a number of times, to avoid teleporting into rock.
     CPoint delta;
     for (;;) {
       delta.x = rnd::rndC(-range, range); delta.y = rnd::rndC(-range, range);
       CPoint newPos = actor.pos + delta;
-      if (CL->map.legalPos(newPos)) { break; }
+      if (CL->map.legalPos(newPos) && !CL->map[newPos].blocked()) { break; }
     }
     WalkCmd cmd(actor, delta.x, delta.y, true);
     // Possibly check 'legal' (for mapPosLegal), even before calling Do.
