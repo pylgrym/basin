@@ -27,5 +27,6 @@ void Persist::eatLabel(std::istream& is, const std::string& expected) {
   std::string dummy; is >> dummy;
   if (dummy != expected) {
     debstr() << "Error: expected [" << expected << "], but got [" << dummy << "] instead.\n";
+    DebugBreak();
   }
 }
