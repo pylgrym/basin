@@ -309,7 +309,7 @@ bool ZapCmd::Do(std::ostream& err) {
     I might use the new 'slide-player' spell to prototype this.
     */
 
-    extern bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim);
+    extern bool teleportTo(Mob& actor, CPoint targetpos, bool announce); // , Mob* aim);
 
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       /* fixme, design: spell's minrange and maxrange should be honoured,
@@ -340,7 +340,21 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_TeleportTo: // mob -> target, dir
         { { logstr log; log << mob.pronoun() << " phase" << mob.verbS() << " next to " << target->pronoun(); }
           CPoint targetpos = target->pos - dir; // The space in front of target.
-          bool bSpellOK = teleportTo(mob, targetpos, target);
+          bool bSpellOK = teleportTo(mob, targetpos, true); // , target);
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
+          break;
+        }
+
+      case SP_TeleSwap: 
+        { { logstr log; log << mob.pronoun() << " switch" << mob.verbS() << " place with " << target->pronoun(); }
+          // it's tricky, because we want each other's space..
+          CPoint actorNewpos = target->pos; 
+          CPoint targetNewpos = mob.pos;
+
+          CL->map.clearMob(mob); // actor);
+          bool bSpellOK = teleportTo(*target, targetNewpos,false);
+          bSpellOK = teleportTo(mob, actorNewpos, true);
+
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -348,7 +362,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_SummonHere: // mob <- target, dir
         { { logstr log; log << mob.pronoun() << " pull" << mob.verbS() << target->pronoun() << " nearer."; }
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
-          bool bSpellOK = teleportTo(*target, targetpos, &mob);
+          bool bSpellOK = teleportTo(*target, targetpos, true); // &mob);
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }
@@ -364,7 +378,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_SleepOther: 
         { // logstr log;
           extern bool sleepMob(Mob* target);
-          bool bSpellOK = sleepMob(target); // teleportTo(*target, targetpos, &mob);
+          bool bSpellOK = sleepMob(target); 
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }

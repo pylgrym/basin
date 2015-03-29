@@ -712,7 +712,7 @@ public:
 } spell_summonObj;
 
 
-bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
+bool teleportTo(Mob& actor, CPoint targetpos, bool announce) { 
   CL->map.moveMob(actor, targetpos);
   if (actor.isPlayer()) { actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
 
@@ -723,8 +723,8 @@ bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim) {
 
 class Spell_TeleTo : public SpellImpl {
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return teleportTo(*param.actor, param.pos, param.target); }
-  static void init(Mob& actor, CPoint targetpos, Mob* aim, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.target = aim;  p.impl = &spell_teleTo; }
+  bool execSpell(SpellParam& param) { return teleportTo(*param.actor, param.pos, true); }
+  static void init(Mob& actor, CPoint targetpos, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.impl = &spell_teleTo; }
 } spell_teleTo;
 
 
@@ -1062,7 +1062,7 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_SummonObj:    Spell_SummonObj::init(actor, p); break; //return summonObj(actor); break;
   // it's a bullet spell, so it goes here:
   case SP_TeleportTo:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i go to mob x.
-  case SP_TeleSwap:       Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i swap with x.
+  case SP_TeleSwap:       Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i swap with x. // hmm, doesn't seem to work?
 
   case SP_MagicMissile:   Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  
   case SP_FireBolt:       Spell_Bullet::init(actor, item, effect, SC_Fire, p); break; // return bulletSpell(actor, item, effect, SC_Fire); break;
