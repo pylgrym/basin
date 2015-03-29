@@ -47,7 +47,9 @@ bool WalkCmd::Do(std::ostream& err) {
   if (mob.isPlayer()) { mob.lightWalls(); } 
 
   if (mob.isPlayer()) {
-    playSound(L"sounds\\chosen\\walk3.wav"); // walk@.wav"); // was: walk2.wav
+    // disabling constant 'bell' sound, for now..:
+    //playSound(L"sounds\\chosen\\walk3.wav"); // walk@.wav"); // was: walk2.wav
+
     if (mob.isPlayer() && CL->map[newpos].envir.interacts()) {
       ShopCmd shop;
       bool bOK = shop.Do(err);
@@ -121,7 +123,7 @@ I might get hitpoints from
 
 
 
-
+/* todo - make viewport go 2 rows down. */
 
 bool HitCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
@@ -132,7 +134,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy, overrideHit); 
+  bool bHit = mob.calcAttack(isPlayer ? err : dummy, ai, *hittee, hitItem, school, spell, overrideHit); // in HitCmd::Do.
 
   if (mob.isPlayer()) {
     FightDashboard::dashboard.hp = hittee->stats.hp;
@@ -152,14 +154,24 @@ bool HitCmd::Do(std::ostream& err) {
     ai.repHitChance(err);
     err << "%)";
 
-    ai.rep(err, mob.stats);
-    return false; 
+    ai.repToHitCheck(err, mob.stats);
+    return true; // even if you miss, you've used up your turn. 
   } else { // It HITS!
     if (mob.isPlayer()) {
       playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
     }
-    logstr log;
-    log
+
+    {
+      logstr log; // First, show if roll succeeded or not (to-hit check):
+      ai.repToHitCheck(log, mob.stats);
+      log << " R.HP:" << hittee->stats.hp; // Remaining 
+    }
+
+    { // Second, show details of the attack roll:
+      logstr log; log << ai.dmgRollInfo;
+    }
+
+    logstr log; log // finally, show the conclusion of the attack:
       << mob.pronoun() << mob.stats.level() // "you hit"<-grep-target-string..
       << " hit" << mob.verbS()  << " "
       << hittee->pronoun() << " for " << ai.dmgTaken;
@@ -170,31 +182,45 @@ bool HitCmd::Do(std::ostream& err) {
 
   }
  
-  {
-    logstr log;
-    ai.rep(log, mob.stats);
-    log << " R.HP:" << hittee->stats.hp; // Remaining 
-  }
 
-  // mob should die if killed:
+  // mob should die, if killed:
   if (hittee->isDead()) {
-    if (isPlayer) {
-      PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
+
+    /* the order is a bit tricky here..
+    we need to order:
+     - A mob death-announcement.
+     - B item-drops
+     - C possible xp+level gain
+     - D dead-mob-cleanup
+    I definitely want A before C,
+    but I have to do C before D (because I need the mob-info to do it.)
+      Also, I'd prefer to do D before B.
+    I could resolve some of it, by caching (e.g. cache deadmob-info for C,
+    to be able to do D before B.)
+    */
+
+    if (hittee->isPlayer()) {
+      logstr log; log << "Alas! You died!..";
+    } else {
+      logstr log; log << hittee->the_mob() << " died.";
     }
 
     bool bLoot = rnd::oneIn(2);
     if (bLoot) {
-      CL->map.addObjAtPos(hittee->pos,CL->level);
+      CL->map.addObjAtPos(hittee->pos, CL->level);
       if (rnd::oneIn(8)) {
         CL->map.scatterObjsAtPos(hittee->pos, rnd::Rnd(1,6), CL->level, 1);
       }
-    }
-    CL->mobs.deleteMob(hittee); // in HitCmd::Do.
-    logstr log; log << "It died.";
-    if (bLoot) {
+
       playSound(L"sounds\\sfxr\\pickaxe1@.wav"); // loot drops
-      log << "An item rolls on the floor.";
+      logstr log; log << "An item rolls on the floor.";
     }
+
+    if (isPlayer) {
+      PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
+    }
+
+    CL->mobs.deleteMob(hittee); // in HitCmd::Do.
   }
   return true;
 }
@@ -220,6 +246,12 @@ should go into a coherent design.
 
 bool ZapCmd::legal(std::ostream& err) {
   if (!Cmd::legal(err)) { return false;  }
+
+  if (mob.stats.isBlind()) {
+      err << mob.pronoun() << " can't see anything!";
+      return false;
+  }
+  
   return true;
 
   // Consider - prompt the user, if he wants to risk it.
@@ -277,7 +309,7 @@ bool ZapCmd::Do(std::ostream& err) {
     I might use the new 'slide-player' spell to prototype this.
     */
 
-    extern bool teleportTo(Mob& actor, CPoint targetpos, Mob* aim);
+    extern bool teleportTo(Mob& actor, CPoint targetpos, bool announce); // , Mob* aim);
 
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       /* fixme, design: spell's minrange and maxrange should be honoured,
@@ -297,7 +329,7 @@ bool ZapCmd::Do(std::ostream& err) {
       CPoint aim = newBullet - tgt;
 
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
+      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: case SP_TeleSelfAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
           bool bSpellOK = Spell::castSpell(effect, *target, NULL, zapHitItem, NoMana); // in zapcmd. hitting a mob.
@@ -308,15 +340,30 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_TeleportTo: // mob -> target, dir
         { { logstr log; log << mob.pronoun() << " phase" << mob.verbS() << " next to " << target->pronoun(); }
           CPoint targetpos = target->pos - dir; // The space in front of target.
-          bool bSpellOK = teleportTo(mob, targetpos, target);
+          bool bSpellOK = teleportTo(mob, targetpos, true); // , target);
+          if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
+          break;
+        }
+
+      case SP_TeleSwap: 
+        { { logstr log; log << mob.pronoun() << " switch" << mob.verbS() << " place with " << target->pronoun(); }
+          // it's tricky, because we want each other's space..
+          CPoint actorNewpos = target->pos; 
+          CPoint targetNewpos = mob.pos;
+
+          CL->map.clearMob(mob); // actor);
+          bool bSpellOK = teleportTo(*target, targetNewpos,false);
+          bSpellOK = teleportTo(mob, actorNewpos, true);
+
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
 
       case SP_SummonHere: // mob <- target, dir
+        // weird - i got an 'x pulls the x nearer' from a mob, suggesting it cast the spell on itself?
         { { logstr log; log << mob.pronoun() << " pull" << mob.verbS() << target->pronoun() << " nearer."; }
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
-          bool bSpellOK = teleportTo(*target, targetpos, &mob);
+          bool bSpellOK = teleportTo(*target, targetpos, true); // &mob);
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }
@@ -332,7 +379,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_SleepOther: 
         { // logstr log;
           extern bool sleepMob(Mob* target);
-          bool bSpellOK = sleepMob(target); // teleportTo(*target, targetpos, &mob);
+          bool bSpellOK = sleepMob(target); 
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }
@@ -726,6 +773,16 @@ bool UseCmd::Do(std::ostream& err) {
 // DONE: Persist ID'ed spells. 
 // DONE: Mark items as identified when sold to shop.
 
+bool CastCmd::legal(std::ostream& err) {
+  if (!Cmd::legal(err)) { return false;  }
+
+  if (actor.stats.isBlind()) {
+      err << actor.pronoun() << " can't see anything!";
+      return false;
+  }
+
+  return true;
+}
 
 bool CastCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }

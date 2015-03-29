@@ -33,6 +33,11 @@ public:
   virtual bool silent() const { return !mob.isPlayer(); } 
 
   virtual bool legal(std::ostream& err) { 
+    if (mob.stats.isRooted()) {
+      err << mob.pronoun() << " rooted in place!";
+      return false;
+    }
+
     if (newpos == old) { err << "Not a move-direction.";  return false; }
     if (!CL->map.legalPos(newpos)) { debstr() << "illegal coords outside map.";  return false; }
     if (CL->map[newpos].blocked()) {
@@ -63,6 +68,10 @@ public:
   virtual bool silent() const { return !mob.isPlayer(); }  
 
   virtual bool legal(std::ostream& err) { 
+    if (mob.stats.isAfraid()) {
+      err << mob.pronoun() << " cower" << mob.verbS() << " in fear!";
+      return false;
+    }
     if (hittee == NULL) { 
       if (!silent()) { err << "No opponent to hit."; }
       return false; 
@@ -122,7 +131,13 @@ public:
   }
 
   virtual bool silent() const { return !mob.isPlayer(); } // .ctype() != CR_Player;  }
-  virtual bool legal(std::ostream& err) {  return true; }
+  virtual bool legal(std::ostream& err) {  
+    if (mob.stats.isBlind()) {
+      err << mob.pronoun() << " can't see anything!";
+      return false;
+    }
+    return true; 
+  }
 
   virtual bool Do(std::ostream& err) {  
     if (!Cmd::Do(err)) { return false; }
@@ -147,6 +162,11 @@ public:
   virtual bool silent() const { return !mob.isPlayer(); } 
 
   virtual bool legal(std::ostream& err) {
+    if (mob.stats.isRooted()) {
+      err << mob.pronoun() << " rooted in place!";
+      return false;
+    }
+
     if (etype != EN_StairDown && etype != EN_StairUp) { err << "There are no stairs here.\n";  return false; }
     return true;
   }
@@ -293,6 +313,11 @@ public:
   virtual bool Do(std::ostream& err) {  
     if (!Cmd::Do(err)) { return false; }
 
+    if (mob.stats.isBlind()) {
+      err << mob.pronoun() << " can't see anything!";
+      return false;
+    }
+  
     debstr() << "doing examine item-command.\n";
     Obj* obj = Bag::bag.pickBag("  Examine what?", false);
     if (obj == NULL) { return false;  }
@@ -436,6 +461,7 @@ class CastCmd : public Cmd {
 public:
   Mob& actor;
   CastCmd(Mob& actor_):actor(actor_) {}
+  virtual bool legal(std::ostream& err);
   virtual bool Do(std::ostream& err);
 };
 

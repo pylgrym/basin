@@ -119,10 +119,10 @@ public:
 
   // const TCHAR* typeS() {  std::string s = etypeAsStr(type); }
 
-  const char* typeS() { 
-    std::string s = etypeAsStr(type);
-    return s.c_str();
-  }
+  // const char* typeS_bad() { 
+  //  std::string s = etypeAsStr(type);
+  //  return s.c_str();
+  //}
 
 
   const std::string typestr();

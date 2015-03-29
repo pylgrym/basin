@@ -41,8 +41,16 @@ std::string Obj::the_item() const { // based on some_item.
   return std::string(CT2A(s));
 }
 
+std::string Obj::the_short_item() const { // based on some_item.
+  CString s = CA2T(objdef->desc, CP_ACP);
+  s.Replace(L".", L"the");  
+  s.Replace(L"-", L"the"); // JG, hmm, why not nec. on the others?  
+  return std::string(CT2A(s));
+}
+
 
 std::string Obj::make_indef_item(const std::string& s) {
+  // A general utility/helper function.
   CString sU = CA2T(s.c_str(), CP_ACP); // tmpU;
   sU.Replace(L". ", L"");
   sU.Replace(L"- ", L""); // grammatically, it makes sense not to do this.
@@ -51,6 +59,7 @@ std::string Obj::make_indef_item(const std::string& s) {
 
 std::string Obj::indef_item() const { // based on some_item.
   CString s = some_item();
+  // JG: looks like we could let 'make_indef_item' do the work here..
   s.Replace(L". ", L"");  
   s.Replace(L"- ", L"");  
   return std::string(CT2A(s));
@@ -385,7 +394,7 @@ int Obj::def2ix(const ObjDef* objdef) {
 
 
 
-const char* Obj::flavorUse(ObjEnum type) {
+std::string Obj::flavorUse(ObjEnum type) {
   switch (type) {
   case OB_Potion:   return "You quaff the potion."; // drink, sip, ?
   case OB_Water:    return "You drink the water."; // drink, sip, ?
@@ -393,9 +402,12 @@ const char* Obj::flavorUse(ObjEnum type) {
 
   case OB_Food:     return "You eat the food."; // drink, sip, ?
   case OB_Mushroom: return "You eat the mushroom."; // drink, sip, ?
-  case OB_LampOil:  return NULL; // IE don't show flavor-text.
+  case OB_LampOil:  return "You pour the oil into your lamp.";  //NULL; // IE don't show flavor-text.
   }
-  return "You use the thingey.";
+
+  std::stringstream ss;
+  ss << "You use " << the_short_item() << "."; //the thingey.";
+  return ss.str();
 }
 
 
@@ -600,8 +612,8 @@ bool Obj::useObj(class Mob& who, std::ostream& err) { // returns true if use suc
   /* Multi-messages must 'prompt with <more>',
   ie whenever too much info to print, guide the user through it. */
 
-  const char* flavor = Obj::flavorUse(otype()); 
-  if (flavor != NULL) { 
+  std::string flavor = flavorUse(otype());  // Obj::
+  if (!flavor.empty()) { 
     logstr log; log << flavor;
   }
 

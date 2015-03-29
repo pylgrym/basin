@@ -115,11 +115,13 @@ void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
     Cuss::prtL("Zero items in bag (stacked)."); // Nothing.Nada."); 
   }
 
+  bool evenRow = true;
+  
   char ix = 'a';
   double everything = bagWeight() + Equ::worn.wornWeight();
   double totalWeight = 0;
   StackMap::iterator i; // BagCont::iterator i;
-  for (i = stack.stacks.begin(); i != stack.stacks.end(); ++i, ++ix) {
+  for (i = stack.stacks.begin(); i != stack.stacks.end(); ++i, ++ix, evenRow=!evenRow) {
 
     Obj& o = *stack.rep(i); 
     int count = stack.count(i);
@@ -135,7 +137,9 @@ void Bag::showBagInvStackedImpl(BagStack& stack, bool bShowPrice) {
       ss << " " << std::fixed << std::setprecision(1) << kilos; // o.kweight();
     }
     ss << " " << descA;
-    
+
+    PushBkCol bk(evenRow ? RGB(64, 50, 50) : RGB(50, 64, 64));
+    PushFgCol fg(evenRow ? RGB(255, 200, 200) : RGB(200, 255, 255));
     Cuss::prtL(ss.str().c_str());  
 
     totalWeight += kilos;

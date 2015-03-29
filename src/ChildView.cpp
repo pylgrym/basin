@@ -338,7 +338,15 @@ public:
     and for floor-tint, we really should just draw the coloured square instead!
     */
     COLORREF tileColor = cell.envir.ecolor; // typeS() NB/fixme - typeS doesn't work atm anymore?
+    // Aach, all the hacks for performance and looks :-(
+    /* intention here is, that bare floor is 'just' coloured.
+    non-floor, e.g. doors, will be 'mask-transparently' drawn on top of coloured floor:
+    */
     tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
+    if (cell.envir.type != EN_Floor) { // plain floor, is just coloured in:
+      tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Mask , 255, colorNone, zcost, tintCost); // drawing floor.
+    }
+
     bool floorStat = false; // true;
     if (floorStat) {
 
@@ -426,7 +434,7 @@ public:
     // DARKENING according to light level (we draw 'black darkness' on top of things,
     //  to emulate light/shadow.
 
-    COLORREF darkness = RGB(0, 0, 255);
+    //COLORREF darkness = RGB(0, 0, 255);
     int dist = 999, distStat = 999, distDyn = 999;
 
     if (cell.is_lit() || cell.hasOverlay()) {
@@ -445,7 +453,7 @@ public:
       if (losDark) { // It should be very totally dark.
         distDyn *= 99;
       } else { // Her er lyst:
-        darkness = colorNone;
+        //darkness = colorNone;
       }
     }
 
@@ -462,7 +470,7 @@ public:
       //Tiles::DrawType transp = Tiles::Blend; // true; // (!losDark && !cell.is_lit());
       if (1) {
         CPoint theTile = (losDark ? blendDarkenTile : blendTintTile);
-        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, darkness,zcost, tintCost); // shadows-transp.
+        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, colorNone,zcost, tintCost); // shadows-transp.
       } else { // try simpler shading.
         // JG: Actually, doesn't help at all.
         CRect r = cellR();  

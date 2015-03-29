@@ -11,6 +11,8 @@
 #include <assert.h>
 #include "Encumb.h"
 
+#include "Term.h"
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -75,7 +77,7 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , wornAC_input(0), wornAC_output(0)
 , toHit(0)
 , hunger(1500)
-, confused(0)
+//, s_confused(0)
 , gold(0)
 {
   baseMobAC = rnd::nDx(2, 2);
@@ -437,11 +439,22 @@ void Stats::updateHunger() {
 }
 
 
+bool TmpState::tickEffect() {
+  if (dur <= 0) { return false; } // Not active.
+  --dur;
+  return true;
+}
+
 void Stats::updateConfusion() {
-  if (confused <= 0) { return; }  // no confusion going on.
-  --confused; // Continuing the countdown.
-  if (confused == 0) {
-    logstr log; log << "Your confusion wears off.";
+  bool last = (s_confused.dur == 1);
+  if (!s_confused.tickEffect()) { return; } // not active.
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "Your confusion wears off.";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob appears less confused.";
+    }
   }
 }
 
@@ -505,45 +518,65 @@ void Stats::manaPct(int percent, Mob* mob) { // May also be used negative.
 
 
 
-void pr(std::stringstream& ss) {
+void pr(std::stringstream& ss,  CPoint& pos) {
+  Cuss::move(pos);
   std::string s = ss.str();
-  Cuss::prtL(s.c_str());  
+  Cuss::prt(s.c_str(),true);  
+  ++pos.y;
+  if (pos.y >= Term::Height) { pos.y = 0; }
   ss.str("");
 }
 
 void Stats::showStats() {
   std::stringstream s;
 
-  s << "AC:" << this->ac;             pr(s);
-  s << "AU:" << this->gold;           pr(s);
-  s << "Confused?" << this->confused; pr(s);
-  s << "HP:" << this->hp;             pr(s);
-  s << "maxHP:" << this->maxHP;       pr(s);
-  s << "XP:" << this->xp;             pr(s);
-  s << "XP-lvl:" << this->xpToLevel;  pr(s);
-  s << "Hunger:" << this->hunger;     pr(s);
-  s << "Level:" << this->level();     pr(s);
-  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s);
-  s << "INT:" << this->Int.v();       pr(s);
-  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s);
-  s << "WIS:" << this->Wis.v();       pr(s);
-  s << "CHR:" << this->Chr.v();       pr(s);
-  s << "CON:" << this->Con.v();       pr(s);
+  Cuss::clearLine(1,true); // necessary hack to clear dashboard,line2.
+  CPoint pos2(25,1);
+  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s,pos2);
+  s << "INT:" << this->Int.v();       pr(s,pos2);
+  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s,pos2);
+  s << "WIS:" << this->Wis.v();       pr(s,pos2);
+  s << "CHR:" << this->Chr.v();       pr(s,pos2);
+  s << "CON:" << this->Con.v();       pr(s,pos2);
 
-  s << "stealth:" << this->stealth(); pr(s);
-  s << "alertness:" << this->alertness(); pr(s);
+  int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
+  s << "depth:" << depth;             pr(s,pos2);
+
+  s << "Confused?" << this->s_confused.dur; pr(s,pos2);
+  s << "Afraid?" << this->s_afraid.dur; pr(s,pos2);
+  s << "Blinded?" << this->s_blinded.dur; pr(s,pos2);
+  s << "Rooted?" << this->s_rooted.dur; pr(s,pos2);
+  s << "Poisoned?" << this->s_poisoned.dur; pr(s,pos2);
+
+  // s << "speed:" << (int) speed;       pr(s,pos2); // FIXME: should be a stat, right now it's a mob attr instead.
+
+  CPoint pos(0,1);
+  s << "AC:" << this->ac;             pr(s,pos);
+  s << "worn-AC:" << wornAC_input << "/" << wornAC_output;             pr(s,pos);
+  int acEffect = Stats::calcAvgACeffect();
+  s << "AC%:" << acEffect;             pr(s,pos);
+  s << "AU:" << this->gold;           pr(s,pos);
+  s << "HP:" << this->hp;             pr(s,pos);
+  s << "maxHP:" << this->maxHP;       pr(s,pos);
+  s << "XP:" << this->xp;             pr(s,pos);
+  s << "XP-lvl:" << this->xpToLevel;  pr(s,pos);
+  s << "Hunger:" << this->hunger;     pr(s,pos);
+  s << "Level:" << this->level();     pr(s,pos);
+
+  s << "stealth:" << this->stealth(); pr(s,pos);
+  s << "alertness:" << this->alertness(); pr(s,pos);
 
   int lightStr = PlayerMob::ply->lightStrength();
   int lightUnits = PlayerMob::ply->theLightUnits;
   s << "Light:" << lightStr;          
   s << ", fuel left:" << lightUnits;          
-  pr(s);
+  pr(s,pos);
 
   int unEnc = Encumb::encLimits(Encumb::LightE);
   int lightEnc = Encumb::encLimits(Encumb::MediumE); // Yeah I know, 'medium == light' is not cool.
   int hardEnc = Encumb::encLimits(Encumb::HeavyE);
   //int enc4 = Encumb::encLimits(Encumb::CantLiftE);
-  s << "enc.limits:" << unEnc << "/" << lightEnc << "/" << hardEnc;   pr(s);
+  s << "enc.limits:" << unEnc << "/" << lightEnc << "/" << hardEnc;   pr(s,pos);
 
   // Cuss::prtL(s.str().c_str());  
 }
@@ -572,7 +605,15 @@ bool Stats::persist(Persist& p) {
   p.transfer(ac,        "ac"); 
   p.transfer(toHit,     "toHit");
   p.transfer(hunger,    "hunger"); 
-  p.transfer(confused,  "confused"); 
+
+  p.transfer(s_confused.dur,  "confused"); 
+  // if (p.bOut) {
+  p.transfer(s_afraid.dur, "confused");
+  p.transfer(s_blinded.dur, "confused");
+  p.transfer(s_rooted.dur, "confused");
+  p.transfer(s_poisoned.dur, "confused");
+  //}
+
   p.transfer(gold,      "gold"); 
 
   // FIXME: - these should probably be persisted with a count, instead of hardcoding 40.
