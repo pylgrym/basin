@@ -175,8 +175,11 @@ int Stats::calcBaseAC() {
 
 int Stats::mobAC() {
   // return level() + 2 + baseMobAC;  // This is too much, I think..?
-  return (level()/2) + 2 + baseMobAC;  // This is too much, I think..?
-  /* JG: This is complex: the 'TOO HARD' RULEÆØ
+  return (level()/2) + 2 + baseMobAC;  // This is too easy?
+  /* JG: This is complex: the 'TOO HARD' RULE gives boring fights, 
+  but 'too easy' is not good either..
+    Problem is, player has been collecting powerful items, armour, weapons,
+  so mobs need some sort of 'arms race' too..?
   */
 }
 
