@@ -488,7 +488,9 @@ void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
   m.pos = newpos;
   (*this)[m.pos].creature.setMob(&m);
 
-  m.invalidateGfx(newpos, oldpos, false);  
+  if (bInvalidate) {
+    m.invalidateGfx(newpos, oldpos, false);
+  }
 
   if (m.isPlayer()) {
     Viewport::vp.adjust(m.pos);
@@ -499,7 +501,9 @@ void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
       lightmap.map_offset = newpos;
       LOS::los.recalcLOS(lightmap);
       // Todo: is some sort of invalidategfx.. necessary?
-      oldMap.invalidateDiff(lightmap);
+      if (bInvalidate) {
+        oldMap.invalidateDiff(lightmap);
+      }
     }
   }
 }
