@@ -535,8 +535,17 @@ Cell& Map::operator [] (CPoint p) {
   }
   assert(p.x >= 0);
   assert(p.y >= 0);
+
+  if (!(p.x < Map::Width)) {
+    DebugBreak();
+  }
   assert(p.x < Map::Width);
+
+  if (!(p.y < Map::Height)) {
+    DebugBreak();
+  }
   assert(p.y < Map::Height);
+
   return cellColumns[p.x][p.y];  
 }
 
