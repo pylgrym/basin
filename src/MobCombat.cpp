@@ -85,7 +85,7 @@ bool Mob::calcAttack(std::ostream& os, AttackInf& ai, Mob& adv, Obj* attackItem,
     // We save the above info for later, because we only generate attack-log-info at a later point
     // (and I want to list the info in a sensible order.)
     ai.dmgRoll = ai.attackDice.roll(inf); 
-    dmgRollInfo = inf.str();
+    ai.dmgRollInfo = inf.str();
   }
 
   if (school == SC_Phys) {
