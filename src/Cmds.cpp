@@ -246,6 +246,12 @@ should go into a coherent design.
 
 bool ZapCmd::legal(std::ostream& err) {
   if (!Cmd::legal(err)) { return false;  }
+
+  if (mob.stats.isBlind()) {
+      err << mob.pronoun() << " can't see anything!";
+      return false;
+  }
+  
   return true;
 
   // Consider - prompt the user, if he wants to risk it.
@@ -752,6 +758,16 @@ bool UseCmd::Do(std::ostream& err) {
 // DONE: Persist ID'ed spells. 
 // DONE: Mark items as identified when sold to shop.
 
+bool CastCmd::legal(std::ostream& err) {
+  if (!Cmd::legal(err)) { return false;  }
+
+  if (actor.stats.isBlind()) {
+      err << actor.pronoun() << " can't see anything!";
+      return false;
+  }
+
+  return true;
+}
 
 bool CastCmd::Do(std::ostream& err) {
   if (!Cmd::Do(err)) { return false; }

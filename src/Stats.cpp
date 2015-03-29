@@ -597,7 +597,15 @@ bool Stats::persist(Persist& p) {
   p.transfer(ac,        "ac"); 
   p.transfer(toHit,     "toHit");
   p.transfer(hunger,    "hunger"); 
+
   p.transfer(s_confused.dur,  "confused"); 
+  // if (p.bOut) {
+  p.transfer(s_afraid.dur, "confused");
+  p.transfer(s_blind.dur, "confused");
+  p.transfer(s_rooted.dur, "confused");
+  p.transfer(s_poisoned.dur, "confused");
+  //}
+
   p.transfer(gold,      "gold"); 
 
   // FIXME: - these should probably be persisted with a count, instead of hardcoding 40.
