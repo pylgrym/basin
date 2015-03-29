@@ -137,7 +137,7 @@ public:
    target = NULL;
    dir = CPoint(0,0);  // zap bullet dir.
    factor = 1.0; // speed factor.
-   confuse = 0; // Nr of confuse-turns, might be 0.
+   tmpEffect = 0; // Nr of confuse-turns, might be 0.
    range = 0; //  teleport range.
    deltaFood = 0; 
    healPct = 0;
@@ -157,7 +157,9 @@ public:
   Mob* target;
   CPoint dir;  // zap bullet dir.
   double factor; // speed factor.
-  int confuse; // Nr of confuse-turns, might be 0.
+
+  int tmpEffect; // confuse; // Nr of confuse-turns, might be 0.
+
   int range; //  teleport range.
   int deltaFood; 
   int healPct;

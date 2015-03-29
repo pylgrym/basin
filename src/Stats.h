@@ -57,6 +57,34 @@ enum StatsEnum {
 };
 */
 
+class TmpState {
+public:
+  TmpState() :dur(0) {}
+  int dur; // remaining duration for the temp effect.
+
+  /* note, this class itself is  not useful for the flavor texts
+   - you'd get stuff like 'you feel less blind'. :-(
+  */
+  void updateEffect(int input) { // NB - both works for additon and for clearing (a questionable design.)
+    if (input == 0) {
+      clearEffect();
+    } else {
+      addDur(input);
+    }
+  }
+
+  void clearEffect() {
+    dur = 0;
+  }
+
+  void addDur(int addition) {
+    dur += addition;
+  }
+
+  bool tickEffect(); // countdown for duration. returns false if not active.
+};
+
+
 class Stats // Actually, ability stats..
 {
 public:
@@ -108,11 +136,22 @@ public:
   // Temp/fluctuating state: Might deserve its own sub-struct; 
   // OTOH, actually all stats might need to follow..
   int hunger;
-  int confused; // counter > 0 if we are confused, 0 if not confused. 
+  // FIXME - these should go into a dynamic map.., maybe? or maybe I'm confusing it with tmp-modifiers.
+  TmpState s_confused; // counter > 0 if we are confused, 0 if not confused. 
+  TmpState s_afraid; // can walk, but can't hit
+  TmpState s_blind; // can't see/aim/read spells, but can operate objects and walk
+  //int paralyzed; //
+  TmpState s_rooted; // You can hit, but you can't walk.
+  TmpState s_poisoned; // You lose health quickly.
+  // nauseous, vomiting, starving, ?
 
   int gold; // Possibly this should go in equipment/inventory instead..?
 
-  bool isConfused() const { return (confused > 0);  }
+  bool isConfused() const { return (s_confused.dur > 0);  }
+  bool isAfraid() const { return (s_afraid.dur > 0);  }
+  bool isBlind() const { return (s_blind.dur > 0);  }
+  bool isRooted() const { return (s_rooted.dur > 0);  }
+  bool isPoisoned() const { return (s_poisoned.dur > 0);  }
 
   int calcMaxHP();
   int calcMaxMana();

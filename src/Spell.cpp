@@ -398,16 +398,66 @@ bool updateConfused(Mob& actor, int confuseCount) {
     playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
   }
 
-  logstr log; if (confuseCount > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " confused."; } else { log << actor.pronoun() << " feel" << actor.verbS() << " less confused."; }
-  actor.stats.confused = confuseCount; 
+  logstr log; 
+  if (confuseCount > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " confused."; } 
+  else { log << actor.pronoun() << " feel" << actor.verbS() << " less confused."; }
+  actor.stats.s_confused.updateEffect(confuseCount); 
   return true;
 }
 
-class Spell_Confuse : public SpellImpl { 
-public:
-  bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.confuse);  }
-  static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.confuse = confuse; p.impl = &spell_confuse; }
+
+bool updateFear(Mob& actor, int count) { logstr log; 
+  if (count > 0) { log << actor.pronoun() << " is afraid!"; } 
+  else { log << actor.pronoun() << " appear" << actor.verbS() << " less afraid."; }
+  actor.stats.s_afraid.updateEffect(count); return true;
+}
+
+
+bool updateBlind(Mob& actor, int count) { logstr log; 
+  if (count > 0) { log << actor.pronoun() << " can't see!"; } 
+  else { log << actor.pronoun() << " can see again."; }
+  actor.stats.s_blind.updateEffect(count); return true;
+}
+
+
+bool updateRooted(Mob& actor, int count) { logstr log; 
+  if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " rooted in place!"; } 
+  else { log << actor.pronoun() << " can move freely again."; }
+  actor.stats.s_blind.updateEffect(count); return true;
+}
+
+bool updatePoisoned(Mob& actor, int count) { logstr log; 
+  if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " poisoned!"; } 
+  else { log << actor.pronoun() << " appear" << actor.verbS() << " unpoisoned."; }
+  actor.stats.s_poisoned.updateEffect(count); return true;
+}
+
+
+
+class Spell_Confuse : public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.tmpEffect); } //  confuse); }
+  static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.tmpEffect = confuse; p.impl = &spell_confuse; }
 } spell_confuse;
+
+class Spell_Fear: public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return updateFear(*param.actor, param.tmpEffect);  }
+  static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_fear; }
+} spell_fear;
+
+class Spell_Blind: public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return updateBlind(*param.actor, param.tmpEffect);  }
+  static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_blind; }
+} spell_blind;
+
+class Spell_Root : public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return updateRooted(*param.actor, param.tmpEffect);  }
+  static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_root; }
+} spell_root;
+
+class Spell_Poison : public SpellImpl { public:
+  bool execSpell(SpellParam& param) { return updatePoisoned(*param.actor, param.tmpEffect);  }
+  static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_poison; }
+} spell_poison;
 
 
 bool eatSpell(Mob& actor, int deltaFood) {

@@ -77,7 +77,7 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , wornAC_input(0), wornAC_output(0)
 , toHit(0)
 , hunger(1500)
-, confused(0)
+//, s_confused(0)
 , gold(0)
 {
   baseMobAC = rnd::nDx(2, 2);
@@ -436,11 +436,22 @@ void Stats::updateHunger() {
 }
 
 
+bool TmpState::tickEffect() {
+  if (dur <= 0) { return false; } // Not active.
+  --dur;
+  return true;
+}
+
 void Stats::updateConfusion() {
-  if (confused <= 0) { return; }  // no confusion going on.
-  --confused; // Continuing the countdown.
-  if (confused == 0) {
-    logstr log; log << "Your confusion wears off.";
+  bool last = (s_confused.dur == 1);
+  if (!s_confused.tickEffect()) { return; } // not active.
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "Your confusion wears off.";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob appears less confused.";
+    }
   }
 }
 
@@ -536,7 +547,7 @@ void Stats::showStats() {
   int acEffect = Stats::calcAvgACeffect();
   s << "AC%:" << acEffect;             pr(s,pos);
   s << "AU:" << this->gold;           pr(s,pos);
-  s << "Confused?" << this->confused; pr(s,pos);
+  s << "Confused?" << this->s_confused.dur; pr(s,pos);
   s << "HP:" << this->hp;             pr(s,pos);
   s << "maxHP:" << this->maxHP;       pr(s,pos);
   s << "XP:" << this->xp;             pr(s,pos);
@@ -586,7 +597,7 @@ bool Stats::persist(Persist& p) {
   p.transfer(ac,        "ac"); 
   p.transfer(toHit,     "toHit");
   p.transfer(hunger,    "hunger"); 
-  p.transfer(confused,  "confused"); 
+  p.transfer(s_confused.dur,  "confused"); 
   p.transfer(gold,      "gold"); 
 
   // FIXME: - these should probably be persisted with a count, instead of hardcoding 40.
