@@ -52,7 +52,7 @@ bool Mob::hitTest(class Mob& adv, AttackInf& ai) {
 
 
 
-bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchool school, SpellEnum spell, std::ostream& os, bool overrideHit) { 
+bool Mob::calcAttack(std::ostream& os, AttackInf& ai, Mob& adv, Obj* attackItem, AttackSchool school, SpellEnum spell, bool overrideHit) { 
   // Collect 'attack info' in an AttackInfo struct.
 
   //ai.school = school; // FIXME, record that..
@@ -80,8 +80,12 @@ bool Mob::calcAttack(Obj* attackItem, class Mob& adv, AttackInf& ai, AttackSchoo
   }
 
   {
-    logstr log; log << "attack roll " << ai.attackDice.n << "d" << ai.attackDice.x << ": ";
-    ai.dmgRoll = ai.attackDice.roll(log); 
+    std::stringstream inf;
+    inf << "attack roll " << ai.attackDice.n << "d" << ai.attackDice.x << ": ";
+    // We save the above info for later, because we only generate attack-log-info at a later point
+    // (and I want to list the info in a sensible order.)
+    ai.dmgRoll = ai.attackDice.roll(inf); 
+    dmgRollInfo = inf.str();
   }
 
   if (school == SC_Phys) {

@@ -27,7 +27,10 @@ struct AttackInf { // consider: combat-system should be isolated?
 
   // DAMAGE INFO, in case of hit:
   Dice attackDice; // the weapon damage roll. (dmgDice?)
+
   int dmgRoll; // 'attackDice roll'.
+  std::string dmgRollInfo;
+
   int dmgBonus; // dmg bonus from weapon.
   int dmgMod; // adjusters to dmg, e.g. %plus-dmg on weapon. and% str mod.
   int dmg; // final damage size we end up hitting with.
@@ -35,9 +38,10 @@ struct AttackInf { // consider: combat-system should be isolated?
   AttackInf() { hitRoll = 0; wpHitBonus = 0; finalToHit = 0; advAC = 0; hitThres = 0; bHit = false; dmgRoll = 0; dmgBonus = 0;  dmgMod = 0; dmg = 0; dmgTaken = 0; }
 
   double calcHitChance() const;
-  void repHitChance(std::ostream& os);
 
-  void rep(std::ostream& os, Stats& stats) {
+  void repHitChance(std::ostream& os); // the general probability.
+
+  void repToHitCheck(std::ostream& os, Stats& stats) { // the current concrete instance.
     os << 'r' << hitRoll << "<=" << hitThres << " (th" << finalToHit << "-ac" << advAC << ")++" << wpHitBonus;
     os << " "; // Where does the horrible toHit come from..
     stats.repToHit(os);
@@ -103,7 +107,7 @@ public:
 
   virtual bool isPlayer() const { return ctype() == CR_Player;  }
 
-  bool calcAttack(Obj* attackItem, class Mob& adv, struct AttackInf& ai, AttackSchool school, SpellEnum spell, std::ostream& os, bool overrideHit); // int& dmg);
+  bool calcAttack(std::ostream& os, AttackInf& ai, Mob& adv, Obj* attackItem, AttackSchool school, SpellEnum spell, bool overrideHit); // int& dmg);
   bool hitTest(class Mob& adv, struct AttackInf& ai); // int& roll, int hitBonus);
   int takeDamage(int dmg, AttackSchool damageType); // returns damage-taken (adjusted for resistancs/vulnerabilities)
 

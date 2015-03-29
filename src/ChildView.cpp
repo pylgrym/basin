@@ -338,7 +338,15 @@ public:
     and for floor-tint, we really should just draw the coloured square instead!
     */
     COLORREF tileColor = cell.envir.ecolor; // typeS() NB/fixme - typeS doesn't work atm anymore?
+    // Aach, all the hacks for performance and looks :-(
+    /* intention here is, that bare floor is 'just' coloured.
+    non-floor, e.g. doors, will be 'mask-transparently' drawn on top of coloured floor:
+    */
     tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
+    if (cell.envir.type != EN_Floor) { // plain floor, is just coloured in:
+      tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Mask , 255, colorNone, zcost, tintCost); // drawing floor.
+    }
+
     bool floorStat = false; // true;
     if (floorStat) {
 

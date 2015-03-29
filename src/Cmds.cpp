@@ -134,7 +134,7 @@ bool HitCmd::Do(std::ostream& err) {
   bool isPlayer = mob.isPlayer();  
 
   AttackInf ai;
-  bool bHit = mob.calcAttack(hitItem, *hittee, ai, school, spell, isPlayer ? err : dummy, overrideHit); 
+  bool bHit = mob.calcAttack(isPlayer ? err : dummy, ai, *hittee, hitItem, school, spell, overrideHit); // in HitCmd::Do.
 
   if (mob.isPlayer()) {
     FightDashboard::dashboard.hp = hittee->stats.hp;
@@ -154,14 +154,24 @@ bool HitCmd::Do(std::ostream& err) {
     ai.repHitChance(err);
     err << "%)";
 
-    ai.rep(err, mob.stats);
+    ai.repToHitCheck(err, mob.stats);
     return false; 
   } else { // It HITS!
     if (mob.isPlayer()) {
       playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
     }
-    logstr log;
-    log
+
+    {
+      logstr log; // First, show if roll succeeded or not (to-hit check):
+      ai.repToHitCheck(log, mob.stats);
+      log << " R.HP:" << hittee->stats.hp; // Remaining 
+    }
+
+    { // Second, show details of the attack roll:
+      logstr log; log << ai.dmgRollInfo;
+    }
+
+    logstr log; log // finally, show the conclusion of the attack:
       << mob.pronoun() << mob.stats.level() // "you hit"<-grep-target-string..
       << " hit" << mob.verbS()  << " "
       << hittee->pronoun() << " for " << ai.dmgTaken;
@@ -172,11 +182,6 @@ bool HitCmd::Do(std::ostream& err) {
 
   }
  
-  {
-    logstr log;
-    ai.rep(log, mob.stats);
-    log << " R.HP:" << hittee->stats.hp; // Remaining 
-  }
 
   // mob should die, if killed:
   if (hittee->isDead()) {
