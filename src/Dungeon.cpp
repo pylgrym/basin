@@ -83,7 +83,7 @@ bool Dungeon::persist(class Persist& p) {
     ReadyQueue::iterator i;
     for (i = mobs.queue.begin(); i != mobs.queue.end(); ++i) {
       MobReady& mr = *i;
-      map.moveMob(*mr.mob, mr.mob->pos);
+      map.moveMobNoInv(*mr.mob, mr.mob->pos);
     }
   }
 

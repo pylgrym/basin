@@ -80,8 +80,10 @@ public:
   bool canSee(CPoint a, CPoint b, bool onlyEnvir);
 
   void clearMob(class Mob& m); // helper for using stairs
-  void moveMob(class Mob& m, CPoint newpos);
+  void moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate);
   void addObj(class Obj& o, CPoint pos);
+  void moveMob(class Mob& m, CPoint newpos);
+  void moveMobNoInv(class Mob& m, CPoint newpos); // { // , bool bInvalidate) {
 
   Map();
 

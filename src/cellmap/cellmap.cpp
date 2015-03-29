@@ -474,7 +474,15 @@ void Map::clearMob(class Mob& m) {
   (*this)[m.pos].creature.clearMob();
 }
 
-void Map::moveMob(class Mob& m, CPoint newpos) {
+void Map::moveMobNoInv(class Mob& m, CPoint newpos) { // , bool bInvalidate) {
+  moveMobImpl(m, newpos, false);
+}
+
+void Map::moveMob(class Mob& m, CPoint newpos) { // , bool bInvalidate) {
+  moveMobImpl(m, newpos, true);
+}
+
+void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
   CPoint oldpos = m.pos;
   (*this)[m.pos].creature.clearMob();
   m.pos = newpos;
