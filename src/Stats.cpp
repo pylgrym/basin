@@ -539,6 +539,12 @@ void Stats::showStats() {
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   s << "depth:" << depth;             pr(s,pos2);
 
+  s << "Confused?" << this->s_confused.dur; pr(s,pos2);
+  s << "Afraid?" << this->s_afraid.dur; pr(s,pos2);
+  s << "Blinded?" << this->s_blinded.dur; pr(s,pos2);
+  s << "Rooted?" << this->s_rooted.dur; pr(s,pos2);
+  s << "Poisoned?" << this->s_poisoned.dur; pr(s,pos2);
+
   // s << "speed:" << (int) speed;       pr(s,pos2); // FIXME: should be a stat, right now it's a mob attr instead.
 
   CPoint pos(0,1);
@@ -547,7 +553,6 @@ void Stats::showStats() {
   int acEffect = Stats::calcAvgACeffect();
   s << "AC%:" << acEffect;             pr(s,pos);
   s << "AU:" << this->gold;           pr(s,pos);
-  s << "Confused?" << this->s_confused.dur; pr(s,pos);
   s << "HP:" << this->hp;             pr(s,pos);
   s << "maxHP:" << this->maxHP;       pr(s,pos);
   s << "XP:" << this->xp;             pr(s,pos);
@@ -601,7 +606,7 @@ bool Stats::persist(Persist& p) {
   p.transfer(s_confused.dur,  "confused"); 
   // if (p.bOut) {
   p.transfer(s_afraid.dur, "confused");
-  p.transfer(s_blind.dur, "confused");
+  p.transfer(s_blinded.dur, "confused");
   p.transfer(s_rooted.dur, "confused");
   p.transfer(s_poisoned.dur, "confused");
   //}

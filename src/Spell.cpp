@@ -416,14 +416,20 @@ bool updateFear(Mob& actor, int count) { logstr log;
 bool updateBlind(Mob& actor, int count) { logstr log; 
   if (count > 0) { log << actor.pronoun() << " can't see!"; } 
   else { log << actor.pronoun() << " can see again."; }
-  actor.stats.s_blind.updateEffect(count); return true;
+  actor.stats.s_blinded.updateEffect(count); return true;
 }
 
+/* Idea: 2-stage attack, where a mob will prepare an announced strike,
+that suggests you move away from him on next turn 
+(e.g. if you remain next to him, he'll hit you HARD (not insta-kill),
+so he sorts of forces your hand about 'better step away in some direction,
+or suffer the consequences'.)
+*/
 
 bool updateRooted(Mob& actor, int count) { logstr log; 
   if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " rooted in place!"; } 
   else { log << actor.pronoun() << " can move freely again."; }
-  actor.stats.s_blind.updateEffect(count); return true;
+  actor.stats.s_rooted.updateEffect(count); return true;
 }
 
 bool updatePoisoned(Mob& actor, int count) { logstr log; 

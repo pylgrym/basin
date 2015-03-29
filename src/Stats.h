@@ -139,17 +139,19 @@ public:
   // FIXME - these should go into a dynamic map.., maybe? or maybe I'm confusing it with tmp-modifiers.
   TmpState s_confused; // counter > 0 if we are confused, 0 if not confused. 
   TmpState s_afraid; // can walk, but can't hit
-  TmpState s_blind; // can't see/aim/read spells, but can operate objects and walk
-  //int paralyzed; //
+  TmpState s_blinded; // can't see/aim/read spells, but can operate objects and walk
   TmpState s_rooted; // You can hit, but you can't walk.
   TmpState s_poisoned; // You lose health quickly.
+  // Sleepy-drowsy?
+  // On fire? freezing?
+  //int paralyzed; //
   // nauseous, vomiting, starving, ?
 
   int gold; // Possibly this should go in equipment/inventory instead..?
 
   bool isConfused() const { return (s_confused.dur > 0);  }
   bool isAfraid() const { return (s_afraid.dur > 0);  }
-  bool isBlind() const { return (s_blind.dur > 0);  }
+  bool isBlind() const { return (s_blinded.dur > 0);  }
   bool isRooted() const { return (s_rooted.dur > 0);  }
   bool isPoisoned() const { return (s_poisoned.dur > 0);  }
 
