@@ -426,6 +426,10 @@ so he sorts of forces your hand about 'better step away in some direction,
 or suffer the consequences'.)
 */
 
+/*fixme, entire map should be drawn/offset 2 first rows, so we can see them.
+something to do with viewport.
+*/
+
 bool updateRooted(Mob& actor, int count) { logstr log; 
   if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " rooted in place!"; } 
   else { log << actor.pronoun() << " can move freely again."; }
@@ -780,7 +784,7 @@ bool spellRush(Mob& actor, CPoint dir, std::string verb) {
     healSpellPct(actor, -66); // Loose 66 pct of health!
     return true;
   }
-  logstr log; log << "Weird, your rush leads nowhere?";
+  logstr log; log << "Weird, your(?) rush leads nowhere?";
   return true;
 }
 
@@ -798,7 +802,7 @@ class Spell_Rush: public SpellImpl { public:
 
 bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You would pin the mob against the wall.."; }
+  { logstr log; log << actor.the_mob()  << " would pin the mob against the wall.."; }
   // NB! Must check mob is adj, and wall on other side.. Make a toolbox to build spells..
   // Consider: maybe it's HitCmd instead?
   // Todo: target ought to be passed along to hit/zap cmd..
@@ -829,7 +833,7 @@ class Spell_Crush: public SpellImpl { public:
 
 bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << "You attempt to embed the mob in the rock.."; }
+  { logstr log; log << actor.the_mob() << " attempt" << actor.verbS() << " to embed " << target.the_mob() << " in the rock.."; }
   // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
 
   // (50%done)-FIXME - this does not push mob into wall, and move you..
@@ -866,7 +870,11 @@ bool spellShove(Mob& actor, Mob& target, CPoint dir) {
   // was: - this does not push mob into wall, and move you..
   // (class Spell_Shove handles the checks for us.)
 
-  return spellRush(target, dir, "You shove the mob!"); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
+  std::stringstream ss;
+  ss << actor.pronoun() << " shove" << actor.verbS() << " " << target.the_mob() << "!";
+  std::string s = ss.str();
+
+  return spellRush(target, dir, s); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
 }
 
 /* thoughts: i should consider making 'floodfill-laby' prettier.
@@ -892,7 +900,9 @@ class Spell_Shove: public SpellImpl { public:
 
 
 
-bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
+bool spellTackle(Mob& actor, Mob* target, CPoint dir) {
+  // JG -something is wrong, 'target' is a nullptr/not known!
+
   // fixme -tackle seems to require being next to mob, that doesn't sound right?
 
   /* fixme - the physical spells don't seem to either identify or eat-charges correctly - 'shove' never eats its charges?
@@ -927,7 +937,7 @@ bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
   Mob* mob = cell->creature.m;
 
   // Second stage, now both mob and actor must slide along.
-  { logstr log; log << "You tackle the mob!"; }
+  { logstr log; log << actor.pronoun() << " tackle" << actor.verbS() << " " << mob->the_mob()  << "!"; }
 
   CPoint newMobPos = newActorPos+dir;
   for (;;) {
@@ -947,7 +957,7 @@ bool spellTackle(Mob& actor, Mob& target, CPoint dir) {
     return tackle.Do(log);
   }
 
-  logstr log; log << "Weird, your tackle leads nowhere?";
+  logstr log; log << "Weird, your(?) tackle leads nowhere?";
 
   /*
   ZapCmd cmd(NULL, actor, SP_Tackle, SC_Phys); // school);
@@ -977,7 +987,7 @@ class Spell_Tackle: public SpellImpl { public:
     return true;
   }
 
-  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
+  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, param.target, param.dir);  } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_tackle; }
 } spell_tackle;
 
