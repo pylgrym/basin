@@ -61,7 +61,7 @@ enum SpellEnum {
 
   SP_SleepOther,
   SP_TeleSelfAway,
-  SP_TeleOtherAway,
+  SP_TeleOtherAway, // teleother, tele_other, teleportother, teleport_other.
 
   SP_SummonHere, // mob x goes next to me.
   SP_SummonMonster, // create random monster.

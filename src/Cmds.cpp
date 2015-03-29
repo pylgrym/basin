@@ -123,7 +123,7 @@ I might get hitpoints from
 
 
 
-
+/* todo - make viewport go 2 rows down. */
 
 bool HitCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
@@ -155,7 +155,7 @@ bool HitCmd::Do(std::ostream& err) {
     err << "%)";
 
     ai.repToHitCheck(err, mob.stats);
-    return false; 
+    return true; // even if you miss, you've used up your turn. 
   } else { // It HITS!
     if (mob.isPlayer()) {
       playSound(L"sounds\\sfxr\\walk2.wav"); // HIT MOB
@@ -329,7 +329,7 @@ bool ZapCmd::Do(std::ostream& err) {
       CPoint aim = newBullet - tgt;
 
       switch (effect) {
-      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
+      case SP_Speedup: case SP_Slowdown: case SP_ConfuseSelf: case SP_Unconfuse: case SP_TeleOtherAway: case SP_TeleSelfAway: //  - No - NO SP_ConfuseMob here! (because it's a bullet spell.)
       case SP_Heal_light: case SP_Heal_minor: case SP_Heal_mod: case SP_Heal_serious: case SP_Heal_crit: case SP_Sick:
         { logstr log;
           bool bSpellOK = Spell::castSpell(effect, *target, NULL, zapHitItem, NoMana); // in zapcmd. hitting a mob.
@@ -360,6 +360,7 @@ bool ZapCmd::Do(std::ostream& err) {
         }
 
       case SP_SummonHere: // mob <- target, dir
+        // weird - i got an 'x pulls the x nearer' from a mob, suggesting it cast the spell on itself?
         { { logstr log; log << mob.pronoun() << " pull" << mob.verbS() << target->pronoun() << " nearer."; }
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
           bool bSpellOK = teleportTo(*target, targetpos, true); // &mob);

@@ -296,6 +296,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
           const bool dontOverrideHit = false;
           HitCmd playerHits(player_weapon, *this, dx, dy, SC_Phys, SP_NoSpell, dontOverrideHit);
           if (playerHits.Do(ss)) { actionDuration = 1; bActionDone = true; } // player old-school HITTING something.
+           // hit or miss, you still use up your turn.
         }
       } //end movement-scope-block.
       break; // end of keyboard switch.
