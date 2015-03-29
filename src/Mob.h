@@ -160,6 +160,7 @@ public:
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 
   virtual std::string a_mob()  const = 0;
+  virtual std::string the_mob()  const { return pronoun(); } // just an alias..
   virtual std::string pronoun() const = 0; // "You"/"The orc".
   virtual std::string verbS() const = 0; // "he hitS".
 

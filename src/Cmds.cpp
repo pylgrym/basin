@@ -178,25 +178,44 @@ bool HitCmd::Do(std::ostream& err) {
     log << " R.HP:" << hittee->stats.hp; // Remaining 
   }
 
-  // mob should die if killed:
+  // mob should die, if killed:
   if (hittee->isDead()) {
-    if (isPlayer) {
-      PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
+
+    /* the order is a bit tricky here..
+    we need to order:
+     - A mob death-announcement.
+     - B item-drops
+     - C possible xp+level gain
+     - D dead-mob-cleanup
+    I definitely want A before C,
+    but I have to do C before D (because I need the mob-info to do it.)
+      Also, I'd prefer to do D before B.
+    I could resolve some of it, by caching (e.g. cache deadmob-info for C,
+    to be able to do D before B.)
+    */
+
+    if (hittee->isPlayer()) {
+      logstr log; log << "Alas! You died!..";
+    } else {
+      logstr log; log << hittee->the_mob() << " died.";
     }
 
     bool bLoot = rnd::oneIn(2);
     if (bLoot) {
-      CL->map.addObjAtPos(hittee->pos,CL->level);
+      CL->map.addObjAtPos(hittee->pos, CL->level);
       if (rnd::oneIn(8)) {
         CL->map.scatterObjsAtPos(hittee->pos, rnd::Rnd(1,6), CL->level, 1);
       }
-    }
-    CL->mobs.deleteMob(hittee); // in HitCmd::Do.
-    logstr log; log << "It died.";
-    if (bLoot) {
+
       playSound(L"sounds\\sfxr\\pickaxe1@.wav"); // loot drops
-      log << "An item rolls on the floor.";
+      logstr log; log << "An item rolls on the floor.";
     }
+
+    if (isPlayer) {
+      PlayerMob::ply->stats.gainKillXP(hittee->stats.level());
+    }
+
+    CL->mobs.deleteMob(hittee); // in HitCmd::Do.
   }
   return true;
 }

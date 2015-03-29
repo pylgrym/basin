@@ -11,6 +11,8 @@
 #include <assert.h>
 #include "Encumb.h"
 
+#include "Term.h"
+
 /* EXP Rules: http://www.monkeysushi.net/gaming/DnD/XP%20table.html
 
 Level	Min. XP
@@ -502,45 +504,52 @@ void Stats::manaPct(int percent, Mob* mob) { // May also be used negative.
 
 
 
-void pr(std::stringstream& ss) {
+void pr(std::stringstream& ss,  CPoint& pos) {
+  Cuss::move(pos);
   std::string s = ss.str();
-  Cuss::prtL(s.c_str());  
+  Cuss::prt(s.c_str(),true);  
+  ++pos.y;
+  if (pos.y >= Term::Height) { pos.y = 0; }
   ss.str("");
 }
 
 void Stats::showStats() {
   std::stringstream s;
 
-  s << "AC:" << this->ac;             pr(s);
-  s << "AU:" << this->gold;           pr(s);
-  s << "Confused?" << this->confused; pr(s);
-  s << "HP:" << this->hp;             pr(s);
-  s << "maxHP:" << this->maxHP;       pr(s);
-  s << "XP:" << this->xp;             pr(s);
-  s << "XP-lvl:" << this->xpToLevel;  pr(s);
-  s << "Hunger:" << this->hunger;     pr(s);
-  s << "Level:" << this->level();     pr(s);
-  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s);
-  s << "INT:" << this->Int.v();       pr(s);
-  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s);
-  s << "WIS:" << this->Wis.v();       pr(s);
-  s << "CHR:" << this->Chr.v();       pr(s);
-  s << "CON:" << this->Con.v();       pr(s);
+  Cuss::clearLine(1,true); // necessary hack to clear dashboard,line2.
+  CPoint pos2(25,0);
+  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s,pos2);
+  s << "INT:" << this->Int.v();       pr(s,pos2);
+  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s,pos2);
+  s << "WIS:" << this->Wis.v();       pr(s,pos2);
+  s << "CHR:" << this->Chr.v();       pr(s,pos2);
+  s << "CON:" << this->Con.v();       pr(s,pos2);
 
-  s << "stealth:" << this->stealth(); pr(s);
-  s << "alertness:" << this->alertness(); pr(s);
+  CPoint pos;
+  s << "AC:" << this->ac;             pr(s,pos);
+  s << "AU:" << this->gold;           pr(s,pos);
+  s << "Confused?" << this->confused; pr(s,pos);
+  s << "HP:" << this->hp;             pr(s,pos);
+  s << "maxHP:" << this->maxHP;       pr(s,pos);
+  s << "XP:" << this->xp;             pr(s,pos);
+  s << "XP-lvl:" << this->xpToLevel;  pr(s,pos);
+  s << "Hunger:" << this->hunger;     pr(s,pos);
+  s << "Level:" << this->level();     pr(s,pos);
+
+  s << "stealth:" << this->stealth(); pr(s,pos);
+  s << "alertness:" << this->alertness(); pr(s,pos);
 
   int lightStr = PlayerMob::ply->lightStrength();
   int lightUnits = PlayerMob::ply->theLightUnits;
   s << "Light:" << lightStr;          
   s << ", fuel left:" << lightUnits;          
-  pr(s);
+  pr(s,pos);
 
   int unEnc = Encumb::encLimits(Encumb::LightE);
   int lightEnc = Encumb::encLimits(Encumb::MediumE); // Yeah I know, 'medium == light' is not cool.
   int hardEnc = Encumb::encLimits(Encumb::HeavyE);
   //int enc4 = Encumb::encLimits(Encumb::CantLiftE);
-  s << "enc.limits:" << unEnc << "/" << lightEnc << "/" << hardEnc;   pr(s);
+  s << "enc.limits:" << unEnc << "/" << lightEnc << "/" << hardEnc;   pr(s,pos);
 
   // Cuss::prtL(s.str().c_str());  
 }

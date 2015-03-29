@@ -40,7 +40,7 @@ void Cuss::clear(bool bInvalidateAll) {
 }
 
 
-void Cuss::prtL(const char* txt, bool stay) {
+void Cuss::prtL(const char* txt, bool stay) { // Prints an entire line, from the left edge.
   CPoint origin = csr;
   csr.x = 0;
   bool bClipped = prt(txt, true);
