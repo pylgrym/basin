@@ -525,8 +525,16 @@ void Stats::showStats() {
   s << "CHR:" << this->Chr.v();       pr(s,pos2);
   s << "CON:" << this->Con.v();       pr(s,pos2);
 
+  int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
+  s << "depth:" << depth;             pr(s,pos2);
+
+  // s << "speed:" << (int) speed;       pr(s,pos2); // FIXME: should be a stat, right now it's a mob attr instead.
+
   CPoint pos(0,1);
   s << "AC:" << this->ac;             pr(s,pos);
+  s << "worn-AC:" << wornAC_input << "/" << wornAC_output;             pr(s,pos);
+  int acEffect = Stats::calcAvgACeffect();
+  s << "AC%:" << acEffect;             pr(s,pos);
   s << "AU:" << this->gold;           pr(s,pos);
   s << "Confused?" << this->confused; pr(s,pos);
   s << "HP:" << this->hp;             pr(s,pos);
