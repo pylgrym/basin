@@ -349,7 +349,7 @@ bool ZapCmd::Do(std::ostream& err) {
         { { logstr log; log << mob.pronoun() << " switch" << mob.verbS() << " place with " << target->pronoun(); }
 
           extern bool teleportSwap(Mob& actor, Mob& target, bool announce);
-          bSpellOK = teleportSwap(actor, *target, true);
+          bool bSpellOK = teleportSwap(mob, *target, true);
 
           /*
           // it's tricky, because we want each other's space..

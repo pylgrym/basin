@@ -734,9 +734,10 @@ bool teleportTo(Mob& actor, CPoint targetpos, bool announce) {
 bool teleportSwap(Mob& actor, Mob& target, bool announce) { 
   // it's tricky, because we want each other's space..
   CPoint actorNewpos = target.pos; 
-  CPoint targetNewpos = mob.pos;
+  CPoint targetNewpos = actor.pos;
 
-  CL->map.setMobForce(mob, actorNewpos, true);
+  // This special mob-mover doesn't clear the previous space, so the two mobs don't sabotage each other..
+  CL->map.setMobForce(actor, actorNewpos, true);
   CL->map.setMobForce(target, targetNewpos, true);
   if (actor.isPlayer())  {  actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
   if (target.isPlayer()) { target.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
