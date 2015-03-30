@@ -18,7 +18,7 @@ void Cuss::clearLine(int y, bool bInvalidate) {
     TCell& cell = Term::term[p]; 
     cell.clearChar();
     if (bInvalidate) {
-      TheUI::invalidateVPCell(p);
+      TheUI::invalidateTPCell(p);
     }
   }
 }
@@ -92,7 +92,7 @@ bool Cuss::putchar(char c, bool bClip) {
   cell.c = c; cell.tcolor = curTxtColor; cell.bkcolor = curBkColor;
 
   if (changed) {
-    TheUI::invalidateVPCell(csr);
+    TheUI::invalidateTPCell(csr);
   }
 
   ++csr.x;

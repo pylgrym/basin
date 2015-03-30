@@ -251,14 +251,14 @@ void TheUI::invalidateWndJG(CRect* pRect, bool erase) {
 
 
 
-void TheUI::invalidateCell(CPoint w_tilepos) { 
+void TheUI::invalidateCell(CPoint w_tilepos) { // world coords.
   // (invalidateCell: same as invalidateCellXY, just convenient interface.)
   invalidateCellXY(w_tilepos.x, w_tilepos.y);  
 }
 
 
 
-void TheUI::invalidateCellXY(int w_tx, int w_ty) {
+void TheUI::invalidateCellXY(int w_tx, int w_ty) { // world coords.
   // (invalidateCellXY: exposed interface func.)
   CPoint wp(w_tx,w_ty); // world
 
@@ -268,10 +268,19 @@ void TheUI::invalidateCellXY(int w_tx, int w_ty) {
 }
 
 
-void TheUI::invalidateVPCell(CPoint vp) { 
-  Term::term[vp].dirty = true;
+void TheUI::invalidateTPCell(CPoint tp) { 
+  Term::term[tp].dirty = true;
 
-  int px = vp.x * Tiles::TileWidth, py = vp.y * Tiles::TileHeight;
+  int px = tp.x * Tiles::TileWidth, py = tp.y * Tiles::TileHeight;
+	CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
+  invalidateWndJG(&cellR, true); // false); // Is supposed to be 'false' -only experiment, with true.
+}
+
+void TheUI::invalidateVPCell(CPoint vp) { 
+  CPoint tp = vp; tp.y += Viewport::Y_Offset;
+  Term::term[tp].dirty = true;
+
+  int px = tp.x * Tiles::TileWidth, py = tp.y * Tiles::TileHeight;
 	CRect cellR(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
   invalidateWndJG(&cellR, true); // false); // Is supposed to be 'false' -only experiment, with true.
 }
@@ -792,6 +801,6 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point) {
 
   CPoint oldTile = mouseTile;
   mouseTile = CPoint(point.x / 32, point.y / 32);
-  TheUI::invalidateVPCell(mouseTile);
-  TheUI::invalidateVPCell(oldTile);
+  TheUI::invalidateTPCell(mouseTile);
+  TheUI::invalidateTPCell(oldTile);
 }

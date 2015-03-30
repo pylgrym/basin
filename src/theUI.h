@@ -13,7 +13,8 @@ public:
   static void invalidateCellXY(int tx, int ty); // Interface
   static void invalidateCell(CPoint tilepos);   // Interface
 
-  static void invalidateVPCell(CPoint vp);   // Interface
+  static void invalidateVPCell(CPoint vp);   // Interface  viewport
+  static void invalidateTPCell(CPoint vp);   // Interface term
 
   static void invalidateWndJG(CRect* pRect, bool erase); // Used for impl.
   static bool shiftKey();
