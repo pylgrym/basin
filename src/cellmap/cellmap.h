@@ -85,6 +85,9 @@ public:
   void moveMob(class Mob& m, CPoint newpos);
   void moveMobNoInv(class Mob& m, CPoint newpos); // { // , bool bInvalidate) {
 
+  void setMobForce(class Mob& m, CPoint newpos, bool bInvalidate); // used for swapping two mobs.
+  void adjustViewport(CPoint newpos, bool bInvalidate);
+
   Map();
 
   void initWorld(int level); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
@@ -135,7 +138,7 @@ class Viewport {
 public:
   enum Sizes { 
 	  Width = 32, 
-	  Height = 20, // 25,  // Note well, this is NOT term height! (it's smaller.)
+	  Height = 18, // 20, // 25,  // Note well, this is NOT term height! (it's smaller.)
 	  SweetspotPct = 20,
     Y_Offset = 2 // todo/fixme: this must be included in all term<->viewport<->dung-map transforms.
   };

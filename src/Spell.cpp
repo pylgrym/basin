@@ -369,7 +369,14 @@ public:
 bool teleportSpell(Mob& actor, int range) {
   playSound(L"sounds\\sfxr\\teleport.wav"); // teleport-spell cast.
 
-  { logstr log; log << "Your body shifts in time and space."; }
+  { 
+    logstr log; 
+    if (actor.isPlayer()) {
+      log << "Your body shifts in time and space."; 
+    } else {
+      log << actor.the_mob() << " shifts in time and space."; 
+    }
+  }
 
   for (int i = 0; i < 15; ++i) { // We try a number of times, to avoid teleporting into rock.
     CPoint delta;
@@ -716,10 +723,31 @@ bool teleportTo(Mob& actor, CPoint targetpos, bool announce) {
   CL->map.moveMob(actor, targetpos);
   if (actor.isPlayer()) { actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
 
-  logstr log;
-  log << "The air shimmers!";
+  if (announce) {
+    logstr log;
+    log << "The air shimmers!";
+  }
   return true;
 }
+
+
+bool teleportSwap(Mob& actor, Mob& target, bool announce) { 
+  // it's tricky, because we want each other's space..
+  CPoint actorNewpos = target.pos; 
+  CPoint targetNewpos = mob.pos;
+
+  CL->map.setMobForce(mob, actorNewpos, true);
+  CL->map.setMobForce(target, targetNewpos, true);
+  if (actor.isPlayer())  {  actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
+  if (target.isPlayer()) { target.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
+
+  if (announce) {
+    logstr log;
+    log << "The air shimmers around both of you!";
+  }
+  return true;
+}
+
 
 class Spell_TeleTo : public SpellImpl {
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }

@@ -482,6 +482,19 @@ void Map::moveMob(class Mob& m, CPoint newpos) { // , bool bInvalidate) {
   moveMobImpl(m, newpos, true);
 }
 
+void Map::setMobForce(class Mob& m, CPoint newpos, bool bInvalidate) {
+  // used for swapping.
+  CPoint oldpos = m.pos;
+  m.pos = newpos;
+  (*this)[m.pos].creature.setMob(&m);
+  if (bInvalidate) {
+    m.invalidateGfx(newpos, oldpos, false);
+  }
+  if (m.isPlayer()) {
+    adjustViewport(newpos,bInvalidate);
+  }
+}
+
 void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
   CPoint oldpos = m.pos;
   (*this)[m.pos].creature.clearMob();
@@ -493,17 +506,22 @@ void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
   }
 
   if (m.isPlayer()) {
-    Viewport::vp.adjust(m.pos);
+    adjustViewport(newpos,bInvalidate);
+  }
+}
 
-    bool bChangedPos = !!(lightmap.map_offset != newpos);
-    if (bChangedPos) {
-      LightMap oldMap = lightmap;
-      lightmap.map_offset = newpos;
-      LOS::los.recalcLOS(lightmap);
-      // Todo: is some sort of invalidategfx.. necessary?
-      if (bInvalidate) {
-        oldMap.invalidateDiff(lightmap);
-      }
+
+void Map::adjustViewport(CPoint newpos, bool bInvalidate) {
+  Viewport::vp.adjust(newpos);
+
+  bool bChangedPos = !!(lightmap.map_offset != newpos);
+  if (bChangedPos) {
+    LightMap oldMap = lightmap;
+    lightmap.map_offset = newpos;
+    LOS::los.recalcLOS(lightmap);
+    // Todo: is some sort of invalidategfx.. necessary?
+    if (bInvalidate) {
+      oldMap.invalidateDiff(lightmap);
     }
   }
 }

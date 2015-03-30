@@ -347,13 +347,22 @@ bool ZapCmd::Do(std::ostream& err) {
 
       case SP_TeleSwap: 
         { { logstr log; log << mob.pronoun() << " switch" << mob.verbS() << " place with " << target->pronoun(); }
+
+          extern bool teleportSwap(Mob& actor, Mob& target, bool announce);
+          bSpellOK = teleportSwap(actor, *target, true);
+
+          /*
           // it's tricky, because we want each other's space..
           CPoint actorNewpos = target->pos; 
           CPoint targetNewpos = mob.pos;
 
-          CL->map.clearMob(mob); // actor);
-          bool bSpellOK = teleportTo(*target, targetNewpos,false);
+          // this didn't work correctly?
+          //CL->map.clearMob(mob); // ie actor - remove ourselves from map.
+          CL->map.setMobForce(mob, actorNewpos, true);
+          CL->map.setMobForce(*target, targetNewpos, true);
+          //bool bSpellOK = teleportTo(*target, targetNewpos,false); // move 'victim' to our space.
           bSpellOK = teleportTo(mob, actorNewpos, true);
+          */
 
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
