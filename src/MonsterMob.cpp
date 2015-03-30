@@ -122,6 +122,14 @@ bool Mob::canSeePlayer() {
 }
 
 
+std::string Mob::pickAbility() {
+  const MobDef& def = this->mobDef();
+  int count = def.abilities.size();
+  int choice = rnd::Rnd(0, count);
+  std::string ability = def.abilities[choice];
+  return ability;
+}
+
 bool Mob::mobCasts(CPoint dir) {
   /* FIxME/ consider: mobs start with zapcmd instead of Spell::castSpell.
   / Main differences are
@@ -135,8 +143,12 @@ bool Mob::mobCasts(CPoint dir) {
   also possible cooldown. the idea is, that it takes 'logistics' to navigate the adversary in place.
   strike of opportunity?
   */
-  // not a_mob
-  { logstr log; log << pronoun() << " aims a spell at you!"; }
+  std::string ability = pickAbility();
+  { 
+    logstr log; 
+    // log << pronoun() << " aims a spell at you!"; 
+    log << pronoun() << " " << ability << " a spell at you!"; 
+  }
 
   CPoint zapDir = dir;
   logstr log; // Will show a mob attacking!

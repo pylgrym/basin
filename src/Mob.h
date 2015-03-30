@@ -154,6 +154,8 @@ public:
   bool mobMeleesPlayer(CPoint dir);
   bool chasePlayer(CPoint dir);
 
+  std::string pickAbility();
+
   COLORREF color;
   virtual CreatureEnum ctype() const { return m_mobType; } // = 0;
   const MobDef&  mobDef();
