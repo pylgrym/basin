@@ -472,7 +472,7 @@ class Spell_Poison : public SpellImpl { public:
 
 bool eatSpell(Mob& actor, int deltaFood) {
   {
-    logstr log; log << "You eat a bit and feel less hungry!";
+    logstr log; log << actor.the_mob() << " eat" << actor.verbS() << " a bit and feel" << actor.verbS() << " less hungry!";
     actor.stats.hunger += deltaFood; // Eat 300 something.
   }
   actor.stats.healPct(25, &actor);

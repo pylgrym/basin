@@ -70,6 +70,8 @@ struct MobDef {
   // choice between melee/ranged attack..spell?
   // const char* tags;
   //const char* tag[]; // [];
+  std::vector< const char* > abilities;
+
   std::vector< const char* > tags;
 
   int minrange, maxrange, moralePct, chargePct, retreatPct;
