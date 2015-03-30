@@ -125,6 +125,7 @@ bool Mob::canSeePlayer() {
 std::string Mob::pickAbility() {
   const MobDef& def = this->mobDef();
   int count = def.abilities.size();
+  assert(count > 0);
   int choice = rnd::Rnd(0, count);
   std::string ability = def.abilities[choice];
   return ability;
@@ -309,7 +310,7 @@ void Mob::moveM(CPoint newpos) { // 'does all', 'move mob on map'.
 void Mob::makeAngry() {
   if (mood == M_Sleeping || mood == M_Wandering) {
     mood = M_Angry;
-    logstr log; log << "You have made the monster angry.";
+    logstr log; log << "You have made " << this->the_mob() << " angry.";
   }
 }
 
@@ -344,7 +345,7 @@ double MonsterMob::actFlee() { // returns time that action requires (0 means kee
         walk.newpos = (pos + dirH);
         if (!walk.legal(ss)) { // if horizontal doesn't work, what about fighting back..
           if (nearPlayer()) {
-            logstr log; log << "Cornered, the scared monster fights back!";
+            logstr log; log << "Cornered, the scared " << this->pronoun() << " fights back!"; // fixme, we lack indef_mob.
             const bool dontOverrideHit = false;
             HitCmd mobCornered(NULL, *this, dir.x, dir.y, SC_Phys, SP_NoSpell, dontOverrideHit);
             mobCornered.Do(ss);

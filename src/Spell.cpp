@@ -779,7 +779,7 @@ bool spellRush(Mob& actor, CPoint dir, std::string verb) {
 
   if (cell->envir.blocked()) {
     if (actor.isPlayer()) { logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!"; }
-    else { logstr log; log << "Ouch! The monster slams into the wall, seriously hurting itself!"; }
+    else { logstr log; log << "Ouch! " << actor.the_mob() << " rushes into the wall, seriously hurting itself!"; }
     
     healSpellPct(actor, -66); // Loose 66 pct of health!
     return true;
@@ -924,8 +924,8 @@ bool spellTackle(Mob& actor, Mob* target, CPoint dir) {
   }
 
   if (cell->envir.blocked()) {
-    if (actor.isPlayer()) { logstr log; log << "Augh! You slam into the wall, seriously hurting yourself!"; }
-    else { logstr log; log << "Ouch! The monster slams into the wall, seriously hurting itself!"; }    
+    if (actor.isPlayer()) { logstr log; log << "Augh! You tackle into the wall, seriously hurting yourself!"; }
+    else { logstr log; log << "Ouch! " << actor.the_mob() << " tackles into the wall, seriously hurting itself!"; }    
     healSpellPct(actor, -66); // Loose 66 pct of health!
     return true;
   }

@@ -301,6 +301,7 @@ public:
   CFont largeFont, smallFont;
 
 
+  VPoint tp; //terminal points.. (vp-2y)
   VPoint vp; // viewport coords.
   CPoint wp; // 'world' (map) coords.
   int zcost; // diagnostics - are we drawing too much.
@@ -342,9 +343,9 @@ public:
     /* intention here is, that bare floor is 'just' coloured.
     non-floor, e.g. doors, will be 'mask-transparently' drawn on top of coloured floor:
     */
-    tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
+    tiles.drawTileB(tp.p.x, tp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Raw, 255, tileColor, zcost, tintCost); // drawing floor.
     if (cell.envir.type != EN_Floor) { // plain floor, is just coloured in:
-      tiles.drawTileB(vp.p.x, vp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Mask , 255, colorNone, zcost, tintCost); // drawing floor.
+      tiles.drawTileB(tp.p.x, tp.p.y, cell.envir.tilekey(), dc, gr, Tiles::Mask , 255, colorNone, zcost, tintCost); // drawing floor.
     }
 
     bool floorStat = false; // true;
@@ -366,7 +367,7 @@ public:
     CString tile = CA2T(cell.item.atypeS()); // .c_str()
     const SpellDesc& sd = Spell::spell(cell.item.o->effect);
     COLORREF itemColor = sd.color; //colorNone; // sd.color; // colorNone; // sd.color;
-    tiles.drawTileU(vp.p.x, vp.p.y, tile, dc, gr, Tiles::Mask, 255, itemColor, zcost, tintCost); // drawing THINGS
+    tiles.drawTileU(tp.p.x, tp.p.y, tile, dc, gr, Tiles::Mask, 255, itemColor, zcost, tintCost); // drawing THINGS
 
     CString s; s.Format(L"<%d>", cell.item.o->ilevel);
 
@@ -384,7 +385,7 @@ public:
     COLORREF mobColor = colorNone;
     const SpellDesc& sd = Spell::spell(cell.creature.m->mobSpell);
     mobColor = sd.color;
-    tiles.drawTileA(vp.p.x, vp.p.y, cell.creature.typeS(), dc, gr, Tiles::Mask, 255, mobColor, zcost, tintCost); // drawing MOBS
+    tiles.drawTileA(tp.p.x, tp.p.y, cell.creature.typeS(), dc, gr, Tiles::Mask, 255, mobColor, zcost, tintCost); // drawing MOBS
 
     // Draw stats/HP:
     Mob* mob = cell.creature.m;
@@ -470,7 +471,7 @@ public:
       //Tiles::DrawType transp = Tiles::Blend; // true; // (!losDark && !cell.is_lit());
       if (1) {
         CPoint theTile = (losDark ? blendDarkenTile : blendTintTile);
-        tiles.drawTileB(vp.p.x, vp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, colorNone,zcost, tintCost); // shadows-transp.
+        tiles.drawTileB(tp.p.x, tp.p.y, theTile, dc, gr, Tiles::Blend /*was:transp true*/, blend, colorNone,zcost, tintCost); // shadows-transp.
       } else { // try simpler shading.
         // JG: Actually, doesn't help at all.
         CRect r = cellR();  
@@ -535,20 +536,26 @@ public:
 
     const CPoint greyDitherTile(36, 22), greyTile2(36,21);
 
-    for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
-      for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
-        TCell& tcell = Term::term[vp.p];
+    for (tp.p.x = 0; tp.p.x < Term::Width; ++tp.p.x) { // Viewport::Width
+      for (tp.p.y = 0; tp.p.y < Term::Height; ++tp.p.y) { // Viewport::Height
+        TCell& tcell = Term::term[tp.p];
         if (!tcell.dirty && !Term::term.dirtyall) { continue; }
         tcell.dirty = false; // as we are drawing it now, it's no longer dirty.
 
         // Used by 'all' that follow:
-        px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        px = tp.p.x * Tiles::TileWidth, py = tp.p.y * Tiles::TileHeight;
         cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
         if (!tcell.charEmpty()) { // If it's a terminal-text-char, just draw that and be done with it:
           drawTermChar(tcell); // dc, gr, txtBk, largeFont, tcell, px, py, cost);
           continue;
         }
+
+        if (tp.p.y < Viewport::Y_Offset) {
+          continue; // first two rows are terminal only, not part of viewport.
+        }
+
+        vp.p.x = tp.p.x; vp.p.y = tp.p.y - Viewport::Y_Offset;
 
         wp = Viewport::vp.v2w(vp.p); // world coords.
 
@@ -563,7 +570,7 @@ public:
 
         if (vp.p == mouseTile) { floortile = greyTile2; }
 
-        tiles.drawTileB(vp.p.x, vp.p.y, floortile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // draw envir.
+        tiles.drawTileB(tp.p.x, tp.p.y, floortile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // draw envir.
         // 15-30 ms for this part..
 
         bool litCell = false;
@@ -575,13 +582,13 @@ public:
             const SpellDesc& sd = Spell::spell(c.item.o->effect);
             COLORREF color = colorNone; // sd.color; // colorNone; // sd.color;
             CPoint itemTile = c.item.tilekey();
-            tiles.drawTileB(vp.p.x, vp.p.y, itemTile, dc, gr, Tiles::Mask, 255, color, zcost, tintCost); // draw item.
-            if (vp.p == mouseTile) { hoverInfo2 = c.item.atypeS(); }
+            tiles.drawTileB(tp.p.x, tp.p.y, itemTile, dc, gr, Tiles::Mask, 255, color, zcost, tintCost); // draw item.
+            if (tp.p == mouseTile) { hoverInfo2 = c.item.atypeS(); }
           }
 
           if (!c.creature.empty()) {
             CPoint mobTile = c.creature.mtilekey();
-            tiles.drawTileB(vp.p.x, vp.p.y, mobTile, dc, gr, Tiles::Mask, 255, colorNone, zcost, tintCost); // draw mob.
+            tiles.drawTileB(tp.p.x, tp.p.y, mobTile, dc, gr, Tiles::Mask, 255, colorNone, zcost, tintCost); // draw mob.
           }
         } // draw if cell
 
@@ -593,11 +600,11 @@ public:
         if (litCell && losDark) { blend = 128; }
 
         if ( (dist != 0 && !losDark) || litCell) {
-          tiles.drawTileB(vp.p.x, vp.p.y, greyDitherTile, dc, gr, Tiles::Blend, blend, colorNone,zcost,tintCost); // draw darkening.
+          tiles.drawTileB(tp.p.x, tp.p.y, greyDitherTile, dc, gr, Tiles::Blend, blend, colorNone,zcost,tintCost); // draw darkening.
         }
 
         if (pCell != NULL && pCell->hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
-          tiles.drawTileB(vp.p.x, vp.p.y, pCell->overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
+          tiles.drawTileB(tp.p.x, tp.p.y, pCell->overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
         }
 
       }
@@ -618,20 +625,26 @@ public:
     zcost = 0;
     tintCost = 0;
 
-    for (vp.p.x = 0; vp.p.x < Term::Width; ++vp.p.x) { // Viewport::Width
-      for (vp.p.y = 0; vp.p.y < Term::Height; ++vp.p.y) { // Viewport::Height
-        TCell& tcell = Term::term[vp.p];
+    for (tp.p.x = 0; tp.p.x < Term::Width; ++tp.p.x) { // Viewport::Width
+      for (tp.p.y = 0; tp.p.y < Term::Height; ++tp.p.y) { // Viewport::Height
+        TCell& tcell = Term::term[tp.p];
         if (!tcell.dirty && !Term::term.dirtyall) { continue; }
         tcell.dirty = false; // as we are drawing it now, it's no longer dirty.
 
         // Used by 'all' that follow:
-        px = vp.p.x * Tiles::TileWidth, py = vp.p.y * Tiles::TileHeight;
+        px = tp.p.x * Tiles::TileWidth, py = tp.p.y * Tiles::TileHeight;
         cellR_buf = CRect(CPoint(px, py), CSize(Tiles::TileWidth, Tiles::TileHeight));
 
         if (!tcell.charEmpty()) { // If it's a terminal-text-char, just draw that and be done with it:
           drawTermChar(tcell); // dc, gr, txtBk, largeFont, tcell, px, py, cost);
           continue;
         }
+
+        if (tp.p.y < Viewport::Y_Offset) {
+          continue; // first two rows are terminal only, not part of viewport.
+        }
+
+        vp.p.x = tp.p.x; vp.p.y = tp.p.y - Viewport::Y_Offset;
 
         wp = Viewport::vp.v2w(vp.p); // world coords.
 
@@ -641,7 +654,7 @@ public:
         if (pCell == NULL  || (losDark && !pCell->is_lit() && !pCell->hasOverlay()) ) { 
           // We MUST draw something for 'dark', otherwise prev.lit tiles will pile up..       
           CPoint darkTile(29,20); // (36, 22);
-          tiles.drawTileB(vp.p.x, vp.p.y, darkTile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // clearing empty/outside cells.
+          tiles.drawTileB(tp.p.x, tp.p.y, darkTile, dc, gr, Tiles::Raw, 255, colorNone,zcost,tintCost); // clearing empty/outside cells.
           continue;
         }
 
@@ -658,7 +671,7 @@ public:
 
         if (cell.hasOverlay()) { // draws bullet sprites, spell effects, rain etc.
           ++zcost;
-          tiles.drawTileB(vp.p.x, vp.p.y, cell.overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
+          tiles.drawTileB(tp.p.x, tp.p.y, cell.overlay, dc, gr, Tiles::Mask, 255, colorNone,zcost, tintCost); // overlays/bulletsprites.
         }
 
         drawLightShadow(cell,losDark); // NB!, this is a major performance hit!
