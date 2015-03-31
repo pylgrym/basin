@@ -103,6 +103,8 @@ bool Dungeons::initLoadGame() {
   // Consider using LoadCmd here:
   const char* file = "basin.sav";
   std::ifstream is(file);
+  if (!is.good() || is.bad()) { return false; }
+
   Persist p(is);
   bool bLoadOK = persist(p); // Dungeons::the_dungeons.
 
