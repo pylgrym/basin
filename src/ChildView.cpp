@@ -338,8 +338,13 @@ public:
     CBrush txtBk(bkColor); // (RGB(0, 0, 20));
     dc.FillRect(&rect, &txtBk);
 
-    CString s; s.Format(L"%c", tcell.c);
-    dc.DrawText(s, &rect,  DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    // Turns out this works, and is necessary:
+    char s_ascii[2] = "a"; s_ascii[0] = tcell.c;
+    CA2T u_ascii(s_ascii, CP_ACP);
+    CString s; s = u_ascii; 
+    // s.Format(L"%c", tcell.c); // Does NOT work!
+
+    dc.DrawText(s, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
   }
 
   void drawFloorTile(Cell& cell) {

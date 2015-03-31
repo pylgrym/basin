@@ -233,6 +233,11 @@ public:
 };
 
 
+class HelpCmd : public Cmd {
+public:
+	virtual bool Do(std::ostream& err);
+};
+
 
 
 class InvCmd : public Cmd {

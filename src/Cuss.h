@@ -4,6 +4,9 @@
 struct Cuss {
   static CPoint csr;
 
+  static void setCellBg(CPoint p, COLORREF color);
+  static void setCellFg(CPoint p, COLORREF color);
+
   static COLORREF curTxtColor;
   static void setTxtColor(COLORREF tcol = RGB(255, 255, 255) );
 

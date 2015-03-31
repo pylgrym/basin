@@ -231,7 +231,9 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
     // std::stringstream ss;
     logstr ss;
-
+    debstr() << "[" << nChar << "]";
+    debstr() << "[" << (void*) nChar << "]";
+    // 16 / 187 for question-mark.
     switch (nChar) {
     case ' ': { actionDuration = 0; bActionDone = false; } break; // space shouldn't do anything.
     case 'W': // W=wield/wear, same as a=activate/use.
@@ -243,6 +245,9 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case 'I': if (InvCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // I is INVentory (not B-bag.)
     case 'P': if (bCtrl) { if (ShowEventsCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break; } // ctrl-P is 'show event log'.
     case 'T': if (UnequipCmd().Do(ss))   { actionDuration = 1; bActionDone = true; } break; // T is 'take-off', as U=unequip is already used.
+
+    //  '?' // JG,fixme: this highlights that my keyboard-reading is questionabl, for international - I'm relying on keyboard layout (?), which I shouldn't..
+    case VK_OEM_PLUS: if (bShift) { if (HelpCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } } break; 
 
     case '.': 
     case VK_OEM_PERIOD: if (WaitCmd(*this).Do(ss)) { actionDuration = 1; bActionDone = true; } break; 

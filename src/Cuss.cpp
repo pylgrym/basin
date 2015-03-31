@@ -75,6 +75,18 @@ void Cuss::CRLF() { // Do carriage-return + lineFeed.
   if (csr.y >= Term::Height) { csr.y = 0;  }
 }
 
+void Cuss::setCellBg(CPoint p, COLORREF color) {
+  TCell& cell = Term::term[p];
+  cell.bkcolor = color;
+  TheUI::invalidateTPCell(p);
+}
+
+void Cuss::setCellFg(CPoint p, COLORREF color) {
+  TCell& cell = Term::term[p];
+  cell.tcolor = color;
+  TheUI::invalidateTPCell(p);
+}
+
 
 void Cuss::setTxtColor(COLORREF tcol) { curTxtColor = tcol; }
 COLORREF Cuss::curTxtColor = RGB(255,255,255);
@@ -83,6 +95,12 @@ void Cuss::setBkColor(COLORREF tcol) { curBkColor = tcol; }
 COLORREF Cuss::curBkColor = RGB(0, 0, 64); // 255, 255, 255);
 
 bool Cuss::putchar(char c, bool bClip) {
+  if (c == '\n') {
+    csr.x = 0; csr.y += 1;
+    if (csr.y >= Term::Height) { csr.y = 0; }
+    return false;
+  }
+
   // debstr() << "[§" << c << "]\n";
   TCell& cell = Term::term[csr]; 
 

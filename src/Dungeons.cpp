@@ -93,6 +93,32 @@ void Dungeons::setCurLevel(int level) {
   Dung::CL = dung;
 }
 
+/*I would like the log  to have more lines on the screen.. I think?
+i would like..?
+dragon-breath spells.
+near-teleporting slowing fly?
+something that teleports near, puts a touch-dot on you,
+and teleports away..
+  possibly something that steals your items, 
+and either puts them somewhere else in the dungeon,
+or you have to kill it/threaten it, to get your item back..
+some radar-thing, that will only tell you distance or direction,
+but not be precise?
+  i wanted to change something..
+
+i should have better stats, less clumsy.
+my current char on other laptop, tells me how much armour is too much
+(+12-13 gives me 80% resistance./AC protection.)
+
+i still have that bug, where it displays a top-msg only partially?
+
+nr + the kobold notices you?
+I wanted to draw the keyboard!
+ ½ 1 2 3 4 5 6 7 8 9 0 +(?) 
+Tab Q W E R T Y U I O P Å ¨
+     A S D F G H I J K L Æ Ø '
+    < Z X C V B N M , . -
+*/
 
 void Dungeons::initNewGame() {
   PlayerMob* player = PlayerMob::createPlayer();
