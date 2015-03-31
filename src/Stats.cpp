@@ -406,7 +406,7 @@ int Stat::mdf() const {
 
 
 
-void Stats::passTime() {
+void Stats::passTime(Mob* who) {
   /* JG: Deal with temporary effects, ie positive and negative buffs,
   and cooldowns. Possibly this is not the proper place to handle all than.
   OTOH, a lot of them might affect stats.
@@ -414,13 +414,15 @@ void Stats::passTime() {
 
   ac = calcTotalAC(); // Don't update all stats, just this one.. so far.
 
-  tickConfusion(); // in passtime.
-  tickFear(); // in passtime.
-  tickBlinded(); // fixme -should temp-unlight cells?
-  tickRooted(); // in passtime.
-  tickPoisoned(); // should reduce health.
-  
+  tickConfusion(who); // in passtime.
+  tickFear(who); // in passtime.
+  tickBlinded(who); // fixme -should temp-unlight cells?
+  tickRooted(who); // in passtime.
+  tickPoisoned(who); // should reduce health.
+}
 
+
+void Stats::passWorldTime() { // only for player.
   if (rnd::oneIn(100)) {
     if (rnd::oneIn(2)) {
       logstr log; log << "You feel a monster appearing.";
@@ -432,12 +434,14 @@ void Stats::passTime() {
   }
 }
 
-void Stats::updateHunger() {
+
+
+void Stats::updateHunger(Mob* who) {
   --hunger;
   if (hunger < 0) {
     if (hunger % 10 == 0) {
       logstr log;
-      log << "You are starving!";
+      log << who->the_mob() << "You are starving!";
     }
   }
 }
@@ -449,7 +453,7 @@ bool TmpState::tickEffect() {
   return true;
 }
 
-void Stats::tickConfusion() {
+void Stats::tickConfusion(Mob* who) {
   bool last = (s_confused.dur == 1);
   if (!s_confused.tickEffect()) { return; } // not active.
 
@@ -457,12 +461,12 @@ void Stats::tickConfusion() {
     if (isPlayer) {
       logstr log; log << "Your confusion wears off.";
     } else { // consider turning this part off:
-      logstr log; log << "The mob appears less confused.";
+      logstr log; log << who->the_mob() << "The mob appears less confused.";
     }
   }
 }
 
-void Stats::tickFear() {
+void Stats::tickFear(Mob* who) {
   bool last = (s_afraid.dur == 1);
   if (!s_afraid.tickEffect()) { return; } // not active.
 
@@ -470,12 +474,12 @@ void Stats::tickFear() {
     if (isPlayer) {
       logstr log; log << "Your fear wears off.";
     } else { // consider turning this part off:
-      logstr log; log << "The mob appears less afraid.";
+      logstr log; log << who->the_mob() << "The mob seems less afraid.";
     }
   }
 }
 
-void Stats::tickBlinded() {
+void Stats::tickBlinded(Mob* who) {
   bool last = (s_blinded.dur == 1);
   if (!s_blinded.tickEffect()) { return; } // not active.
 
@@ -488,7 +492,7 @@ void Stats::tickBlinded() {
   }
 }
 
-void Stats::tickRooted() {
+void Stats::tickRooted(Mob* who) {
   bool last = (s_rooted.dur == 1);
   if (!s_rooted.tickEffect()) { return; } // not active.
 
@@ -501,7 +505,7 @@ void Stats::tickRooted() {
   }
 }
 
-void Stats::tickPoisoned() {
+void Stats::tickPoisoned(Mob* who) {
   bool last = (s_poisoned.dur == 1);
   if (!s_poisoned.tickEffect()) { return; } // not active.
 

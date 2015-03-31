@@ -190,14 +190,17 @@ void PlayerMob::dashboard() {
 }
 
 
+
 void Mob::passTime() {
-	stats.passTime();
+	stats.passTime(this);
 }
+
 
 void PlayerMob::passTime() {
   Mob::passTime();
+  Stats::passWorldTime(); // only on player's turn.
 	updateLight();
-  ShopInv::updateShop(); // fixme, wrong place for this.
+  ShopInv::updateShop(); // fixme, wrong place for this?
 }
 
 
@@ -208,6 +211,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
   // FIXME - probably should respect action-duration.
   // FIXME - when paralyse/sleep/such effects 'steal' the player's turn, passTime must reflect this correctly (mobqueue instead?)
   passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. 
+  
 
   bool bActionDone = false;
   for (;!bActionDone && !TheUI::hasQuit;) { // JG: this seems to have been the important one, of 'hasQuit' checks..

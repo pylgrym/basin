@@ -198,14 +198,15 @@ public:
     mana = newMana;
   }
 
-  void passTime();
-  void updateHunger();
+  static void passWorldTime(); // only for player.
+  void passTime(Mob* who);
+  void updateHunger(Mob* who);
 
   void tickConfusion(Mob* who);
-  void tickFear();
-  void tickBlinded(); // fixme -should temp-unlight cells?
-  void tickRooted();
-  void tickPoisoned(); // should reduce health.
+  void tickFear(Mob* who);
+  void tickBlinded(Mob* who); // fixme -should temp-unlight cells?
+  void tickRooted(Mob* who);
+  void tickPoisoned(Mob* who); // should reduce health.
 
 
   void showStats();
