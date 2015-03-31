@@ -100,7 +100,7 @@ void Dungeons::initNewGame() {
 }
 
 bool Dungeons::initLoadGame() {
-  // Consider using LoadCmd here:
+  // Consider using LoadCmd here..:
   const char* file = "basin.sav";
   std::ifstream is(file);
   if (!is.good() || is.bad()) { return false; }
