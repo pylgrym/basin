@@ -200,7 +200,13 @@ public:
 
   void passTime();
   void updateHunger();
-  void updateConfusion();
+
+  void tickConfusion(Mob* who);
+  void tickFear();
+  void tickBlinded(); // fixme -should temp-unlight cells?
+  void tickRooted();
+  void tickPoisoned(); // should reduce health.
+
 
   void showStats();
 

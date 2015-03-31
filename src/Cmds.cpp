@@ -351,6 +351,8 @@ bool ZapCmd::Do(std::ostream& err) {
           extern bool teleportSwap(Mob& actor, Mob& target, bool announce);
           bool bSpellOK = teleportSwap(mob, *target, true);
 
+          // goblin warrior has wrong graphics
+
           /*
           // it's tricky, because we want each other's space..
           CPoint actorNewpos = target->pos; 

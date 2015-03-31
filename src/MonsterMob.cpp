@@ -7,6 +7,10 @@
 const bool MLog = false; // ML is 'monster log/verbose output'.
 
 double MonsterMob::act() { // returns time that action requires (0 means keep doing actions/keep initiative.)
+
+  // NB - time should actually pass, independently of mob's speed.
+  passTime(); // Step the time, for 'things that happen every N seconds', e.g. hunger. 
+
   double duration = 1.0; // actionDuration  // seconds.
 
   switch (mood) {
@@ -48,7 +52,6 @@ double Mob::noticePlayerProb(CPoint coords, int mobAlert) {
   }
 
   int baseNoticeProb = int(0.5 + noticeDSize / (dist + 1.0)); // By accident, 1/x actually gives good default chances/distribution!
-  //return baseNoticeProb;
 
   int noticeThreshold = baseNoticeProb; // nt(0.5 + baseNoticeProb + (noticeBalance * (noticeDSize / 20.0))); // it's 5%-ratings, which we convert to promille.
 
@@ -422,6 +425,7 @@ bool MonsterMob::flee_prob() {
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.retreatPct);  
 }
+
 bool MonsterMob::flee() { 
   actFlee();
   return true;
@@ -451,8 +455,6 @@ bool MonsterMob::attack() {
   return bOK; 
 }
 
-
-
 bool MonsterMob::too_close() { 
   const MobDef& def = mobDef();  
   int dist = PlayerMob::distPlyCart(pos); // not distPly, so far.
@@ -474,8 +476,6 @@ bool MonsterMob::incr_dist() {
   return true; // possibly we should track if we succeeded or not (?)
 }
 
-
-
 bool MonsterMob::too_far() { 
   const MobDef& def = mobDef();  
   int dist = PlayerMob::distPlyCart(pos); // not distPly so far.
@@ -496,16 +496,14 @@ bool MonsterMob::decr_dist() {
   return chasePlayer(dir);
 }
 
-// figure out, why rush etc doesn't let us discover?
-
 bool MonsterMob::melee_range() { 
   return nearPlayer();
 }
+
 bool MonsterMob::melee_prob() { 
   const MobDef& def = mobDef();  
   return rnd::pctChance(def.chargePct);  
 }
-
 
 bool MonsterMob::attack_melee() { 
   CPoint dir = playerDir();
@@ -526,7 +524,7 @@ bool MonsterMob::attack_ranged() {
   return mobCasts(dir);
 }
 
-
+// stare, gaze
 bool MonsterMob::stay() { return true; } // possibly this should cast some spell.
 
 

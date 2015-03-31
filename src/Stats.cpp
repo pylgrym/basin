@@ -414,8 +414,12 @@ void Stats::passTime() {
 
   ac = calcTotalAC(); // Don't update all stats, just this one.. so far.
 
-  updateHunger();
-  updateConfusion();
+  tickConfusion(); // in passtime.
+  tickFear(); // in passtime.
+  tickBlinded(); // fixme -should temp-unlight cells?
+  tickRooted(); // in passtime.
+  tickPoisoned(); // should reduce health.
+  
 
   if (rnd::oneIn(100)) {
     if (rnd::oneIn(2)) {
@@ -445,7 +449,7 @@ bool TmpState::tickEffect() {
   return true;
 }
 
-void Stats::updateConfusion() {
+void Stats::tickConfusion() {
   bool last = (s_confused.dur == 1);
   if (!s_confused.tickEffect()) { return; } // not active.
 
@@ -457,6 +461,65 @@ void Stats::updateConfusion() {
     }
   }
 }
+
+void Stats::tickFear() {
+  bool last = (s_afraid.dur == 1);
+  if (!s_afraid.tickEffect()) { return; } // not active.
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "Your fear wears off.";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob appears less afraid.";
+    }
+  }
+}
+
+void Stats::tickBlinded() {
+  bool last = (s_blinded.dur == 1);
+  if (!s_blinded.tickEffect()) { return; } // not active.
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "The veil lifts..";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob can see again.";
+    }
+  }
+}
+
+void Stats::tickRooted() {
+  bool last = (s_rooted.dur == 1);
+  if (!s_rooted.tickEffect()) { return; } // not active.
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "You can move freely again!";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob can move freely again.";
+    }
+  }
+}
+
+void Stats::tickPoisoned() {
+  bool last = (s_poisoned.dur == 1);
+  if (!s_poisoned.tickEffect()) { return; } // not active.
+
+  if (rnd::oneIn(2)) {
+    healPct(rnd::rndC(-3,-1), NULL);
+  }
+
+  if (last) {
+    if (isPlayer) {
+      logstr log; log << "The poison has left your body!";
+    } else { // consider turning this part off:
+      logstr log; log << "The mob isn't poisoned anymore.";
+    }
+  }
+}
+
+
+
 
 
 void Stats::healPct(int percent, Mob* mob) { // May also be used negative.
@@ -470,10 +533,10 @@ void Stats::healPct(int percent, Mob* mob) { // May also be used negative.
   logstr log;
   if (percent > 0) {
     if (isPlayer) { log << "You feel your health returning."; } 
-    else          { log << mob->pronoun() << " appears healthier."; }
+    else          { if (mob) { log << mob->pronoun() << " appears healthier."; } }
   } else {
     if (isPlayer) { log << "Your health worsens."; } 
-    else          { log << mob->pronoun() << " appears less healthy."; }
+    else          { if (mob) { log << mob->pronoun() << " appears less healthy."; } }
   }
 }
 

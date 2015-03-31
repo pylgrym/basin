@@ -161,7 +161,7 @@ public:
   const MobDef&  mobDef();
 
   virtual double act() = 0; // returns time that action requires (0 means keep doing actions/keep initiative.)
-  virtual void passTime() {} // Currently only activated for player mob.
+  virtual void passTime(); // was: Currently only activated for player mob. (that is a bug)
 
   virtual bool wear(Obj* obj, std::ostream& err); // Obj will go to/from bag.
 

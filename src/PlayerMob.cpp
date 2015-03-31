@@ -190,12 +190,14 @@ void PlayerMob::dashboard() {
 }
 
 
-
+void Mob::passTime() {
+	stats.passTime();
+}
 
 void PlayerMob::passTime() {
-	stats.passTime();
+  Mob::passTime();
 	updateLight();
-  ShopInv::updateShop();
+  ShopInv::updateShop(); // fixme, wrong place for this.
 }
 
 
