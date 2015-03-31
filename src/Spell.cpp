@@ -792,14 +792,21 @@ bool spellRush(Mob& actor, CPoint dir, std::string verb) {
   }
 
   if (!cell->creature.empty()) { // Good: we bump into an enemy!
+
+    Mob* target = cell->creature.m;
     { 
       logstr log;
       if (!verb.empty()) {
         log << verb;
       } else {
-        log << "You rush into the mob!"; 
+        if (actor.isPlayer()) {
+          log << "You rush into " << target->the_mob() << "!"; 
+        } else {
+          log << actor.the_mob() << " rushes into " << target->the_mob() << "!";  // "You rush into " 
+        }
       }
     }
+
     const bool doOverrideHit = true;
     HitCmd rush(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
     logstr log;
