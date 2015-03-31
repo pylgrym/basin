@@ -24,7 +24,7 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
   pos.x = rnd::Rnd(1, Map::Width-1); 
   pos.y = rnd::Rnd(2, Map::Height-1);
   color = RGB(rand()%255,rand()%255,rand()%255);
-  speed = 1.0;
+  old_mob_speed = 1.0;
 
   defSchool = (AttackSchool) rnd::Rnd(0, SC_MaxSchools);
   mobSpell = Spell::rndSpell_level(mlevel);

@@ -76,7 +76,9 @@ bool MobQueue::dispatchFirst() {
   queue.pop(); // pop_heap / take us out of the queue.
 
   if (!cur.mob->isDead()) { // As long as you are not dead, you get a next turn:
-    double nextReady = globalClock += duration;
+    double realDuration = 0.0;
+    if (duration > 0) { realDuration = cur.mob->stats.mob_speed; } // mob-speed controls time-queue!
+    double nextReady = globalClock += realDuration;
     queue.push(MobReady(nextReady,cur.mob));
   } // if-not-dead.
   // NB, something needs to clean up/delete dead mobs!

@@ -186,7 +186,7 @@ void PlayerMob::dashboard() {
   addInfS("", stats.isConfused() ? "confused" : "-", width, dash);
 
   addInf1("au", stats.gold, width, dash);
-  addInf1("speed", (int) speed, width, dash); // FIXME - shouldn't speed be a stat?
+  addInf1("speed", (int) stats.mob_speed, width, dash); // FIXME - shouldn't speed be a stat?
 }
 
 

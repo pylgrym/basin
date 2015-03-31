@@ -133,6 +133,8 @@ public:
   int baseMobAC; // a varying dice roll for mob ac, a 'delta' (to make mobs not always equal)
   int wornAC_input, wornAC_output;
 
+  double mob_speed;
+
   // Temp/fluctuating state: Might deserve its own sub-struct; 
   // OTOH, actually all stats might need to follow..
   int hunger;

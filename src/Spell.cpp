@@ -350,7 +350,7 @@ public:
 bool updateSpeed(Mob& actor, double factor) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
   logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }
-  actor.speed *= factor;
+  actor.stats.mob_speed *= factor;
   return true;
 }
 

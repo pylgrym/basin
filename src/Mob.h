@@ -73,7 +73,7 @@ public:
       
     stats.persist(p);
 
-    p.transfer(speed, "speed"); 
+    // if (!p.bOut) { p.transfer(old_mob_speed, "speed"); }
 
     int intMood = mood;
     p.transfer(intMood, "mood"); 
@@ -96,7 +96,7 @@ public:
   CreatureEnum m_mobType; // better access it through ctype.
   CPoint pos;
   Stats stats;
-  double speed;
+  double old_mob_speed;
   MoodEnum mood;
   Dice mobDummyWeapon;
   AttackSchool defSchool;

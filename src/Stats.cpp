@@ -76,8 +76,8 @@ Stats::Stats(int mlevel, bool bPlayer_)
 , baseMobAC(0)
 , wornAC_input(0), wornAC_output(0)
 , toHit(0)
+, mob_speed(1.0)
 , hunger(1500)
-//, s_confused(0)
 , gold(0)
 {
   baseMobAC = rnd::nDx(2, 2);
@@ -621,7 +621,7 @@ void Stats::showStats() {
   s << "AC:" << this->ac;             pr(s,pos);
   s << "worn-AC:" << wornAC_input << "/" << wornAC_output;             pr(s,pos);
   int acEffect = Stats::calcAvgACeffect();
-  s << "AC%:" << acEffect;             pr(s,pos);
+  s << "AC%:" << acEffect;            pr(s,pos);
   s << "AU:" << this->gold;           pr(s,pos);
   s << "HP:" << this->hp;             pr(s,pos);
   s << "maxHP:" << this->maxHP;       pr(s,pos);
@@ -671,6 +671,8 @@ bool Stats::persist(Persist& p) {
 
   p.transfer(ac,        "ac"); 
   p.transfer(toHit,     "toHit");
+
+  p.transfer(mob_speed, "speed"); // if (p.bOut)  { }
   p.transfer(hunger,    "hunger"); 
 
   p.transfer(s_confused.dur,  "confused"); 

@@ -83,6 +83,9 @@ alter between different states - 'the golem starts glowing/growing, shrinks'?
 /*
 humanoid, beast. monstrosity-monster.fey,plant undead fiend demon ghost elemental dragon-kin. giant aberration. construct. ooze.
 demon devil  fiend.
+
+tele phase and slow, annoying bugger. slowstinger.
+more kinds of terrain.
 */
 
 // design: abilities are just 3rd-person-verbs, so they can be used as-is in texts.
