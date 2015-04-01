@@ -955,17 +955,30 @@ bool HelpCmd::Do(std::ostream& err) {
 	Cuss::clear(false);
 	Cuss::prtL("  Keyboard:");
 
+  // idea: lock random seed for dungeon?
+  /*
+  f8/shift f8,is the 'new' f4 (does it work for
+  several kinds of lists?)
+
+  idea: make compact level generators,
+  to give each level more personality and difference.
+  */
+
   std::string s[] = {
     " ½ 1 2 3 4 5 6 7 8 9 0 +(?)   ",
     "Tab Q W E R T Y U I O P Å ¨   ",
-    "     A S D F G H J K L Æ Ø '",
+    "     A S D F G H J K L Æ Ø '  ",
     "    < Z X C V B N M , . -     ",
-  }
-  ;
+    "Q-stats, W-ear, E-xamine, T-akeoff, I-nv,",
+    "O-pen/close,",
+    "A-ctivate, S-ee, D-rop, F-bash, G-et,",
+    "Z-ap, X-spells, C-stairs."
+  };
 
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < 8; ++i) {
     Cuss::prtL(s[i].c_str());
   }
+
   // Movement keys:
   COLORREF moveHue = RGB(0, 185, 0);
   Cuss::setCellBg(CPoint(15, 3), moveHue); // H
@@ -979,15 +992,15 @@ bool HelpCmd::Do(std::ostream& err) {
   Cuss::setCellBg(CPoint(14, 2), moveHue); // YU
   Cuss::setCellBg(CPoint(16, 2), moveHue);
 
-  COLORREF oHue = RGB(185, 0, 0);
+  COLORREF oHue = RGB(185, 0, 185); // commands I could remove!
   COLORREF iHue = RGB(185, 0, 0);
   // O is Open:
-  Cuss::setCellBg(CPoint(20, 2), oHue); // O,open/close(!)
-  Cuss::setCellBg(CPoint(18, 2), iHue); // I,inventory
+  Cuss::setCellBg(CPoint(20, 2), iHue); // O,open/close(!)
+  Cuss::setCellBg(CPoint(18, 2), oHue); // I,inventory // COULD be dropped! (A instead)
   Cuss::setCellBg(CPoint(12, 2), iHue); // T is take off
   Cuss::setCellBg(CPoint( 8, 2), iHue); // E examine
 
-  Cuss::setCellBg(CPoint(6, 2), iHue); // W = wear
+  Cuss::setCellBg(CPoint(6, 2), oHue); // W = wear // COULD be dropped!(A instead)
   Cuss::setCellBg(CPoint(4, 2), iHue); // Q = stats
 
   Cuss::setCellBg(CPoint(5, 3), iHue); // A = activate-use
@@ -997,7 +1010,7 @@ bool HelpCmd::Do(std::ostream& err) {
   Cuss::setCellBg(CPoint(13, 3), iHue); // G get
 
   Cuss::setCellBg(CPoint(6, 4), iHue); // Z zap=cast spell
-  Cuss::setCellBg(CPoint(8, 4), iHue); // X spell-book(not nec?)
+  Cuss::setCellBg(CPoint(8, 4), oHue); // X spell-book(not nec?) // COULD be dropped! (z instead.)
   Cuss::setCellBg(CPoint(10, 4), iHue); // C stairs, go up/down
 
   // p is unequip - why/how?

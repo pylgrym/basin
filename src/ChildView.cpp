@@ -728,11 +728,13 @@ void CChildView::OnPaint() {
   }
 
   int delta = draw.measure.getDelta(); // stopClock();
-  std::stringstream ss; ss << delta; std::string s = ss.str();
+  std::stringstream ss; 
+  ss << delta << "/" << draw.measure.start << "/" << draw.measure.end; 
+  std::string s = ss.str();
 
   CA2T us(s.c_str());
   // CA2T us(draw.hoverInfo2.c_str());
-  GetParent()->SetWindowText(us);
+  GetParent()->SetWindowText(us); // setwindowtitle.
 }
 
 
