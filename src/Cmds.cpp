@@ -701,18 +701,21 @@ bool RollStatsCmd::Do(std::ostream& err) {
     // NB, all variations of clear still leaves dungeon drawn below - no full screen clear
     // (use clearLine instead I guess? - how dow inv draw?) prtL will fill full line across screen.
     Cuss::clear(false); 
-    Cuss::prtL("Demo of re-roll/rolling stats:");
-    Cuss::prtL("");
+    Cuss::prtL("Roll your stats:");
+    Cuss::prtL(" ");
     Stats tmpStats(1, true);
     tmpStats.showStats();
     Cuss::prtL("");
     int key = 0;
     while (1) {
-      const char* prompt = "  (Space to roll, ESC to stop.)";
+      const char* prompt = "  (Space to roll, Enter to accept, ESC to stop.)";
       key = TheUI::promptForKey(prompt,__FILE__, __LINE__, "stats-roller");
-      if (key == VK_ESCAPE || key == ' ') { break; }
+      if (key == VK_ESCAPE || key == ' ' || key == VK_RETURN) { break; } // VK_ACCEPT 
     } 
-    if (key == VK_ESCAPE) { break; }
+    if (key == VK_ESCAPE || key == VK_RETURN) { 
+      outStats = tmpStats;
+      break;
+    }
   }
 
   Cuss::clear(true);

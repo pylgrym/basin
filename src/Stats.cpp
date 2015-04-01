@@ -599,12 +599,12 @@ void Stats::showStats() {
 
   Cuss::clearLine(1,true); // necessary hack to clear dashboard,line2.
   CPoint pos2(25,1);
-  s << "STR:" << this->Str.v() << " (" << Str.base << ")";       pr(s,pos2);
-  s << "INT:" << this->Int.v();       pr(s,pos2);
-  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ")";       pr(s,pos2);
-  s << "WIS:" << this->Wis.v();       pr(s,pos2);
-  s << "CHR:" << this->Chr.v();       pr(s,pos2);
-  s << "CON:" << this->Con.v();       pr(s,pos2);
+  s << "STR:" << this->Str.v() << " (" << Str.base << ") ";       pr(s,pos2);
+  s << "INT:" << this->Int.v() << " ";       pr(s, pos2);
+  s << "DEX:" << this->Dex.v() << " (" << Dex.base << ") ";       pr(s,pos2);
+  s << "WIS:" << this->Wis.v() << " ";       pr(s, pos2);
+  s << "CHR:" << this->Chr.v() << " ";       pr(s, pos2);
+  s << "CON:" << this->Con.v() << " ";       pr(s,pos2);
 
   int depth = PlayerMob::ply ? PlayerMob::ply->dungLevel : 0;
   s << "depth:" << depth;             pr(s,pos2);

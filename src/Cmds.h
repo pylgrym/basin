@@ -240,6 +240,8 @@ public:
 
 class RollStatsCmd : public Cmd {
 public:
+  Stats outStats;
+  RollStatsCmd() :outStats(1, true){}
   virtual bool Do(std::ostream& err);
 };
 

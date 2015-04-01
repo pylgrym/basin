@@ -35,14 +35,22 @@ CChildView::CChildView() {
 
   TCHAR dirBufU[256 + 1];
   // what does sizeof actually do? Answer: size in BYTES.
-  ::GetCurrentDirectory(sizeof dirBufU/sizeof(TCHAR), dirBufU);
+  ::GetCurrentDirectory(sizeof dirBufU / sizeof(TCHAR), dirBufU);
 
   CT2A dirBufA(dirBufU, CP_ACP);
   // CA2T uc(s.c_str(), CP_ACP); //  CP_UTF8);
 
-  debstr() << "CChildView ctor, cur dir:" << dirBufA << std::endl; 
+  debstr() << "CChildView ctor, cur dir:" << dirBufA << std::endl;
   // Conclusion: current dir is: 
   // "D:\moria\Basin\src\"
+
+  //singletonInit();
+}
+
+void CChildView::singletonInit() {
+  static bool initYet = false;
+  if (initYet) { return; }
+  initYet = true;
 
   int shiftKey = GetAsyncKeyState(VK_SHIFT);
   bool isShiftDown = (shiftKey < 0);
@@ -177,7 +185,11 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
 	debstr() << "ontimer:" << nIDEvent << "\n";
-	KillTimer(timerID);
+  singletonInit();
+
+  if (!CL) { return; } // If we don't have a dungeon yet, don't start any dungeon-stuff..
+
+  KillTimer(timerID);
 
   const bool wantDoubleBuffer = true; // JG: It actually seems to work.
   if (wantDoubleBuffer && 0) { // 1) { //0) { // 1) {
@@ -188,7 +200,8 @@ void CChildView::OnTimer(UINT nIDEvent) { // Used to start app loop.
     // 
   }
 
-	// do stuff..
+ 
+  // do stuff..
   debstr() << "Starting queue-process..\n";
   for (bool isRunning=true; isRunning && !TheUI::hasQuit; ) {
     bool ignored = CL->mobs.dispatchFirst(); //      isRunning = // This was a bug, random mob dying shouldn't throw us out of game-loop..
@@ -654,6 +667,8 @@ public:
           continue;
         }
 
+        if (!CL) { continue; } // Don't draw other parts, if we don't have a dungeon..
+
         if (tp.p.y < Viewport::Y_Offset) {
           continue; // first two rows are terminal only, not part of viewport.
         }
@@ -707,6 +722,8 @@ public:
 
 
 void CChildView::OnPaint() {
+  singletonInit(); // actually this seems to be called first.
+
   CRect u; GetUpdateRect(&u);
   if (u.left == 0 && u.bottom > 700) {   // Kludge - idea: if suff. large area is dirty, redraw all..
     Term::term.dirtyall = true;  

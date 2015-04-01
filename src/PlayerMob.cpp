@@ -6,9 +6,19 @@
 #include "./theUI.h"
 #include "Cmds.h"
 
+void PlayerMob::rollStats() {// FIXME, probably / really belongs in Stats class, not playermob (?)
+  RollStatsCmd rollStatsCmd;
+  std::stringstream ss;
+  rollStatsCmd.Do(ss);
+  stats = rollStatsCmd.outStats;
+}
 
 PlayerMob* PlayerMob::createPlayer() {
   PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
+
+  // new experiment:
+  player->rollStats();
+
   player->stats.setLevel(1); // 20);
 
   Spell::spellNC(SP_MagicMissile).ability = true; // Player starts out knowing magic-missile.

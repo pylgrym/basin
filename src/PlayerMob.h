@@ -34,6 +34,8 @@ public:
   void dashboardMini(); // Few stats.
   void dashboardMini2(); // horizontal.
 
+  void rollStats();
+
   static PlayerMob* ply;
   static int distPlyCart(CPoint p); // right-angle distance.raw/true calc.
   static int distPly(CPoint p); // raw/true calc. (square)

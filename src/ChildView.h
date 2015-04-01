@@ -29,6 +29,8 @@ public:
 
   void drawTermChar(CDC& dc, Gdiplus::Graphics& gr, CBrush& txtBk, CFont& largeFont, class TCell& tcell, int px, int py, int cost); // , CRect& cellR
 
+  void singletonInit();
+
 
 private:
   static CChildView* singletonWnd;
