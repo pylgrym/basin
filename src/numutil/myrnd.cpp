@@ -15,6 +15,7 @@ int rnd::Rnd(int range) {
 
 int rnd::Rnd(int from,int to) { 
   int delta = to - from;
+  if (delta == 0) { return from; }
   return from + rand() % delta; // (to - from);
 } // from, NOT including 'to'. 
 

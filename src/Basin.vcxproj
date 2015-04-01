@@ -122,6 +122,7 @@
     <ClInclude Include="Equ.h" />
     <ClInclude Include="FightDashboard.h" />
     <ClInclude Include="GrowSeed.h" />
+    <ClInclude Include="Kaching.h" />
     <ClInclude Include="Levelize.h" />
     <ClInclude Include="LogEvents.h" />
     <ClInclude Include="LOS.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Equ.cpp" />
     <ClCompile Include="FightDashboard.cpp" />
     <ClCompile Include="GrowSeed.cpp" />
+    <ClCompile Include="Kaching.cpp" />
     <ClCompile Include="Levelize.cpp" />
     <ClCompile Include="LogEvents.cpp" />
     <ClCompile Include="LOS.cpp" />

@@ -13,6 +13,8 @@
 #include "../CanSee.h"
 #include "../Cuss.h"
 
+#include "../Kaching.h"
+
 
 void Map::addRandomMob(int levelbase) {  
   const int maxRetries = 75;
@@ -128,7 +130,11 @@ void Map::initWorld(int level) {
     initTown(level);
   } else {
     // alternate between the two:
-    level % 2 ? initTunnels2(level) : initTunnels(level);
+    switch (level % 3) {
+    case 0: initTunnels(level); break;
+    case 1: initKachingBlob(level); break;
+    case 2: initTunnels2(level); break;
+    }
   }
 }
 
@@ -197,7 +203,8 @@ int countDiagOpens(CPoint p, Laby& laby) { return countDiag(p, laby, M_Open); }
 int countDiagWalls(CPoint p, Laby& laby) { return countDiag(p, laby, M_Wall); }
 
 void Map::initTunnels2(int level) {
-  GrCanvas laby;
+  GrCanvas laby; // FIXME - same problem with width/height!
+
   runSimu(laby, NULL); // CDC* dc);
   /* now do something with laby, transfer it to cellmap. */
   // Create floor/environ.
@@ -225,14 +232,16 @@ void Map::initTunnels2(int level) {
       }
     }
   }
-  addStairs();
+  addStairs(Map::Width, Map::Height);
 }
 
 
 
 void Map::initTunnels(int level) {
 
-  Laby laby(Map::Width); // 101); // 51); // 101);
+  // FIXME/NB! - 'map' is different width+height, whereas this algo is same width-height!
+
+  Laby laby(Map::Height); // Width); // 101); // 51); // 101);
   laby.combine(); //  buildAll(); // dc);
 
 
@@ -243,7 +252,7 @@ void Map::initTunnels(int level) {
       Cell& cell = column[y];
       if (x == 0 || y == 1 || x == Width - 1 || y == Height - 1) { // The outer border.
         cell.envir.type = EN_Border;
-      } else { // Inside-area:
+      } else if (x < Map::Height) { // Inside-area: // NB, danger here - width/height!
         CPoint p(x, y);
         Mark& mark = laby.grid[p];
 
@@ -292,7 +301,7 @@ void Map::initTunnels(int level) {
     }
   } // for x/ create floor.   
 
-  addStairs();
+  addStairs(Map::Width, Map::Height);
 }
 
 void Map::initTown(int level) {
@@ -386,25 +395,30 @@ void Map::addColDemo(int x, int y) {
 }
 
 
-void Map::addStairs() {
+void Map::addStairs(int theWidth, int theHeight) {
   int numStairs = 3;
   for (int i = 0; i < numStairs; ++i) {
-    addStair(EN_StairDown);
-    addStair(EN_StairUp);
+    addStair(EN_StairDown, theWidth, theHeight);
+    addStair(EN_StairUp, theWidth, theHeight);
   }
 }
 
-void Map::addStair(EnvirEnum type) {
-  CPoint stairPos = findFreeEnvir(EN_Floor);
+void Map::addStair(EnvirEnum type, int theWidth, int theHeight) {
+  CPoint stairPos = findFreeEnvir(EN_Floor, theWidth, theHeight);
   if (stairPos.x < 0) { return;  } // give up.
   Cell& stairCell = (*this)[stairPos];
   stairCell.envir.type = type;
 }
 
-CPoint Map::findFreeEnvir(EnvirEnum type) {
+CPoint Map::findFreeEnvir(EnvirEnum type, int theWidth, int theHeight) {
   const int limit = 100;
   for (int i = 0; i < limit; ++i) {
-    CPoint cand(rnd::Rnd(1,Map::Width-1), rnd::Rnd(1,Map::Height-1));
+
+    CPoint cand(
+      rnd::Rnd(1, theWidth-1), //Map::Width - 1),
+      rnd::Rnd(1, theHeight - 1) //Map::Height-1)// FIXME, remember width+height independent!
+    );
+
     if ((*this)[cand].envir.type == type) { return cand; }
   }
   CPoint notFound(-1, 1);
@@ -715,4 +729,43 @@ bool Map::transferObj(Persist& p) { // Only works for obj IN, to map:
 
 bool Map::canSee(CPoint a, CPoint b, bool onlyEnvir) {
   return CanSee::canSee(a, b, *this, onlyEnvir);
+}
+
+
+
+
+void Map::initKachingBlob(int level) {
+  /* fixme, this is wrong: The 3 map generator things should go in a separate file,
+  not in the general cellmap.cpp!
+  */
+  Blob blob(0); // JG: I'm not sure we really ended up using the blob-thing for anything
+  // (it's the queue we are interested in?)
+  Blobs queue;
+  blob.run(NULL,queue); // &dc);
+  for (int x = 0; x < Blob::Side; ++x) {
+    for (int y = 0; y < Blob::Side; ++y) {
+      CPoint p(x, y);
+      MarkB& m = queue.marks[x][y];
+      EnvirEnum etype = EN_Floor;
+      const int type = m.c;
+      if (type == 0) { // Unvisited
+        etype = EN_Floor;
+      } else if (type == -1000) {
+        etype = Envir::ranDoor();
+      } else if (type < 0) {
+        etype = Envir::ranFloor(); // EN_Tree; // innerFloor;
+        if (rnd::oneIn(9)) {
+          addObjAtPos(p, level);
+        }      
+      } else if (type > 0) { // wall.
+        etype = Envir::ranWall();
+      }
+      Cell& cell = (*this)[p];
+      cell.envir.type = etype;
+      ;
+    }
+  }
+  // FIX Borders:
+  initOuterBorders();
+  addStairs(Blob::Side, Blob::Side);
 }

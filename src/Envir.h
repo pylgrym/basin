@@ -17,9 +17,15 @@ enum EnvirEnum {
   EN_StairDown = '>',
   EN_Shop = 'S',
 
+  EN_WallRed= 'Q',
+  EN_WallOther = 'A',
+
   EN_Tree = 'T',
   EN_Green = 'G',
   EN_Water = 'W',
+
+  EN_FloorRed = 'R',
+  EN_FloorOther = 'O',
 
   EN_DoorOpen   = '1',
   EN_DoorClosed = '2',
@@ -92,6 +98,8 @@ public:
   }
 
   static EnvirEnum ranDoor();
+  static EnvirEnum ranWall();
+  static EnvirEnum ranFloor();
 
   bool isDoor() const {
     switch (type) {

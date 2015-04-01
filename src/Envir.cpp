@@ -73,11 +73,17 @@ void Envir::initEnvirKeys() {
     priv_envirKeys[EN_Vein]  = "vein"; //
     priv_envirKeys[EN_StairUp]  = "stairup";
     priv_envirKeys[EN_StairDown]  = "stairdown";
-    priv_envirKeys[EN_Shop]  = "shop"; 
+    priv_envirKeys[EN_Shop]  = "shop";
+
+    priv_envirKeys[EN_WallRed] = "Q";
+    priv_envirKeys[EN_WallOther] = "A",
 
     priv_envirKeys[EN_Tree]  = "tree"; 
     priv_envirKeys[EN_Green]  = "green"; 
     priv_envirKeys[EN_Water]  = "waterlight"; 
+
+    priv_envirKeys[EN_FloorRed] = "R"; // Consider using enum-value itself for key.. important that keys are single-letters 'roguelike', for ascii maps.
+    priv_envirKeys[EN_FloorOther] = "O";
 
     priv_envirKeys[EN_DoorOpen]    = "door_open"; 
     priv_envirKeys[EN_DoorClosed]  = "door_closed";
@@ -130,6 +136,27 @@ EnvirEnum Envir::ranDoor() {
   return EN_DoorOpen;
 }
 
+EnvirEnum Envir::ranWall() {
+  const int WallTypeCount = 2;
+  int choice = rnd::Rnd(WallTypeCount);
+  switch (choice) { // FIXME: locked/stuck must become more rare! (i'm tired of having to kick doors..)
+  case 0: return EN_Wall;
+  case 1: return EN_Border;
+  }
+  return EN_Wall;
+}
+
+EnvirEnum Envir::ranFloor() {
+  const int FloorTypeCount = 4;
+  int choice = rnd::Rnd(FloorTypeCount);
+  switch (choice) { // FIXME: locked/stuck must become more rare! (i'm tired of having to kick doors..)
+  case 0: return EN_Floor;
+  case 1: return EN_Green; // Grass;
+  case 2: return EN_Tree;
+  case 3: return EN_Water; // FIXME - not water..
+  }
+  return EN_Floor;
+}
 
 
 /* idea, LOS check! canSee.

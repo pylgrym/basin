@@ -63,7 +63,7 @@ public:
 class Map {
 public:
   enum MapConst { 
-    Width = 101, //100, //48, //16, 
+    Width = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
     Height = CellColumn::Height 
   };
 
@@ -100,6 +100,8 @@ public:
 
   void initTunnels2(int level);
 
+  void initKachingBlob(int level);
+
   // static Map map;
 
   static CPoint key2dir(char key);
@@ -114,11 +116,11 @@ public:
   void scatterObjsAtPos(CPoint pos, int n, int level, int radius);
 
 
-  void addStairs();
-  void addStair(EnvirEnum type);
+  void addStairs(int theWidth, int theHeight);
+  void addStair(EnvirEnum type, int theWidth, int theHeight);
 
-  CPoint findFreeEnvir(EnvirEnum type);
-  CPoint findNextEnvir(CPoint start, EnvirEnum type);
+  CPoint findFreeEnvir(EnvirEnum type, int theWidth, int theHeight);
+  CPoint findNextEnvir(CPoint start, EnvirEnum type); // , int theWidth);
 
   CPoint findNextMob(CPoint start, CreatureEnum ctype);
   // CPoint findMobFree(CreatureEnum type);
