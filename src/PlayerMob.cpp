@@ -246,6 +246,8 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
     case 'P': if (bCtrl) { if (ShowEventsCmd().Do(ss)) { actionDuration = 0; bActionDone = true; } break; } // ctrl-P is 'show event log'.
     case 'T': if (UnequipCmd().Do(ss))   { actionDuration = 1; bActionDone = true; } break; // T is 'take-off', as U=unequip is already used.
 
+    case 'R': if (RollStatsCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } break; // I is INVentory (not B-bag.)
+
     //  '?' // JG,fixme: this highlights that my keyboard-reading is questionabl, for international - I'm relying on keyboard layout (?), which I shouldn't..
     case VK_OEM_PLUS: if (bShift) { if (HelpCmd().Do(ss))       { actionDuration = 0; bActionDone = true; } } break; 
 

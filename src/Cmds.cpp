@@ -691,6 +691,35 @@ bool FillLampCmd::Do(std::ostream& err) {
 
 
 
+/* f8/shift f8,is the 'new' f4 (does it work for
+several kinds of lists?) */
+
+bool RollStatsCmd::Do(std::ostream& err) {
+  debstr() << "doing rollstats command.\n";
+
+  while (1) {
+    // NB, all variations of clear still leaves dungeon drawn below - no full screen clear
+    // (use clearLine instead I guess? - how dow inv draw?) prtL will fill full line across screen.
+    Cuss::clear(false); 
+    Cuss::prtL("Demo of re-roll/rolling stats:");
+    Cuss::prtL("");
+    Stats tmpStats(1, true);
+    tmpStats.showStats();
+    Cuss::prtL("");
+    int key = 0;
+    while (1) {
+      const char* prompt = "  (Space to roll, ESC to stop.)";
+      key = TheUI::promptForKey(prompt,__FILE__, __LINE__, "stats-roller");
+      if (key == VK_ESCAPE || key == ' ') { break; }
+    } 
+    if (key == VK_ESCAPE) { break; }
+  }
+
+  Cuss::clear(true);
+  return true;
+}
+
+
 bool StatCmd::Do(std::ostream& err) {  
   if (!Cmd::Do(err)) { return false; }
 

@@ -150,6 +150,7 @@ int TheUI::promptForKey(const char* prompt, const char* file, int line, const ch
   return key;
 }
 
+// Idea, make promptForKey "YN" (how to say e.g. 'escape'?)// PromptForKeys {"Y","N",Escape}
 
 void Cuss::move(CPoint pos) {
   csr = pos;

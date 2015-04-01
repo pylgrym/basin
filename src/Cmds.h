@@ -238,6 +238,11 @@ public:
 	virtual bool Do(std::ostream& err);
 };
 
+class RollStatsCmd : public Cmd {
+public:
+  virtual bool Do(std::ostream& err);
+};
+
 
 
 class InvCmd : public Cmd {
