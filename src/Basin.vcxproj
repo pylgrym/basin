@@ -107,6 +107,7 @@
     <ClInclude Include="BagStack.h" />
     <ClInclude Include="Basin.h" />
     <ClInclude Include="Bresenham.h" />
+    <ClInclude Include="BungBrownian.h" />
     <ClInclude Include="CanSee.h" />
     <ClInclude Include="cellmap\cellmap.h" />
     <ClInclude Include="ChildView.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="BagStack.cpp" />
     <ClCompile Include="Basin.cpp" />
     <ClCompile Include="Bresenham.cpp" />
+    <ClCompile Include="BungBrownian.cpp" />
     <ClCompile Include="CanSee.cpp" />
     <ClCompile Include="cellmap\cellmap.cpp" />
     <ClCompile Include="ChildView.cpp" />

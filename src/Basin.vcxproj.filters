@@ -168,6 +168,9 @@
     <ClInclude Include="MapGen3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BungBrownian.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -309,6 +312,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapGen3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BungBrownian.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
