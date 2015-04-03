@@ -1,61 +1,65 @@
 #pragma once
 
-// #include "theMark.h"
 #include <vector>
 #include "numutil/myrnd.h"
+#include <assert.h>
 
-// int rnd(int n); // { return rand() % n; }
-//int rnd(int n1, int n2); // { return n1 + rand() % (n2 - n1); }
 
+struct MarkB {
+  int c;
+
+  MarkB() { c = 0;  }  // M_Unvisited;
+  bool visited() const { return c != 0; }
+  void occupyMark(int id) { c = id; }
+};
 
 
 struct Blob {
-  enum Consts {
-    Side = 50, // 130, 
-    Count = 40 // 200
-  };
+
   CRect r;
   bool deadSides[4];
   int id;
   COLORREF color;
   CPoint door;
 
-  Blob(int id_) :id(id_) {
-    CPoint p((rnd::Rnd(Side) / 3) * 3, (rnd::Rnd(Side) / 3) * 3);
-
-    r = CRect(p, CSize(0, 0)); // 1, 1));
-    for (int i = 0; i < 4; ++i) {
-      deadSides[i] = false;
-    }
-    const int fac = 120;
-    color = RGB(rnd::Rnd(fac), rnd::Rnd(fac), rnd::Rnd(fac));
-  }
+  Blob(int id_, struct Blobs& blobs);
 
   void addDoor(CDC* dc, struct Blobs& blobs);
   void clearInner(CDC* dc, struct Blobs& blobs);
-
-  void run(CDC* dc, struct Blobs& queue);
 };
 
 
-class MarkB {
-public:
-  int c;
-  // int count;
-
-  MarkB() {
-    c = 0; // M_Unvisited;
-    // count = -1;
-  }
-
-  bool visited() const { return c != 0; }
-
-  //bool blocked() const { return c == M_Wall || c == M_Wall_H || c == M_Unvisited; }
-  void occupyMark(int id) { c = id; }
-};
 
 struct Blobs {
+  Blobs(int SideW_, int SideH_):SideW(SideW_),SideH(SideH_) 
+  {
+    marks_i.resize(SideW);
+    for (int column = 0; column < SideW; ++column) {
+      marks_i[column].resize(SideH);
+    }
+  }
+
+  // MarkB marks[Blob::SideW][Blob::SideH];
+  std::vector< std::vector <MarkB> > marks_i;
+  MarkB& marks(CPoint p) {
+    assert(p.x >= 0);
+    assert(p.y >= 0);
+    assert(p.x < SideW);
+    assert(p.y < SideH);
+    return marks_i[p.x][p.y];
+  }
+
+  int SideW, SideH;
+
+  enum Consts {
+    // SideW = 50, // 130, 
+    // SideH = 50,
+    Count = 40 // 200
+  };
+
   std::vector<Blob*> blobs;
+
+  void run(CDC* dc); // , struct Blobs& queue);
 
   void remove(int ix) {
     if (blobs.size() >= 2) {
@@ -70,7 +74,6 @@ struct Blobs {
   void exploreSide(int side, Blob& b, CDC* dc);
   bool sideFree(CPoint a, CPoint b, CPoint dir, CPoint nei);
   bool occupied(CPoint a);
-  MarkB marks[Blob::Side][Blob::Side];
   bool isLegal(CPoint a);
   void occupySide(CPoint a, CPoint b, CPoint dir, Blob& z, CDC* dc);
 

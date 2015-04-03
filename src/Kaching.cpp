@@ -3,31 +3,45 @@
 
 
 
+Blob::Blob(int id_, struct Blobs& blobs) :id(id_) {
+  CPoint p((rnd::Rnd(blobs.SideW) / 3) * 3, (rnd::Rnd(blobs.SideH) / 3) * 3);
 
-void Blob::run(CDC* dc, Blobs& queue) {
+  r = CRect(p, CSize(0, 0)); 
+  for (int i = 0; i < 4; ++i) {
+    deadSides[i] = false;
+  }
+  const int fac = 120;
+  color = RGB(rnd::Rnd(fac), rnd::Rnd(fac), rnd::Rnd(fac));
+}
+
+
+void Blobs::run(CDC* dc) {
+  //Blobs& queue = *this;
+
   for (int i = 0; i < Count; ++i) {
-    queue.blobs.push_back(new Blob(i + 1));
+    blobs.push_back(new Blob(i + 1, *this));
   }
 
   std::vector<Blob*> output;
-  while (queue.blobs.size() > 0) {
-    int ix = rnd::Rnd(queue.blobs.size());
-    Blob* pick = queue.blobs[ix];
-    if (!queue.growSomeSide(*pick, dc)) {
-      queue.remove(ix);
+
+  while (blobs.size() > 0) {
+    int ix = rnd::Rnd(blobs.size());
+    Blob* pick = blobs[ix];
+    if (!growSomeSide(*pick, dc)) {
+      remove(ix);
       output.push_back(pick);
-      pick->addDoor(dc, queue);
-      pick->clearInner(dc, queue);
+      pick->addDoor(dc, *this);
+      pick->clearInner(dc, *this);
     }
   }
 
-  /*
+  // Clean up (our output is really the array)
   std::vector<Blob*>::iterator i;
   for (i = output.begin(); i != output.end(); ++i) {
     Blob* ptr = *i;
     delete ptr;
   }
-  */
+  
 }
 
 bool Blobs::growSomeSide(Blob& b, CDC* dc) {
@@ -49,15 +63,14 @@ bool Blobs::growSomeSide(Blob& b, CDC* dc) {
 
 
 bool Blobs::isLegal(CPoint a) {
-  if (a.x < 0 || a.y < 0 || a.x >= Blob::Side || a.y >= Blob::Side) { return false; }
+  if (a.x < 0 || a.y < 0 || a.x >= SideW || a.y >= SideH) { return false; }
   return true;
 }
 
 bool Blobs::occupied(CPoint a) {
-  if (a.x < 0 || a.y < 0 || a.x >= Blob::Side || a.y >= Blob::Side) { return true; }
-  return marks[a.x][a.y].visited();
+  if (a.x < 0 || a.y < 0 || a.x >= SideW || a.y >= SideH) { return true; }
+  return marks(a).visited();
 }
-
 
 
 enum { S_Left = 0, S_Top = 1, S_Right = 2, S_Bottom = 3 };
@@ -77,7 +90,7 @@ bool Blobs::sideFree(CPoint a, CPoint b, CPoint dir, CPoint nei) {
 
 void Blobs::occupySide(CPoint a, CPoint b, CPoint dir, Blob& z, CDC* dc) {
   for (CPoint p = a;; p += dir) {
-    if (isLegal(p)) { marks[p.x][p.y].occupyMark(z.id); }
+    if (isLegal(p)) { marks(p).occupyMark(z.id); }
     if (p == b) {
       break;
     }
@@ -91,10 +104,8 @@ void Blobs::plotBox(CPoint a, CPoint b, COLORREF color, CDC* dc) {
     CPoint sa(a.x*sc, a.y*sc);
     CPoint sb(b.x*sc + sc - 1, b.y*sc + sc - 1);
     CRect sr(sa, sb);
-    CBrush brush(color); // RGB(240, 250, 230));
+    CBrush brush(color); 
     dc->FillRect(&sr, &brush);
-    //dc.MoveTo(a);
-    //dc.LineTo(b);
   }
 }
 
@@ -137,7 +148,7 @@ void Blob::addDoor(CDC* dc, Blobs& blobs) {
     door.x = (side ? r.left : r.right);  door.y = pos;
   }
 
-  blobs.marks[door.x][door.y].occupyMark(-1000); // -1000 is door. 
+  blobs.marks(door).occupyMark(-1000); // -1000 is door. 
 
   if (dc) {
     COLORREF color = RGB(0, 0, 0);
@@ -149,7 +160,7 @@ void Blob::clearInner(CDC* dc, Blobs& blobs) {
   for (int x = r.left + 1; x < r.right; ++x) {
     for (int y = r.top + 1; y < r.bottom; ++y) {
       CPoint i(x, y);
-      MarkB& inner = blobs.marks[i.x][i.y]; // door.x][door.y];
+      MarkB& inner = blobs.marks(i);
       inner.c = -inner.c;
       if (dc) {
         COLORREF color2 = RGB(255-GetRValue(color), 255-GetGValue(color), 255-GetBValue(color));
@@ -159,3 +170,4 @@ void Blob::clearInner(CDC* dc, Blobs& blobs) {
     }
   }
 }
+
