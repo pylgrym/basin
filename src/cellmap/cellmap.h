@@ -114,6 +114,8 @@ public:
 
   void initKachingBlob(int level);
 
+  void initTunnelsBrown(int level);
+
   // static Map map;
 
   static CPoint key2dir(char key);

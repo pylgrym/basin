@@ -492,8 +492,9 @@ public:
       blend = dist * 15; // (int)(255.0 - (255.0 / ((0.9*dist) + 1.0)));
       if (blend > 255) { blend = 255;  }
 
-      CPoint blendDarkenTile(29,20); // "Pure black"
-      CPoint blendTintTile(36,22); // gray-dither-mass-shadow. 
+      // JG: (36,22 is dither-tile. 29-20 is 'pure black'.)
+      CPoint blendDarkenTile(29, 20); // 27, 22); /// 29, 20); // "Pure black" (we never get to see this one..)
+      CPoint blendTintTile(29, 20); // (36, 22); // gray-dither-mass-shadow. // this one always wins, currently.
       ++zcost;
       //Tiles::DrawType transp = Tiles::Blend; // true; // (!losDark && !cell.is_lit());
       if (1) {

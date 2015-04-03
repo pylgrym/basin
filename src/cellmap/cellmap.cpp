@@ -209,10 +209,11 @@ void Map::initWorld(int level) {
   }
   else {
     // alternate between the two:
-    switch (level % 3) {
+    switch (level % 4) {
     case 0: initTunnels(level); break;
-    case 1: initKachingBlob(level); break;
-    case 2: initTunnels2(level); break;
+    case 1: initTunnelsBrown(level); break;
+    case 2: initKachingBlob(level); break;
+    case 3: initTunnels2(level); break;
     }
   }
 }
