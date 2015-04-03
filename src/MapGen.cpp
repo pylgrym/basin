@@ -7,6 +7,9 @@
 
 #include <map>
 
+
+
+
 MapGen::MapGen()
 {
 }
@@ -71,3 +74,9 @@ void Map::initKachingBlob(int level) {
   initOuterBorders();
   addStairs(queue.SideW, queue.SideH);
 }
+
+
+
+
+
+
