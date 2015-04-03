@@ -101,7 +101,7 @@ CPoint BresIter::next() {
 
 
 void bresenExample() {
-  BresIter i(4, 9, 74, 35);
+  BresIter i(2, 9, 29, 14);
   for ( ; !i.done(); ) {
     CPoint p = i.next();
     CL->map[p].envir.type = EN_Green;

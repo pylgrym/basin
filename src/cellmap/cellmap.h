@@ -68,8 +68,9 @@ public:
   enum MapConst { 
     // Width1 = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
     // Height1 = 60, //CellColumn::Height,
-    DefWidth = 101,
-    DefHeight= 60
+
+    DefWidth = 44, //101, // FIXME: with these 'dynamic', try to make them very small!
+    DefHeight= 26, //60
   };
 
   LightMap lightmap;
