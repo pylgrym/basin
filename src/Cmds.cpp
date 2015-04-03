@@ -673,6 +673,15 @@ bool LightModCmd::Do(std::ostream& err) {
 }
 
 
+bool OverrideLightCmd::Do(std::ostream& err) {
+  debstr() << "overridelightmod-cmd do begin..\n";
+  PlayerMob::ply->overrideLight = (PlayerMob::ply->overrideLight == 0 ? 200 : 0);
+  PlayerMob::ply->updateLight();
+  Cuss::clear(true);
+  return true;
+}
+
+
 
 bool FillLampCmd::Do(std::ostream& err) {
   logstr log; log << "You fill the lamp.";

@@ -459,6 +459,14 @@ public:
   virtual bool Do(std::ostream& err);
 };
 
+class OverrideLightCmd : public Cmd {
+public:
+  //OverrideLightCmd(int delta_) :delta(delta_){}
+  virtual bool Do(std::ostream& err);
+};
+
+//overrideLight
+
 
 class FillLampCmd : public Cmd {
 public:

@@ -678,6 +678,8 @@ public:
         wp = Viewport::vp.v2w(vp.p); // world coords.
 
         bool losDark = CL->map.lightmap.isDark(wp);
+        if (PlayerMob::ply->overrideLight) { losDark = false; } //A '*' toggle to light everything.
+
         // (- no, used to..) map (will) return 'nil items' when you ask outside range, because we need to clear/draw outside fields too.
         Cell* pCell = CL->map.cell(wp); 
         if (pCell == NULL  || (losDark && !pCell->is_lit() && !pCell->hasOverlay()) ) { 

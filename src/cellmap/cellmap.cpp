@@ -732,12 +732,22 @@ bool Map::canSee(CPoint a, CPoint b, bool onlyEnvir) {
 }
 
 
-
+struct RoomColors {
+  std::map< int, EnvirEnum > floors;
+  EnvirEnum floorForRoom(int id) {
+    if (floors.find(id) == floors.end()) {
+      floors[id] = Envir::ranFloor();
+    }
+    return floors[id];
+  }
+};
 
 void Map::initKachingBlob(int level) {
   /* fixme, this is wrong: The 3 map generator things should go in a separate file,
   not in the general cellmap.cpp!
   */
+  RoomColors floorTypes;
+
   Blob blob(0); // JG: I'm not sure we really ended up using the blob-thing for anything
   // (it's the queue we are interested in?)
   Blobs queue;
@@ -753,7 +763,8 @@ void Map::initKachingBlob(int level) {
       } else if (type == -1000) {
         etype = Envir::ranDoor();
       } else if (type < 0) {
-        etype = Envir::ranFloor(); // EN_Tree; // innerFloor;
+        // FIXME: get floors from a std::map<idcolor, randchosenfloor>
+        etype = floorTypes.floorForRoom(m.c); // m.color); // Envir::ranFloor(); // EN_Tree; // innerFloor;
         if (rnd::oneIn(9)) {
           addObjAtPos(p, level);
         }      

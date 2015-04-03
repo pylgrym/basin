@@ -22,8 +22,12 @@ public:
   int lightStrength() const { return theLightStrength;  }
   int theLightStrength; // 1 is weak, 9 is good. (examples.)
   int theLightUnits; // how much fuel left.
+  int overrideLight; // 0 or 200..
 
-  void setLightStrength(int strength, int lightUnits)  { 
+  void setLightStrength(int strength, int lightUnits)  {
+    if (overrideLight) {
+      strength = overrideLight;
+    }
     theLightStrength = strength; 
     theLightUnits = lightUnits;
   }

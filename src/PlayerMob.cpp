@@ -266,6 +266,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
     case VK_ADD:      if (LightModCmd(+15).Do(ss)) { actionDuration = 0; bActionDone = false; } break; 
     case VK_SUBTRACT: if (LightModCmd(-15).Do(ss)) { actionDuration = 0; bActionDone = false; } break; 
+    case VK_MULTIPLY: if (OverrideLightCmd().Do(ss)) { actionDuration = 0; bActionDone = false; } break;
 
 
     case 'S': 
@@ -352,6 +353,7 @@ PlayerMob::PlayerMob():Mob(1, true) {
 
   theLightStrength = 1;
   theLightUnits = 0;
+  overrideLight = 0;
   m_mobType = CR_Player; // (CreatureEnum)rnd(CR_Kobold, CR_MaxLimit);
 }
 
