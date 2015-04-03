@@ -14,12 +14,15 @@
 #include "../Cuss.h"
 
 
-Map::Map(int w, int h):Width2(w), Height2(h) {
-  // cellColumns_i.resize(Width2);
+void Map::resizeMap() {
   cells_i.resize(Width2);
   for (int column = 0; column < Width2; ++column) {
     cells_i[column].resize(Height2);
   }
+}
+
+Map::Map(int w, int h):Width2(w), Height2(h) {
+  resizeMap();
 
   lightmap.map = this; // necessary init of map ptr.
 }
@@ -513,6 +516,12 @@ bool Viewport::adjust(CPoint wpos, Map& map) { // True if adjust happens.
 
 
 bool Map::persist(Persist& p) {
+
+  // NB, currently all maps are the same size!
+  p.transfer(Width2, "mapWidth");
+  p.transfer(Height2, "mapHeight");
+  if (!p.bOut) { resizeMap(); }
+
   int objCount = 0; // (count obj's, to aid later output of obj-list.)
   // First, output floor-cells:
 

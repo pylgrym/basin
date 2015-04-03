@@ -62,8 +62,8 @@ public:
 
 class Map {
 public:
-  const int Width2;
-  const int Height2;
+  int Width2; // can't be const, because of persist().
+  int Height2;
 
   enum MapConst { 
     // Width1 = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
@@ -99,6 +99,8 @@ public:
   void adjustViewport(CPoint newpos, bool bInvalidate);
 
   Map(int w, int h);
+
+  void resizeMap();
 
   void initWorld(int level); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
 
