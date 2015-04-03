@@ -149,9 +149,11 @@ bool Mob::mobCasts(CPoint dir) {
   */
   std::string ability = pickAbility();
   { 
+    SpellImpl* spellPtr = SpellImpl::spellFromTag(ability);
+
     logstr log; 
     // log << pronoun() << " aims a spell at you!"; 
-    log << pronoun() << " " << ability << " a spell at you!"; 
+    log << pronoun() << " " << ability << " a spell at you!" << spellPtr; 
   }
 
   CPoint zapDir = dir;

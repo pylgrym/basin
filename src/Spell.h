@@ -1,8 +1,9 @@
 #pragma once
 
 #include <ostream>
-
+#include <set>
 #include "numutil/myrnd.h"
+#include <map>
 
 /* JG: Spell/Spellnum allows me to map enums to text-tags and back.
 This makes it possible for me to have sets of spell effects on items.
@@ -174,6 +175,24 @@ public:
   int radius; // light area
 
   bool exec();
+};
+
+
+class SpellImpl {
+public:
+  static std::set<SpellImpl*> spellColl;
+  static std::map< std::string, SpellImpl* > spellMap;
+
+  SpellImpl() { spellColl.insert(this); }
+  ~SpellImpl() { spellColl.erase(this); } // erase is the opposite of insert.
+
+  virtual std::string spelltag() const = 0;
+
+  virtual bool getParams(SpellParam& param) { return true; }
+  virtual bool execSpell(SpellParam& param) = 0;
+
+  static void initSpellMap();
+  static SpellImpl* spellFromTag(const std::string& tag);
 };
 
 

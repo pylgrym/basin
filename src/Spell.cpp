@@ -322,7 +322,7 @@ void Spell::initQual() {
 
 
 
-bool sleepMob(Mob* target) {
+bool sleepMob(Mob* target) { // FIXME - do we have spell for this?
   MonsterMob* monster = dynamic_cast<MonsterMob*>(target);
   if (monster != NULL) {
     monster->mood = M_Sleeping;
@@ -340,31 +340,29 @@ bool sleepMob(Mob* target) {
 
 
 
-class SpellImpl {
-public:
-  static std::set<SpellImpl*> spellColl;
-  SpellImpl() { spellColl.insert(this); }
-  ~SpellImpl() { spellColl.erase(this); } // erase is the opposite of insert.
-
-  virtual std::string spelltag() const = 0;
-
-  virtual bool getParams(SpellParam& param) { return true;  }
-  virtual bool execSpell(SpellParam& param) = 0;
-
-  static void initSpellMap();
-};
+SpellImpl* SpellImpl::spellFromTag(const std::string& tag) {
+  std::map< std::string, SpellImpl* >::iterator i;
+  i = spellMap.find(tag);
+  if (i != spellMap.end()) {
+    return i->second;
+  }
+  return NULL;
+}
 
 
 std::set<SpellImpl*> SpellImpl::spellColl;
+std::map< std::string, SpellImpl* > SpellImpl::spellMap;
 
 void SpellImpl::initSpellMap() { // Sketch..
-  std::map< std::string, SpellImpl* > spellMap;
 
   std::set<SpellImpl*>::iterator i;
   for (i = spellColl.begin(); i != spellColl.end(); ++i) {
     SpellImpl* si = *i;
     spellMap[si->spelltag()] = si;
-    /* FIXME: can't do this yet, as long as SpellImpl isn't tied to spells/types/names..SpellDesc 
+    /* 
+    FIXME: use 3rd-person VERBS for spell-tags!
+    
+    FIXME: can't do this yet, as long as SpellImpl isn't tied to spells/types/names..SpellDesc 
     Update: spellImpl have tags now, but they are not 'unique' - 'slow' and  'speedup'
     share the same spell, but should have different args (0.5/2.0) and ids.
 
@@ -388,7 +386,7 @@ bool updateSpeed(Mob& actor, double factor) {
 
 class Spell_Speed : public SpellImpl { 
 public:
-  std::string spelltag() const { return "speed"; }
+  std::string spelltag() const { return "speeds"; }
   bool execSpell(SpellParam& param) { return updateSpeed(*param.actor, param.factor); }
   static void init(Mob& actor, double factor, SpellParam& p) { p.actor = &actor;  p.factor = factor; p.impl = &spell_speed; }
 } spell_speed;
@@ -428,7 +426,7 @@ bool teleportSpell(Mob& actor, int range) {
 
 class Spell_Tele : public SpellImpl { 
 public:
-  std::string spelltag() const { return "tele"; }
+  std::string spelltag() const { return "teleports"; }
   bool execSpell(SpellParam& param) { return teleportSpell(*param.actor, param.range); }
   static void init(Mob& actor, int range, SpellParam& p) { p.actor = &actor;  p.range = range; p.impl = &spell_tele; }
 } spell_tele;
@@ -486,31 +484,31 @@ bool updatePoisoned(Mob& actor, int count) { logstr log;
 
 
 class Spell_Confuse : public SpellImpl { public:
-  std::string spelltag() const { return "confuse"; }
+  std::string spelltag() const { return "confuses"; }
   bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.tmpEffect); } //  confuse); }
   static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.tmpEffect = confuse; p.impl = &spell_confuse; }
 } spell_confuse;
 
 class Spell_Fear: public SpellImpl { public:
-  std::string spelltag() const { return "fear"; }
+  std::string spelltag() const { return "fears"; }
   bool execSpell(SpellParam& param) { return updateFear(*param.actor, param.tmpEffect); }
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_fear; }
 } spell_fear;
 
 class Spell_Blind: public SpellImpl { public:
-  std::string spelltag() const { return "blind"; }
+  std::string spelltag() const { return "blinds"; }
   bool execSpell(SpellParam& param) { return updateBlind(*param.actor, param.tmpEffect); }
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_blind; }
 } spell_blind;
 
 class Spell_Root : public SpellImpl { public:
-  std::string spelltag() const { return "root"; }
+  std::string spelltag() const { return "roots"; }
   bool execSpell(SpellParam& param) { return updateRooted(*param.actor, param.tmpEffect); }
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_root; }
 } spell_root;
 
 class Spell_Poison : public SpellImpl { public:
-  std::string spelltag() const { return "poison"; }
+  std::string spelltag() const { return "poisons"; }
   bool execSpell(SpellParam& param) { return updatePoisoned(*param.actor, param.tmpEffect); }
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_poison; }
 } spell_poison;
@@ -527,7 +525,7 @@ bool eatSpell(Mob& actor, int deltaFood) {
 
 class Spell_Eat: public SpellImpl { 
 public:
-  std::string spelltag() const { return "eat"; }
+  std::string spelltag() const { return "eats"; }
   bool execSpell(SpellParam& param) { return eatSpell(*param.actor, param.deltaFood); }
   static void init(Mob& actor, int deltaFood, SpellParam& p) { p.actor = &actor;  p.deltaFood = deltaFood; p.impl = &spell_eat; }
 } spell_eat;
@@ -549,7 +547,7 @@ bool healSpellPct(Mob& actor, int percent) {
 
 class Spell_HealPct: public SpellImpl { 
 public:
-  std::string spelltag() const { return "healpct"; }
+  std::string spelltag() const { return "heals"; }
   bool execSpell(SpellParam& param) { return healSpellPct(*param.actor, param.healPct); }
   static void init(Mob& actor, int healPct, SpellParam& p) { p.actor = &actor;  p.healPct = healPct; p.impl = &spell_healPct; }
 } spell_healPct;
@@ -569,7 +567,7 @@ bool healSpellDice(Mob& actor, Dice dice) {
 
 class Spell_HealDice: public SpellImpl { 
 public:
-  std::string spelltag() const { return "healdice"; }
+  std::string spelltag() const { return "healdices"; }
   bool execSpell(SpellParam& param) { return healSpellDice(*param.actor, param.healDice); }
   static void init(Mob& actor, Dice healDice, SpellParam& p) { p.actor = &actor;  p.healDice = healDice; p.impl = &spell_healDice; }
 } spell_healDice;
@@ -592,7 +590,7 @@ bool manaSpellPct(Mob& actor, int percent) {
 
 class Spell_ManaPct: public SpellImpl { 
 public:
-  std::string spelltag() const { return "manapct"; }
+  std::string spelltag() const { return "manapct"; } // energizes
   bool execSpell(SpellParam& param) { return manaSpellPct(*param.actor, param.manaPct); }
   static void init(Mob& actor, int manaPct, SpellParam& p) { p.actor = &actor;  p.manaPct = manaPct; p.impl = &spell_manaPct; }
 } spell_manaPct;
@@ -609,7 +607,8 @@ bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool scho
 
 class Spell_Bullet: public SpellImpl { 
 public:
-  std::string spelltag() const { return "bullet"; }
+  std::string spelltag() const { return "zaps"; } //  bullets"; }
+
   bool getParams(SpellParam& param) {
     return getParamsDIR(param);
   }
@@ -721,7 +720,7 @@ bool lightSpell(Mob& actor, CPoint pos, int radius) {
 
 class Spell_Light: public SpellImpl { 
 public:
-  std::string spelltag() const { return "light"; }
+  std::string spelltag() const { return "lights"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return lightSpell(*param.actor, param.pos, param.radius);  }
   static void init(Mob& actor, CPoint pos, int radius, SpellParam& p) { p.actor = &actor;  p.pos = pos; p.radius = radius;  p.impl = &spell_light; }
@@ -741,7 +740,7 @@ bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
 
 class Spell_SummonMob : public SpellImpl {
 public:
-  std::string spelltag() const { return "summon"; }
+  std::string spelltag() const { return "summons"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return summonSpell(*param.actor); }
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonMob; }
@@ -759,7 +758,7 @@ bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
 
 class Spell_SummonObj : public SpellImpl {
 public:
-  std::string spelltag() const { return "summonobj"; }
+  std::string spelltag() const { return "summonsobj"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return summonObj(*param.actor); }
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonObj; }
@@ -798,7 +797,7 @@ bool teleportSwap(Mob& actor, Mob& target, bool announce) {
 
 
 class Spell_TeleTo : public SpellImpl {
-  std::string spelltag() const { return "teleto"; }
+  std::string spelltag() const { return "teleportsto"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
   bool execSpell(SpellParam& param) { return teleportTo(*param.actor, param.pos, true); }
   static void init(Mob& actor, CPoint targetpos, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.impl = &spell_teleTo; }
@@ -875,7 +874,7 @@ bool spellRush(Mob& actor, CPoint dir, std::string verb) {
 
 
 class Spell_Rush: public SpellImpl { public:
-  std::string spelltag() const { return "rush"; }
+  std::string spelltag() const { return "rushes"; }
   bool getParams(SpellParam& param) {
     return Spell_Bullet::getParamsDIR(param); 
   }
@@ -899,7 +898,7 @@ bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
 
 
 class Spell_Crush: public SpellImpl { public:
-  std::string spelltag() const { return "crush"; }
+  std::string spelltag() const { return "crushes"; }
   bool getParams(SpellParam& p) { return getParamsCRUSH(p); }
 
   static bool getParamsCRUSH(SpellParam& p) { 
@@ -934,7 +933,7 @@ bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
 
 
 class Spell_Embed: public SpellImpl { public:
-  std::string spelltag() const { return "embed"; }
+  std::string spelltag() const { return "embeds"; }
   bool getParams(SpellParam& param) { // Embed has same requirements as Crush (wall on other side, and mob in between, directly next to you.)
     return Spell_Crush::getParamsCRUSH(param); 
   }
@@ -944,7 +943,7 @@ class Spell_Embed: public SpellImpl { public:
 
 
 class Spell_Detect: public SpellImpl { public:
-  std::string spelltag() const { return "detect"; }
+  std::string spelltag() const { return "detects"; }
   bool execSpell(SpellParam& param) { return spellDetect(*param.actor, param.effect); } // Consider: we could impl directly here!
   static void init(Mob& actor, SpellEnum effect, SpellParam& p) { p.actor = &actor; p.effect = effect; p.impl = &spell_detect; }
 } spell_detect;
@@ -970,7 +969,7 @@ DONE: i should make restore mana
 */
 
 class Spell_Shove: public SpellImpl { public:
-  std::string spelltag() const { return "shove"; }
+  std::string spelltag() const { return "shoves"; }
   bool getParams(SpellParam& param) { return getParamsSHOVE(param); }
 
   static bool getParamsSHOVE(SpellParam& p) { 

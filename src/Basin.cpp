@@ -63,8 +63,10 @@ BOOL CBasinApp::InitInstance()
   // Obj::initWeights();
   Obj::initShortnames();
 
-  Creature::initMobDefs();
   Spell::initQual();
+  SpellImpl::initSpellMap();
+
+  Creature::initMobDefs();
   MobDist::enumerate();
 
 
