@@ -139,8 +139,8 @@ void LogEvents::show() {
   std::vector< std::string >::iterator i;
   i = lines.begin();
 
-  if (lines.size() > Map::Height) {
-    i = (lines.end() - Map::Height);
+  if (lines.size() > Term::Height) { // Viewport::VP_Height) {
+    i = (lines.end() - Term::Height); // Viewport::VP_Height);
   }
 
   for (; i != lines.end(); ++i) {

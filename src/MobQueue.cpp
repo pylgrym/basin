@@ -89,7 +89,7 @@ bool MobQueue::dispatchFirst() {
 
 
 
-bool MobReady::persist(Persist& p) {
+bool MobReady::persist(Persist& p, class Map* anyMap) {
   p.transfer(when, "when");
 
   int isPlayer = (mob ? mob->isPlayer() : 0);
@@ -98,17 +98,19 @@ bool MobReady::persist(Persist& p) {
   /* FIXME/refactor: figure out a more elegant way to persist player a single time,
   and still keep him in many queues.
   */
+  Map* nullMap = NULL;
+
   bool bFirstPlayer = false;
   if (!p.bOut) { // IE it's read-in.
     if (isPlayer) {
       if (PlayerMob::ply == NULL) { // Only create a single instance.
-        mob = new PlayerMob;
+        mob = new PlayerMob(nullMap);
         bFirstPlayer = true;
       } else {
         mob = PlayerMob::ply;
       }
     } else {
-      mob = new MonsterMob(1);
+      mob = new MonsterMob(1, nullMap);
     } // in MobReady::persist.
   }
   bool bOK = true;
@@ -116,7 +118,7 @@ bool MobReady::persist(Persist& p) {
   // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
   if (isPlayer && !p.bOut && !bFirstPlayer) {
     // do nothing - don't read in player more than once.
-    static MonsterMob dummyPlayer(1);
+    static MonsterMob dummyPlayer(1,nullMap);
     dummyPlayer.persist(p); // We still need to 'eat/parse' that object.
   } else { // if monster, or first-time-the-player, read in:
     bOK = mob->persist(p);
@@ -127,7 +129,7 @@ bool MobReady::persist(Persist& p) {
 }
 
 
-bool MobQueue::persist(class Persist& p) {
+bool MobQueue::persist(class Persist& p, class Map* anyMapHack) {
   int mobCount = queue.size();
   p.transfer(mobCount, "mobCount");
 
@@ -135,13 +137,13 @@ bool MobQueue::persist(class Persist& p) {
     ReadyQueue::iterator i;
     for (i = queue.begin(); i != queue.end(); ++i) {
       MobReady& mr = *i;
-      mr.persist(p);
+      mr.persist(p, anyMapHack); // Outputting existing mobqueue.
     }
   } else {
     for (int i = 0; i < mobCount; ++i) {
       MobReady mr;
-      mr.persist(p);
-      queueMob(mr.mob, mr.when);      
+      mr.persist(p, anyMapHack);
+      queueMob(mr.mob, mr.when); // Reading in persisted mobqueue.
     }
   }
   return true;

@@ -10,9 +10,12 @@
 
 #include "./theUI.h"
 
+void Mob::placeMobOnMap(Map* map) {
+  pos.x = rnd::Rnd(1, map->Width2 - 1);
+  pos.y = rnd::Rnd(2, map->Height2 - 1);
+}
 
-
-Mob::Mob(int mlevel, bool bIsPlayer_)
+Mob::Mob(int mlevel, bool bIsPlayer_, Map* map)
   :stats(mlevel,bIsPlayer_)
 {
 
@@ -21,8 +24,12 @@ Mob::Mob(int mlevel, bool bIsPlayer_)
 
   m_mobType = (CreatureEnum) rnd::Rnd(CR_Kobold, CR_MaxLimit);
 
-  pos.x = rnd::Rnd(1, Map::Width-1); 
-  pos.y = rnd::Rnd(2, Map::Height-1);
+  if (map != NULL) {
+    placeMobOnMap(map);
+  } else {
+    pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
+  }
+
   color = RGB(rand()%255,rand()%255,rand()%255);
   old_mob_speed = 1.0;
 

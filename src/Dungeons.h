@@ -15,7 +15,7 @@ public:
 
   static Dungeons the_dungeons;
   static Dungeon* get(int level);
-  static void setCurLevel(int level);
+  static Dungeon* setCurLevel(int level);
 
   void initDungeons(bool loadGame);
 

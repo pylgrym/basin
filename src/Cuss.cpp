@@ -114,10 +114,10 @@ bool Cuss::putchar(char c, bool bClip) {
   }
 
   ++csr.x;
-  if (csr.x >= Term::Width) { // Map::Width) {
+  if (csr.x >= Term::Width) { 
     csr.x = 0;
     ++csr.y;
-    if (csr.y >= Term::Height) { // Map::Height) { 
+    if (csr.y >= Term::Height) {  
       csr.y = 0;  
     }
 

@@ -13,8 +13,8 @@ void PlayerMob::rollStats() {// FIXME, probably / really belongs in Stats class,
   stats = rollStatsCmd.outStats;
 }
 
-PlayerMob* PlayerMob::createPlayer() {
-  PlayerMob* player = new PlayerMob; // Is a singleton, will store himself.
+PlayerMob* PlayerMob::createPlayer(class Map* unintendedMap) {
+  PlayerMob* player = new PlayerMob(unintendedMap); // Is a singleton, will store himself.
 
   // new experiment:
   player->rollStats();
@@ -146,7 +146,7 @@ void PlayerMob::dashboardMini() {
 
   const int width = 8; // 10;
   /* FIXME - make functions for these. */
-  CPoint dash(Viewport::Width, 1);
+  CPoint dash(Viewport::VP_Width, 1);
   addInf2("hp", stats.hp, stats.maxHP, width, dash);
   addInf2("mana", stats.mana, stats.maxMana, width, dash);
 
@@ -166,7 +166,7 @@ void PlayerMob::dashboard() {
 
   const int width = 8; // 10;
   /* FIXME - make functions for these. */
-  CPoint dash(Viewport::Width, 1);
+  CPoint dash(Viewport::VP_Width, 1);
 
   addInf1("light", lightStrength(), width, dash);
   addInf1("unit", theLightUnits, width, dash);
@@ -344,7 +344,7 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
 PlayerMob* PlayerMob::ply = NULL;
 
-PlayerMob::PlayerMob():Mob(1, true) { 
+PlayerMob::PlayerMob(Map* unIntendedMap) :Mob(1, true, unIntendedMap) {
   ply = this;  
 
   dungLevel = 0; // 1;

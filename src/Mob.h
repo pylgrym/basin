@@ -60,8 +60,10 @@ enum MoodEnum {
 
 class Mob {
 public:
-  Mob(int mlevel, bool bIsPlayer_); 
+  Mob(int mlevel, bool bIsPlayer_, Map* map);
   ~Mob(void);
+
+  void placeMobOnMap(Map* map);
 
   bool persist(class Persist& p) {
     p.transfer(pos.x, "posx"); 
@@ -223,7 +225,7 @@ public:
 
 class MonsterMob : public Mob {
 public:
-  MonsterMob(int mlevel) :Mob(mlevel, false) {}
+  MonsterMob(int mlevel, Map* map) :Mob(mlevel, false,map) {}
 
   virtual double act(); // returns time that action requires (0 means keep doing actions/keep initiative.)
 

@@ -47,5 +47,5 @@ void Map::initTunnels2(int level) {
       }
     }
   }
-  addStairs(Map::Width, Map::Height);
+  addStairs(Width2, Height2);
 }

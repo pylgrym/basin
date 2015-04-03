@@ -62,19 +62,20 @@ void Map::initTunnels(int level) {
 
   // FIXME/NB! - 'map' is different width+height, whereas this algo is same width-height!
 
-  Laby laby(Map::Width, Map::Height); // Width); // 101); // 51); // 101);
+  Laby laby(Width2, Height2); // Width); // 101); // 51); // 101);
   laby.combine(); //  buildAll(); // dc);
 
 
   // Create floor/environ.
   for (int x = 0; x < Width; ++x) {
-    CellColumn& column = (*this)[x];
-    for (int y = 1; y < Height; ++y) {
-      Cell& cell = column[y];
-      if (x == 0 || y == 1 || x == Width - 1 || y == Height - 1) { // The outer border.
+    //CellColumn& column = (*this)[x];
+    for (int y = 0; y < Height; ++y) {
+      CPoint p(x, y);
+      Cell& cell = (*this)[p]; // column[y];
+      if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) { // The outer border.
         cell.envir.type = EN_Border;
       }
-      else if (x < Map::Height) { // Inside-area: // NB, danger here - width/height!
+      else if (x < Map::Width) { // Height) { // Inside-area: // NB, danger here - width/height!
         CPoint p(x, y);
         Mark& mark = laby.grid[p];
 
@@ -124,5 +125,5 @@ void Map::initTunnels(int level) {
     }
   } // for x/ create floor.   
 
-  addStairs(Map::Width, Map::Height);
+  addStairs(Width2, Height2);
 }

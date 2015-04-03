@@ -51,28 +51,37 @@ public:
 
 
 
-class CellColumn {
-public:
-  enum ColumnConst { Height = 60 }; //30 }; // 30
-  Cell cells[Height];
-  Cell& operator [] (int y); // { return cells[y];  }
-};
+/// class CellColumn {
+/// public:
+///   enum ColumnConst { Height = 60 }; //30 }; // 30
+///   Cell cells[Height];
+///   Cell& operator [] (int y); // { return cells[y];  }
+/// };
 
 
 
 class Map {
 public:
+  const int Width2;
+  const int Height2;
+
   enum MapConst { 
     Width = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
-    Height = CellColumn::Height 
+    Height = 60, //CellColumn::Height,
+    DefWidth = 101,
+    DefHeight= 60
   };
 
   LightMap lightmap;
 
 private:
-  CellColumn cellColumns[Width];
+  std::vector < std::vector< Cell > > cells_i;
+
+  //std::vector <CellColumn> cellColumns_i;
+  // CellColumn& cellColumns(int colIx); // [Width];
+
 public:
-  CellColumn& operator [] (int x); 
+  //CellColumn& operator [] (int x); 
   Cell& operator [] (CPoint p); 
   Cell* cell(CPoint p); // NULL if outside.
 
@@ -88,7 +97,7 @@ public:
   void setMobForce(class Mob& m, CPoint newpos, bool bInvalidate); // used for swapping two mobs.
   void adjustViewport(CPoint newpos, bool bInvalidate);
 
-  Map();
+  Map(int w, int h);
 
   void initWorld(int level); // JG, FIXME: All this shouldn't really clutter Map/CellMap -'initWorld'  should go somewhere OUTSIDE basic structures' impls.
 
@@ -139,15 +148,15 @@ public:
 class Viewport {
 public:
   enum Sizes { 
-	  Width = 32, 
-	  Height = 18, // 20, // 25,  // Note well, this is NOT term height! (it's smaller.)
+	  VP_Width = 32, 
+	  VP_Height = 18, // 20, // 25,  // Note well, this is NOT term height! (it's smaller.)
 	  SweetspotPct = 20,
     Y_Offset = 2 // todo/fixme: this must be included in all term<->viewport<->dung-map transforms.
   };
   CPoint offset; // Offset is WORLD coordinates, of upper left (0,0) VIEWPORT corner. (e.g. 1,1 for first offset.) So you must ADD it, to go from  v2W
   CRect sweetspotArea;
   Viewport();
-  bool adjust(CPoint wpos); // True if adjust happens.
+  bool adjust(CPoint wpos, class Map& map); // True if adjust happens.
 
   CPoint w2v(CPoint w);
   CPoint v2w(CPoint v);

@@ -14,15 +14,93 @@
 #include "../Cuss.h"
 
 
+Map::Map(int w, int h):Width2(w), Height2(h) {
+  // cellColumns_i.resize(Width2);
+  cells_i.resize(Width2);
+  for (int column = 0; column < Width2; ++column) {
+    cells_i[column].resize(Height2);
+  }
 
-void Map::addRandomMob(int levelbase) {  
+  lightmap.map = this; // necessary init of map ptr.
+}
+
+// CellColumn& Map::cellColumns(int colIx) {  return cellColumns_i[colIx]; }
+
+
+
+
+
+Cell* Map::cell(CPoint p) { 
+  if (p.x < 0 || p.x >= Width2 || p.y < 0 || p.y >= Height2) {
+    return NULL;
+  }
+  assert(p.x >= 0);
+  assert(p.y >= 0);
+  assert(p.x < Width2);
+  assert(p.y < Height2);
+  return &cells_i[p.x][p.y];// cellColumns(p.x)[p.y];
+}
+
+
+Cell& Map::operator [] (CPoint p) { 
+  if (p.x < 0 || p.x >= Width2 || p.y < 0 || p.y >= Height2) {
+    int badThingsHappen = 42;
+  }
+  assert(p.x >= 0);
+  assert(p.y >= 0);
+
+  if (!(p.x < Map::Width)) {
+    DebugBreak();
+  }
+  assert(p.x < Width2);
+
+  if (!(p.y < Height2)) {
+    DebugBreak();
+  }
+  assert(p.y < Height2);
+
+  return cells_i[p.x][p.y]; // cellColumns(p.x)[p.y];
+}
+
+
+/// CellColumn& Map::operator [] (int x) { 
+///   static CellColumn noneColumn;
+///   if (x < 0 || x >= Map::Width) { return noneColumn; }
+/// 
+///   assert(x >= 0);
+///   assert(x < Map::Width);
+///   return cellColumns(x);  
+/// }
+
+
+/// Cell& CellColumn::operator [] (int y) { 
+///   static Cell noneCell;
+///   if (y < 0 || y >= Map::Height) { return noneCell; }
+/// 
+///   assert(y >= 0);
+///   assert(y < CellColumn::Height);
+///   return cells[y];  
+/// }
+
+
+
+
+bool Map::legalPos(CPoint pos) {
+  if (pos.x < 0 || pos.y < 0) { return false; }
+  if (pos.x >= Width2 || pos.y >= Height2) { return false;  }
+  return true;
+}
+
+
+
+void Map::addRandomMob(int levelbase) {
   const int maxRetries = 75;
   for (int i = 0; i < maxRetries; ++i) {
     CPoint pos(rnd::Rnd(1, Width), rnd::Rnd(1, Height));
     assert(legalPos(pos));
     if (!(*this)[pos].creature.empty()) { continue; }
-    addRandomMobAtPos(pos,levelbase);
-    return; 
+    addRandomMobAtPos(pos, levelbase);
+    return;
   }
 }
 
@@ -31,13 +109,13 @@ bool Map::addRandomMobAtPos(CPoint pos, int levelbase) {
   Cell& cell = (*this)[pos];
   if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return false; }
 
-  int mlevel = Levelize::suggestLevel(levelbase);  
-  Mob* monster = new MonsterMob(mlevel);
+  int mlevel = Levelize::suggestLevel(levelbase);
+  Mob* monster = new MonsterMob(mlevel, this);
   CreatureEnum ctype = MobDist::suggRndMob(mlevel); // Then pick an appropriate creature-type for that mob.
   monster->m_mobType = ctype;
 
   CL->map.moveMob(*monster, monster->pos);
-  CL->mobs.queueMob(monster,1);
+  CL->mobs.queueMob(monster, 1);
   return true;
 }
 
@@ -50,9 +128,9 @@ void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
     for (int j = 0; j < maxRetries; ++j) {
       posA.x += rnd::rndC(-radius, radius);
       posA.y += rnd::rndC(-radius, radius);
-      if (!legalPos(posA)) { continue;  }
-      if ((*this)[posA].blocked()) { continue;  }
-      if (!(*this)[posA].creature.empty()) { continue;  }
+      if (!legalPos(posA)) { continue; }
+      if ((*this)[posA].blocked()) { continue; }
+      if (!(*this)[posA].creature.empty()) { continue; }
       addRandomMobAtPos(posA, level);
       break;
     }
@@ -63,24 +141,24 @@ void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
 void Map::addRandomObj(int level) {
   CPoint pos(rnd::Rnd(1, Width), rnd::Rnd(1, Height));
   assert(legalPos(pos));
-  addObjAtPos(pos,level);
+  addObjAtPos(pos, level);
 }
 
 
-void Map::addObjAtPos(CPoint pos,int levelbase) {
+void Map::addObjAtPos(CPoint pos, int levelbase) {
   assert(legalPos(pos));
   Cell& cell = (*this)[pos];
   if (!cell.item.empty()) { debstr() << "cell already has item.\n"; return; }
 
   const ObjDef& ranDef = Obj::randObjDesc();
-  int ilevel = Levelize::suggestLevel(levelbase);  
-  Obj* newObj = new Obj(ranDef,ilevel); 
+  int ilevel = Levelize::suggestLevel(levelbase);
+  Obj* newObj = new Obj(ranDef, ilevel);
 
   if (newObj->otype() == OB_Lamp) {
     newObj->itemUnits += rnd::Rnd(500, 2500);
   }
 
-  if (newObj->otype() ==  OB_WinItem && levelbase < 39) { // You can't find it before level 39..
+  if (newObj->otype() == OB_WinItem && levelbase < 39) { // You can't find it before level 39..
     newObj->objdef = &Obj::objDesc(OB_Food);
   }
   cell.item.setObj(newObj); // in addObjAtPos.
@@ -98,26 +176,23 @@ void Map::scatterObjsAtPos(CPoint pos, int n, int level, int radius) {
 
 
 
-Map::Map() {
-  lightmap.map = this; // necessary init of map ptr.
-}
 
 
 /* maze fixmes, todo:
- - maze generator classifications of cell types are  a mess,
- it's internal 'stage' graph-colouring flags;
+- maze generator classifications of cell types are  a mess,
+it's internal 'stage' graph-colouring flags;
 which is not even coherent between first 'perfect-maze'
 and second 'fill-in deadends' stages.
 
 Further, same classifications end up a mess in the Environment categories,
 and similarly, they don't play well with the digging code either.
 So far, they've only been 'handled' in the 'iscellblocked' code.
-  Further, same messy categories, make the TILE DRAWING a mess (unclear cell types,
-and unnecessary even-odd tile effects (because of cell/door grid.) 
+Further, same messy categories, make the TILE DRAWING a mess (unclear cell types,
+and unnecessary even-odd tile effects (because of cell/door grid.)
 
 Also, the entire thing is a bit slow, in light of wanting to have quick load-cycles;
 can partially be solved by smaller maze.
-in particular, 'fill-deadends' approach is a bit messy - 
+in particular, 'fill-deadends' approach is a bit messy -
 instead of repeated scans, I should probably just fill based on 'found seeds'(?)
 
 Also, treasure in veins should be impl!
@@ -127,7 +202,8 @@ Also, treasure in veins should be impl!
 void Map::initWorld(int level) {
   if (level == 0) {
     initTown(level);
-  } else {
+  }
+  else {
     // alternate between the two:
     switch (level % 3) {
     case 0: initTunnels(level); break;
@@ -152,9 +228,9 @@ void Map::initOuterBorders() {
 
   for (int y = 0; y < Height; ++y) { // was : 1 (old hack)
     CPoint posLeft(0, y);
-    CPoint posRight(Width-1, y);
+    CPoint posRight(Width - 1, y);
     Cell& cell1 = (*this)[posLeft];  cell1.envir.type = EN_Border;
-    Cell& cell2 = (*this)[posRight]; cell2.envir.type = EN_Border;    
+    Cell& cell2 = (*this)[posRight]; cell2.envir.type = EN_Border;
   }
 }
 
@@ -195,7 +271,7 @@ void Map::initTown(int level) {
     ""
   };
 
-  const char* layout[] = { 
+  const char* layout[] = {
     "&", // First row for messages (fixme with viewport offset.)
     "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&",
     "&...............................................&",
@@ -224,9 +300,9 @@ void Map::initTown(int level) {
     "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&",
     ""
   };
-  for (int y = 0; y < Map::Height && layout[y][0] != '\0'; ++y) {
+  for (int y = 0; y < Height2 && layout[y][0] != '\0'; ++y) {
     const char* row = layout[y];
-    for (int x = 0; x < Map::Width && row[x] != '\0'; ++x) {
+    for (int x = 0; x < Width2 && row[x] != '\0'; ++x) {
       CPoint pos(x, y);
       Cell& cell = (*this)[pos];
       //int envirInt = row[x] - '0';
@@ -248,8 +324,8 @@ void Map::addColDemo(int x, int y) {
 
   const ObjDef& def = Obj::objDesc(OB_Potion);
 
-  SpellEnum spell = (SpellEnum) (x % SP_MaxSpells);
-  Obj* newObj = new Obj(def, 1); 
+  SpellEnum spell = (SpellEnum)(x % SP_MaxSpells);
+  Obj* newObj = new Obj(def, 1);
   newObj->effect = spell;
   cell.item.setObj(newObj); // in addColDemo (colour magic identify stuff.)
 }
@@ -265,7 +341,7 @@ void Map::addStairs(int theWidth, int theHeight) {
 
 void Map::addStair(EnvirEnum type, int theWidth, int theHeight) {
   CPoint stairPos = findFreeEnvir(EN_Floor, theWidth, theHeight);
-  if (stairPos.x < 0) { return;  } // give up.
+  if (stairPos.x < 0) { return; } // give up.
   Cell& stairCell = (*this)[stairPos];
   stairCell.envir.type = type;
 }
@@ -275,9 +351,9 @@ CPoint Map::findFreeEnvir(EnvirEnum type, int theWidth, int theHeight) {
   for (int i = 0; i < limit; ++i) {
 
     CPoint cand(
-      rnd::Rnd(1, theWidth-1), //Map::Width - 1),
+      rnd::Rnd(1, theWidth - 1), //Map::Width - 1),
       rnd::Rnd(1, theHeight - 1) //Map::Height-1)// FIXME, remember width+height independent!
-    );
+      );
 
     if ((*this)[cand].envir.type == type) { return cand; }
   }
@@ -290,16 +366,16 @@ CPoint Map::findFreeEnvir(EnvirEnum type, int theWidth, int theHeight) {
 CPoint Map::findNextEnvir(CPoint start, EnvirEnum type) {
   for (CPoint pos = start;;) { // (endless loop)
     ++pos.x;
-    if (pos.x >= Map::Width) {
+    if (pos.x >= Width2) {
       pos.x = 0;
       ++pos.y;
-      if (pos.y >= Map::Height) {
+      if (pos.y >= Height2) {
         pos.y = 0;
       }
     }
     Cell& c = (*this)[pos];
     if (c.envir.type == type) { return pos; }
-    if (pos == start) { 
+    if (pos == start) {
       CPoint notFound(-1, -1);
       return notFound;
     }
@@ -313,16 +389,16 @@ CPoint Map::findNextEnvir(CPoint start, EnvirEnum type) {
 CPoint Map::findNextMob(CPoint start, CreatureEnum ctype) {
   for (CPoint pos = start;;) { // (endless loop)
     ++pos.x;
-    if (pos.x >= Map::Width) {
+    if (pos.x >= Width2) {
       pos.x = 0;
       ++pos.y;
-      if (pos.y >= Map::Height) {
+      if (pos.y >= Height2) {
         pos.y = 0;
       }
     }
     Cell& c = (*this)[pos];
     if (c.creature.type() == ctype) { return pos; }
-    if (pos == start) { 
+    if (pos == start) {
       CPoint notFound(-1, -1);
       return notFound;
     }
@@ -365,7 +441,7 @@ void Map::setMobForce(class Mob& m, CPoint newpos, bool bInvalidate) {
     m.invalidateGfx(newpos, oldpos, false);
   }
   if (m.isPlayer()) {
-    adjustViewport(newpos,bInvalidate);
+    adjustViewport(newpos, bInvalidate);
   }
 }
 
@@ -380,13 +456,13 @@ void Map::moveMobImpl(class Mob& m, CPoint newpos, bool bInvalidate) {
   }
 
   if (m.isPlayer()) {
-    adjustViewport(newpos,bInvalidate);
+    adjustViewport(newpos, bInvalidate);
   }
 }
 
 
 void Map::adjustViewport(CPoint newpos, bool bInvalidate) {
-  Viewport::vp.adjust(newpos);
+  Viewport::vp.adjust(newpos, *this);
 
   bool bChangedPos = !!(lightmap.map_offset != newpos);
   if (bChangedPos) {
@@ -408,86 +484,20 @@ void Map::addObj(class Obj& o, CPoint pos) {
 }
 
 
-
-Cell* Map::cell(CPoint p) { 
-  if (p.x < 0 || p.x >= Map::Width || p.y < 0 || p.y >= Map::Height) {
-    return NULL;
-  }
-  assert(p.x >= 0);
-  assert(p.y >= 0);
-  assert(p.x < Map::Width);
-  assert(p.y < Map::Height);
-  return &cellColumns[p.x][p.y];  
-}
-
-
-Cell& Map::operator [] (CPoint p) { 
-  if (p.x < 0 || p.x >= Map::Width || p.y < 0 || p.y >= Map::Height) {
-    int badThingsHappen = 42;
-  }
-  assert(p.x >= 0);
-  assert(p.y >= 0);
-
-  if (!(p.x < Map::Width)) {
-    DebugBreak();
-  }
-  assert(p.x < Map::Width);
-
-  if (!(p.y < Map::Height)) {
-    DebugBreak();
-  }
-  assert(p.y < Map::Height);
-
-  return cellColumns[p.x][p.y];  
-}
-
-
-CellColumn& Map::operator [] (int x) { 
-  static CellColumn noneColumn;
-  if (x < 0 || x >= Map::Width) { return noneColumn; }
-
-  assert(x >= 0);
-  assert(x < Map::Width);
-  return cellColumns[x];  
-}
-
-
-Cell& CellColumn::operator [] (int y) { 
-  static Cell noneCell;
-  if (y < 0 || y >= Map::Height) { return noneCell; }
-
-  assert(y >= 0);
-  assert(y < CellColumn::Height);
-  return cells[y];  
-}
-
-
-
-
-bool Map::legalPos(CPoint pos) {
-  if (pos.x < 0 || pos.y < 0) { return false; }
-  if (pos.x >= Map::Width || pos.y >= Map::Height) { return false;  }
-  return true;
-}
-
-
-
-
-
 Viewport Viewport::vp;
 
 Viewport::Viewport() {
-  const int sweetspotWidth  = (SweetspotPct * Width / 100);
-  const int sweetspotHeight = (SweetspotPct * Height / 100);
+  const int sweetspotWidth  = (SweetspotPct * VP_Width / 100);
+  const int sweetspotHeight = (SweetspotPct * VP_Height / 100);
   sweetspotArea.top = sweetspotHeight;
   sweetspotArea.left = sweetspotWidth;
-  sweetspotArea.right = Width - sweetspotWidth;
-  sweetspotArea.bottom = Height - sweetspotHeight;
+  sweetspotArea.right = VP_Width - sweetspotWidth;
+  sweetspotArea.bottom = VP_Height - sweetspotHeight;
 }
 
 
 
-bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
+bool Viewport::adjust(CPoint wpos, Map& map) { // True if adjust happens.
   VPoint vp; 
   vp.p = w2v(wpos); //wpos - offset;
   if (sweetspotArea.PtInRect(vp.p)) { return false; } // No adjustment necessary.
@@ -496,19 +506,19 @@ bool Viewport::adjust(CPoint wpos) { // True if adjust happens.
   CPoint oldOffset = offset;
 
   if (vp.p.x < sweetspotArea.left || vp.p.x > sweetspotArea.right) {
-    int halfVPWidth = (Width / 2);
+    int halfVPWidth = (VP_Width / 2);
     offset.x = wpos.x - halfVPWidth;
 
     if (wpos.x < halfVPWidth) { offset.x = 0; } // If we are close to left edge, lock it.
-    if (wpos.x > (Map::Width - halfVPWidth)) { offset.x = (Map::Width - Width); } // If we are close to right edge, lock it.
+    if (wpos.x > (map.Width2 - halfVPWidth)) { offset.x = (map.Width2 - VP_Width); } // If we are close to right edge, lock it.
   }
 
   if (vp.p.y < sweetspotArea.top || vp.p.y > sweetspotArea.bottom) {
-    int halfVPHeight = (Height / 2);
+    int halfVPHeight = (VP_Height / 2);
     offset.y = wpos.y - halfVPHeight;
 
     if (wpos.y < halfVPHeight) { offset.y = 0; } // If we are close to left edge, lock it.
-    if (wpos.y > (Map::Height - halfVPHeight)) { offset.y = (Map::Height - Height); } // If we are close to bottom edge, lock it.
+    if (wpos.y > (map.Height2 - halfVPHeight)) { offset.y = (map.Height2 - VP_Height); } // If we are close to bottom edge, lock it.
   }
 
   /* If we are 'cornered', we don't really want center; 
@@ -548,16 +558,18 @@ bool Map::persist(Persist& p) {
     }
   }
 
+  // FIXME - beware of any left traces of 'y-start = 1'
+
   p.transfer(objCount, "objCount");
 
   if (p.bOut) {
     // Output objects:
     for (int x = 0; x < Width; ++x) {
-      CellColumn& column = (*this)[x];
-      for (int y = 1; y < Height; ++y) {
-        Cell& cell = column[y];
+      // CellColumn& column = (*this)[x];
+      for (int y = 0; y < Height; ++y) {
+        CPoint pos(x, y);
+        Cell& cell = (*this)[pos]; // cells[column[y];
         if (!cell.item.empty()) {
-          CPoint pos(x, y);
           cell.item.o->persist(p,pos);
         }
       }

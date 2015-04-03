@@ -21,7 +21,7 @@ Dungeon* Dungeons::implGet(int level) {
   }
   if (dungeons[level] == NULL) {
     Dungeon* newDungeon = new Dungeon(level);
-    newDungeon->initDungeon();
+    newDungeon->initDungeon(); // Will move player in place! (on the map.)
     dungeons[level] = newDungeon;
   }
 
@@ -86,11 +86,12 @@ bool Dungeons::persist(class Persist& p) {
 Dungeon* Dung::CL = NULL; // should at least be in a namespace with 'using'.
 
 
-void Dungeons::setCurLevel(int level) {
-  if (CL != NULL) { CL->map.clearMob(*PlayerMob::ply); } // Clear player from prev. level.
+Dungeon* Dungeons::setCurLevel(int level) {
+  if (CL != NULL && PlayerMob::ply != NULL) { CL->map.clearMob(*PlayerMob::ply); } // Clear player from prev. level.
 
   Dungeon* dung = get(level);
   Dung::CL = dung;
+  return dung;
 }
 
 /*I would like the log  to have more lines on the screen.. I think?
@@ -121,8 +122,19 @@ Tab Q W E R T Y U I O P Å ¨
 */
 
 void Dungeons::initNewGame() {
-  PlayerMob* player = PlayerMob::createPlayer();
-  Dungeons::setCurLevel(player->dungLevel);
+
+  Map* nullMap = NULL;
+  PlayerMob* player = PlayerMob::createPlayer(nullMap);
+  Dungeon* dung = Dungeons::setCurLevel(player->dungLevel);
+  /* I have been thinking a lot about whether createPlayer or 'createDungeonLevel (MAP)
+  should come first. 
+     My current thinking is, that 'player is more important than any given map,
+  so even though I "could" hack it so a dungoen is created immediately before,
+  to cater for the player, I .. won't.
+    The real issue is, that assignment of position is tied wrongly to player creation
+   - instead it should be delayed,
+  to the  QUEUING of the mob (which is when it is tied to a given Dungeon = [map+mobs].)
+  */
 }
 
 bool Dungeons::initLoadGame() {
