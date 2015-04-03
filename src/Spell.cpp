@@ -872,6 +872,12 @@ bool spellRush(Mob& actor, CPoint dir, std::string verb) {
 }
 
 
+/* The basic idea with a 3rd-person-verb as spell-tag is sympathetic,
+but it can ony be a default - the spell class itself must
+have an overridable text-describer, that defaults to the raw verb,
+but that can  be overridden to 'teleports to you, heals you,restores your mana' or whatever
+describes more complex actions.
+*/
 
 class Spell_Rush: public SpellImpl { public:
   std::string spelltag() const { return "rushes"; }
@@ -1250,9 +1256,11 @@ bool Spell::castSpell(SpellEnum spellType, Mob& actor, Mob* target, Obj* item, c
   if (useMana == UseMana) { // 3: User-self-cast spells must cost him mana.
     // I prefer to postpone this check to AFTER user has specified any direction
     // (So we don't do the check multiple times, if he reconsiders.)
-    logstr log;
-    bool suffMana = Spell::manaCostCheck(spellType, actor, log); // 3, check enough mana.
-    if (!suffMana) { return false; }
+    {
+      logstr log;
+      bool suffMana = Spell::manaCostCheck(spellType, actor, log); // 3, check enough mana.
+      if (!suffMana) { return false; }
+    }
 
     // 4 - eat mana - At this point, we eat the mana:
     // NB!- zap/dir commands should only consume mana AFTER dir is specified.

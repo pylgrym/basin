@@ -150,23 +150,20 @@ bool Mob::mobCasts(CPoint dir) {
   std::string ability = pickAbility();
   { 
     SpellImpl* spellPtr = SpellImpl::spellFromTag(ability);
-
-    logstr log; 
-    // log << pronoun() << " aims a spell at you!"; 
+    logstr log; // log << pronoun() << " aims a spell at you!"; 
     log << pronoun() << " " << ability << " a spell at you!" << spellPtr; 
+    // FIXME - make a leaner version  of 'castSpell'.
   }
 
-  CPoint zapDir = dir;
-  logstr log; // Will show a mob attacking!
-
   bool bOK = true;
-  if (false) { // Old approach.
-    ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
-    cmd.mobZapDir = zapDir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
-    bOK = cmd.Do(log);
-  } else { // new approach:
-    Mob* target = PlayerMob::ply; // NULL;
+  if (true) { // new approach.
+    Mob* target = PlayerMob::ply; 
     bOK = Spell::castSpell(mobSpell, *this, target, NULL, NoMana);
+  } else { // old approach:
+    ZapCmd cmd(NULL, *this, mobSpell, this->defSchool); // Monster's spell-cast. FIXME, should be spell's school instead? 
+    cmd.mobZapDir = dir; // Interesting/idea: this way, a mob can do 'friendly fire'/another mob can be caught in crossfire!
+    logstr log; // Will show a mob attacking!
+    bOK = cmd.Do(log);
   }
 
   return bOK;
