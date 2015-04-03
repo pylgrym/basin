@@ -127,6 +127,7 @@
     <ClInclude Include="LogEvents.h" />
     <ClInclude Include="LOS.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MapGen.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="MobCombat.h" />
     <ClInclude Include="MobDist.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="LogEvents.cpp" />
     <ClCompile Include="LOS.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MapGen.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="MobCombat.cpp" />
     <ClCompile Include="MobDist.cpp" />

@@ -159,6 +159,9 @@
     <ClInclude Include="Kaching.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="MapGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basin.cpp">
@@ -291,6 +294,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Kaching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
