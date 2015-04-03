@@ -62,7 +62,7 @@ void Map::initTunnels(int level) {
 
   // FIXME/NB! - 'map' is different width+height, whereas this algo is same width-height!
 
-  Laby laby(Map::Height); // Width); // 101); // 51); // 101);
+  Laby laby(Map::Width, Map::Height); // Width); // 101); // 51); // 101);
   laby.combine(); //  buildAll(); // dc);
 
 

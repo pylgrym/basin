@@ -62,34 +62,34 @@ struct Pool : public std::vector < CPoint > {
 
 
 struct Grid {
-  Grid(int side_) :Side(side_) {
-    cells.resize(Side);
-    for (int i = 0; i < Side; ++i) {
-      cells[i].resize(Side);
+  Grid(int sideW_, int sideH_) :SideW(sideW_), SideH(sideH_) {
+    cells.resize(SideW);
+    for (int i = 0; i < SideW; ++i) {
+      cells[i].resize(SideH);
     }
   }
 
   std::vector< std::vector< Mark > > cells;
-  int Side;
+  const int SideW, SideH;
 
   Mark& operator [] (CPoint p) { return cell(p); }
 
   Mark& cell(CPoint p) {
-    if (p.x >= Side) {
+    if (p.x >= SideW) {
       int q = 19;
     }
     assert(p.x >= 0);
     assert(p.y >= 0);
-    assert(p.x < Side);
-    assert(p.y < Side);
+    assert(p.x < SideW);
+    assert(p.y < SideH);
     return cells[p.x][p.y];
   }
 };
 
 struct Laby {
-  Laby(int side_) :Side(side_), grid(side_) {}
+  Laby(int sideW_, int sideH_) :SSideW(sideW_), SSideH(sideH_),grid(sideW_, sideH_) {}
 
-  const int Side;
+  const int SSideW, SSideH;
 
   Grid grid;
 
@@ -102,14 +102,14 @@ struct Laby {
 
 
   bool isVisited(CPoint p) {
-    if (p.x < 1 || p.y < 1 || p.x >= Side - 1 || p.y >= Side - 1) {
+    if (p.x < 1 || p.y < 1 || p.x >= SSideW - 1 || p.y >= SSideH - 1) {
       return true;
     }
     return grid[p].visited(); 
   }
 
   bool isBlocked(CPoint p) { // Cell-wise, reverse of original
-    if (p.x < 1 || p.y < 1 || p.x >= Side - 1 || p.y >= Side - 1) {
+    if (p.x < 1 || p.y < 1 || p.x >= SSideW - 1 || p.y >= SSideH - 1) {
       return true;
     }
     return grid[p].blocked(); 
@@ -118,8 +118,8 @@ struct Laby {
 
   void draw(CDC& dc) {
     dc.SetBkMode(TRANSPARENT);
-    for (int x = 0; x < Side; ++x) {
-      for (int y = 0; y < Side; ++y) {
+    for (int x = 0; x < SSideW; ++x) {
+      for (int y = 0; y < SSideH; ++y) {
         CPoint p(x, y);
         drawCell(p, grid[p], dc);
       }
@@ -140,7 +140,7 @@ struct Laby {
       int tmp = s.cx;
       s.cx = s.cy; s.cy = tmp;
     }
-    CPoint ul(1 + (rnd::Rnd(1, Side - s.cx - 1) / 2) * 2, 1 + (rnd::Rnd(1, Side - s.cy - 1) / 2) * 2);
+    CPoint ul(1 + (rnd::Rnd(1, SSideW - s.cx - 1) / 2) * 2, 1 + (rnd::Rnd(1, SSideH - s.cy - 1) / 2) * 2);
     CRect r(ul, s);
     fillRoom(r);
   }
@@ -160,8 +160,8 @@ struct Laby {
   }
 
   void fillDeadends() {
-    for (int x = 1; x < Side - 1; x += 2) {
-      for (int y = 1; y < Side - 1; y += 2) {
+    for (int x = 1; x < SSideW - 1; x += 2) {
+      for (int y = 1; y < SSideH - 1; y += 2) {
         CPoint p(x, y);
         fillIfDeadend(p);
       }

@@ -32,7 +32,7 @@ void Laby::buildMaze() {
   Pool pool;  // pool of active cells
 
   for (int i = 0; i < 1; ++i) {
-    CPoint seed(rnd::Rnd(1, Side / 2) * 2 + 1, rnd::Rnd(1, Side / 2) * 2 + 1);
+    CPoint seed(rnd::Rnd(1, SSideW / 2) * 2 + 1, rnd::Rnd(1, SSideH / 2) * 2 + 1);
     if (isVisited(seed)) { continue; }
     pool.Push(seed); // add a seed cell to the pool.    
     grid[seed].c = M_Open; // Now taken.
@@ -97,7 +97,7 @@ void Laby::combine() {
 
   bool doVeins = false; // true; // false;
   if (doVeins) { // Build an extra maze, to use as 'mineral veins':
-    Laby veins(Side); veins.thinnedMaze(veinThin); // 5); // 120);
+    Laby veins(SSideW, SSideH); veins.thinnedMaze(veinThin); // 5); // 120);
     addVeins(veins);
   }
 
@@ -106,8 +106,8 @@ void Laby::combine() {
 }
 
 void Laby::addVeins(Laby& veins) {
-  for (int x = 1; x < Side-1; ++x) {
-    for (int y = 1; y < Side-1; ++y) {
+  for (int x = 1; x < SSideW-1; ++x) {
+    for (int y = 1; y < SSideH-1; ++y) {
       CPoint p(x, y);
       if (veins.veinTrigger(p) && grid[p].isWall() ) { 
         grid[p].makeVein();
