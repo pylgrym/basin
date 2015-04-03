@@ -123,9 +123,10 @@ Tab Q W E R T Y U I O P Å ¨
 
 void Dungeons::initNewGame() {
 
-  Map* nullMap = NULL;
-  PlayerMob* player = PlayerMob::createPlayer(nullMap);
+  // JG: NB! We don't need to account for player pos - dungeon will handle this, in initDungeon.
+  PlayerMob* player = PlayerMob::createPlayer(); // nullMap); // Map* nullMap = NULL;
   Dungeon* dung = Dungeons::setCurLevel(player->dungLevel);
+
   /* I have been thinking a lot about whether createPlayer or 'createDungeonLevel (MAP)
   should come first. 
      My current thinking is, that 'player is more important than any given map,

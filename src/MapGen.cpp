@@ -41,7 +41,7 @@ void Map::initKachingBlob(int level) {
   // Blob blob(0); // JG: I'm not sure we really ended up using the blob-thing for anything
   // (it's the queue we are interested in?)
 
-  Blobs queue(Width, Height);
+  Blobs queue(Width2, Height2);
 
   queue.run(NULL); // , queue); // &dc);
   for (int x = 0; x < queue.SideW; ++x) {

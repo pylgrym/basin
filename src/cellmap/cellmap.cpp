@@ -49,7 +49,7 @@ Cell& Map::operator [] (CPoint p) {
   assert(p.x >= 0);
   assert(p.y >= 0);
 
-  if (!(p.x < Map::Width)) {
+  if (!(p.x < Map::Width2)) {
     DebugBreak();
   }
   assert(p.x < Width2);
@@ -96,7 +96,7 @@ bool Map::legalPos(CPoint pos) {
 void Map::addRandomMob(int levelbase) {
   const int maxRetries = 75;
   for (int i = 0; i < maxRetries; ++i) {
-    CPoint pos(rnd::Rnd(1, Width), rnd::Rnd(1, Height));
+    CPoint pos(rnd::Rnd(1, Width2), rnd::Rnd(1, Height2));
     assert(legalPos(pos));
     if (!(*this)[pos].creature.empty()) { continue; }
     addRandomMobAtPos(pos, levelbase);
@@ -110,7 +110,8 @@ bool Map::addRandomMobAtPos(CPoint pos, int levelbase) {
   if (!cell.creature.empty()) { debstr() << "cell already has mob.\n"; return false; }
 
   int mlevel = Levelize::suggestLevel(levelbase);
-  Mob* monster = new MonsterMob(mlevel, this);
+  Mob* monster = new MonsterMob(mlevel); // , this); // in addRandomMobAtPos.
+  monster->placeMobOnMap(this);
   CreatureEnum ctype = MobDist::suggRndMob(mlevel); // Then pick an appropriate creature-type for that mob.
   monster->m_mobType = ctype;
 
@@ -139,7 +140,7 @@ void Map::scatterMobsAtPos(CPoint pos, int n, int level, int radius) {
 
 
 void Map::addRandomObj(int level) {
-  CPoint pos(rnd::Rnd(1, Width), rnd::Rnd(1, Height));
+  CPoint pos(rnd::Rnd(1, Width2), rnd::Rnd(1, Height2));
   assert(legalPos(pos));
   addObjAtPos(pos, level);
 }
@@ -219,16 +220,16 @@ done: place myself on empty.
 
 void Map::initOuterBorders() {
   // husk 1-offset.
-  for (int x = 0; x < Width; ++x) {
+  for (int x = 0; x < Width2; ++x) {
     CPoint posTop(x, 0); // was: 1
-    CPoint posBottom(x, Height - 1);
+    CPoint posBottom(x, Height2 - 1);
     Cell& cell1 = (*this)[posTop];    cell1.envir.type = EN_Border;
     Cell& cell2 = (*this)[posBottom]; cell2.envir.type = EN_Border;
   }
 
-  for (int y = 0; y < Height; ++y) { // was : 1 (old hack)
+  for (int y = 0; y < Height2; ++y) { // was : 1 (old hack)
     CPoint posLeft(0, y);
-    CPoint posRight(Width - 1, y);
+    CPoint posRight(Width2 - 1, y);
     Cell& cell1 = (*this)[posLeft];  cell1.envir.type = EN_Border;
     Cell& cell2 = (*this)[posRight]; cell2.envir.type = EN_Border;
   }
@@ -544,8 +545,8 @@ bool Map::persist(Persist& p) {
   int objCount = 0; // (count obj's, to aid later output of obj-list.)
   // First, output floor-cells:
 
-  for (int y = 0; y < Height; ++y) {
-    for (int x = 0; x < Width; ++x) {
+  for (int y = 0; y < Height2; ++y) {
+    for (int x = 0; x < Width2; ++x) {
       CPoint pos(x, y);
       Cell& cell = (*this)[pos];
       cell.persist(p);
@@ -564,9 +565,9 @@ bool Map::persist(Persist& p) {
 
   if (p.bOut) {
     // Output objects:
-    for (int x = 0; x < Width; ++x) {
+    for (int x = 0; x < Width2; ++x) {
       // CellColumn& column = (*this)[x];
-      for (int y = 0; y < Height; ++y) {
+      for (int y = 0; y < Height2; ++y) {
         CPoint pos(x, y);
         Cell& cell = (*this)[pos]; // cells[column[y];
         if (!cell.item.empty()) {

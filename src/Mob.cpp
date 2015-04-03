@@ -15,20 +15,19 @@ void Mob::placeMobOnMap(Map* map) {
   pos.y = rnd::Rnd(2, map->Height2 - 1);
 }
 
-Mob::Mob(int mlevel, bool bIsPlayer_, Map* map)
-  :stats(mlevel,bIsPlayer_)
+Mob::Mob(int mlevel, bool bIsPlayer_) //, Map* map)
+:stats(mlevel,bIsPlayer_)
 {
-
-  // mobDummyWeapon = Dice(rnd(3), rnd(2,12)); // Wow that can hit hard..
   mobDummyWeapon = Levelize::randDiceForLevel(mlevel);
 
   m_mobType = (CreatureEnum) rnd::Rnd(CR_Kobold, CR_MaxLimit);
 
-  if (map != NULL) {
-    placeMobOnMap(map);
-  } else {
-    pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
-  }
+  pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
+  // if (map != NULL) {
+  //   placeMobOnMap(map);
+  // } else {
+  //   pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
+  // }
 
   color = RGB(rand()%255,rand()%255,rand()%255);
   old_mob_speed = 1.0;

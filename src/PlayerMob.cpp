@@ -13,8 +13,8 @@ void PlayerMob::rollStats() {// FIXME, probably / really belongs in Stats class,
   stats = rollStatsCmd.outStats;
 }
 
-PlayerMob* PlayerMob::createPlayer(class Map* unintendedMap) {
-  PlayerMob* player = new PlayerMob(unintendedMap); // Is a singleton, will store himself.
+PlayerMob* PlayerMob::createPlayer() { // class Map* unintendedMap) {
+  PlayerMob* player = new PlayerMob; // (unintendedMap); // Is a singleton, will store himself.
 
   // new experiment:
   player->rollStats();
@@ -344,11 +344,13 @@ double PlayerMob::act() { // returns time that action requires (0 means keep doi
 
 PlayerMob* PlayerMob::ply = NULL;
 
-PlayerMob::PlayerMob(Map* unIntendedMap) :Mob(1, true, unIntendedMap) {
+PlayerMob::PlayerMob() //Map* unIntendedMap) 
+:Mob(1, true) //, unIntendedMap) 
+{
   ply = this;  
 
   dungLevel = 0; // 1;
-  pos.x = 15; 
+  pos.x = 15; // JG: so far, misused for town-levelpos :-). 
   pos.y = 15; // FIXME; must be free!
 
   theLightStrength = 1;

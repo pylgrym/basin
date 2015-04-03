@@ -17,16 +17,16 @@ MapGen3::~MapGen3()
 
 
 void Map::initTunnels2(int level) {
-  GrCanvas laby(Width,Height); // FIXME - same problem with width/height!
+  GrCanvas laby(Width2,Height2); // FIXME - same problem with width/height!
 
   runSimu(laby, NULL); // CDC* dc);
   /* now do something with laby, transfer it to cellmap. */
   // Create floor/environ.
-  for (int x = 0; x < Width; ++x) {
-    for (int y = 0; y < Height; ++y) {
+  for (int x = 0; x < Width2; ++x) {
+    for (int y = 0; y < Height2; ++y) {
       CPoint cur(x, y);
       Cell& cell = (*this)[cur];
-      if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) { // The outer border.
+      if (x == 0 || y == 0 || x == Width2 - 1 || y == Height2 - 1) { // The outer border.
         cell.envir.type = EN_Border;
       }
       else { // Inside-area:

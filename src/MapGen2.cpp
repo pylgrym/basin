@@ -67,15 +67,15 @@ void Map::initTunnels(int level) {
 
 
   // Create floor/environ.
-  for (int x = 0; x < Width; ++x) {
+  for (int x = 0; x < Width2; ++x) {
     //CellColumn& column = (*this)[x];
-    for (int y = 0; y < Height; ++y) {
+    for (int y = 0; y < Height2; ++y) {
       CPoint p(x, y);
       Cell& cell = (*this)[p]; // column[y];
-      if (x == 0 || y == 0 || x == Width - 1 || y == Height - 1) { // The outer border.
+      if (x == 0 || y == 0 || x == Width2 - 1 || y == Height2 - 1) { // The outer border.
         cell.envir.type = EN_Border;
       }
-      else if (x < Map::Width) { // Height) { // Inside-area: // NB, danger here - width/height!
+      else if (x < Map::Width2) { // Height) { // Inside-area: // NB, danger here - width/height!
         CPoint p(x, y);
         Mark& mark = laby.grid[p];
 

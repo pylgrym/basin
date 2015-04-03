@@ -4,7 +4,7 @@
 
 class PlayerMob : public Mob {
 public:
-  PlayerMob(Map* unIntendedMap);
+  PlayerMob(); // Map* unIntendedMap);
   ~PlayerMob();
   virtual double act(); // returns time that action requires (0 means keep doing actions/keep initiative.)
   virtual void passTime();
@@ -45,6 +45,6 @@ public:
   static int distPly(CPoint p); // raw/true calc. (square)
   static double distPlyLight(CPoint p); // light-adjusted
 
-  static PlayerMob* createPlayer(class Map* unintendedMap);
+  static PlayerMob* createPlayer(); // class Map* unintendedMap);
 };
 

@@ -89,7 +89,7 @@ bool MobQueue::dispatchFirst() {
 
 
 
-bool MobReady::persist(Persist& p, class Map* anyMap) {
+bool MobReady::persist(Persist& p) { //, class Map* anyMap) {
   p.transfer(when, "when");
 
   int isPlayer = (mob ? mob->isPlayer() : 0);
@@ -98,19 +98,19 @@ bool MobReady::persist(Persist& p, class Map* anyMap) {
   /* FIXME/refactor: figure out a more elegant way to persist player a single time,
   and still keep him in many queues.
   */
-  Map* nullMap = NULL;
+  // Map* nullMap = NULL;
 
   bool bFirstPlayer = false;
   if (!p.bOut) { // IE it's read-in.
     if (isPlayer) {
       if (PlayerMob::ply == NULL) { // Only create a single instance.
-        mob = new PlayerMob(nullMap);
+        mob = new PlayerMob; // (nullMap); // in MobReady::persist - we don't need to sugggest position.
         bFirstPlayer = true;
       } else {
         mob = PlayerMob::ply;
       }
     } else {
-      mob = new MonsterMob(1, nullMap);
+      mob = new MonsterMob(1); //, nullMap); // in MobReady::persist - we don't need to sugggest position.
     } // in MobReady::persist.
   }
   bool bOK = true;
@@ -118,7 +118,7 @@ bool MobReady::persist(Persist& p, class Map* anyMap) {
   // Sorry - all this messy code, to handle  that we transfer player multiple times :-(.
   if (isPlayer && !p.bOut && !bFirstPlayer) {
     // do nothing - don't read in player more than once.
-    static MonsterMob dummyPlayer(1,nullMap);
+    static MonsterMob dummyPlayer(1); // , nullMap); // in MobReady::persist - we don't need to sugggest position.
     dummyPlayer.persist(p); // We still need to 'eat/parse' that object.
   } else { // if monster, or first-time-the-player, read in:
     bOK = mob->persist(p);
@@ -129,7 +129,7 @@ bool MobReady::persist(Persist& p, class Map* anyMap) {
 }
 
 
-bool MobQueue::persist(class Persist& p, class Map* anyMapHack) {
+bool MobQueue::persist(class Persist& p) { //, class Map* anyMapHack) {
   int mobCount = queue.size();
   p.transfer(mobCount, "mobCount");
 
@@ -137,12 +137,12 @@ bool MobQueue::persist(class Persist& p, class Map* anyMapHack) {
     ReadyQueue::iterator i;
     for (i = queue.begin(); i != queue.end(); ++i) {
       MobReady& mr = *i;
-      mr.persist(p, anyMapHack); // Outputting existing mobqueue.
+      mr.persist(p); /// , anyMapHack); // Outputting existing mobqueue.
     }
   } else {
     for (int i = 0; i < mobCount; ++i) {
       MobReady mr;
-      mr.persist(p, anyMapHack);
+      mr.persist(p); // , anyMapHack);
       queueMob(mr.mob, mr.when); // Reading in persisted mobqueue.
     }
   }

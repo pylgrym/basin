@@ -64,10 +64,11 @@ void Dungeon::initMobs() {
   for (int i = 0; i<mobCount; ++i) {
     debstr() << "i:" << i << "\n";
 
-    int mlevel = Levelize::suggestLevel(this->level); // First, pick a level for new mob.
+    int mlevel = Levelize::suggestLevel(this->level); // First, pick a level for a fresh mob.
     CreatureEnum ctype = MobDist::suggRndMob(mlevel); // Then pick an appropriate creature-type for that mob.
 
-    Mob* monster = new MonsterMob(mlevel, &map); 
+    Mob* monster = new MonsterMob(mlevel); // , &map);
+    monster->placeMobOnMap(&map);
     monster->m_mobType = ctype;
     
     map.moveMob(*monster, monster->pos);
@@ -79,7 +80,7 @@ void Dungeon::initMobs() {
 
 bool Dungeon::persist(class Persist& p) {
   map.persist(p);
-  mobs.persist(p, &map); // JG: I've changed the order here, because I want the map ready before the mobs.
+  mobs.persist(p); // , &map); // JG: I've changed the order here, because I want the map ready before the mobs.
 
   /* JG, consider: Do we want this to happen 'inside' the mobqueue, and not 'out' here in the dungeon code?
   */

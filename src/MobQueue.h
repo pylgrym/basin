@@ -14,7 +14,7 @@ struct MobReady {
   bool operator > (const MobReady& rhs) const;
   
   //  bool operator > (const MobReady& rhs) const { return when > rhs.when; }
-  bool persist(class Persist& p, class Map* anyMap);
+  bool persist(class Persist& p); // , class Map* anyMap);
 };
 
 
@@ -71,6 +71,6 @@ public:
   void deleteMob(Mob* toDelete);
   bool dispatchFirst();
 
-  bool persist(class Persist& p, class Map* anyMapHack);
+  bool persist(class Persist& p); // , class Map* anyMapHack);
 };
 

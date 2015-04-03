@@ -66,8 +66,8 @@ public:
   const int Height2;
 
   enum MapConst { 
-    Width = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
-    Height = 60, //CellColumn::Height,
+    // Width1 = 101, // Fixme, these should be  dynamic, and fixme2: height should be  independent of width.. 
+    // Height1 = 60, //CellColumn::Height,
     DefWidth = 101,
     DefHeight= 60
   };
