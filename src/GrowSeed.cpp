@@ -53,15 +53,15 @@ public:
   }
 
   void addpool1() { for (int i = 1; i < GrCanvas::MaxPool; ++i) { 
-    CPoint newSeed(rand() % GrCanvas::Side, rand() % GrCanvas::Side); 
+    CPoint newSeed(rand() % cells.SideW, rand() % cells.SideH); 
     addSeed(SeedID(newSeed,i)); } 
   }
 
   void addpool2() {
     CSize dim(9, 9);
     int i = 1;
-    for (int x = dim.cx / 2; x < GrCanvas::Side; x += dim.cx) {
-      for (int y = dim.cy / 2; y < GrCanvas::Side; y += rndC(dim.cy-1,dim.cy+1), ++i) {
+    for (int x = dim.cx / 2; x < cells.SideW; x += dim.cx) {
+      for (int y = dim.cy / 2; y < cells.SideH; y += rndC(dim.cy-1,dim.cy+1), ++i) {
         CPoint newSeed(x+rndC(-1,1), y+rndC(-1,1));
         addSeed(SeedID(newSeed,i));
       }
@@ -110,12 +110,12 @@ public:
   }
 
   bool vacant(CPoint pos) {
-    if (pos.x < 0 || pos.y < 0 || pos.x >= GrCanvas::Side || pos.y >= GrCanvas::Side) { return false;  }
+    if (pos.x < 0 || pos.y < 0 || pos.x >= cells.SideW || pos.y >= cells.SideH) { return false;  }
     return cells[pos].isClear();
   }
 
   int idOfCell(CPoint pos) {
-    if (pos.x < 0 || pos.y < 0 || pos.x >= GrCanvas::Side || pos.y >= GrCanvas::Side) { return -1;  }
+    if (pos.x < 0 || pos.y < 0 || pos.x >= cells.SideW || pos.y >= cells.SideH) { return -1;  }
     return cells[pos].c;
   }
 

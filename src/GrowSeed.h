@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <vector>
 
 class ACell { 
 public:
@@ -17,23 +18,43 @@ public:
 
 class GrCanvas {
 public:
+  const int SideW;
+  const int SideH;
+
   enum { 
     MaxPool = 150, 
-    Side = 101 
+    // SideW,SideH = 101 
   };
 
-  ACell cells[Side][Side];
+  GrCanvas(int w, int h) :SideW(w), SideH(h) {
+    cells_i.resize(SideW);
+    for (int column = 0; column < SideW; ++column) {
+      cells_i[column].resize(SideH);
+    }
+  }
+
+  std::vector< std::vector < ACell > > cells_i;
+  // ACell cells[SideW][SideH];
+
+  ACell& cells(CPoint p) {
+    assert(p.x >= 0);
+    assert(p.y >= 0);
+    assert(p.x < SideW);
+    assert(p.y < SideH);
+    return cells_i[p.x][p.y];
+  }
+
 
   ACell& operator [] (CPoint p) {
     assert(p.x >= 0);
     assert(p.y >= 0);
-    assert(p.x < Side);
-    assert(p.y < Side);
-    return cells[p.x][p.y];
+    assert(p.x < SideW);
+    assert(p.y < SideH);
+    return cells(p); // [p.x][p.y];
   }
 
   bool legalPos(CPoint p) const {
-    return (p.x >= 0 && p.y >= 0 && p.x < Side && p.y < Side);
+    return (p.x >= 0 && p.y >= 0 && p.x < SideW && p.y < SideH);
   }
 
 };

@@ -17,7 +17,7 @@ MapGen3::~MapGen3()
 
 
 void Map::initTunnels2(int level) {
-  GrCanvas laby; // FIXME - same problem with width/height!
+  GrCanvas laby(Width,Height); // FIXME - same problem with width/height!
 
   runSimu(laby, NULL); // CDC* dc);
   /* now do something with laby, transfer it to cellmap. */
