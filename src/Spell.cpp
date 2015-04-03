@@ -364,7 +364,17 @@ void SpellImpl::initSpellMap() { // Sketch..
   for (i = spellColl.begin(); i != spellColl.end(); ++i) {
     SpellImpl* si = *i;
     spellMap[si->spelltag()] = si;
-    /* FIXME: can't do this yet, as long as SpellImpl isn't tied to spells/types/names..SpellDesc */
+    /* FIXME: can't do this yet, as long as SpellImpl isn't tied to spells/types/names..SpellDesc 
+    Update: spellImpl have tags now, but they are not 'unique' - 'slow' and  'speedup'
+    share the same spell, but should have different args (0.5/2.0) and ids.
+
+    Consider: raw spell functions should maybe go INTO the spellImpl classes as static function?
+
+    FIXME/general issue:  SpellDesc struct-table approach
+    and spellImpl are not tied together.
+    similarly, spellTypeEnum is not tied into it.
+      
+    */
   }
 }
 
