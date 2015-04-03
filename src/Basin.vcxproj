@@ -129,6 +129,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MapGen.h" />
     <ClInclude Include="MapGen2.h" />
+    <ClInclude Include="MapGen3.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="MobCombat.h" />
     <ClInclude Include="MobDist.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MapGen.cpp" />
     <ClCompile Include="MapGen2.cpp" />
+    <ClCompile Include="MapGen3.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="MobCombat.cpp" />
     <ClCompile Include="MobDist.cpp" />
