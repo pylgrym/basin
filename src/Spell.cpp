@@ -339,12 +339,32 @@ bool sleepMob(Mob* target) {
 
 
 
+
 class SpellImpl {
 public:
+  static std::set<SpellImpl*> spellColl;
+  SpellImpl() { spellColl.insert(this); }
+  ~SpellImpl() { spellColl.erase(this); } // erase is the opposite of insert.
+
   virtual bool getParams(SpellParam& param) { return true;  }
   virtual bool execSpell(SpellParam& param) = 0;
+
+  static void initSpellMap();
 };
 
+
+std::set<SpellImpl*> SpellImpl::spellColl;
+
+void SpellImpl::initSpellMap() { // Sketch..
+  std::map< std::string, SpellImpl* > spellMap;
+
+  std::set<SpellImpl*>::iterator i;
+  for (i = spellColl.begin(); i != spellColl.end(); ++i) {
+    SpellImpl* si = *i;
+    spellMap["spellName"] = si;
+    /* FIXME: can't do this yet, as long as SpellImpl isn't tied to spells/types/names..SpellDesc */
+  }
+}
 
 
 bool updateSpeed(Mob& actor, double factor) {
@@ -1076,6 +1096,7 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
   */
 
 
+
 ///////////////////////////////////////////////////////NB, 'target' here not thought through!
 bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, Obj* item) {  
   // prepareSpell fills out a SpellParam! - makes sure e.g. bullet-aim-dir is known
@@ -1162,6 +1183,18 @@ bool SpellParam::exec() {
   bool xOK = impl->execSpell(*this);
   return xOK; 
 }
+
+/* it should be possible to simplify this greatly.
+spells will have tag-names, and go in a string-map.
+  input parameters should be passed in a general 'universal' inputparam-struct,
+instead of all those init-calls.
+  I should consider if I can throw away the 'getparams' pre-part.
+
+I should consider if spellDesc part could be integrated in the spell classes.
+(ie add things like min/max range to the class instead?)
+Advantage of class-approach, is that I can extend/add aspects, and add overrides for them.
+Advantage of struct-arrays, is that I get a nice 'table-like' presentation.
+*/
 
 bool Spell::castSpell(SpellEnum spellType, Mob& actor, Mob* target, Obj* item, const ManaEnum useMana) {  
   /* castSpell combines preparespell, manacheck, manaeat, and actual execute.
