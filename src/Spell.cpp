@@ -379,8 +379,22 @@ void SpellImpl::initSpellMap() { // Sketch..
 
 bool updateSpeed(Mob& actor, double factor) {
   playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  logstr log; if (factor > 1.0) { log << "You speed up."; } else { log << "you slow down."; }
-  actor.stats.mob_speed *= factor;
+
+  logstr log; 
+  // 0.5 is fast, 2.0 is slow.
+  if (factor < 1.0) { log << actor.the_mob() << " speed" << actor.verbS() << " up."; } 
+  else { log << actor.the_mob() << " slow" << actor.verbS() << " down."; }
+
+  /* I actually experienced a dragon that just 
+  kept speeding up by factor of x2 continously - I never got my turn back..
+  */
+
+  if (factor < 1.0 && actor.stats.mob_speed > 0.25) {
+    actor.stats.mob_speed *= factor; // max speed is 0.25..
+  }
+  if (factor > 1.0 && actor.stats.mob_speed < 2) {
+    actor.stats.mob_speed *= factor; // slowest speed is 2.0..
+  }
   return true;
 }
 
@@ -1141,12 +1155,12 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
 bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, Obj* item) {  
   // prepareSpell fills out a SpellParam! - makes sure e.g. bullet-aim-dir is known
   switch (effect) {
-  case SP_Speedup:          Spell_Speed::init(actor, 2, p);       break; // return updateSpeed(actor, 2); break;
-  case SP_Slowdown:         Spell_Speed::init(actor, 0.5, p);     break; //return updateSpeed(actor, 0.5); break; 
+  case SP_Speedup:          Spell_Speed::init(actor, 0.5, p);     break; // return updateSpeed(actor, 2); break;
+  case SP_Slowdown:         Spell_Speed::init(actor, 2.0, p);     break; // return updateSpeed(actor, 0.5); break; 
 
   case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd::Rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
   case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
-  case SP_ConfuseMob:     Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
+  case SP_ConfuseMob:      Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
 
     // sleep other, here?
   case SP_SleepOther:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  

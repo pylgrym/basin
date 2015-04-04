@@ -30,7 +30,6 @@ Mob::Mob(int mlevel, bool bIsPlayer_) //, Map* map)
   // }
 
   color = RGB(rand()%255,rand()%255,rand()%255);
-  old_mob_speed = 1.0;
 
   defSchool = (AttackSchool) rnd::Rnd(0, SC_MaxSchools);
   mobSpell = Spell::rndSpell_level(mlevel);

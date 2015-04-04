@@ -14,6 +14,18 @@
 #include "PlayerMob.h"
 #include "sprites/Tilemap.h"
 
+/* idea for 'flavor' materials, from temple-of-the-roguelike forums:
+http://forums.roguetemple.com/index.php?topic=3911.0
+The idea is to relate materials to the improved quality at various levels,
+to explain why I both have an AC2 and AC14 breastplate..
+- Common Wood *0.2
+- Ebony Wood *0.4
+- Copper *0.8
+- Iron *1
+- Steel *1.4
+- Ebony Metal *2.0
+- Dragon Bone *2.5
+*/
 
 bool IsVowel(TCHAR c) {
   CString vowels = L"aeiou"; // y is consonant, speaking-wise.

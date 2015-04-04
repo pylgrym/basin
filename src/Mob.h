@@ -98,7 +98,6 @@ public:
   CreatureEnum m_mobType; // better access it through ctype.
   CPoint pos;
   Stats stats;
-  double old_mob_speed;
   MoodEnum mood;
   Dice mobDummyWeapon;
   AttackSchool defSchool;
