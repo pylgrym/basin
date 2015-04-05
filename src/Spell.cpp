@@ -528,61 +528,69 @@ class Spell_Poison : public SpellImpl { public:
 } spell_poison;
 
 
-bool eatSpell(Mob& actor, int deltaFood) {
-  {
-    logstr log; log << actor.the_mob() << " eat" << actor.verbS() << " a bit and feel" << actor.verbS() << " less hungry!";
-    actor.stats.hunger += deltaFood; // Eat 300 something.
-  }
-  actor.stats.healPct(25, &actor);
-  return true; 
-}
 
 class Spell_Eat: public SpellImpl { 
 public:
   std::string spelltag() const { return "eats"; }
-  bool execSpell(SpellParam& param) { return eatSpell(*param.actor, param.deltaFood); }
+
+  static bool exec2(Mob& actor, int deltaFood) { // eatSpell
+    {
+      logstr log; log << actor.the_mob() << " eat" << actor.verbS() << " a bit and feel" << actor.verbS() << " less hungry!";
+      actor.stats.hunger += deltaFood; // Eat 300 something.
+    }
+    actor.stats.healPct(25, &actor);
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.deltaFood); } // eatSpell
   static void init(Mob& actor, int deltaFood, SpellParam& p) { p.actor = &actor;  p.deltaFood = deltaFood; p.impl = &spell_eat; }
 } spell_eat;
 
-
-bool healSpellPct(Mob& actor, int percent) {
-  {
-    logstr log; 
-    if (percent > 0) { 
-      log << actor.pronoun() << " feel" << actor.verbS()<< " healing energies."; 
-    }
-    if (percent < 0) { 
-      log << actor.pronoun() << " feel" << actor.verbS() << " sick."; 
-    }
-  }
-  actor.stats.healPct(percent, &actor);
-  return true;
+bool eatSpell(Mob& actor, int deltaFood) {
+  return Spell_Eat::exec2(actor, deltaFood); // hack-kludge.
 }
 
 class Spell_HealPct: public SpellImpl { 
 public:
   std::string spelltag() const { return "heals"; }
-  bool execSpell(SpellParam& param) { return healSpellPct(*param.actor, param.healPct); }
+
+  static bool exec2(Mob& actor, int percent) { // healSpellPct
+    {
+      logstr log;
+      if (percent > 0) {
+        log << actor.pronoun() << " feel" << actor.verbS() << " healing energies.";
+      }
+      if (percent < 0) {
+        log << actor.pronoun() << " feel" << actor.verbS() << " sick.";
+      }
+    }
+    actor.stats.healPct(percent, &actor);
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.healPct); } // healSpellPct
   static void init(Mob& actor, int healPct, SpellParam& p) { p.actor = &actor;  p.healPct = healPct; p.impl = &spell_healPct; }
 } spell_healPct;
 
 
-bool healSpellDice(Mob& actor, Dice dice) {
-  std::stringstream dummy;
-  int val = dice.roll(dummy);
-  {
-    logstr log;
-    if (val > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " healing energies."; }
-    if (val < 0) { log << actor.pronoun() << " feel" << actor.verbS() << " sick."; }
-  }
-  actor.stats.healAbs(val, &actor);
-  return true;
-}
 
 class Spell_HealDice: public SpellImpl { 
 public:
   std::string spelltag() const { return "healdices"; }
-  bool execSpell(SpellParam& param) { return healSpellDice(*param.actor, param.healDice); }
+
+  static bool exec2(Mob& actor, Dice dice) { // healSpellDice
+    std::stringstream dummy;
+    int val = dice.roll(dummy);
+    {
+      logstr log;
+      if (val > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " healing energies."; }
+      if (val < 0) { log << actor.pronoun() << " feel" << actor.verbS() << " sick."; }
+    }
+    actor.stats.healAbs(val, &actor);
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.healDice); } // healSpellDice
   static void init(Mob& actor, Dice healDice, SpellParam& p) { p.actor = &actor;  p.healDice = healDice; p.impl = &spell_healDice; }
 } spell_healDice;
 
@@ -899,7 +907,7 @@ class Spell_Rush: public SpellImpl { public:
       if (actor.isPlayer()) { logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!"; }
       else { logstr log; log << "Ouch! " << actor.the_mob() << " rushes into the wall, seriously hurting itself!"; }
 
-      healSpellPct(actor, -66); // Loose 66 pct of health!
+      Spell_HealPct::exec2(actor, -66); // Loose 66 pct of health! //  healSpellPct
       return true;
     }
     logstr log; log << "Weird, your(?) rush leads nowhere?";
@@ -1067,7 +1075,7 @@ class Spell_Tackle: public SpellImpl { public:
     if (cell->envir.blocked()) {
       if (actor.isPlayer()) { logstr log; log << "Augh! You tackle into the wall, seriously hurting yourself!"; }
       else { logstr log; log << "Ouch! " << actor.the_mob() << " tackles into the wall, seriously hurting itself!"; }
-      healSpellPct(actor, -66); // Loose 66 pct of health!
+      Spell_HealPct::exec2(actor, -66); // Loose 66 pct of health! //  healSpellPct
       return true;
     }
 
