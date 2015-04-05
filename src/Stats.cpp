@@ -461,7 +461,7 @@ void Stats::tickConfusion(Mob* who) {
     if (isPlayer) {
       logstr log; log << "Your confusion wears off.";
     } else { // consider turning this part off:
-      logstr log; log << who->the_mob() << "The mob appears less confused.";
+      logstr log; log << who->the_mob() << " appears less confused.";
     }
   }
 }
@@ -474,7 +474,7 @@ void Stats::tickFear(Mob* who) {
     if (isPlayer) {
       logstr log; log << "Your fear wears off.";
     } else { // consider turning this part off:
-      logstr log; log << who->the_mob() << "The mob seems less afraid.";
+      logstr log; log << who->the_mob() << " seems less afraid.";
     }
   }
 }
@@ -487,7 +487,7 @@ void Stats::tickBlinded(Mob* who) {
     if (isPlayer) {
       logstr log; log << "The veil lifts..";
     } else { // consider turning this part off:
-      logstr log; log << "The mob can see again.";
+      logstr log; log << who->the_mob() << " can see again.";
     }
   }
 }
@@ -500,7 +500,7 @@ void Stats::tickRooted(Mob* who) {
     if (isPlayer) {
       logstr log; log << "You can move freely again!";
     } else { // consider turning this part off:
-      logstr log; log << "The mob can move freely again.";
+      logstr log; log << who->the_mob() << " can move freely again.";
     }
   }
 }
@@ -517,7 +517,7 @@ void Stats::tickPoisoned(Mob* who) {
     if (isPlayer) {
       logstr log; log << "The poison has left your body!";
     } else { // consider turning this part off:
-      logstr log; log << "The mob isn't poisoned anymore.";
+      logstr log; log << who->the_mob() << " isn't poisoned anymore.";
     }
   }
 }
@@ -594,6 +594,25 @@ void pr(std::stringstream& ss,  CPoint& pos) {
   ss.str("");
 }
 
+/* error: it seems, on e.g. depth 11, that player-light doesn't highlight walls perm?
+on a different(same?) non-error-note,
+it seems "magic-map area" does a gradual lightning,
+so maybe it's a side-effect of that gradual light..
+(ie the dark edges of the gradual-highlight causes the darkness..)
+ie so it might even highlight, but very dark..?
+further confusing is, tthat temporarily while player is there, it DOES light..
+but maybe that's the LOS-FOV kicking in? 
+*/
+
+/* error: when ome of the mobs cast attack-spells, it looks like they hit themselves,codewise?
+(e.g. tackle-shove?)
+*/
+
+/* Idea:I should add 'throw item' to the game, so
+I can get rid of things, so I have a last-resort-attack,
+and funny effects
+*/
+
 void Stats::showStats() {
   std::stringstream s;
 
@@ -627,8 +646,9 @@ void Stats::showStats() {
   s << "maxHP:" << this->maxHP;       pr(s,pos);
   s << "XP:" << this->xp;             pr(s,pos);
   s << "XP-lvl:" << this->xpToLevel;  pr(s,pos);
-  s << "Hunger:" << this->hunger;     pr(s,pos);
-  s << "Level:" << this->level();     pr(s,pos);
+  s << "Hunger:" << this->hunger;     pr(s, pos);
+  s << "Speed:" << this->mob_speed;   pr(s, pos);
+  s << "Level:" << this->level();     pr(s, pos);
 
   s << "stealth:" << this->stealth(); pr(s,pos);
   s << "alertness:" << this->alertness(); pr(s,pos);

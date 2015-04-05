@@ -722,21 +722,23 @@ bool spellDetect(Mob& actor, SpellEnum effect) {
 }
 
 
-bool lightSpell(Mob& actor, CPoint pos, int radius) {
-  /* idea: that light-area sets s light-strength on the tiles.
-  */
-  // Do a 'light' command:
-  actor.lightArea(pos,radius); 
-  logstr log;
-  log << "Light floods around you.";
-  return true;
-}
 
 class Spell_Light: public SpellImpl { 
 public:
   std::string spelltag() const { return "lights"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return lightSpell(*param.actor, param.pos, param.radius);  }
+
+  static bool exec2(Mob& actor, CPoint pos, int radius) { // lightSpell
+    /* idea: that light-area sets s light-strength on the tiles.
+    */
+    // Do a 'light' command:
+    actor.lightArea(pos, radius);
+    logstr log;
+    log << "Light floods around you.";
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.pos, param.radius);  }// lightSpell
   static void init(Mob& actor, CPoint pos, int radius, SpellParam& p) { p.actor = &actor;  p.pos = pos; p.radius = radius;  p.impl = &spell_light; }
 } spell_light;
 
@@ -760,21 +762,23 @@ public:
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonMob; }
 } spell_summonMob;
 
-bool summonObj(Mob& actor) { // , int count) { // , CPoint pos, int radius) {
-  CPoint pos = actor.pos;
-  int ilevel = Levelize::suggestLevel(actor.stats.level());
-  CL->map.scatterObjsAtPos(pos, rnd::rndC(1,2), ilevel, 1);
-  // actor.lightArea(pos, radius);
-  logstr log;
-  log << "Items shimmer before you!";
-  return true;
-}
 
 class Spell_SummonObj : public SpellImpl {
 public:
   std::string spelltag() const { return "summonsobj"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return summonObj(*param.actor); }
+
+  static bool exec2(Mob& actor) { //summonObj , int count) { // , CPoint pos, int radius) {
+    CPoint pos = actor.pos;
+    int ilevel = Levelize::suggestLevel(actor.stats.level());
+    CL->map.scatterObjsAtPos(pos, rnd::rndC(1, 2), ilevel, 1);
+    // actor.lightArea(pos, radius);
+    logstr log;
+    log << "Items shimmer before you!";
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor); } // summonObj
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonObj; }
 } spell_summonObj;
 
@@ -832,58 +836,6 @@ idea: 'standing in bad' dots - leaving temp bad tiles on ground, that you must a
 */
 
 
-bool spellRush(Mob& actor, CPoint dir, std::string verb) {
-  // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
-  // (I want to discourage using it for plain moving/fast moving..)
-  // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
-
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  // { logstr log; log << "You would rush headfirst into the mob..";  }
-  // Todo: projectile + move player.. Make a toolbox to build spells..
-
-  // Todo: this loop could be put in an iteratorish-class:
-  CPoint newPos = actor.pos;
-  Cell* cell = NULL;
-  for (;;) {
-    newPos += dir;
-    cell = &CL->map[newPos];
-    if (cell->blocked()) { break; }
-    actor.moveM(newPos);
-    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
-  }
-
-  if (!cell->creature.empty()) { // Good: we bump into an enemy!
-
-    Mob* target = cell->creature.m;
-    { 
-      logstr log;
-      if (!verb.empty()) {
-        log << verb;
-      } else {
-        if (actor.isPlayer()) {
-          log << "You rush into " << target->the_mob() << "!"; 
-        } else {
-          log << actor.the_mob() << " rushes into " << target->the_mob() << "!";  // "You rush into " 
-        }
-      }
-    }
-
-    const bool doOverrideHit = true;
-    HitCmd rush(NULL,actor,dir.x, dir.y,SC_Phys,SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
-    logstr log;
-    return rush.Do(log);
-  }
-
-  if (cell->envir.blocked()) {
-    if (actor.isPlayer()) { logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!"; }
-    else { logstr log; log << "Ouch! " << actor.the_mob() << " rushes into the wall, seriously hurting itself!"; }
-    
-    healSpellPct(actor, -66); // Loose 66 pct of health!
-    return true;
-  }
-  logstr log; log << "Weird, your(?) rush leads nowhere?";
-  return true;
-}
 
 
 /* The basic idea with a 3rd-person-verb as spell-tag is sympathetic,
@@ -898,23 +850,68 @@ class Spell_Rush: public SpellImpl { public:
   bool getParams(SpellParam& param) {
     return Spell_Bullet::getParamsDIR(param); 
   }
-  bool execSpell(SpellParam& param) { return spellRush(*param.actor, param.dir, "");  } // Consider: we could impl directly here!
+
+  static bool exec2(Mob& actor, CPoint dir, std::string verb) { //spellRush
+    // NB! if you do this without hitting a mob, you'll hurt yourself badly for 2/3 of your (remaining) health!
+    // (I want to discourage using it for plain moving/fast moving..)
+    // Actually, it could still be used to flee fast along a corridor, to get quickly away from a mob (at the price of 2/3 hp..)
+
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+    // { logstr log; log << "You would rush headfirst into the mob..";  }
+    // Todo: projectile + move player.. Make a toolbox to build spells..
+
+    // Todo: this loop could be put in an iteratorish-class:
+    CPoint newPos = actor.pos;
+    Cell* cell = NULL;
+    for (;;) {
+      newPos += dir;
+      cell = &CL->map[newPos];
+      if (cell->blocked()) { break; }
+      actor.moveM(newPos);
+      TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+    }
+
+    if (!cell->creature.empty()) { // Good: we bump into an enemy!
+
+      Mob* target = cell->creature.m;
+      {
+        logstr log;
+        if (!verb.empty()) {
+          log << verb;
+        }
+        else {
+          if (actor.isPlayer()) {
+            log << "You rush into " << target->the_mob() << "!";
+          }
+          else {
+            log << actor.the_mob() << " rushes into " << target->the_mob() << "!";  // "You rush into " 
+          }
+        }
+      }
+
+      const bool doOverrideHit = true;
+      HitCmd rush(NULL, actor, dir.x, dir.y, SC_Phys, SP_Rush, doOverrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
+      logstr log;
+      return rush.Do(log);
+    }
+
+    if (cell->envir.blocked()) {
+      if (actor.isPlayer()) { logstr log; log << "Augh! You rush into the wall, seriously hurting yourself!"; }
+      else { logstr log; log << "Ouch! " << actor.the_mob() << " rushes into the wall, seriously hurting itself!"; }
+
+      healSpellPct(actor, -66); // Loose 66 pct of health!
+      return true;
+    }
+    logstr log; log << "Weird, your(?) rush leads nowhere?";
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.dir, "");  } // spellRush Consider: we could impl directly here!
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_rush; }
 } spell_rush;
 
 
 
-bool spellCrush(Mob& actor, Mob& target, CPoint dir) {
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << actor.the_mob()  << " would pin the mob against the wall.."; }
-  // NB! Must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  // Consider: maybe it's HitCmd instead?
-  // Todo: target ought to be passed along to hit/zap cmd..
-  ZapCmd cmd(NULL, actor, SP_Crush, SC_Phys); // school);
-  cmd.mobZapDir = dir;
-  logstr log;
-  return cmd.Do(log);
-}
 
 
 class Spell_Crush: public SpellImpl { public:
@@ -930,26 +927,25 @@ class Spell_Crush: public SpellImpl { public:
     if (!CL->map[p.pos+p.dir].envir.blocked()) { if (p.actor->isPlayer()) { logstr log; log << "But there is no wall to crush against?"; } return false; }
     return true;
   }
-  bool execSpell(SpellParam& param) { return spellCrush(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
+
+  bool exec2(Mob& actor, Mob& target, CPoint dir) { // spellCrush
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+    { logstr log; log << actor.the_mob() << " would pin the mob against the wall.."; }
+    // NB! Must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+    // Consider: maybe it's HitCmd instead?
+    // Todo: target ought to be passed along to hit/zap cmd..
+    ZapCmd cmd(NULL, actor, SP_Crush, SC_Phys); // school);
+    cmd.mobZapDir = dir;
+    logstr log;
+    return cmd.Do(log);
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here! // spellCrush
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_crush; }
 } spell_crush;
 
 
 
-bool spellEmbed(Mob& actor, Mob& target, CPoint dir) {
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  { logstr log; log << actor.the_mob() << " attempt" << actor.verbS() << " to embed " << target.the_mob() << " in the rock.."; }
-  // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-
-  // (50%done)-FIXME - this does not push mob into wall, and move you..
-  CPoint embedPos = (target.pos + dir);
-  target.moveM(embedPos); //CL->map.moveMob(target, target.pos);
-
-  ZapCmd cmd(NULL, actor, SP_Embed, SC_Phys); // school);
-  cmd.mobZapDir = dir;
-  logstr log;
-  return cmd.Do(log);
-}
 
 
 class Spell_Embed: public SpellImpl { public:
@@ -957,7 +953,23 @@ class Spell_Embed: public SpellImpl { public:
   bool getParams(SpellParam& param) { // Embed has same requirements as Crush (wall on other side, and mob in between, directly next to you.)
     return Spell_Crush::getParamsCRUSH(param); 
   }
-  bool execSpell(SpellParam& param) { return spellEmbed(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
+
+  bool exec2(Mob& actor, Mob& target, CPoint dir) { // spellEmbed
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+    { logstr log; log << actor.the_mob() << " attempt" << actor.verbS() << " to embed " << target.the_mob() << " in the rock.."; }
+    // Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+
+    // (50%done)-FIXME - this does not push mob into wall, and move you..
+    CPoint embedPos = (target.pos + dir);
+    target.moveM(embedPos); //CL->map.moveMob(target, target.pos);
+
+    ZapCmd cmd(NULL, actor, SP_Embed, SC_Phys); // school);
+    cmd.mobZapDir = dir;
+    logstr log;
+    return cmd.Do(log);
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, *param.target, param.dir); } // Consider: we could impl directly here! // spellEmbed
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_embed; }
 } spell_embed;
 
@@ -969,20 +981,6 @@ class Spell_Detect: public SpellImpl { public:
 } spell_detect;
 
 
-bool spellShove(Mob& actor, Mob& target, CPoint dir) {
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  // { logstr log; log << "You would shove the mob along the ground.."; }
-
-  //DONE:Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
-  // was: - this does not push mob into wall, and move you..
-  // (class Spell_Shove handles the checks for us.)
-
-  std::stringstream ss;
-  ss << actor.pronoun() << " shove" << actor.verbS() << " " << target.the_mob() << "!";
-  std::string s = ss.str();
-
-  return spellRush(target, dir, s); // hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
-}
 
 /* thoughts: i should consider making 'floodfill-laby' prettier.
 DONE: i should make restore mana
@@ -1002,78 +1000,27 @@ class Spell_Shove: public SpellImpl { public:
     return true;
   }
 
-  bool execSpell(SpellParam& param) { return spellShove(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here!
+  static bool exec2(Mob& actor, Mob& target, CPoint dir) { // spellShove
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+    // { logstr log; log << "You would shove the mob along the ground.."; }
+
+    //DONE:Todo: must check mob is adj, and wall on other side.. Make a toolbox to build spells..
+    // was: - this does not push mob into wall, and move you..
+    // (class Spell_Shove handles the checks for us.)
+
+    std::stringstream ss;
+    ss << actor.pronoun() << " shove" << actor.verbS() << " " << target.the_mob() << "!";
+    std::string s = ss.str();
+
+    return Spell_Rush::exec2(target, dir, s); // spellRush hack: move mob instead.. // fixme.. hitting the MOB for 66% of health is too extreme.
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, *param.target, param.dir);  } // Consider: we could impl directly here! // spellShove(
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_shove; }
 } spell_shove;
 
 
 
-bool spellTackle(Mob& actor, Mob* target, CPoint dir) {
-  // JG -something is wrong, 'target' is a nullptr/not known!
-
-  // fixme -tackle seems to require being next to mob, that doesn't sound right?
-
-  /* fixme - the physical spells don't seem to either identify or eat-charges correctly - 'shove' never eats its charges?
-  */
-
-  // fiXmE - is 'target anything yet? (it might be,  because we assume both are next to each other? but actually, 'tackle' may use run-lead-up?
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-  // { logstr log; log << "You would tackle the mob.."; }
-
-  // First hurl-part, only actor:
-  CPoint newActorPos = actor.pos;
-  Cell* cell = NULL;
-  for (;;) {
-    newActorPos += dir;
-    cell = &CL->map[newActorPos];
-    if (cell->blocked()) { break; }
-    actor.moveM(newActorPos);
-    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
-  }
-
-  if (cell->envir.blocked()) {
-    if (actor.isPlayer()) { logstr log; log << "Augh! You tackle into the wall, seriously hurting yourself!"; }
-    else { logstr log; log << "Ouch! " << actor.the_mob() << " tackles into the wall, seriously hurting itself!"; }    
-    healSpellPct(actor, -66); // Loose 66 pct of health!
-    return true;
-  }
-
-  if (cell->creature.empty()) { // bad unexpected we didn't bump into an enemy?
-    { logstr log; log << "Why is there noone here?"; }
-    return true;
-  }
-  Mob* mob = cell->creature.m;
-
-  // Second stage, now both mob and actor must slide along.
-  { logstr log; log << actor.pronoun() << " tackle" << actor.verbS() << " " << mob->the_mob()  << "!"; }
-
-  CPoint newMobPos = newActorPos+dir;
-  for (;;) {
-    newActorPos += dir;
-    newMobPos += dir;
-    cell = &CL->map[newMobPos];
-    if (cell->blocked()) { break; }
-    mob->moveM(newMobPos);
-    actor.moveM(newActorPos);
-    TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
-  }
-
-  { // this is a bit cheating - tackle, ie mob hitting wall with me, gets dmg by me hitting mob with 'tackle..'
-    const bool overrideHit = true;
-    HitCmd tackle(NULL,actor,dir.x, dir.y,SC_Phys,SP_Tackle,overrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
-    logstr log;
-    return tackle.Do(log);
-  }
-
-  logstr log; log << "Weird, your(?) tackle leads nowhere?";
-
-  /*
-  ZapCmd cmd(NULL, actor, SP_Tackle, SC_Phys); // school);
-  cmd.mobZapDir = dir;
-  logstr log;
-  return cmd.Do(log);
-  */
-}
 
 // you use the thingey -> real name!
 // that way is blocked by x.
@@ -1097,7 +1044,71 @@ class Spell_Tackle: public SpellImpl { public:
     return true;
   }
 
-  bool execSpell(SpellParam& param) { return spellTackle(*param.actor, param.target, param.dir);  } // Consider: we could impl directly here!
+  static bool exec2(Mob& actor, Mob* target, CPoint dir) { // spellTackle
+    // JG -something is wrong, 'target' is a nullptr/not known!
+    // fixme -tackle seems to require being next to mob, that doesn't sound right?
+    /* fixme - the physical spells don't seem to either identify or eat-charges correctly - 'shove' never eats its charges?
+    */
+    // fiXmE - is 'target anything yet? (it might be,  because we assume both are next to each other? but actually, 'tackle' may use run-lead-up?
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+    // { logstr log; log << "You would tackle the mob.."; }
+
+    // First hurl-part, only actor:
+    CPoint newActorPos = actor.pos;
+    Cell* cell = NULL;
+    for (;;) {
+      newActorPos += dir;
+      cell = &CL->map[newActorPos];
+      if (cell->blocked()) { break; }
+      actor.moveM(newActorPos);
+      TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+    }
+
+    if (cell->envir.blocked()) {
+      if (actor.isPlayer()) { logstr log; log << "Augh! You tackle into the wall, seriously hurting yourself!"; }
+      else { logstr log; log << "Ouch! " << actor.the_mob() << " tackles into the wall, seriously hurting itself!"; }
+      healSpellPct(actor, -66); // Loose 66 pct of health!
+      return true;
+    }
+
+    if (cell->creature.empty()) { // bad unexpected we didn't bump into an enemy?
+      { logstr log; log << "Why is there noone here?"; }
+      return true;
+    }
+    Mob* mob = cell->creature.m;
+
+    // Second stage, now both mob and actor must slide along.
+    { logstr log; log << actor.pronoun() << " tackle" << actor.verbS() << " " << mob->the_mob() << "!"; }
+
+    CPoint newMobPos = newActorPos + dir;
+    for (;;) {
+      newActorPos += dir;
+      newMobPos += dir;
+      cell = &CL->map[newMobPos];
+      if (cell->blocked()) { break; }
+      mob->moveM(newMobPos);
+      actor.moveM(newActorPos);
+      TheUI::microSleepForRedraw(7); // animate, fast - let us see mob moving.
+    }
+
+  { // this is a bit cheating - tackle, ie mob hitting wall with me, gets dmg by me hitting mob with 'tackle..'
+    const bool overrideHit = true;
+    HitCmd tackle(NULL, actor, dir.x, dir.y, SC_Phys, SP_Tackle, overrideHit); // FIXME; how much dmg does it do, and does it stun/confuse him?
+    logstr log;
+    return tackle.Do(log);
+  }
+
+  logstr log; log << "Weird, your(?) tackle leads nowhere?";
+
+  /*
+  ZapCmd cmd(NULL, actor, SP_Tackle, SC_Phys); // school);
+  cmd.mobZapDir = dir;
+  logstr log;
+  return cmd.Do(log);
+  */
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.target, param.dir);  } // Consider: we could impl directly here! // spellTackle
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_tackle; }
 } spell_tackle;
 
