@@ -322,21 +322,6 @@ void Spell::initQual() {
 
 
 
-bool sleepMob(Mob* target) { // FIXME - do we have spell for this?
-  MonsterMob* monster = dynamic_cast<MonsterMob*>(target);
-  if (monster != NULL) {
-    monster->mood = M_Sleeping;
-    logstr log;
-    log << target->pronoun() << " falls to sleep!";
-    return true;
-  }
-
-  // error - probably a monster trying to sleep the player.
-  debstr() << "err, impl player being put to sleep\n";
-  logstr log; log << "(fixme) impl. monster putting player to sleep.\n";
-  return false;
-}
-
 
 
 
@@ -374,6 +359,25 @@ void SpellImpl::initSpellMap() { // Sketch..
       
     */
   }
+}
+
+
+
+bool sleepMob(Mob* target) { // (is currently accessed externally/cmds) FIXME - do we have spell for this?
+  // NB, sleepMob doesn't have 'SpellImpl' yet.
+
+  MonsterMob* monster = dynamic_cast<MonsterMob*>(target);
+  if (monster != NULL) {
+    monster->mood = M_Sleeping;
+    logstr log;
+    log << target->pronoun() << " falls to sleep!";
+    return true;
+  }
+
+  // error - probably a monster trying to sleep the player.
+  debstr() << "err, impl player being put to sleep\n";
+  logstr log; log << "(fixme) impl. monster putting player to sleep.\n";
+  return false;
 }
 
 
@@ -574,7 +578,8 @@ public:
 } spell_eat;
 
 
-bool eatSpell(Mob& actor, int deltaFood) {
+
+bool eatSpell(Mob& actor, int deltaFood) { // Old external/direct accessors.
   return Spell_Eat::exec2(actor, deltaFood); // hack-kludge.
 }
 
@@ -651,13 +656,6 @@ public:
 
 
 
-// Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
-bool bulletSpell(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school, CPoint dir) { // error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
-  ZapCmd cmd(spellItem, actor, effect, school);
-  cmd.mobZapDir = dir;
-  logstr log;
-  return cmd.Do(log);
-}
 
 class Spell_Bullet: public SpellImpl { 
 public:
@@ -665,6 +663,14 @@ public:
 
   bool getParams(SpellParam& param) {
     return getParamsDIR(param);
+  }
+
+  // Consider: 'school' should not be extra arg to bulletSpell, because spell itself knows magicschool.
+  static bool exec2(Mob& actor, Obj* spellItem, SpellEnum effect, AttackSchool school, CPoint dir) { // bulletSpell error/fixme: spell itself already knows school, so specifying it twice leads to ambiguity redundancy errors!
+    ZapCmd cmd(spellItem, actor, effect, school);
+    cmd.mobZapDir = dir;
+    logstr log;
+    return cmd.Do(log);
   }
 
   static bool getParamsDIR(SpellParam& param) { 
@@ -681,7 +687,7 @@ public:
     return true; 
   }
 
-  bool execSpell(SpellParam& param) { return bulletSpell(*param.actor, param.item, param.effect, param.school, param.dir);  }
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.item, param.effect, param.school, param.dir);  } // bulletSpell
   static void init(Mob& actor, Obj* item, SpellEnum effect, AttackSchool school, SpellParam& p) { 
     p.actor = &actor;  p.item = item; p.effect = effect; p.school = school; p.impl = &spell_bullet; 
   }
@@ -697,7 +703,6 @@ struct IsObj  : public CheckCellBase { virtual bool check(const Cell& c) { retur
 struct IsMob  : public CheckCellBase { virtual bool check(const Cell& c) { return !c.creature.empty(); }  std::string what(){return "monsters";} };
 struct IsDoor : public CheckCellBase { virtual bool check(const Cell& c) { return c.envir.isDoor() || c.envir.isStair(); }    std::string what(){return "doors or stairs";} };
 struct IsTrap : public CheckCellBase { virtual bool check(const Cell& c) { return (c.item.type() == OB_Trap); }   std::string what(){return "traps";} };
-
 
 struct IsTreasure : public CheckCellBase {
   virtual bool check(const Cell& c) {
@@ -747,19 +752,31 @@ bool detectTreasure(CPoint pos, int radius,Mob& actor) { return detectCells(acto
 bool detectObj(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsObj()); } //, CheckCellBase& checker) {
 bool detectMobs(CPoint pos, int radius,Mob& actor) { return detectCells(actor,pos, radius, IsMob()); } //, CheckCellBase& checker) {
 
-bool spellDetect(Mob& actor, SpellEnum effect) {
-  CPoint pos = actor.pos;
-  int rad = 23;
-  switch (effect) {
-  case SP_DetectDoor:    return detectDoors(pos, rad,actor);
-  case SP_DetectTrap:    return detectTraps(pos, rad,actor);
-  case SP_DetectTreasure:return detectTreasure(pos, rad,actor);
-  case SP_DetectObject:  return detectObj(pos, rad,actor);
-  case SP_DetectMobs:    return detectMobs(pos, rad,actor);
+
+
+class Spell_Detect : public SpellImpl {
+public:
+  std::string spelltag() const { return "detects"; }
+
+  static bool exec2(Mob& actor, SpellEnum effect) { // spellDetect
+    CPoint pos = actor.pos;
+    int rad = 23;
+    switch (effect) {
+    case SP_DetectDoor:    return detectDoors(pos, rad, actor);
+    case SP_DetectTrap:    return detectTraps(pos, rad, actor);
+    case SP_DetectTreasure:return detectTreasure(pos, rad, actor);
+    case SP_DetectObject:  return detectObj(pos, rad, actor);
+    case SP_DetectMobs:    return detectMobs(pos, rad, actor);
+    }
+    assert(false);  // spellDetect shouldn't happen.
+    return false;
   }
-  assert(false);  // spellDetect shouldn't happen.
-  return false;
-}
+
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.effect); } // spellDetect Consider: we could impl directly here!
+
+  static void init(Mob& actor, SpellEnum effect, SpellParam& p) { p.actor = &actor; p.effect = effect; p.impl = &spell_detect; }
+} spell_detect;
 
 
 
@@ -828,7 +845,7 @@ public:
 
 
 
-bool teleportSwap(Mob& actor, Mob& target, bool announce) { 
+bool teleportSwap(Mob& actor, Mob& target, bool announce) {  // used by Cmds.
   // it's tricky, because we want each other's space..
   CPoint actorNewpos = target.pos; 
   CPoint targetNewpos = actor.pos;
@@ -867,7 +884,8 @@ class Spell_TeleTo : public SpellImpl { public:
   static void init(Mob& actor, CPoint targetpos, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.impl = &spell_teleTo; }
 } spell_teleTo;
 
-bool extTeleportTo(Mob& actor, CPoint targetpos, bool announce) {
+
+bool extTeleportTo(Mob& actor, CPoint targetpos, bool announce) { // Old external/direct accessors.
   return Spell_TeleTo::exec2(actor, targetpos, announce);
 }
 
@@ -1023,12 +1041,6 @@ class Spell_Embed: public SpellImpl { public:
 } spell_embed;
 
 
-class Spell_Detect: public SpellImpl { public:
-  std::string spelltag() const { return "detects"; }
-  bool execSpell(SpellParam& param) { return spellDetect(*param.actor, param.effect); } // Consider: we could impl directly here!
-  static void init(Mob& actor, SpellEnum effect, SpellParam& p) { p.actor = &actor; p.effect = effect; p.impl = &spell_detect; }
-} spell_detect;
-
 
 
 /* thoughts: i should consider making 'floodfill-laby' prettier.
@@ -1071,8 +1083,12 @@ class Spell_Shove: public SpellImpl { public:
 
 
 
-// you use the thingey -> real name!
-// that way is blocked by x.
+// DONE: you use the thingey -> real name!
+// DONE: that way is blocked by x.
+
+/* consider, 'you use the x', should be short-circuited for staffs/wands
+(go directly to 'direction?')
+*/
 
 class Spell_Tackle: public SpellImpl { public:
   std::string spelltag() const { return "tackle"; }
