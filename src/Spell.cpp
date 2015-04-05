@@ -446,31 +446,7 @@ public:
 } spell_tele;
 
 
-bool updateConfused(Mob& actor, int confuseCount) {
-  if (confuseCount > 0) { // If counter is set positive, a confusion-spell has been cast on someone.
-    playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
-  }
 
-  logstr log; 
-  if (confuseCount > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " confused."; } 
-  else { log << actor.pronoun() << " feel" << actor.verbS() << " less confused."; }
-  actor.stats.s_confused.updateEffect(confuseCount); 
-  return true;
-}
-
-
-bool updateFear(Mob& actor, int count) { logstr log; 
-  if (count > 0) { log << actor.pronoun() << " is afraid!"; } 
-  else { log << actor.pronoun() << " appear" << actor.verbS() << " less afraid."; }
-  actor.stats.s_afraid.updateEffect(count); return true;
-}
-
-
-bool updateBlind(Mob& actor, int count) { logstr log; 
-  if (count > 0) { log << actor.pronoun() << " can't see!"; } 
-  else { log << actor.pronoun() << " can see again."; }
-  actor.stats.s_blinded.updateEffect(count); return true;
-}
 
 /* Idea: 2-stage attack, where a mob will prepare an announced strike,
 that suggests you move away from him on next turn 
@@ -479,53 +455,95 @@ so he sorts of forces your hand about 'better step away in some direction,
 or suffer the consequences'.)
 */
 
-/*fixme, entire map should be drawn/offset 2 first rows, so we can see them.
+/* DONE:fixme, entire map should be drawn/offset 2 first rows, so we can see them.
 something to do with viewport.
 */
 
-bool updateRooted(Mob& actor, int count) { logstr log; 
-  if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " rooted in place!"; } 
-  else { log << actor.pronoun() << " can move freely again."; }
-  actor.stats.s_rooted.updateEffect(count); return true;
-}
-
-bool updatePoisoned(Mob& actor, int count) { logstr log; 
-  if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " poisoned!"; } 
-  else { log << actor.pronoun() << " appear" << actor.verbS() << " unpoisoned."; }
-  actor.stats.s_poisoned.updateEffect(count); return true;
-}
 
 
 
 class Spell_Confuse : public SpellImpl { public:
   std::string spelltag() const { return "confuses"; }
-  bool execSpell(SpellParam& param) { return updateConfused(*param.actor, param.tmpEffect); } //  confuse); }
+
+  static bool exec2(Mob& actor, int confuseCount) { // updateConfused
+    if (confuseCount > 0) { // If counter is set positive, a confusion-spell has been cast on someone.
+      playSound(L"sounds\\sfxr\\confuse.wav"); // confusion-spell cast.
+    }
+
+    logstr log;
+    if (confuseCount > 0) { log << actor.pronoun() << " feel" << actor.verbS() << " confused."; }
+    else { log << actor.pronoun() << " feel" << actor.verbS() << " less confused."; }
+    actor.stats.s_confused.updateEffect(confuseCount);
+    return true;
+  }
+
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); } // updateConfused confuse); }
   static void init(Mob& actor, int confuse, SpellParam& p) { p.actor = &actor;  p.tmpEffect = confuse; p.impl = &spell_confuse; }
 } spell_confuse;
 
+
+
+
 class Spell_Fear: public SpellImpl { public:
   std::string spelltag() const { return "fears"; }
-  bool execSpell(SpellParam& param) { return updateFear(*param.actor, param.tmpEffect); }
+
+
+  static bool exec2(Mob& actor, int count) { // updateFear
+    logstr log;
+    if (count > 0) { log << actor.pronoun() << " is afraid!"; }
+    else { log << actor.pronoun() << " appear" << actor.verbS() << " less afraid."; }
+    actor.stats.s_afraid.updateEffect(count); return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); } // updateFear
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_fear; }
 } spell_fear;
 
 class Spell_Blind: public SpellImpl { public:
   std::string spelltag() const { return "blinds"; }
-  bool execSpell(SpellParam& param) { return updateBlind(*param.actor, param.tmpEffect); }
+  static bool exec2(Mob& actor, int count) { // updateBlind
+    logstr log;
+    if (count > 0) { log << actor.pronoun() << " can't see!"; }
+    else { log << actor.pronoun() << " can see again."; }
+    actor.stats.s_blinded.updateEffect(count); return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); } // updateBlind
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_blind; }
 } spell_blind;
 
 class Spell_Root : public SpellImpl { public:
   std::string spelltag() const { return "roots"; }
-  bool execSpell(SpellParam& param) { return updateRooted(*param.actor, param.tmpEffect); }
+  static bool exec2(Mob& actor, int count) { // updateRooted
+    logstr log;
+    if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " rooted in place!"; }
+    else { log << actor.pronoun() << " can move freely again."; }
+    actor.stats.s_rooted.updateEffect(count); return true;
+  }
+
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); }// updateRooted
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_root; }
 } spell_root;
 
+
+
 class Spell_Poison : public SpellImpl { public:
   std::string spelltag() const { return "poisons"; }
-  bool execSpell(SpellParam& param) { return updatePoisoned(*param.actor, param.tmpEffect); }
+
+  static bool exec2(Mob& actor, int count) { // updatePoisoned
+    logstr log;
+    if (count > 0) { log << actor.pronoun() << " appear" << actor.verbS() << " poisoned!"; }
+    else { log << actor.pronoun() << " appear" << actor.verbS() << " unpoisoned."; }
+    actor.stats.s_poisoned.updateEffect(count); return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); } // updatePoisoned
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_poison; }
 } spell_poison;
+
+
 
 
 
