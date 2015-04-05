@@ -153,6 +153,14 @@ bool Mob::mobCasts(CPoint dir) {
     logstr log; // log << pronoun() << " aims a spell at you!"; 
     log << pronoun() << " " << ability << " a spell at you!" << spellPtr; 
     // FIXME - make a leaner version  of 'castSpell'.
+    if (spellPtr != NULL) {
+      SpellParam param;
+      class Obj* noItem = NULL;
+      Spell::prepareSpell2(param, spellPtr, *this, PlayerMob::ply, noItem);  
+      /* JG: intention - prepareSpell2 is supposed to be a 'switch-less' parameter-gatherer ('just gather ALL the things'..)
+      Presumably means, that SpellImpl must have some virtual overridable to gather spell-specific params, e.g. a radius or range  or strength of a given spell.
+      */
+    }
   }
 
   bool bOK = true;

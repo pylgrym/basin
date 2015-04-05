@@ -1235,6 +1235,16 @@ bool Spell::prepareSpell2(SpellParam& p, SpellImpl* pImpl, class Mob& actor, Mob
   p.pos = actor.pos;
   p.impl = pImpl;
 
+  /*
+  p.range
+  p.radius
+  p.manaPct
+  p.healPct
+  p.factor
+  p.effect
+  p.deltaFood
+  */
+ 
   return true;
 }
 
