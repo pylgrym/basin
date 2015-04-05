@@ -1226,6 +1226,17 @@ bool Spell::manaCostCheck(SpellEnum effect, Mob& mob, std::ostream& err) {
   */
 
 
+bool Spell::prepareSpell2(SpellParam& p, SpellImpl* pImpl, class Mob& actor, Mob* target, class Obj* item) {
+  p.actor = &actor;
+  p.target = target;
+  p.item = item;
+
+  p.dir = actor.playerDir();
+  p.pos = actor.pos;
+  p.impl = pImpl;
+
+  return true;
+}
 
 ///////////////////////////////////////////////////////NB, 'target' here not thought through!
 bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, Obj* item) {  

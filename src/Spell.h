@@ -222,7 +222,8 @@ public:
   static SpellEnum rndSpell_dangerous();
   static SpellEnum rndSpell_level(int ilevel);
 
-  static bool prepareSpell(SpellParam& p, SpellEnum, class Mob& actor, Mob* target, class Obj* item); 
+  static bool prepareSpell2(SpellParam& p, class SpellImpl* pImpl, class Mob& actor, Mob* target, class Obj* item);
+  static bool prepareSpell(SpellParam& p, SpellEnum, class Mob& actor, Mob* target, class Obj* item);
   static bool castSpell(SpellEnum, class Mob& actor, Mob* target, class Obj* item, const ManaEnum useMana); 
 
   static SpellEnum pickASpell(const char* prompt);
