@@ -309,7 +309,7 @@ bool ZapCmd::Do(std::ostream& err) {
     I might use the new 'slide-player' spell to prototype this.
     */
 
-    extern bool teleportTo(Mob& actor, CPoint targetpos, bool announce); // , Mob* aim);
+    extern bool extTeleportTo(Mob& actor, CPoint targetpos, bool announce); // , Mob* aim);
 
     if (!CL->map[newBullet].creature.empty()) { // We've hit a mob..
       /* fixme, design: spell's minrange and maxrange should be honoured,
@@ -340,7 +340,7 @@ bool ZapCmd::Do(std::ostream& err) {
       case SP_TeleportTo: // mob -> target, dir
         { { logstr log; log << mob.pronoun() << " phase" << mob.verbS() << " next to " << target->pronoun(); }
           CPoint targetpos = target->pos - dir; // The space in front of target.
-          bool bSpellOK = teleportTo(mob, targetpos, true); // , target);
+          bool bSpellOK = extTeleportTo(mob, targetpos, true); // FIXME, integrate with 'exec2' mechanism.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); }
           break;
         }
@@ -374,7 +374,7 @@ bool ZapCmd::Do(std::ostream& err) {
         // weird - i got an 'x pulls the x nearer' from a mob, suggesting it cast the spell on itself?
         { { logstr log; log << mob.pronoun() << " pull" << mob.verbS() << target->pronoun() << " nearer."; }
           CPoint targetpos = mob.pos + dir; // The space just in front of me.
-          bool bSpellOK = teleportTo(*target, targetpos, true); // &mob);
+          bool bSpellOK = extTeleportTo(*target, targetpos, true); // FIXME, integrate with 'exec2' mechanism.
           if (bSpellOK && mob.isPlayer()) { Spell::trySpellIdent(effect); } 
           break;
         }

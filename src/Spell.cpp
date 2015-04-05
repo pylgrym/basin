@@ -377,31 +377,33 @@ void SpellImpl::initSpellMap() { // Sketch..
 }
 
 
-bool updateSpeed(Mob& actor, double factor) {
-  playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
-
-  logstr log; 
-  // 0.5 is fast, 2.0 is slow.
-  if (factor < 1.0) { log << actor.the_mob() << " speed" << actor.verbS() << " up."; } 
-  else { log << actor.the_mob() << " slow" << actor.verbS() << " down."; }
-
-  /* I actually experienced a dragon that just 
-  kept speeding up by factor of x2 continously - I never got my turn back..
-  */
-
-  if (factor < 1.0 && actor.stats.mob_speed > 0.25) {
-    actor.stats.mob_speed *= factor; // max speed is 0.25..
-  }
-  if (factor > 1.0 && actor.stats.mob_speed < 2) {
-    actor.stats.mob_speed *= factor; // slowest speed is 2.0..
-  }
-  return true;
-}
 
 class Spell_Speed : public SpellImpl { 
 public:
   std::string spelltag() const { return "speeds"; }
-  bool execSpell(SpellParam& param) { return updateSpeed(*param.actor, param.factor); }
+
+  static bool exec2(Mob& actor, double factor) { // updateSpeed
+    playSound(L"sounds\\sfxr\\negative.wav"); // speed/slow spell.
+
+    logstr log;
+    // 0.5 is fast, 2.0 is slow.
+    if (factor < 1.0) { log << actor.the_mob() << " speed" << actor.verbS() << " up."; }
+    else { log << actor.the_mob() << " slow" << actor.verbS() << " down."; }
+
+    /* I actually experienced a dragon that just
+    kept speeding up by factor of x2 continously - I never got my turn back..
+    */
+
+    if (factor < 1.0 && actor.stats.mob_speed > 0.25) {
+      actor.stats.mob_speed *= factor; // max speed is 0.25..
+    }
+    if (factor > 1.0 && actor.stats.mob_speed < 2) {
+      actor.stats.mob_speed *= factor; // slowest speed is 2.0..
+    }
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.factor); } // updateSpeed
   static void init(Mob& actor, double factor, SpellParam& p) { p.actor = &actor;  p.factor = factor; p.impl = &spell_speed; }
 } spell_speed;
 
@@ -411,37 +413,40 @@ public:
 
 
 
-bool teleportSpell(Mob& actor, int range) {
-  playSound(L"sounds\\sfxr\\teleport.wav"); // teleport-spell cast.
-
-  { 
-    logstr log; 
-    if (actor.isPlayer()) {
-      log << "Your body shifts in time and space."; 
-    } else {
-      log << actor.the_mob() << " shifts in time and space."; 
-    }
-  }
-
-  for (int i = 0; i < 15; ++i) { // We try a number of times, to avoid teleporting into rock.
-    CPoint delta;
-    for (;;) {
-      delta.x = rnd::rndC(-range, range); delta.y = rnd::rndC(-range, range);
-      CPoint newPos = actor.pos + delta;
-      if (CL->map.legalPos(newPos) && !CL->map[newPos].blocked()) { break; }
-    }
-    WalkCmd cmd(actor, delta.x, delta.y, true);
-    // Possibly check 'legal' (for mapPosLegal), even before calling Do.
-    logstr log;
-    if (cmd.Do(log)) { return true;  } // Otherwise, keep trying different directions.
-  }
-  return false; // It never worked. Not normal.
-}
 
 class Spell_Tele : public SpellImpl { 
 public:
   std::string spelltag() const { return "teleports"; }
-  bool execSpell(SpellParam& param) { return teleportSpell(*param.actor, param.range); }
+
+  static bool exec2(Mob& actor, int range) { // teleportSpell
+    playSound(L"sounds\\sfxr\\teleport.wav"); // teleport-spell cast.
+
+    {
+      logstr log;
+      if (actor.isPlayer()) {
+        log << "Your body shifts in time and space.";
+      }
+      else {
+        log << actor.the_mob() << " shifts in time and space.";
+      }
+    }
+
+    for (int i = 0; i < 15; ++i) { // We try a number of times, to avoid teleporting into rock.
+      CPoint delta;
+      for (;;) {
+        delta.x = rnd::rndC(-range, range); delta.y = rnd::rndC(-range, range);
+        CPoint newPos = actor.pos + delta;
+        if (CL->map.legalPos(newPos) && !CL->map[newPos].blocked()) { break; }
+      }
+      WalkCmd cmd(actor, delta.x, delta.y, true);
+      // Possibly check 'legal' (for mapPosLegal), even before calling Do.
+      logstr log;
+      if (cmd.Do(log)) { return true; } // Otherwise, keep trying different directions.
+    }
+    return false; // It never worked. Not normal.
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.range); } // teleportSpell
   static void init(Mob& actor, int range, SpellParam& p) { p.actor = &actor;  p.range = range; p.impl = &spell_tele; }
 } spell_tele;
 
@@ -500,6 +505,8 @@ class Spell_Fear: public SpellImpl { public:
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_fear; }
 } spell_fear;
 
+
+
 class Spell_Blind: public SpellImpl { public:
   std::string spelltag() const { return "blinds"; }
   static bool exec2(Mob& actor, int count) { // updateBlind
@@ -512,6 +519,8 @@ class Spell_Blind: public SpellImpl { public:
   bool execSpell(SpellParam& param) { return exec2(*param.actor, param.tmpEffect); } // updateBlind
   static void init(Mob& actor, int dur, SpellParam& p) { p.actor = &actor;  p.tmpEffect = dur; p.impl = &spell_blind; }
 } spell_blind;
+
+
 
 class Spell_Root : public SpellImpl { public:
   std::string spelltag() const { return "roots"; }
@@ -564,9 +573,12 @@ public:
   static void init(Mob& actor, int deltaFood, SpellParam& p) { p.actor = &actor;  p.deltaFood = deltaFood; p.impl = &spell_eat; }
 } spell_eat;
 
+
 bool eatSpell(Mob& actor, int deltaFood) {
   return Spell_Eat::exec2(actor, deltaFood); // hack-kludge.
 }
+
+
 
 class Spell_HealPct: public SpellImpl { 
 public:
@@ -614,24 +626,26 @@ public:
 
 
 
-bool manaSpellPct(Mob& actor, int percent) {
-  {
-    logstr log; 
-    if (percent > 0) { 
-      log << actor.pronoun() << " feel" << actor.verbS()<< " mana flowing through 'you'."; 
-    }
-    if (percent < 0) { 
-      log << actor.pronoun() << " feel" << actor.verbS() << " mana draining away from 'you'."; 
-    }
-  }
-  actor.stats.manaPct(percent, &actor);
-  return true;
-}
 
 class Spell_ManaPct: public SpellImpl { 
 public:
   std::string spelltag() const { return "manapct"; } // energizes
-  bool execSpell(SpellParam& param) { return manaSpellPct(*param.actor, param.manaPct); }
+
+  static bool exec2(Mob& actor, int percent) { // manaSpellPct
+    {
+      logstr log;
+      if (percent > 0) {
+        log << actor.pronoun() << " feel" << actor.verbS() << " mana flowing through 'you'.";
+      }
+      if (percent < 0) {
+        log << actor.pronoun() << " feel" << actor.verbS() << " mana draining away from 'you'.";
+      }
+    }
+    actor.stats.manaPct(percent, &actor);
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.manaPct); } // manaSpellPct
   static void init(Mob& actor, int manaPct, SpellParam& p) { p.actor = &actor;  p.manaPct = manaPct; p.impl = &spell_manaPct; }
 } spell_manaPct;
 
@@ -769,22 +783,24 @@ public:
 } spell_light;
 
 
-bool summonSpell(Mob& actor) { // , CPoint pos, int radius) {
-  // CONSIDER: Summon-Mob-Type, e.g. undead, demon, dragon, elemental, etc.
-  CPoint pos = actor.pos;
-  int mlevel = rnd::rndC(1,2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
-  CL->map.scatterMobsAtPos(pos, 1, mlevel, 1);
-  // actor.lightArea(pos, radius);
-  logstr log;
-  log << "A monster shimmers before you!";
-  return true;
-}
 
 class Spell_SummonMob : public SpellImpl {
 public:
   std::string spelltag() const { return "summons"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return summonSpell(*param.actor); }
+
+  static bool exec2(Mob& actor) { //summonSpell , CPoint pos, int radius) {
+    // CONSIDER: Summon-Mob-Type, e.g. undead, demon, dragon, elemental, etc.
+    CPoint pos = actor.pos;
+    int mlevel = rnd::rndC(1, 2) + Levelize::suggestLevel(actor.stats.level()); // Scary - a bit higher than we'd like :-)
+    CL->map.scatterMobsAtPos(pos, 1, mlevel, 1);
+    // actor.lightArea(pos, radius);
+    logstr log;
+    log << "A monster shimmers before you!";
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor); } /// summonSpell
   static void init(Mob& actor, SpellParam& p) { p.actor = &actor;  p.impl = &spell_summonMob; }
 } spell_summonMob;
 
@@ -809,16 +825,7 @@ public:
 } spell_summonObj;
 
 
-bool teleportTo(Mob& actor, CPoint targetpos, bool announce) { 
-  CL->map.moveMob(actor, targetpos);
-  if (actor.isPlayer()) { actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
 
-  if (announce) {
-    logstr log;
-    log << "The air shimmers!";
-  }
-  return true;
-}
 
 
 bool teleportSwap(Mob& actor, Mob& target, bool announce) { 
@@ -840,13 +847,29 @@ bool teleportSwap(Mob& actor, Mob& target, bool announce) {
 }
 
 
-class Spell_TeleTo : public SpellImpl {
+
+class Spell_TeleTo : public SpellImpl { public:
   std::string spelltag() const { return "teleportsto"; }
   // bool getParams(SpellParam& param) { param.dir = CPoint(1, 0);  return true; }
-  bool execSpell(SpellParam& param) { return teleportTo(*param.actor, param.pos, true); }
+
+  static bool exec2(Mob& actor, CPoint targetpos, bool announce) { // teleportTo
+    CL->map.moveMob(actor, targetpos);
+    if (actor.isPlayer()) { actor.lightWalls(); }  // Fixme - moving always needs this? (we don't want move+light everytime.)
+
+    if (announce) {
+      logstr log;
+      log << "The air shimmers!";
+    }
+    return true;
+  }
+
+  bool execSpell(SpellParam& param) { return exec2(*param.actor, param.pos, true); } // teleportTo
   static void init(Mob& actor, CPoint targetpos, SpellParam& p) { p.actor = &actor;  p.pos = targetpos; p.impl = &spell_teleTo; }
 } spell_teleTo;
 
+bool extTeleportTo(Mob& actor, CPoint targetpos, bool announce) {
+  return Spell_TeleTo::exec2(actor, targetpos, announce);
+}
 
 /*
 idea: 'standing in bad' dots - leaving temp bad tiles on ground, that you must avoid standing on or possibly next to.
