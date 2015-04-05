@@ -1248,26 +1248,30 @@ bool Spell::prepareSpell2(SpellParam& p, SpellImpl* pImpl, class Mob& actor, Mob
   return true;
 }
 
+/* THOUGHT : bulletspell is a 'bad hack' that i should untangle,
+so I can get my spells straight.
+*/
+
 ///////////////////////////////////////////////////////NB, 'target' here not thought through!
 bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* target, Obj* item) {  
   // prepareSpell fills out a SpellParam! - makes sure e.g. bullet-aim-dir is known
   switch (effect) {
-  case SP_Speedup:          Spell_Speed::init(actor, 0.5, p);     break; // return updateSpeed(actor, 2); break;
-  case SP_Slowdown:         Spell_Speed::init(actor, 2.0, p);     break; // return updateSpeed(actor, 0.5); break; 
+  case SP_Speedup:          Spell_Speed::init(actor, 0.5, p);     break; // SPEED-FACTOR. return updateSpeed(actor, 2); break;
+  case SP_Slowdown:         Spell_Speed::init(actor, 2.0, p);     break; // SPEED-FACTOR. return updateSpeed(actor, 0.5); break; 
 
-  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd::Rnd(5,25),p); break; //return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
-  case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
+  case SP_ConfuseSelf:    Spell_Confuse::init(actor,rnd::Rnd(5,25),p); break; // DURATION. return updateConfused(actor, p.confuse); break; // Careful, 'confuse' is the 'recipient part'
+  case SP_Unconfuse:      Spell_Confuse::init(actor, 0, p);       break; //   NO ARGS return updateConfused(actor, 0); break;         // Careful, 'confuse' is the 'recipient part'
   case SP_ConfuseMob:      Spell_Bullet::init(actor, item, effect, SC_Mind, p); break; // return bulletSpell(actor, item, effect, SC_Mind); break; // or gas..? // Conversely, this is the 'sender part' // It should actually just use 'confuseself' for bullet. (very fitting, how the confuse-spell has worked for the programmer himself.)
 
     // sleep other, here?
   case SP_SleepOther:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // return bulletSpell(actor, item, effect, SC_Magic); break;  
-  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
+  case SP_TeleSelfAway:      Spell_Tele::init(actor, 44, p);      break; // TELEPORT_RANGE. return teleportSpell(actor, 44); break; // (Consider: We need a 'bullet teleport' too) This is only the 'receiver' part.
   case SP_TeleOtherAway:   Spell_Bullet::init(actor, item, SP_TeleSelfAway, SC_Mind, p); break; // return bulletSpell(actor, item, SP_TeleSelfAway, SC_Mind); break;
 
 
   case SP_SummonHere:      Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // x goes to me.
-  case SP_SummonMonster:Spell_SummonMob::init(actor, p); break; //return summonSpell(actor); break;
-  case SP_SummonObj:    Spell_SummonObj::init(actor, p); break; //return summonObj(actor); break;
+  case SP_SummonMonster:Spell_SummonMob::init(actor, p); break; // NO ARGS return summonSpell(actor); break;
+  case SP_SummonObj:    Spell_SummonObj::init(actor, p); break; // NO ARGS return summonObj(actor); break;
   // it's a bullet spell, so it goes here:
   case SP_TeleportTo:     Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i go to mob x.
   case SP_TeleSwap:       Spell_Bullet::init(actor, item, effect, SC_Magic,p); break; // i swap with x. // hmm, doesn't seem to work?
@@ -1282,32 +1286,32 @@ bool Spell::prepareSpell(SpellParam& p, SpellEnum effect, Mob& actor, Mob* targe
   case SP_Earthquake:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
   case SP_FocusBlast:     Spell_Bullet::init(actor, item, effect, SC_Earth, p);break; // return bulletSpell(actor, item, effect, SC_Earth); break;
 
-  case SP_Rush:             Spell_Rush::init(actor, p);                        break; 
-  case SP_Crush:           Spell_Crush::init(actor, p);                        break; 
-  case SP_Embed:           Spell_Embed::init(actor, p);                        break; 
-  case SP_Shove:           Spell_Shove::init(actor, p);                        break; 
-  case SP_Tackle:         Spell_Tackle::init(actor, p);                        break; 
+  case SP_Rush:             Spell_Rush::init(actor, p);                        break; // NO ARGS 
+  case SP_Crush:           Spell_Crush::init(actor, p);                        break; // NO ARGS
+  case SP_Embed:           Spell_Embed::init(actor, p);                        break; // NO ARGS
+  case SP_Shove:           Spell_Shove::init(actor, p);                        break; // NO ARGS
+  case SP_Tackle:         Spell_Tackle::init(actor, p);                        break; // NO ARGS
 
                        // FiXME, dragon-breath is NOT tackle!
-  case SP_Breath:         Spell_Tackle::init(actor, p);                        break; 
+  case SP_Breath:         Spell_Tackle::init(actor, p);                        break; // NO ARGS
 
-  case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // return eatSpell(actor,p.deltaFood); break;
-  case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // return healSpellPct(actor,p.healPct); break;
+  case SP_Eat:         Spell_Eat::init(actor, item ? item->itemUnits : 250, p);break; // CHARGES/ITEMS/UNITS return eatSpell(actor,p.deltaFood); break;
+  case SP_Sick:        Spell_HealPct::init(actor, -35, p);                     break; // UNITS return healSpellPct(actor,p.healPct); break;
   // Heal dice design: lots of small dice, so you always get some healing.
   case SP_Heal_light:   Spell_HealDice::init(actor, Dice(4,3), p);             break; //return healSpellDice(actor, p.healDice); break;
   case SP_Heal_minor:   Spell_HealDice::init(actor, Dice(6,3), p);             break; //return healSpellDice(actor, Dice(6,  3)); break;
   case SP_Heal_mod:     Spell_HealDice::init(actor, Dice(8,3), p);             break; //return healSpellDice(actor, Dice(8,  3)); break;
   case SP_Heal_serious: Spell_HealDice::init(actor, Dice(10,3), p);            break; //return healSpellDice(actor, Dice(10, 3)); break;
   case SP_Heal_crit:    Spell_HealDice::init(actor, Dice(12,3), p);            break; //return healSpellDice(actor, Dice(12, 3)); break;
-  case SP_LightArea:       Spell_Light::init(actor, actor.pos,4, p);           break; //return lightSpell(actor, actor.pos,4); break;
+  case SP_LightArea:       Spell_Light::init(actor, actor.pos,4, p);           break; // RADIUS return lightSpell(actor, actor.pos,4); break;
   case SP_LightDir:       Spell_Bullet::init(actor, item, effect, SC_Light, p);break; //return bulletSpell(actor, item, effect, SC_Light); break; // actor.pos, 3); break; // FIXME, should be zap spell instead.. (sure?)
 
   case SP_DetectDoor: case SP_DetectTrap: case SP_DetectTreasure: case SP_DetectObject: case SP_DetectMobs:
                           Spell_Detect::init(actor, effect,p);                 break;
 
-  case SP_MagicMap:        Spell_Light::init(actor, actor.pos,22, p);          break; //return lightSpell(actor, actor.pos,4); break;
+  case SP_MagicMap:        Spell_Light::init(actor, actor.pos,22, p);          break; //RANGE/RADIUS - return lightSpell(actor, actor.pos,4); break;
   // case SP_MagicMap: { logstr log;  log << "(magicmap not impl yet.)"; } return false;
-  case SP_PhaseDoor:        Spell_Tele::init(actor, 44, p);      break; //return teleportSpell(actor, 9); break;
+  case SP_PhaseDoor:        Spell_Tele::init(actor, 44, p);      break; //44? REALLY? range/radius - return teleportSpell(actor, 9); break;
 
     // Idea -it could be partial with blanks/particles?
     /* todo:
@@ -1318,7 +1322,7 @@ void detectTraps(CPoint pos, int radius) { return detectCells(pos, radius, IsTra
 void detectTreasure(CPoint pos, int radius) { return detectCells(pos, radius, IsTreasure()); } //, CheckCellBase& checker) {
     */
 
-  case SP_RestoreMana:   Spell_ManaPct::init(actor, 33, p);                    break; // return healSpellPct(actor,p.healPct); break;
+  case SP_RestoreMana:   Spell_ManaPct::init(actor, 33, p);                    break; // UNITS return healSpellPct(actor,p.healPct); break;
   // case SP_Poison:       healSpell(actor); break;
   default: { logstr log; log << "err spell unknown:" << effect; } return false;
   }
