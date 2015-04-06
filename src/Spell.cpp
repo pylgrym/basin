@@ -382,6 +382,23 @@ bool sleepMob(Mob* target) { // (is currently accessed externally/cmds) FIXME - 
 
 
 
+
+
+
+
+struct Spell_X : public SpellImpl { std::string spelltag() const { return "exes"; }
+bool execSpell(SpellParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; }
+} spell_x; //logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+
+
+
+
+
+
+
+
 class Spell_Speed : public SpellImpl { 
 public:
   std::string spelltag() const { return "speeds"; }
