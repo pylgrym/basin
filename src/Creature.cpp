@@ -93,7 +93,7 @@ MobDef mobDefs[] = {
   // FIXME - get rid of MobDef-ix having to be == CreatureEnum.
   { 0, CR_None, ".", "nothing", {},  { "tag1", "tag2", "tag3" } }, // , {"tag1","tag2","tag3",NULL} "tag1,tag2,tag3"
   { 1, CR_Player, "@", "you", {}, },
-  { 1, CR_Kobold, "k", ". kobold", { "stabs", "lunges", "hum", "infra", "firevuln", "-firevuln", "charges", "bumps", "embeds", "knocks back", "fireresist", "harkens", "bids", "holds", "locks" }, { "hum" }},
+  { 1, CR_Kobold, "k", ". kobold", { "stabs", "lunges", "hum", "infra", "firevuln", "-firevuln", "charges", "bumps", "embeds", "knocks back", "fireresist", "fireshield", "harkens", "bids", "holds", "locks" }, { "hum" }},
   { 2, CR_Dragon, "d", ". dragon", { "breathes", "dragon", "swipes", "tail", "lashes", "lunges", "summons" }, {"dragon"}},
   { 3, CR_FireAnt, "a", ". fire ant", { "spits", "hisses", "fire", "clacks","bites" }, { "beast" } },
   { 4, CR_Jelly, "J", ". jelly", { "slimes", "corrodes", "splits" }, { "aber" }},

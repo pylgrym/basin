@@ -129,6 +129,7 @@ struct SpellDesc {
 
 
 
+typedef class SpellParam SParam;
 
 class SpellParam { 
 public:
@@ -187,9 +188,11 @@ public:
   ~SpellImpl() { spellColl.erase(this); } // erase is the opposite of insert.
 
   virtual std::string spelltag() const = 0;
+  virtual std::string tag() const { return "newer"; } // = 0;
 
   virtual bool getParams(SpellParam& param) { return true; }
-  virtual bool execSpell(SpellParam& param) = 0;
+  virtual bool execSpell(SpellParam& param) { return false;  } //= 0;
+  virtual bool Do(SParam& param) { return true;  } // = 0;
 
   static void initSpellMap();
   static SpellImpl* spellFromTag(const std::string& tag);

@@ -387,11 +387,250 @@ bool sleepMob(Mob* target) { // (is currently accessed externally/cmds) FIXME - 
 
 
 struct Spell_X : public SpellImpl { std::string spelltag() const { return "exes"; }
-bool execSpell(SpellParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; }
-} spell_x; //logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_x; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_stabs : public SpellImpl { std::string spelltag() const { return "stabs"; }
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+  // May cause bleed-DOT-effect, 50-50.
+} spell_stabs; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_lunges : public SpellImpl { std::string spelltag() const { return "lunges"; }
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+  // What does lunge do?
+} spell_lunges; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
 
 
+struct Spell_charges : public SpellImpl {  std::string spelltag() const { return "charges"; }
+  // Charge does the same as rush.. mob moves up to target, and possibly short-duration-stuns/confuses him (1 turn?)
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_charges; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
 
+struct Spell_bumps : public SpellImpl {  std::string spelltag() const { return "bumps"; }
+  // Bump will bump you 1 field backwards; further: If it bumps you up against anything, it hits harder,
+  // so you should 'keep your back free' when you fight a bumping mob.
+  // Alternatively, fighting with your back against a wall, might protect you from 'kick-back stun effects'?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_bumps; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+// Spell 'embeds' already exists.
+/* Idea: elemental-shield, e.g. fire-shield, that causes some kind of effect to 
+mobs that brush up against you, and/or protects you (e.g. against frost attacks/mobs.)
+*/
+
+struct Spell_FireShield : public SpellImpl {  std::string spelltag() const { return "burns"; }
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_burns; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Holds : public SpellImpl {  std::string spelltag() const { return "holds"; }
+  // aliases: grab/lock/pin
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_holds; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Swipes : public SpellImpl {  std::string spelltag() const { return "swipes"; }
+  /*'dragon tail swipe': It will knock you 'sideways' 1 square, hurt you, and probably unbalance you.
+   I don't know, if it will interact with walls?
+  Alias: lashes (tail lashes) - possible 'pain dot' (from lashing..)
+  */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_swipes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Summons : public SpellImpl {  std::string spelltag() const { return "summons"; }
+  // already exists: summons helper monsters. Needs own phrasing (so it doesn't say 'summons you'.)
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_summons; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Spits : public SpellImpl {  std::string spelltag() const { return "spits"; }
+  // Acid/fire/burn effect - may apply fire/burn/corrode dot? possibly blinding/poision
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_spits; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Hisses : public SpellImpl {  std::string spelltag() const { return "hisses"; }
+  // hiss may frighten you (alias for fear), or alert nearby monsters.
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_hisses; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_Bites : public SpellImpl {  std::string spelltag() const { return "bites"; }
+ /* May infect with disease, rot, sickness.
+ */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_bites; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_slimes : public SpellImpl {  std::string spelltag() const { return "slimes"; }
+  /* Slime will DOT-slow your speed, possibly corrode or poison.
+  might also leave 'bad on ground'.
+  */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_slimes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_corrodes : public SpellImpl {  std::string spelltag() const { return "corrodes"; }
+/* corrode would damage certain kinds of things in your inventory,
+possibly with (beneficial?) side effects (e.g. prematurely triggering your potion effects ?),
+  might it also make you drop things?
+*/
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_corrodes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_splits : public SpellImpl {  std::string spelltag() const { return "splits"; }
+  /* mob splits in two, "more-than-halving" HP, ie 200 HP -> 120+120 HP.
+  action for oozes, worms, rats, vermin, gnats, lice, fleas.
+  */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_splits; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_gazes : public SpellImpl {  std::string spelltag() const { return "gazes"; }
+/* aliases: stares, x.
+effect: might paralyse you, confuse you, stone you, petrify-you, blind.. you, slow you? charm you?
+*/
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_gazes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+/* idea: immaterial 'mist'like monsters, that might move through you or 'possess' you? 'inhale' effect?
+*/
+
+/* idea: avoiding breathing in temp gas effects dotting floor? green poison cloud?
+*/
+
+struct Spell_swirls : public SpellImpl {  std::string spelltag() const { return "swirls"; }
+/* ghost-ethereal attack */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_swirls; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_bores : public SpellImpl {  std::string spelltag() const { return "bores"; }
+/* bore might do bleed/poison/pain effect?
+*/
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_bores; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+// stagger?
+
+struct Spell_claws : public SpellImpl { std::string spelltag() const { return "claws"; }
+/* claw may infect/bleed effect?
+*/
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_claws; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+// molten/melt
+struct Spell_glows : public SpellImpl {  std::string spelltag() const { return "burns"; }  
+  /* alias: melt.
+  applies a fire DOT effect 
+  */
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_glows; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_freezes : public SpellImpl {  std::string spelltag() const { return "freezes"; }
+/* will root you in place and slow you:
+ - you can't MOVE until you 'melt' somehow, and
+ you can only hit twice as slow, because you are frozen-slowed.
+ think of ideas to counter/lessen this.
+*/
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_freezes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+// Grab and hold are rooting effects, or possibly they mean the mob DRAGS you along!
+
+struct Spell_murmurs : public SpellImpl {
+  /* alias: whisper?
+  murmurs are temp-stat-reducing effects, that ghosts cause.
+  */
+  std::string spelltag() const { return "murmurs"; }
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_murmurs; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_Paralyze : public SpellImpl {
+  /* paralyze is a .. simple? impassive-for-3-turns (?) effect.. 
+  any way to spice it up / make it interesting instead of just immensely annoying?
+  possibly a timeout, that means you are immmune to it for 3 turns or 1 turn or something, when it's happened?
+  'diminishing returns'.
+  */
+  std::string spelltag() const { return "paralyzes"; }  
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_paralyzes; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_charms : public SpellImpl {
+  /* you hand over one of your items or some of your gold? or what?
+  possibly works as a buff on that mob itself, to ensure you can't attack it/hurt it.. temp?
+  */
+  std::string spelltag() const { return "charms"; }
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_charms; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+// drool.
+
+// slimed squares will slow you or dot you?
+
+struct Spell_sleeps : public SpellImpl {
+  /* how to interact with combat? that mob gets away? */
+  std::string spelltag() const { return "sleeps"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_sleeps; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_blinds : public SpellImpl {
+  /*blind: room turns dark, so mainly a 'rendering' thing - might also affect spells/reading..?*/
+  std::string spelltag() const { return "blinds"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_blinds; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+/* ideas: 40-30-20-10 dots, and 15-15-15-15 dots, and  10-20-30-40 dots..
+the 'riser' dots, should be cancelled somehow, tactics-wise..
+*/
+
+struct Spell_strangles : public SpellImpl {
+  std::string spelltag() const { return "strangles"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_strangles; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_dooms : public SpellImpl {
+  /* a count-down, where you must get out of LOS bbefore trigger/launch.
+  */
+  std::string spelltag() const { return "dooms"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_dooms; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_screams : public SpellImpl {
+  /// aliases: frightens, scares?
+  // A confusion-attack/stun/fear attack?
+  std::string spelltag() const { return "screams"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_screams; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_haunts : public SpellImpl {
+  // temp-stat-lower?
+  std::string spelltag() const { return "haunts"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_haunts; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+
+struct Spell_wails : public SpellImpl {
+  std::string spelltag() const { return "wails"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_wails; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+
+struct Spell_scratches : public SpellImpl {
+  // infects/dot:
+  std::string spelltag() const { return "scratches"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_scratches; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+/*
+struct Spell_xs : public SpellImpl {
+  std::string spelltag() const { return "xs"; } // lulls you to sleep/dozes you off to sleep?
+  bool Do(SParam& p) { p.actor->stats.s_afraid.updateEffect(p.tmpEffect); return true; } // execSpell
+} spell_xs; //SpellParam / logstr log; log << p.actor.pronoun() << " exes " << p.target->pronoun() << "!"; 
+*/
 
 
 
