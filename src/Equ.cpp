@@ -19,7 +19,7 @@ EquipSlotEnum Equ::rndSlot() {
   return slot;
 }
 
-bool Equ::isSlotEquipped(EquipSlotEnum slot) const { 
+bool Equ::isSlotEquipped(EquipSlotEnum slot) const { // Used by e.g. isWeaponEquipped and canUnequipSlot and unequipWeaponSlot.
   return (equ[slot] != NULL);  
 }
 
@@ -36,6 +36,8 @@ bool Equ::isWeaponEquipped(EquipSlotEnum newslot) const {
   return false; // Nothing blocking.
 }
 
+// Stash is arg to unequipWeaponSlot and unequipSlot and replaceItem.
+// Stash seems to happen outside / only arg to here.
 
 bool Equ::unequipWeaponSlot(EquipSlotEnum newslot, Obj** objStash, std::ostream& err) {
   //bool Equ::unequipSlot(EquipSlotEnum slot, Obj** objStash, std::ostream& err) { // returns false if not possible (if e.g. worn is cursed.)
@@ -73,14 +75,17 @@ bool Equ::canUnequipSlot(EquipSlotEnum slot) const {
   return true; // we don't have cursed-items yet.
 } 
 
+
 bool Equ::canEquipSlot(EquipSlotEnum slot) const { 
   if (!isSlotEquipped(slot)) { return true;  } // If nothing is equipped, you are free to equip item.
   return canUnequipSlot(slot); // IF whatever is equipped can be unequipped, you can equip something else.
 } // means 'same' thing as 'canUnequipSlot': (you can only equip, IF you can unequip previous.)
 
-Obj* Equ::wornItem(EquipSlotEnum slot) const { 
+
+Obj* Equ::wornItem(EquipSlotEnum slot) const { // Used by weapon().
   return equ[slot];  
 }
+
 
 Obj* Equ::weapon() const {
   if (isSlotEquipped(EQ_2Hands)) { return wornItem(EQ_2Hands);  }

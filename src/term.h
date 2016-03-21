@@ -15,8 +15,18 @@ public:
   bool charEmpty() const { return c == EmptyChar; }
 };
 
-class Term
-{
+
+
+class Term {
+  // Our 'text screen overlay' abstraction,
+  // the 'text buffer matrix'.
+  // Is a fixed layer outside the viewport.
+
+  // When the screen/grafics-renderer operates,
+  // it draws a fixed cell matrix, drawing
+  // about 4-5 layers. Top layer is 'Term';
+  // the remaining layers are viewport-adjusted views into the map.
+
 public:
   enum { 
 	  Width = 48, 

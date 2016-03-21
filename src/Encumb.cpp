@@ -72,11 +72,5 @@ const char* Encumb::encTxt(EncumbEnum type) {
 
 
 
-Encumb::Encumb()
-{
-}
-
-
-Encumb::~Encumb()
-{
-}
+Encumb::Encumb(){}
+Encumb::~Encumb(){}

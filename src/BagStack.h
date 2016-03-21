@@ -24,8 +24,14 @@ public:
 typedef std::vector< Obj* > Coll;
 typedef std::map< Stacker, Coll > StackMap; 
 
-class BagStack
-{
+class BagStack {
+  /* BagStack is just a temporary rendering of a Bag.
+  The idea is, that Bag is general-purpose and makes no assumptions,
+  it's just a 'logical' container for items.
+    BagStack, is a chosen 'view' of Bag contents,
+  biased towards stacking identical items,
+  so you avoid 4 bottles listed as 4 entries.
+  */
 public:
 
   StackMap stacks;

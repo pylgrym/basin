@@ -12,10 +12,10 @@
 
 void Mob::placeMobOnMap(Map* map) {
   pos.x = rnd::Rnd(1, map->Width2 - 1);
-  pos.y = rnd::Rnd(2, map->Height2 - 1);
+  pos.y = rnd::Rnd(2, map->Height2 - 1); // FIXME, this '2' seems like outdated offset from when map and top-info-row were interacting?
 }
 
-Mob::Mob(int mlevel, bool bIsPlayer_) //, Map* map)
+Mob::Mob(int mlevel, bool bIsPlayer_)
 :stats(mlevel,bIsPlayer_)
 {
   mobDummyWeapon = Levelize::randDiceForLevel(mlevel);
@@ -23,17 +23,11 @@ Mob::Mob(int mlevel, bool bIsPlayer_) //, Map* map)
   m_mobType = (CreatureEnum) rnd::Rnd(CR_Kobold, CR_MaxLimit);
 
   pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
-  // if (map != NULL) {
-  //   placeMobOnMap(map);
-  // } else {
-  //   pos = CPoint(1, 1); // no map dimensions, so put mob on (1,1)
-  // }
 
   color = RGB(rand()%255,rand()%255,rand()%255);
 
   defSchool = (AttackSchool) rnd::Rnd(0, SC_MaxSchools);
   mobSpell = Spell::rndSpell_level(mlevel);
-
 
   // starting-Mood distribution..
   mood = M_Sleeping; // The default..
@@ -62,6 +56,7 @@ Mob::Mob(int mlevel, bool bIsPlayer_) //, Map* map)
 */
 
 /* idea - consider having 'grey floor' made with fill-brush and cell-colours.
+Hmm, I do that currently, don't I?
 */
 
 Mob::~Mob() {}
@@ -76,7 +71,7 @@ void Mob::invalidateGfx(CPoint pos, CPoint oldpos, bool force) {
   }
 }
 
-void Mob::invalidateGfx() {
+void Mob::invalidateGfx() { // Hmm, these methods should get A/B names..?
   TheUI::invalidateCell(pos); 
 }
 

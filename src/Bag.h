@@ -1,6 +1,7 @@
 #pragma once
 
-#include "cellmap/cellmap.h"
+#include "Obj.h"
+// #include "cellmap/cellmap.h"
 
 class Obj;
 

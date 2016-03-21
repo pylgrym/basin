@@ -15,8 +15,9 @@ public:
 };
 
 
-class MobDist
-{
+class MobDist {
+  // Mob-DISTRIBUTION, not distance..
+  // Statistical spread of weak/strong monsters per level.
 public:
   MobDist();
   ~MobDist();

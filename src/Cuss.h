@@ -2,6 +2,10 @@
 
 
 struct Cuss {
+  // Cuss is the interface to Term;
+  // Term is just a raw buffer/container,
+  // without behaviour.
+
   static CPoint csr;
 
   static void setCellBg(CPoint p, COLORREF color);

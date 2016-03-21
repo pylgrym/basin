@@ -1,8 +1,4 @@
 #pragma once
-class MobCombat
-{
-public:
-  MobCombat();
-  ~MobCombat();
-};
+
+// class MobCombat {public:  MobCombat();  ~MobCombat(); };
 

@@ -697,10 +697,10 @@ bool Stats::persist(Persist& p) {
 
   p.transfer(s_confused.dur,  "confused"); 
   // if (p.bOut) {
-  p.transfer(s_afraid.dur, "confused");
-  p.transfer(s_blinded.dur, "confused");
-  p.transfer(s_rooted.dur, "confused");
-  p.transfer(s_poisoned.dur, "confused");
+  p.transfer(s_afraid.dur,   "afraid");
+  p.transfer(s_blinded.dur,  "blinded");
+  p.transfer(s_rooted.dur,   "rooted");
+  p.transfer(s_poisoned.dur, "poisoned");
   //}
 
   p.transfer(gold,      "gold"); 

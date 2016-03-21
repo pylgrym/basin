@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Dungeon.h"
 #include "Mob.h"
-#include "Bag.h"
+// #include "Bag.h"
 #include "PlayerMob.h"
 #include "Levelize.h"
 #include "MobDist.h"
@@ -88,7 +88,7 @@ bool Dungeon::persist(class Persist& p) {
     ReadyQueue::iterator i;
     for (i = mobs.queue.begin(); i != mobs.queue.end(); ++i) {
       MobReady& mr = *i;
-      map.moveMobNoInv(*mr.mob, mr.mob->pos);
+      map.moveMobNoInv(*mr.mob, mr.mob->pos); // "No-Invalidate."
     }
   }
 

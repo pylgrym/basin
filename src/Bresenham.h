@@ -2,12 +2,7 @@
 
 #include <vector>
 
-class Bresenham
-{
-public:
-  Bresenham();
-  ~Bresenham();
-};
+// class Bresenham { public:  Bresenham();   ~Bresenham(); };
 
 
 class BresIter {

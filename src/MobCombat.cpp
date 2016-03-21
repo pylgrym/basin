@@ -3,14 +3,8 @@
 
 #include "mob.h"
 
-MobCombat::MobCombat()
-{
-}
-
-
-MobCombat::~MobCombat()
-{
-}
+// MobCombat::MobCombat() {}
+// MobCombat::~MobCombat(){}
 
 
 

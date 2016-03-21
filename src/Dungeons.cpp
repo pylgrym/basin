@@ -130,7 +130,7 @@ void Dungeons::initNewGame() {
   /* I have been thinking a lot about whether createPlayer or 'createDungeonLevel (MAP)
   should come first. 
      My current thinking is, that 'player is more important than any given map,
-  so even though I "could" hack it so a dungoen is created immediately before,
+  so even though I "could" hack it so a dungeon is created immediately before,
   to cater for the player, I .. won't.
     The real issue is, that assignment of position is tied wrongly to player creation
    - instead it should be delayed,
@@ -151,10 +151,12 @@ bool Dungeons::initLoadGame() {
   // CL->map.lightmap.map_offset = PlayerMob::ply->pos;
   //LOS::los.recalcLOS(CL->map.lightmap);
 
+  // Silly that we activate spells in two different places here?
   Spell::spellNC(SP_LightArea).ability = true; // Player starts out knowing light-area.. for now.
 
-  extern void bresenExample();
-  bresenExample(); // Just show how it looks.. :-)
+  // Disabled, to remove a silly dependency.
+  // extern void bresenExample();
+  // bresenExample(); // Just show how it looks.. :-)
 
   return bLoadOK;
 }
@@ -170,6 +172,7 @@ void Dungeons::initDungeons(bool loadGame) {
   }
 
   // Hack - make sure we know MM:
+  // Silly that we activate spells in two different places here?
   Spell::spellNC(SP_MagicMissile).ability = true; // Player starts out known magic-missile.
 
   PlayerMob::ply->passTime(); // Hack to make player-LIGHT init correctly; could be handled many other ways.

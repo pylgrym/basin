@@ -8,12 +8,6 @@
 
 
 
-class BungBrownian
-{
-public:
-  BungBrownian();
-  ~BungBrownian();
-};
 
 
 struct BrCell {

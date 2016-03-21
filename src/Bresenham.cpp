@@ -1,22 +1,16 @@
 #include "stdafx.h"
 #include "Bresenham.h"
 
-#include "./Dungeons.h"
+// #include "./Dungeons.h" // was only for bresenExample.
 
-Bresenham::Bresenham()
-{
-}
-
-
-Bresenham::~Bresenham()
-{
-}
+// Bresenham::Bresenham() {}
+// Bresenham::~Bresenham() {}
 
 
 
 // void putpixel(int x, int y, int color){}
 
-// Example impl:
+// Example impl: (not active)
 void bres_line(int x,int y,int x2, int y2, std::vector<CPoint>& pixels) { // int color) {
   // Bresenham.
   // Alternatively, this should be a visitor-iterator, where 'putpixel' becomes the callback.
@@ -100,6 +94,7 @@ CPoint BresIter::next() {
 }
 
 
+/*
 void bresenExample() {
   BresIter i(2, 9, 29, 14);
   for ( ; !i.done(); ) {
@@ -108,3 +103,4 @@ void bresenExample() {
     // Use p
   } 
 }
+*/
